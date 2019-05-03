@@ -1,0 +1,12 @@
+<Project>
+  <PropertyGroup>
+    <!-- Customize OutDir/IntDir and GeneratedFilesDir to:
+      1. Avoid race conditions where a project has the same generated/intermediate output for different configurations.
+      2. Avoid race conditions where two different projects in the same folder (e.g. uwp+win32) have the same generated/intermediate output
+      3. Avoid build artifacts contaminating any source code folders
+    -->
+    <OutDir Condition="$(OutDir)==''">$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
+    <IntermediateOutputPath Condition="$(IntermediateOutputPath)==''">$(SolutionDir)obj\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</IntermediateOutputPath>
+    <GeneratedFilesDir Condition="$(GeneratedFilesDir)==''">$(SolutionDir)obj\$(Configuration)\$(Platform)\$(MSBuildProjectName)\GeneratedFiles</GeneratedFilesDir>
+  </PropertyGroup>
+</Project>
