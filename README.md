@@ -1,3 +1,7 @@
+# Visual Studio OpenXR Sample Projects
+
+This repository contains a copy of the OpenXR loader (required for OpenXR applications) and a simple
+OpenXR application which can run on both the Hololens 2 and PC.
 
 # Contributing
 
