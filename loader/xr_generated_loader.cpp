@@ -2317,6 +2317,82 @@ XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimeToTimespecTimeKHR(
 #endif // defined(XR_USE_TIMESPEC)
 
 
+// ---- XR_EXT_performance_settings extension commands
+XRAPI_ATTR XrResult XRAPI_CALL xrPerfSettingsSetPerformanceLevelEXT(
+    XrSession                                   session,
+    XrPerfSettingsDomainEXT                     domain,
+    XrPerfSettingsLevelEXT                      level) {
+    try {
+        std::unique_lock<std::mutex> secondary_lock(g_session_mutex);
+        LoaderInstance *loader_instance = g_session_map[session];
+        secondary_lock.unlock();
+        if (nullptr == loader_instance) {
+            XrLoaderLogObjectInfo bad_object = {};
+            bad_object.type = XR_OBJECT_TYPE_SESSION;
+            bad_object.handle = reinterpret_cast<uint64_t const&>(session);
+            std::vector<XrLoaderLogObjectInfo> loader_objects;
+            loader_objects.push_back(bad_object);
+            LoaderLogger::LogValidationErrorMessage("VUID-xrPerfSettingsSetPerformanceLevelEXT-session-parameter", "xrPerfSettingsSetPerformanceLevelEXT",
+                                                    "session is not a valid XrSession", loader_objects);
+            return XR_ERROR_HANDLE_INVALID;
+        }
+        const std::unique_ptr<XrGeneratedDispatchTable>& dispatch_table = loader_instance->DispatchTable();
+        if (!loader_instance->ExtensionIsEnabled("XR_EXT_performance_settings")) {
+            LoaderLogger::LogValidationErrorMessage("VUID-xrPerfSettingsSetPerformanceLevelEXT-extension-notenabled",
+                                                    "xrPerfSettingsSetPerformanceLevelEXT",
+                                                    "The XR_EXT_performance_settings extension has not been enabled prior to calling xrPerfSettingsSetPerformanceLevelEXT");
+            return XR_ERROR_FUNCTION_UNSUPPORTED;
+        }
+
+        return dispatch_table->PerfSettingsSetPerformanceLevelEXT(session, domain, level);
+    } catch (...) {
+        LoaderLogger::LogErrorMessage("xrPerfSettingsSetPerformanceLevelEXT", "xrPerfSettingsSetPerformanceLevelEXT trampoline encountered an unknown error");
+        // NOTE: Most calls only allow XR_SUCCESS as a return code
+        return XR_SUCCESS;
+    }
+}
+
+
+
+// ---- XR_EXT_thermal_query extension commands
+XRAPI_ATTR XrResult XRAPI_CALL xrThermalGetTemperatureTrendEXT(
+    XrSession                                   session,
+    XrPerfSettingsDomainEXT                     domain,
+    XrPerfSettingsNotificationLevelEXT*         notificationLevel,
+    float*                                      tempHeadroom,
+    float*                                      tempSlope) {
+    try {
+        std::unique_lock<std::mutex> secondary_lock(g_session_mutex);
+        LoaderInstance *loader_instance = g_session_map[session];
+        secondary_lock.unlock();
+        if (nullptr == loader_instance) {
+            XrLoaderLogObjectInfo bad_object = {};
+            bad_object.type = XR_OBJECT_TYPE_SESSION;
+            bad_object.handle = reinterpret_cast<uint64_t const&>(session);
+            std::vector<XrLoaderLogObjectInfo> loader_objects;
+            loader_objects.push_back(bad_object);
+            LoaderLogger::LogValidationErrorMessage("VUID-xrThermalGetTemperatureTrendEXT-session-parameter", "xrThermalGetTemperatureTrendEXT",
+                                                    "session is not a valid XrSession", loader_objects);
+            return XR_ERROR_HANDLE_INVALID;
+        }
+        const std::unique_ptr<XrGeneratedDispatchTable>& dispatch_table = loader_instance->DispatchTable();
+        if (!loader_instance->ExtensionIsEnabled("XR_EXT_thermal_query")) {
+            LoaderLogger::LogValidationErrorMessage("VUID-xrThermalGetTemperatureTrendEXT-extension-notenabled",
+                                                    "xrThermalGetTemperatureTrendEXT",
+                                                    "The XR_EXT_thermal_query extension has not been enabled prior to calling xrThermalGetTemperatureTrendEXT");
+            return XR_ERROR_FUNCTION_UNSUPPORTED;
+        }
+
+        return dispatch_table->ThermalGetTemperatureTrendEXT(session, domain, notificationLevel, tempHeadroom, tempSlope);
+    } catch (...) {
+        LoaderLogger::LogErrorMessage("xrThermalGetTemperatureTrendEXT", "xrThermalGetTemperatureTrendEXT trampoline encountered an unknown error");
+        // NOTE: Most calls only allow XR_SUCCESS as a return code
+        return XR_SUCCESS;
+    }
+}
+
+
+
 // ---- XR_EXT_debug_utils extension commands
 XRAPI_ATTR XrResult XRAPI_CALL xrSetDebugUtilsObjectNameEXT(
     XrInstance                                  instance,
@@ -2392,43 +2468,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSubmitDebugUtilsMessageEXT(
         error_message += " is invalid";
         LoaderLogger::LogErrorMessage("xrSubmitDebugUtilsMessageEXT", error_message);
         return XR_ERROR_HANDLE_INVALID;
-    }
-}
-
-
-
-// ---- XR_MSFT_secondary_view_configuration extension commands
-XRAPI_ATTR XrResult XRAPI_CALL xrSubmitFrameCompositionLayersMSFT(
-    XrSession                                   session,
-    XrViewConfigurationType                     viewConfigurationType,
-    const XrFrameEndInfo*                       frameEndInfo) {
-    try {
-        std::unique_lock<std::mutex> secondary_lock(g_session_mutex);
-        LoaderInstance *loader_instance = g_session_map[session];
-        secondary_lock.unlock();
-        if (nullptr == loader_instance) {
-            XrLoaderLogObjectInfo bad_object = {};
-            bad_object.type = XR_OBJECT_TYPE_SESSION;
-            bad_object.handle = reinterpret_cast<uint64_t const&>(session);
-            std::vector<XrLoaderLogObjectInfo> loader_objects;
-            loader_objects.push_back(bad_object);
-            LoaderLogger::LogValidationErrorMessage("VUID-xrSubmitFrameCompositionLayersMSFT-session-parameter", "xrSubmitFrameCompositionLayersMSFT",
-                                                    "session is not a valid XrSession", loader_objects);
-            return XR_ERROR_HANDLE_INVALID;
-        }
-        const std::unique_ptr<XrGeneratedDispatchTable>& dispatch_table = loader_instance->DispatchTable();
-        if (!loader_instance->ExtensionIsEnabled("XR_MSFT_secondary_view_configuration")) {
-            LoaderLogger::LogValidationErrorMessage("VUID-xrSubmitFrameCompositionLayersMSFT-extension-notenabled",
-                                                    "xrSubmitFrameCompositionLayersMSFT",
-                                                    "The XR_MSFT_secondary_view_configuration extension has not been enabled prior to calling xrSubmitFrameCompositionLayersMSFT");
-            return XR_ERROR_FUNCTION_UNSUPPORTED;
-        }
-
-        return dispatch_table->SubmitFrameCompositionLayersMSFT(session, viewConfigurationType, frameEndInfo);
-    } catch (...) {
-        LoaderLogger::LogErrorMessage("xrSubmitFrameCompositionLayersMSFT", "xrSubmitFrameCompositionLayersMSFT trampoline encountered an unknown error");
-        // NOTE: Most calls only allow XR_SUCCESS as a return code
-        return XR_SUCCESS;
     }
 }
 
@@ -2691,7 +2730,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrStoreSpatialAnchorMSFT(
 }
 
 
-XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateStoredAnchorsMSFT(
+XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateStoredSpatialAnchorsMSFT(
     XrSession                                   session,
     uint32_t                                    anchorCapacityInput,
     uint32_t*                                   anchorCountOutput,
@@ -2706,21 +2745,21 @@ XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateStoredAnchorsMSFT(
             bad_object.handle = reinterpret_cast<uint64_t const&>(session);
             std::vector<XrLoaderLogObjectInfo> loader_objects;
             loader_objects.push_back(bad_object);
-            LoaderLogger::LogValidationErrorMessage("VUID-xrEnumerateStoredAnchorsMSFT-session-parameter", "xrEnumerateStoredAnchorsMSFT",
+            LoaderLogger::LogValidationErrorMessage("VUID-xrEnumerateStoredSpatialAnchorsMSFT-session-parameter", "xrEnumerateStoredSpatialAnchorsMSFT",
                                                     "session is not a valid XrSession", loader_objects);
             return XR_ERROR_HANDLE_INVALID;
         }
         const std::unique_ptr<XrGeneratedDispatchTable>& dispatch_table = loader_instance->DispatchTable();
         if (!loader_instance->ExtensionIsEnabled("XR_MSFT_spatial_anchor_storage")) {
-            LoaderLogger::LogValidationErrorMessage("VUID-xrEnumerateStoredAnchorsMSFT-extension-notenabled",
-                                                    "xrEnumerateStoredAnchorsMSFT",
-                                                    "The XR_MSFT_spatial_anchor_storage extension has not been enabled prior to calling xrEnumerateStoredAnchorsMSFT");
+            LoaderLogger::LogValidationErrorMessage("VUID-xrEnumerateStoredSpatialAnchorsMSFT-extension-notenabled",
+                                                    "xrEnumerateStoredSpatialAnchorsMSFT",
+                                                    "The XR_MSFT_spatial_anchor_storage extension has not been enabled prior to calling xrEnumerateStoredSpatialAnchorsMSFT");
             return XR_ERROR_FUNCTION_UNSUPPORTED;
         }
 
-        return dispatch_table->EnumerateStoredAnchorsMSFT(session, anchorCapacityInput, anchorCountOutput, anchorNames);
+        return dispatch_table->EnumerateStoredSpatialAnchorsMSFT(session, anchorCapacityInput, anchorCountOutput, anchorNames);
     } catch (...) {
-        LoaderLogger::LogErrorMessage("xrEnumerateStoredAnchorsMSFT", "xrEnumerateStoredAnchorsMSFT trampoline encountered an unknown error");
+        LoaderLogger::LogErrorMessage("xrEnumerateStoredSpatialAnchorsMSFT", "xrEnumerateStoredSpatialAnchorsMSFT trampoline encountered an unknown error");
         // NOTE: Most calls only allow XR_SUCCESS as a return code
         return XR_SUCCESS;
     }
@@ -2773,7 +2812,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpatialAnchorFromStoredAnchorNameMSFT(
 }
 
 
-XRAPI_ATTR XrResult XRAPI_CALL xrDeleteStoredAnchorMSFT(
+XRAPI_ATTR XrResult XRAPI_CALL xrDeleteStoredSpatialAnchorMSFT(
     XrSession                                   session,
     XrPath                                      anchorName) {
     try {
@@ -2786,21 +2825,21 @@ XRAPI_ATTR XrResult XRAPI_CALL xrDeleteStoredAnchorMSFT(
             bad_object.handle = reinterpret_cast<uint64_t const&>(session);
             std::vector<XrLoaderLogObjectInfo> loader_objects;
             loader_objects.push_back(bad_object);
-            LoaderLogger::LogValidationErrorMessage("VUID-xrDeleteStoredAnchorMSFT-session-parameter", "xrDeleteStoredAnchorMSFT",
+            LoaderLogger::LogValidationErrorMessage("VUID-xrDeleteStoredSpatialAnchorMSFT-session-parameter", "xrDeleteStoredSpatialAnchorMSFT",
                                                     "session is not a valid XrSession", loader_objects);
             return XR_ERROR_HANDLE_INVALID;
         }
         const std::unique_ptr<XrGeneratedDispatchTable>& dispatch_table = loader_instance->DispatchTable();
         if (!loader_instance->ExtensionIsEnabled("XR_MSFT_spatial_anchor_storage")) {
-            LoaderLogger::LogValidationErrorMessage("VUID-xrDeleteStoredAnchorMSFT-extension-notenabled",
-                                                    "xrDeleteStoredAnchorMSFT",
-                                                    "The XR_MSFT_spatial_anchor_storage extension has not been enabled prior to calling xrDeleteStoredAnchorMSFT");
+            LoaderLogger::LogValidationErrorMessage("VUID-xrDeleteStoredSpatialAnchorMSFT-extension-notenabled",
+                                                    "xrDeleteStoredSpatialAnchorMSFT",
+                                                    "The XR_MSFT_spatial_anchor_storage extension has not been enabled prior to calling xrDeleteStoredSpatialAnchorMSFT");
             return XR_ERROR_FUNCTION_UNSUPPORTED;
         }
 
-        return dispatch_table->DeleteStoredAnchorMSFT(session, anchorName);
+        return dispatch_table->DeleteStoredSpatialAnchorMSFT(session, anchorName);
     } catch (...) {
-        LoaderLogger::LogErrorMessage("xrDeleteStoredAnchorMSFT", "xrDeleteStoredAnchorMSFT trampoline encountered an unknown error");
+        LoaderLogger::LogErrorMessage("xrDeleteStoredSpatialAnchorMSFT", "xrDeleteStoredSpatialAnchorMSFT trampoline encountered an unknown error");
         // NOTE: Most calls only allow XR_SUCCESS as a return code
         return XR_SUCCESS;
     }
@@ -3065,6 +3104,20 @@ LOADER_EXPORT XRAPI_ATTR XrResult XRAPI_CALL xrGetInstanceProcAddr(XrInstance in
             }
 #endif // defined(XR_USE_TIMESPEC)
 
+        // ---- XR_EXT_performance_settings extension commands
+
+        } else if (func_name == "PerfSettingsSetPerformanceLevelEXT") {
+            if (loader_instance->ExtensionIsEnabled("XR_EXT_performance_settings")) {
+                *function = reinterpret_cast<PFN_xrVoidFunction>(loader_instance->DispatchTable()->PerfSettingsSetPerformanceLevelEXT);
+            }
+
+        // ---- XR_EXT_thermal_query extension commands
+
+        } else if (func_name == "ThermalGetTemperatureTrendEXT") {
+            if (loader_instance->ExtensionIsEnabled("XR_EXT_thermal_query")) {
+                *function = reinterpret_cast<PFN_xrVoidFunction>(loader_instance->DispatchTable()->ThermalGetTemperatureTrendEXT);
+            }
+
         // ---- XR_EXT_debug_utils extension commands
 
         } else if (func_name == "SetDebugUtilsObjectNameEXT") {
@@ -3094,13 +3147,6 @@ LOADER_EXPORT XRAPI_ATTR XrResult XRAPI_CALL xrGetInstanceProcAddr(XrInstance in
         } else if (func_name == "SessionInsertDebugUtilsLabelEXT") {
             if (loader_instance->ExtensionIsEnabled("XR_EXT_debug_utils")) {
                 *function = reinterpret_cast<PFN_xrVoidFunction>(xrSessionInsertDebugUtilsLabelEXT);
-            }
-
-        // ---- XR_MSFT_secondary_view_configuration extension commands
-
-        } else if (func_name == "SubmitFrameCompositionLayersMSFT") {
-            if (loader_instance->ExtensionIsEnabled("XR_MSFT_secondary_view_configuration")) {
-                *function = reinterpret_cast<PFN_xrVoidFunction>(loader_instance->DispatchTable()->SubmitFrameCompositionLayersMSFT);
             }
 
         // ---- XR_MSFT_spatial_perception_bridge extension commands
@@ -3140,17 +3186,17 @@ LOADER_EXPORT XRAPI_ATTR XrResult XRAPI_CALL xrGetInstanceProcAddr(XrInstance in
             if (loader_instance->ExtensionIsEnabled("XR_MSFT_spatial_anchor_storage")) {
                 *function = reinterpret_cast<PFN_xrVoidFunction>(loader_instance->DispatchTable()->StoreSpatialAnchorMSFT);
             }
-        } else if (func_name == "EnumerateStoredAnchorsMSFT") {
+        } else if (func_name == "EnumerateStoredSpatialAnchorsMSFT") {
             if (loader_instance->ExtensionIsEnabled("XR_MSFT_spatial_anchor_storage")) {
-                *function = reinterpret_cast<PFN_xrVoidFunction>(loader_instance->DispatchTable()->EnumerateStoredAnchorsMSFT);
+                *function = reinterpret_cast<PFN_xrVoidFunction>(loader_instance->DispatchTable()->EnumerateStoredSpatialAnchorsMSFT);
             }
         } else if (func_name == "CreateSpatialAnchorFromStoredAnchorNameMSFT") {
             if (loader_instance->ExtensionIsEnabled("XR_MSFT_spatial_anchor_storage")) {
                 *function = reinterpret_cast<PFN_xrVoidFunction>(loader_instance->DispatchTable()->CreateSpatialAnchorFromStoredAnchorNameMSFT);
             }
-        } else if (func_name == "DeleteStoredAnchorMSFT") {
+        } else if (func_name == "DeleteStoredSpatialAnchorMSFT") {
             if (loader_instance->ExtensionIsEnabled("XR_MSFT_spatial_anchor_storage")) {
-                *function = reinterpret_cast<PFN_xrVoidFunction>(loader_instance->DispatchTable()->DeleteStoredAnchorMSFT);
+                *function = reinterpret_cast<PFN_xrVoidFunction>(loader_instance->DispatchTable()->DeleteStoredSpatialAnchorMSFT);
             }
         }
     }
@@ -3322,6 +3368,12 @@ void LoaderGenInitInstanceDispatchTable(XrInstance instance, std::unique_ptr<XrG
     RuntimeInterface::GetInstanceProcAddr(instance, "xrConvertTimeToTimespecTimeKHR", reinterpret_cast<PFN_xrVoidFunction*>(&table->ConvertTimeToTimespecTimeKHR));
 #endif // defined(XR_USE_TIMESPEC)
 
+    // ---- XR_EXT_performance_settings extension commands
+    RuntimeInterface::GetInstanceProcAddr(instance, "xrPerfSettingsSetPerformanceLevelEXT", reinterpret_cast<PFN_xrVoidFunction*>(&table->PerfSettingsSetPerformanceLevelEXT));
+
+    // ---- XR_EXT_thermal_query extension commands
+    RuntimeInterface::GetInstanceProcAddr(instance, "xrThermalGetTemperatureTrendEXT", reinterpret_cast<PFN_xrVoidFunction*>(&table->ThermalGetTemperatureTrendEXT));
+
     // ---- XR_EXT_debug_utils extension commands
     table->SetDebugUtilsObjectNameEXT = LoaderXrTermSetDebugUtilsObjectNameEXT;
     table->CreateDebugUtilsMessengerEXT = LoaderXrTermCreateDebugUtilsMessengerEXT;
@@ -3330,9 +3382,6 @@ void LoaderGenInitInstanceDispatchTable(XrInstance instance, std::unique_ptr<XrG
     RuntimeInterface::GetInstanceProcAddr(instance, "xrSessionBeginDebugUtilsLabelRegionEXT", reinterpret_cast<PFN_xrVoidFunction*>(&table->SessionBeginDebugUtilsLabelRegionEXT));
     RuntimeInterface::GetInstanceProcAddr(instance, "xrSessionEndDebugUtilsLabelRegionEXT", reinterpret_cast<PFN_xrVoidFunction*>(&table->SessionEndDebugUtilsLabelRegionEXT));
     RuntimeInterface::GetInstanceProcAddr(instance, "xrSessionInsertDebugUtilsLabelEXT", reinterpret_cast<PFN_xrVoidFunction*>(&table->SessionInsertDebugUtilsLabelEXT));
-
-    // ---- XR_MSFT_secondary_view_configuration extension commands
-    RuntimeInterface::GetInstanceProcAddr(instance, "xrSubmitFrameCompositionLayersMSFT", reinterpret_cast<PFN_xrVoidFunction*>(&table->SubmitFrameCompositionLayersMSFT));
 
     // ---- XR_MSFT_spatial_perception_bridge extension commands
 #if defined(XR_USE_PLATFORM_WIN32)
@@ -3349,9 +3398,9 @@ void LoaderGenInitInstanceDispatchTable(XrInstance instance, std::unique_ptr<XrG
 
     // ---- XR_MSFT_spatial_anchor_storage extension commands
     RuntimeInterface::GetInstanceProcAddr(instance, "xrStoreSpatialAnchorMSFT", reinterpret_cast<PFN_xrVoidFunction*>(&table->StoreSpatialAnchorMSFT));
-    RuntimeInterface::GetInstanceProcAddr(instance, "xrEnumerateStoredAnchorsMSFT", reinterpret_cast<PFN_xrVoidFunction*>(&table->EnumerateStoredAnchorsMSFT));
+    RuntimeInterface::GetInstanceProcAddr(instance, "xrEnumerateStoredSpatialAnchorsMSFT", reinterpret_cast<PFN_xrVoidFunction*>(&table->EnumerateStoredSpatialAnchorsMSFT));
     RuntimeInterface::GetInstanceProcAddr(instance, "xrCreateSpatialAnchorFromStoredAnchorNameMSFT", reinterpret_cast<PFN_xrVoidFunction*>(&table->CreateSpatialAnchorFromStoredAnchorNameMSFT));
-    RuntimeInterface::GetInstanceProcAddr(instance, "xrDeleteStoredAnchorMSFT", reinterpret_cast<PFN_xrVoidFunction*>(&table->DeleteStoredAnchorMSFT));
+    RuntimeInterface::GetInstanceProcAddr(instance, "xrDeleteStoredSpatialAnchorMSFT", reinterpret_cast<PFN_xrVoidFunction*>(&table->DeleteStoredSpatialAnchorMSFT));
 }
 
 // Instance Update Dispatch Table with an API Layer Interface
@@ -3677,6 +3726,18 @@ void ApiLayerInterface::GenUpdateInstanceDispatchTable(XrInstance instance, std:
     }
 #endif // defined(XR_USE_TIMESPEC)
 
+    // ---- XR_EXT_performance_settings extension commands
+    _get_instant_proc_addr(instance, "xrPerfSettingsSetPerformanceLevelEXT", &cur_func_ptr);
+    if (nullptr != cur_func_ptr) {
+        table->PerfSettingsSetPerformanceLevelEXT = reinterpret_cast<PFN_xrPerfSettingsSetPerformanceLevelEXT>(cur_func_ptr);
+    }
+
+    // ---- XR_EXT_thermal_query extension commands
+    _get_instant_proc_addr(instance, "xrThermalGetTemperatureTrendEXT", &cur_func_ptr);
+    if (nullptr != cur_func_ptr) {
+        table->ThermalGetTemperatureTrendEXT = reinterpret_cast<PFN_xrThermalGetTemperatureTrendEXT>(cur_func_ptr);
+    }
+
     // ---- XR_EXT_debug_utils extension commands
     _get_instant_proc_addr(instance, "xrSetDebugUtilsObjectNameEXT", &cur_func_ptr);
     if (nullptr != cur_func_ptr) {
@@ -3705,12 +3766,6 @@ void ApiLayerInterface::GenUpdateInstanceDispatchTable(XrInstance instance, std:
     _get_instant_proc_addr(instance, "xrSessionInsertDebugUtilsLabelEXT", &cur_func_ptr);
     if (nullptr != cur_func_ptr) {
         table->SessionInsertDebugUtilsLabelEXT = reinterpret_cast<PFN_xrSessionInsertDebugUtilsLabelEXT>(cur_func_ptr);
-    }
-
-    // ---- XR_MSFT_secondary_view_configuration extension commands
-    _get_instant_proc_addr(instance, "xrSubmitFrameCompositionLayersMSFT", &cur_func_ptr);
-    if (nullptr != cur_func_ptr) {
-        table->SubmitFrameCompositionLayersMSFT = reinterpret_cast<PFN_xrSubmitFrameCompositionLayersMSFT>(cur_func_ptr);
     }
 
     // ---- XR_MSFT_spatial_perception_bridge extension commands
@@ -3746,17 +3801,17 @@ void ApiLayerInterface::GenUpdateInstanceDispatchTable(XrInstance instance, std:
     if (nullptr != cur_func_ptr) {
         table->StoreSpatialAnchorMSFT = reinterpret_cast<PFN_xrStoreSpatialAnchorMSFT>(cur_func_ptr);
     }
-    _get_instant_proc_addr(instance, "xrEnumerateStoredAnchorsMSFT", &cur_func_ptr);
+    _get_instant_proc_addr(instance, "xrEnumerateStoredSpatialAnchorsMSFT", &cur_func_ptr);
     if (nullptr != cur_func_ptr) {
-        table->EnumerateStoredAnchorsMSFT = reinterpret_cast<PFN_xrEnumerateStoredAnchorsMSFT>(cur_func_ptr);
+        table->EnumerateStoredSpatialAnchorsMSFT = reinterpret_cast<PFN_xrEnumerateStoredSpatialAnchorsMSFT>(cur_func_ptr);
     }
     _get_instant_proc_addr(instance, "xrCreateSpatialAnchorFromStoredAnchorNameMSFT", &cur_func_ptr);
     if (nullptr != cur_func_ptr) {
         table->CreateSpatialAnchorFromStoredAnchorNameMSFT = reinterpret_cast<PFN_xrCreateSpatialAnchorFromStoredAnchorNameMSFT>(cur_func_ptr);
     }
-    _get_instant_proc_addr(instance, "xrDeleteStoredAnchorMSFT", &cur_func_ptr);
+    _get_instant_proc_addr(instance, "xrDeleteStoredSpatialAnchorMSFT", &cur_func_ptr);
     if (nullptr != cur_func_ptr) {
-        table->DeleteStoredAnchorMSFT = reinterpret_cast<PFN_xrDeleteStoredAnchorMSFT>(cur_func_ptr);
+        table->DeleteStoredSpatialAnchorMSFT = reinterpret_cast<PFN_xrDeleteStoredSpatialAnchorMSFT>(cur_func_ptr);
     }
 }
 #ifdef __cplusplus

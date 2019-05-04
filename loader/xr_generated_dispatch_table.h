@@ -152,6 +152,12 @@ struct XrGeneratedDispatchTable {
     PFN_xrConvertTimeToTimespecTimeKHR ConvertTimeToTimespecTimeKHR;
 #endif // defined(XR_USE_TIMESPEC)
 
+    // ---- XR_EXT_performance_settings extension commands
+    PFN_xrPerfSettingsSetPerformanceLevelEXT PerfSettingsSetPerformanceLevelEXT;
+
+    // ---- XR_EXT_thermal_query extension commands
+    PFN_xrThermalGetTemperatureTrendEXT ThermalGetTemperatureTrendEXT;
+
     // ---- XR_EXT_debug_utils extension commands
     PFN_xrSetDebugUtilsObjectNameEXT SetDebugUtilsObjectNameEXT;
     PFN_xrCreateDebugUtilsMessengerEXT CreateDebugUtilsMessengerEXT;
@@ -160,9 +166,6 @@ struct XrGeneratedDispatchTable {
     PFN_xrSessionBeginDebugUtilsLabelRegionEXT SessionBeginDebugUtilsLabelRegionEXT;
     PFN_xrSessionEndDebugUtilsLabelRegionEXT SessionEndDebugUtilsLabelRegionEXT;
     PFN_xrSessionInsertDebugUtilsLabelEXT SessionInsertDebugUtilsLabelEXT;
-
-    // ---- XR_MSFT_secondary_view_configuration extension commands
-    PFN_xrSubmitFrameCompositionLayersMSFT SubmitFrameCompositionLayersMSFT;
 
     // ---- XR_MSFT_spatial_perception_bridge extension commands
 #if defined(XR_USE_PLATFORM_WIN32)
@@ -179,9 +182,9 @@ struct XrGeneratedDispatchTable {
 
     // ---- XR_MSFT_spatial_anchor_storage extension commands
     PFN_xrStoreSpatialAnchorMSFT StoreSpatialAnchorMSFT;
-    PFN_xrEnumerateStoredAnchorsMSFT EnumerateStoredAnchorsMSFT;
+    PFN_xrEnumerateStoredSpatialAnchorsMSFT EnumerateStoredSpatialAnchorsMSFT;
     PFN_xrCreateSpatialAnchorFromStoredAnchorNameMSFT CreateSpatialAnchorFromStoredAnchorNameMSFT;
-    PFN_xrDeleteStoredAnchorMSFT DeleteStoredAnchorMSFT;
+    PFN_xrDeleteStoredSpatialAnchorMSFT DeleteStoredSpatialAnchorMSFT;
 };
 
 

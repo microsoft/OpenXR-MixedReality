@@ -368,6 +368,9 @@ XrResult GeneratedXrUtilitiesStructureTypeToString(XrStructureType struct_type,
         case XR_TYPE_VULKAN_SWAPCHAIN_FORMAT_LIST_CREATE_INFO_KHR:
             strncpy(buffer, "XR_TYPE_VULKAN_SWAPCHAIN_FORMAT_LIST_CREATE_INFO_KHR", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
+        case XR_TYPE_EVENT_DATA_PERF_SETTINGS_EXT:
+            strncpy(buffer, "XR_TYPE_EVENT_DATA_PERF_SETTINGS_EXT", XR_MAX_STRUCTURE_NAME_SIZE);
+            break;
         case XR_TYPE_COMPOSITION_LAYER_CYLINDER_KHR:
             strncpy(buffer, "XR_TYPE_COMPOSITION_LAYER_CYLINDER_KHR", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
@@ -454,18 +457,6 @@ XrResult GeneratedXrUtilitiesStructureTypeToString(XrStructureType struct_type,
             break;
         case XR_TYPE_EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR:
             strncpy(buffer, "XR_TYPE_EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR", XR_MAX_STRUCTURE_NAME_SIZE);
-            break;
-        case XR_TYPE_COMPOSITION_LAYER_COLOR_MODULATION_INFO_KHR:
-            strncpy(buffer, "XR_TYPE_COMPOSITION_LAYER_COLOR_MODULATION_INFO_KHR", XR_MAX_STRUCTURE_NAME_SIZE);
-            break;
-        case XR_TYPE_SESSION_BEGIN_VIEW_CONFIGURATION_INFO_MSFT:
-            strncpy(buffer, "XR_TYPE_SESSION_BEGIN_VIEW_CONFIGURATION_INFO_MSFT", XR_MAX_STRUCTURE_NAME_SIZE);
-            break;
-        case XR_TYPE_FRAME_VIEW_CONFIGURATION_STATE_MSFT:
-            strncpy(buffer, "XR_TYPE_FRAME_VIEW_CONFIGURATION_STATE_MSFT", XR_MAX_STRUCTURE_NAME_SIZE);
-            break;
-        case XR_TYPE_VIEW_CONFIGURATION_LOCATE_INFO_MSFT:
-            strncpy(buffer, "XR_TYPE_VIEW_CONFIGURATION_LOCATE_INFO_MSFT", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
         case XR_TYPE_SPATIAL_COORDINATE_SYSTEM_SPACE_CREATE_INFO_MSFT:
             strncpy(buffer, "XR_TYPE_SPATIAL_COORDINATE_SYSTEM_SPACE_CREATE_INFO_MSFT", XR_MAX_STRUCTURE_NAME_SIZE);

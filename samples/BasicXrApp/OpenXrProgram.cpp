@@ -51,7 +51,11 @@ namespace {
                         std::this_thread::sleep_for(250ms);
                     }
                 }
-            } while (!requestRestart);
+
+                if (requestRestart) {
+                    PrepareSessionRestart();
+                }
+            } while (requestRestart);
         }
 
     private:
@@ -240,7 +244,7 @@ namespace {
                 spaceCreateInfo.poseInReferenceSpace = Pose::Identity();
                 CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &spaceCreateInfo, m_sceneSpace.Put()));
 
-                // Initialize the placed cube 1 meter in front of user..
+                // Initialize the placed cube 1 meter in front of user.
                 m_placedCube.Space = m_sceneSpace.Get();
                 m_placedCube.Pose = Pose::Translation({0, 0, -1});
                 m_placedCube.Scale = {0.1f, 0.1f, 0.1f};
@@ -330,9 +334,9 @@ namespace {
             *buffer = {XR_TYPE_EVENT_DATA_BUFFER};
             const XrResult xr = CHECK_XRCMD(xrPollEvent(m_instance.Get(), buffer));
             if (xr == XR_EVENT_UNAVAILABLE) {
-                return nullptr;
+                return false;
             } else {
-                return buffer;
+                return true;
             }
         }
 
@@ -417,7 +421,7 @@ namespace {
                         vibration.amplitude = 1.0f;
                         vibration.duration = XR_MIN_HAPTIC_DURATION;
                         vibration.frequency = XR_FREQUENCY_UNSPECIFIED;
-                        CHECK_XRCMD(xrApplyHapticFeedback(m_vibrateAction.Get(), 1, &subactionPath, (XrHapticBaseHeader*)&vibration));
+                        CHECK_XRCMD(xrApplyHapticFeedback(m_vibrateAction.Get(), 0.5, &subactionPath, (XrHapticBaseHeader*)&vibration));
                     }
 
                     // Locate the hand in the scene.
@@ -556,6 +560,13 @@ namespace {
             layer.viewCount = (uint32_t)projectionLayerViews.size();
             layer.views = projectionLayerViews.data();
             return true;
+        }
+
+        void PrepareSessionRestart() {
+            m_configViews.clear();
+            m_swapchains.clear();
+            m_session.Reset();
+            m_systemId = XR_NULL_SYSTEM_ID;
         }
 
         constexpr bool IsSessionVisible() const {

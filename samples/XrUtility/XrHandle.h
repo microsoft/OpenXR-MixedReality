@@ -21,36 +21,35 @@ namespace xr {
     public:
         XrHandle() = default;
         XrHandle(const XrHandle&) = delete;
-        XrHandle(XrHandle&& other) {
+        XrHandle(XrHandle&& other) noexcept {
             *this = std::move(other);
         }
 
-        ~XrHandle() {
+        ~XrHandle() noexcept {
             Reset();
         }
 
         XrHandle& operator=(const XrHandle&) = delete;
-        XrHandle& operator=(XrHandle&& other) {
+        XrHandle& operator=(XrHandle&& other) noexcept {
             m_handle = other.m_handle;
             other.m_handle = XR_NULL_HANDLE;
             return *this;
         }
 
-        HandleType Get() const {
+        HandleType Get() const noexcept {
             return m_handle;
         }
 
-        HandleType* Put() {
-            if (m_handle != XR_NULL_HANDLE) {
-                HandleType handle = m_handle;
-                m_handle = XR_NULL_HANDLE;
-                CHECK_XRCMD(DestroyFunction(handle));
-            }
+        HandleType* Put() noexcept {
+            Reset();
             return &m_handle;
         }
 
-        void Reset(HandleType newHandle = XR_NULL_HANDLE) {
-            *Put() = newHandle;
+        void Reset(HandleType newHandle = XR_NULL_HANDLE) noexcept {
+            if (m_handle != XR_NULL_HANDLE) {
+                DestroyFunction(m_handle);
+            }
+            m_handle = newHandle;
         }
 
     private:

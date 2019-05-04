@@ -156,6 +156,12 @@ void GeneratedXrPopulateDispatchTable(struct XrGeneratedDispatchTable *table,
     (get_inst_proc_addr(instance, "xrConvertTimeToTimespecTimeKHR", (PFN_xrVoidFunction*)&table->ConvertTimeToTimespecTimeKHR));
 #endif // defined(XR_USE_TIMESPEC)
 
+    // ---- XR_EXT_performance_settings extension commands
+    (get_inst_proc_addr(instance, "xrPerfSettingsSetPerformanceLevelEXT", (PFN_xrVoidFunction*)&table->PerfSettingsSetPerformanceLevelEXT));
+
+    // ---- XR_EXT_thermal_query extension commands
+    (get_inst_proc_addr(instance, "xrThermalGetTemperatureTrendEXT", (PFN_xrVoidFunction*)&table->ThermalGetTemperatureTrendEXT));
+
     // ---- XR_EXT_debug_utils extension commands
     (get_inst_proc_addr(instance, "xrSetDebugUtilsObjectNameEXT", (PFN_xrVoidFunction*)&table->SetDebugUtilsObjectNameEXT));
     (get_inst_proc_addr(instance, "xrCreateDebugUtilsMessengerEXT", (PFN_xrVoidFunction*)&table->CreateDebugUtilsMessengerEXT));
@@ -164,9 +170,6 @@ void GeneratedXrPopulateDispatchTable(struct XrGeneratedDispatchTable *table,
     (get_inst_proc_addr(instance, "xrSessionBeginDebugUtilsLabelRegionEXT", (PFN_xrVoidFunction*)&table->SessionBeginDebugUtilsLabelRegionEXT));
     (get_inst_proc_addr(instance, "xrSessionEndDebugUtilsLabelRegionEXT", (PFN_xrVoidFunction*)&table->SessionEndDebugUtilsLabelRegionEXT));
     (get_inst_proc_addr(instance, "xrSessionInsertDebugUtilsLabelEXT", (PFN_xrVoidFunction*)&table->SessionInsertDebugUtilsLabelEXT));
-
-    // ---- XR_MSFT_secondary_view_configuration extension commands
-    (get_inst_proc_addr(instance, "xrSubmitFrameCompositionLayersMSFT", (PFN_xrVoidFunction*)&table->SubmitFrameCompositionLayersMSFT));
 
     // ---- XR_MSFT_spatial_perception_bridge extension commands
 #if defined(XR_USE_PLATFORM_WIN32)
@@ -183,9 +186,9 @@ void GeneratedXrPopulateDispatchTable(struct XrGeneratedDispatchTable *table,
 
     // ---- XR_MSFT_spatial_anchor_storage extension commands
     (get_inst_proc_addr(instance, "xrStoreSpatialAnchorMSFT", (PFN_xrVoidFunction*)&table->StoreSpatialAnchorMSFT));
-    (get_inst_proc_addr(instance, "xrEnumerateStoredAnchorsMSFT", (PFN_xrVoidFunction*)&table->EnumerateStoredAnchorsMSFT));
+    (get_inst_proc_addr(instance, "xrEnumerateStoredSpatialAnchorsMSFT", (PFN_xrVoidFunction*)&table->EnumerateStoredSpatialAnchorsMSFT));
     (get_inst_proc_addr(instance, "xrCreateSpatialAnchorFromStoredAnchorNameMSFT", (PFN_xrVoidFunction*)&table->CreateSpatialAnchorFromStoredAnchorNameMSFT));
-    (get_inst_proc_addr(instance, "xrDeleteStoredAnchorMSFT", (PFN_xrVoidFunction*)&table->DeleteStoredAnchorMSFT));
+    (get_inst_proc_addr(instance, "xrDeleteStoredSpatialAnchorMSFT", (PFN_xrVoidFunction*)&table->DeleteStoredSpatialAnchorMSFT));
 }
 
 #ifdef __cplusplus

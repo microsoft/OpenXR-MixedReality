@@ -248,6 +248,7 @@ typedef enum XrStructureType {
     XR_TYPE_INSTANCE_CREATE_INFO_ANDROID_KHR = 1000008000,
     XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR = 1000010000,
     XR_TYPE_VULKAN_SWAPCHAIN_FORMAT_LIST_CREATE_INFO_KHR = 1000014000,
+    XR_TYPE_EVENT_DATA_PERF_SETTINGS_EXT = 1000015000,
     XR_TYPE_COMPOSITION_LAYER_CYLINDER_KHR = 1000017000,
     XR_TYPE_COMPOSITION_LAYER_EQUIRECT_KHR = 1000018000,
     XR_TYPE_DEBUG_UTILS_OBJECT_NAME_INFO_EXT = 1000019000,
@@ -277,10 +278,6 @@ typedef enum XrStructureType {
     XR_TYPE_GRAPHICS_REQUIREMENTS_D3D12_KHR = 1000028002,
     XR_TYPE_VISIBILITY_MASK_KHR = 1000031000,
     XR_TYPE_EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR = 1000031001,
-    XR_TYPE_COMPOSITION_LAYER_COLOR_MODULATION_INFO_KHR = 1000034000,
-    XR_TYPE_SESSION_BEGIN_VIEW_CONFIGURATION_INFO_MSFT = 1000999000,
-    XR_TYPE_FRAME_VIEW_CONFIGURATION_STATE_MSFT = 1000999001,
-    XR_TYPE_VIEW_CONFIGURATION_LOCATE_INFO_MSFT = 1000999002,
     XR_TYPE_SPATIAL_COORDINATE_SYSTEM_SPACE_CREATE_INFO_MSFT = 1001005000,
     XR_TYPE_ACTION_STATE_POSE_CONTROLLER_RENDER_MODEL_MSFT = 1001006000,
     XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT = 1001008000,
@@ -311,7 +308,6 @@ typedef enum XrReferenceSpaceType {
 typedef enum XrViewConfigurationType {
     XR_VIEW_CONFIGURATION_TYPE_PRIMARY_MONO = 1,
     XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO = 2,
-    XR_VIEW_CONFIGURATION_TYPE_SECONDARY_MIXED_REALITY_CAPTURE_MSFT = 1001000000,
     XR_VIEW_CONFIGURATION_TYPE_MAX_ENUM = 0x7FFFFFFF
 } XrViewConfigurationType;
 
@@ -1319,16 +1315,69 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetVisibilityMaskKHR(
 #endif
 
 
-#define XR_KHR_composition_layer_color_modulation 1
-#define XR_KHR_composition_layer_color_modulation_SPEC_VERSION 2
-#define XR_KHR_COMPOSITION_LAYER_COLOR_MODULATION_EXTENSION_NAME "XR_KHR_composition_layer_color_modulation"
-typedef struct XrCompositionLayerColorModulationInfoKHR {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    XrColor4f                   colorScale;
-    XrColor4f                   colorOffset;
-} XrCompositionLayerColorModulationInfoKHR;
+#define XR_EXT_performance_settings 1
+#define XR_EXT_performance_settings_SPEC_VERSION 1
+#define XR_EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME "XR_EXT_performance_settings"
 
+typedef enum XrPerfSettingsDomainEXT {
+    XR_PERF_SETTINGS_DOMAIN_CPU_EXT = 1,
+    XR_PERF_SETTINGS_DOMAIN_GPU_EXT = 2,
+    XR_PERF_SETTINGS_DOMAIN_MAX_ENUM_EXT = 0x7FFFFFFF
+} XrPerfSettingsDomainEXT;
+
+typedef enum XrPerfSettingsSubDomainEXT {
+    XR_PERF_SETTINGS_SUB_DOMAIN_COMPOSITING_EXT = 1,
+    XR_PERF_SETTINGS_SUB_DOMAIN_RENDERING_EXT = 2,
+    XR_PERF_SETTINGS_SUB_DOMAIN_THERMAL_EXT = 3,
+    XR_PERF_SETTINGS_SUB_DOMAIN_MAX_ENUM_EXT = 0x7FFFFFFF
+} XrPerfSettingsSubDomainEXT;
+
+typedef enum XrPerfSettingsLevelEXT {
+    XR_PERF_SETTINGS_LEVEL_POWER_SAVINGS_EXT = 0,
+    XR_PERF_SETTINGS_LEVEL_SUSTAINED_LOW_EXT = 25,
+    XR_PERF_SETTINGS_LEVEL_SUSTAINED_HIGH_EXT = 50,
+    XR_PERF_SETTINGS_LEVEL_BOOST_EXT = 75,
+    XR_PERF_SETTINGS_LEVEL_MAX_ENUM_EXT = 0x7FFFFFFF
+} XrPerfSettingsLevelEXT;
+
+typedef enum XrPerfSettingsNotificationLevelEXT {
+    XR_PERF_SETTINGS_NOTIF_LEVEL_NORMAL_EXT = 0,
+    XR_PERF_SETTINGS_NOTIF_LEVEL_WARNING_EXT = 25,
+    XR_PERF_SETTINGS_NOTIF_LEVEL_IMPAIRED_EXT = 75,
+    XR_PERF_SETTINGS_NOTIFICATION_LEVEL_MAX_ENUM_EXT = 0x7FFFFFFF
+} XrPerfSettingsNotificationLevelEXT;
+typedef struct XrEventDataPerfSettingsEXT {
+    XrStructureType                       type;
+    const void* XR_MAY_ALIAS              next;
+    XrPerfSettingsDomainEXT               domain;
+    XrPerfSettingsSubDomainEXT            subDomain;
+    XrPerfSettingsNotificationLevelEXT    fromLevel;
+    XrPerfSettingsNotificationLevelEXT    toLevel;
+} XrEventDataPerfSettingsEXT;
+
+typedef XrResult (XRAPI_PTR *PFN_xrPerfSettingsSetPerformanceLevelEXT)(XrSession session, XrPerfSettingsDomainEXT domain, XrPerfSettingsLevelEXT level);
+
+#ifndef XR_NO_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrPerfSettingsSetPerformanceLevelEXT(
+    XrSession                                   session,
+    XrPerfSettingsDomainEXT                     domain,
+    XrPerfSettingsLevelEXT                      level);
+#endif
+
+
+#define XR_EXT_thermal_query 1
+#define XR_EXT_thermal_query_SPEC_VERSION 1
+#define XR_EXT_THERMAL_QUERY_EXTENSION_NAME "XR_EXT_thermal_query"
+typedef XrResult (XRAPI_PTR *PFN_xrThermalGetTemperatureTrendEXT)(XrSession session, XrPerfSettingsDomainEXT domain, XrPerfSettingsNotificationLevelEXT* notificationLevel, float* tempHeadroom, float* tempSlope);
+
+#ifndef XR_NO_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrThermalGetTemperatureTrendEXT(
+    XrSession                                   session,
+    XrPerfSettingsDomainEXT                     domain,
+    XrPerfSettingsNotificationLevelEXT*         notificationLevel,
+    float*                                      tempHeadroom,
+    float*                                      tempSlope);
+#endif
 
 
 #define XR_EXT_debug_utils 1
@@ -1432,44 +1481,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSessionInsertDebugUtilsLabelEXT(
 #endif
 
 
-#define XR_MSFT_secondary_view_configuration 1
-#define XR_MSFT_secondary_view_configuration_SPEC_VERSION 1
-#define XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME "XR_MSFT_secondary_view_configuration"
-typedef struct XrSessionBeginViewConfigurationInfoMSFT {
-    XrStructureType                   type;
-    const void* XR_MAY_ALIAS          next;
-    uint32_t                          enabledViewConfigurationCount;
-    const XrViewConfigurationType*    enabledViewConfigurationTypes;
-} XrSessionBeginViewConfigurationInfoMSFT;
-
-typedef struct XrFrameViewConfigurationStateMSFT {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    uint32_t                    viewConfigurationCount;
-    XrBool32*                   viewConfigurationsActive;
-} XrFrameViewConfigurationStateMSFT;
-
-typedef struct XrViewConfigurationLocateInfoMSFT {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    XrViewConfigurationType     viewConfigurationType;
-} XrViewConfigurationLocateInfoMSFT;
-
-typedef XrResult (XRAPI_PTR *PFN_xrSubmitFrameCompositionLayersMSFT)(XrSession session, XrViewConfigurationType viewConfigurationType, const XrFrameEndInfo* frameEndInfo);
-
-#ifndef XR_NO_PROTOTYPES
-XRAPI_ATTR XrResult XRAPI_CALL xrSubmitFrameCompositionLayersMSFT(
-    XrSession                                   session,
-    XrViewConfigurationType                     viewConfigurationType,
-    const XrFrameEndInfo*                       frameEndInfo);
-#endif
-
-
-#define XR_MSFT_mixed_reality_capture 1
-#define XR_MSFT_mixed_reality_capture_SPEC_VERSION 1
-#define XR_MSFT_MIXED_REALITY_CAPTURE_NAME "XR_MSFT_mixed_reality_capture"
-
-
 #define XR_MSFT_controller_render_model 1
 #define XR_MSFT_controller_render_model_SPEC_VERSION 1
 #define XR_MSFT_CONTROLLER_RENDER_MODEL_EXTENSION_NAME "XR_MSFT_controller_render_model"
@@ -1512,7 +1523,7 @@ typedef struct XrSpatialAnchorCreateInfoMSFT {
 } XrSpatialAnchorCreateInfoMSFT;
 
 typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialAnchorSpaceMSFT)(XrSession session, XrSpatialAnchorMSFT anchor, XrSpace* space);
-typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialAnchorMSFT)(XrSession session, const XrSpatialAnchorCreateInfoMSFT*anchorCreateInfo, XrSpatialAnchorMSFT*anchor);
+typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialAnchorMSFT)(XrSession session, const XrSpatialAnchorCreateInfoMSFT* anchorCreateInfo, XrSpatialAnchorMSFT* anchor);
 typedef XrResult (XRAPI_PTR *PFN_xrDestroySpatialAnchorMSFT)(XrSpatialAnchorMSFT anchor);
 
 #ifndef XR_NO_PROTOTYPES
@@ -1535,16 +1546,16 @@ XRAPI_ATTR XrResult XRAPI_CALL xrDestroySpatialAnchorMSFT(
 #define XR_MSFT_spatial_anchor_storage_SPEC_VERSION 1
 #define XR_MSFT_SPATIAL_ANCHOR_STORAGE_EXTENSION_NAME "XR_MSFT_spatial_anchor_storage"
 typedef XrResult (XRAPI_PTR *PFN_xrStoreSpatialAnchorMSFT)(XrSpatialAnchorMSFT anchor, XrPath anchorName);
-typedef XrResult (XRAPI_PTR *PFN_xrEnumerateStoredAnchorsMSFT)(XrSession session, uint32_t anchorCapacityInput, uint32_t* anchorCountOutput, XrPath* anchorNames);
+typedef XrResult (XRAPI_PTR *PFN_xrEnumerateStoredSpatialAnchorsMSFT)(XrSession session, uint32_t anchorCapacityInput, uint32_t* anchorCountOutput, XrPath* anchorNames);
 typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialAnchorFromStoredAnchorNameMSFT)(XrSession session, XrPath anchorName, XrSpatialAnchorMSFT* anchor);
-typedef XrResult (XRAPI_PTR *PFN_xrDeleteStoredAnchorMSFT)(XrSession session, XrPath anchorName);
+typedef XrResult (XRAPI_PTR *PFN_xrDeleteStoredSpatialAnchorMSFT)(XrSession session, XrPath anchorName);
 
 #ifndef XR_NO_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrStoreSpatialAnchorMSFT(
     XrSpatialAnchorMSFT                         anchor,
     XrPath                                      anchorName);
 
-XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateStoredAnchorsMSFT(
+XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateStoredSpatialAnchorsMSFT(
     XrSession                                   session,
     uint32_t                                    anchorCapacityInput,
     uint32_t*                                   anchorCountOutput,
@@ -1555,7 +1566,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpatialAnchorFromStoredAnchorNameMSFT(
     XrPath                                      anchorName,
     XrSpatialAnchorMSFT*                        anchor);
 
-XRAPI_ATTR XrResult XRAPI_CALL xrDeleteStoredAnchorMSFT(
+XRAPI_ATTR XrResult XRAPI_CALL xrDeleteStoredSpatialAnchorMSFT(
     XrSession                                   session,
     XrPath                                      anchorName);
 #endif
