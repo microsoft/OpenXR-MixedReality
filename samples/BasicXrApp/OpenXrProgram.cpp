@@ -418,10 +418,10 @@ namespace {
                     // Apply a tiny vibration to controller to indicate that action is detected.
                     {
                         XrHapticVibration vibration{XR_TYPE_HAPTIC_VIBRATION};
-                        vibration.amplitude = 1.0f;
+                        vibration.amplitude = 0.5f;
                         vibration.duration = XR_MIN_HAPTIC_DURATION;
                         vibration.frequency = XR_FREQUENCY_UNSPECIFIED;
-                        CHECK_XRCMD(xrApplyHapticFeedback(m_vibrateAction.Get(), 0.5, &subactionPath, (XrHapticBaseHeader*)&vibration));
+                        CHECK_XRCMD(xrApplyHapticFeedback(m_vibrateAction.Get(), 1, &subactionPath, (XrHapticBaseHeader*)&vibration));
                     }
 
                     // Locate the hand in the scene.
