@@ -442,7 +442,7 @@ namespace {
                             createInfo.space = m_sceneSpace.Get();
                             createInfo.pose = spaceRelation.pose;
                             createInfo.time = placeActionValue.lastChangeTime;
-                            SpatialAnchorHandle spatialAnchor;
+                            XrSpatialAnchorHandle spatialAnchor;
                             XrResult r = xrCreateSpatialAnchorMSFT(m_session.Get(), &createInfo, spatialAnchor.Put());
                             if (XR_SUCCEEDED(r)) {
                                 CHECK_XRCMD(xrCreateSpatialAnchorSpaceMSFT(m_session.Get(), spatialAnchor.Get(), m_placedCubeSpace.Put()));
@@ -611,8 +611,7 @@ namespace {
 
         XrSpaceHandle m_sceneSpace;
 
-        typedef xr::XrHandle<XrSpatialAnchorMSFT, xrDestroySpatialAnchorMSFT> SpatialAnchorHandle;
-        SpatialAnchorHandle m_spatialAnchor;
+        XrSpatialAnchorHandle m_spatialAnchor;
         XrSpaceHandle m_placedCubeSpace;
         Cube m_placedCube; // Placed in local or anchor space.
 
@@ -642,7 +641,7 @@ namespace {
         bool m_sessionRunning{false};
         XrSessionState m_sessionState{XR_SESSION_STATE_UNKNOWN};
         XrEnvironmentBlendMode m_environmentBlendMode{};
-    }; // namespace
+    };
 } // namespace
 
 namespace xr {
