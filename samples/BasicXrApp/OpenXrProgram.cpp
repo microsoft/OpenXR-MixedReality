@@ -390,7 +390,7 @@ namespace {
                 case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
                 case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED:
                 default: {
-                    DEBUG_PRINT("Ignoring event type %d\n", header->type);
+                    DEBUG_PRINT("Ignoring event type %d", header->type);
                     break;
                 }
                 }
@@ -429,17 +429,27 @@ namespace {
                     XrSpaceRelation spaceRelation{XR_TYPE_SPACE_RELATION};
                     CHECK_XRCMD(xrLocateSpace(handSpace, m_sceneSpace.Get(), placeActionValue.lastChangeTime, &spaceRelation));
 
+                    // Ensure we have tracking before placing a cube in the scene, so that it stays reliably at a physical location.
                     constexpr XrSpaceRelationFlags PoseValidFlags =
-                        XR_SPACE_RELATION_POSITION_VALID_BIT | XR_SPACE_RELATION_ORIENTATION_VALID_BIT;
-                    if ((spaceRelation.relationFlags & PoseValidFlags) == PoseValidFlags) {
+                        XR_SPACE_RELATION_POSITION_TRACKED_BIT | XR_SPACE_RELATION_ORIENTATION_TRACKED_BIT;
+                    if ((spaceRelation.relationFlags & PoseValidFlags) != PoseValidFlags) {
+                        DEBUG_PRINT("Cube cannot be placed when positional tracking is lost.");
+                    } else {
                         if (m_optionalExtensions.SpatialAnchorSupported) {
                             // Anchors provide the best stability when moving beyond 5 meters, so if the extension is enabled,
                             // create an anchor at the hand location and use the resulting anchor space.
                             XrSpatialAnchorCreateInfoMSFT createInfo{XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT};
                             createInfo.space = m_sceneSpace.Get();
                             createInfo.pose = spaceRelation.pose;
-                            CHECK_XRCMD(xrCreateSpatialAnchorMSFT(m_session.Get(), &createInfo, m_spatialAnchor.Put()));
-                            CHECK_XRCMD(xrCreateSpatialAnchorSpaceMSFT(m_session.Get(), m_spatialAnchor.Get(), m_placedCubeSpace.Put()));
+                            createInfo.time = placeActionValue.lastChangeTime;
+                            SpatialAnchorHandle spatialAnchor;
+                            XrResult r = xrCreateSpatialAnchorMSFT(m_session.Get(), &createInfo, spatialAnchor.Put());
+                            if (XR_SUCCEEDED(r)) {
+                                CHECK_XRCMD(xrCreateSpatialAnchorSpaceMSFT(m_session.Get(), spatialAnchor.Get(), m_placedCubeSpace.Put()));
+                                m_spatialAnchor = std::move(spatialAnchor);
+                            } else if (r != XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT) {
+                                CHECK_XRRESULT(r, "xrCreateSpatialAnchorSpaceMSFT");
+                            }
                         } else {
                             // If the anchor extension is not available, create a local space with an origin at the hand location.
                             XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
@@ -601,7 +611,8 @@ namespace {
 
         XrSpaceHandle m_sceneSpace;
 
-        xr::XrHandle<XrSpatialAnchorMSFT, xrDestroySpatialAnchorMSFT> m_spatialAnchor;
+        typedef xr::XrHandle<XrSpatialAnchorMSFT, xrDestroySpatialAnchorMSFT> SpatialAnchorHandle;
+        SpatialAnchorHandle m_spatialAnchor;
         XrSpaceHandle m_placedCubeSpace;
         Cube m_placedCube; // Placed in local or anchor space.
 
@@ -631,7 +642,7 @@ namespace {
         bool m_sessionRunning{false};
         XrSessionState m_sessionState{XR_SESSION_STATE_UNKNOWN};
         XrEnvironmentBlendMode m_environmentBlendMode{};
-    };
+    }; // namespace
 } // namespace
 
 namespace xr {
