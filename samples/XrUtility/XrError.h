@@ -21,7 +21,7 @@
 #define CHECK_HRCMD(cmd) xr::detail::_CheckHResult(cmd, #cmd, FILE_AND_LINE);
 #define CHECK_HRESULT(res, cmdStr) xr::detail::_CheckHResult(res, cmdStr, FILE_AND_LINE);
 
-#define DEBUG_PRINT(...) ::OutputDebugStringA(xr::detail::_Fmt(__VA_ARGS__).c_str())
+#define DEBUG_PRINT(...) ::OutputDebugStringA((xr::detail::_Fmt(__VA_ARGS__) + "\n").c_str())
 
 namespace xr::detail {
 #define CHK_STRINGIFY(x) #x

@@ -62,4 +62,5 @@ namespace xr {
     using XrSessionHandle = XrHandle<XrSession, xrDestroySession>;
     using XrSpaceHandle = XrHandle<XrSpace, xrDestroySpace>;
     using XrSwapchainHandle = XrHandle<XrSwapchain, xrDestroySwapchain>;
+    using XrSpatialAnchorHandle = XrHandle<XrSpatialAnchorMSFT, xrDestroySpatialAnchorMSFT>;
 } // namespace xr
