@@ -24,6 +24,7 @@
 #include <atomic>
 #include <array>
 #include <map>
+#include <unordered_map>
 #include <algorithm>
 #include <assert.h>
 
