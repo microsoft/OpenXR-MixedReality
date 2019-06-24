@@ -245,8 +245,9 @@ namespace {
                 CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &spaceCreateInfo, m_sceneSpace.Put()));
 
                 // Initialize the placed cube 1 meter in front of user.
-                m_placedCube.Space = m_sceneSpace.Get();
-                m_placedCube.Pose = Pose::Translation({0, 0, -1});
+                spaceCreateInfo.poseInReferenceSpace = Pose::Translation({0, 0, -1});
+                CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &spaceCreateInfo, m_placedCubeSpace.Put()));
+                m_placedCube.Space = m_placedCubeSpace.Get();
                 m_placedCube.Scale = {0.1f, 0.1f, 0.1f};
             }
 
