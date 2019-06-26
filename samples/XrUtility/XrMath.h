@@ -145,10 +145,10 @@ namespace xr::math {
 #undef DEFINE_CAST
 
     // Shortcut non-templated overload of cast() function
-#define DEFINE_CAST(X, Y)                               \
-    inline const X& cast(const Y& value) {              \
-        return detail::implement_math_cast<X>(value);   \
-    }                                                   \
+#define DEFINE_CAST(X, Y)                             \
+    inline const X& cast(const Y& value) {            \
+        return detail::implement_math_cast<X>(value); \
+    }
 
     DEFINE_CAST(DirectX::XMFLOAT2, XrVector2f);
     DEFINE_CAST(DirectX::XMFLOAT3, XrVector3f);
@@ -185,11 +185,10 @@ namespace xr::math {
     }
 
     inline DirectX::XMMATRIX XM_CALLCONV LoadInvertedXrPose(const XrPosef& pose) {
-        using namespace DirectX;
-        XMVECTOR position = LoadXrVector3(pose.position);
-        XMVECTOR orientation = LoadXrQuaternion(pose.orientation);
-        XMVECTOR invertOrientation = DirectX::XMQuaternionConjugate(orientation);
-        XMVECTOR invertPosition = DirectX::XMVector3Rotate(-position, invertOrientation);
+        DirectX::XMVECTOR position = LoadXrVector3(pose.position);
+        DirectX::XMVECTOR orientation = LoadXrQuaternion(pose.orientation);
+        DirectX::XMVECTOR invertOrientation = DirectX::XMQuaternionConjugate(orientation);
+        DirectX::XMVECTOR invertPosition = DirectX::XMVector3Rotate(DirectX::XMVectorNegate(position), invertOrientation);
         return XMMatrixAffineTransformation(DirectX::g_XMOne,  // scale
                                             DirectX::g_XMZero, // rotation origin
                                             invertOrientation, // rotation
@@ -250,7 +249,7 @@ namespace xr::math {
         inline bool IsNormalized(const XrQuaternionf& quaternion) {
             DirectX::XMVECTOR vector = LoadXrQuaternion(quaternion);
             DirectX::XMVECTOR length = DirectX::XMVector4Length(vector);
-            DirectX::XMVECTOR equal = XMVectorNearEqual(length, DirectX::g_XMOne, XMEpsilon);
+            DirectX::XMVECTOR equal = DirectX::XMVectorNearEqual(length, DirectX::g_XMOne, XMEpsilon);
             return DirectX::XMVectorGetX(equal) != 0;
         }
     } // namespace Quaternion
@@ -337,7 +336,7 @@ namespace xr::math {
             projectionMatrix._42 = 0.0f;
             projectionMatrix._44 = 0.0f;
 
-            return XMLoadFloat4x4(&projectionMatrix);
+            return DirectX::XMLoadFloat4x4(&projectionMatrix);
         } else {
             return DirectX::XMMatrixPerspectiveOffCenterRH(l, r, b, t, nearPlane, farPlane);
         }

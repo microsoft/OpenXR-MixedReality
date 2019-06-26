@@ -379,12 +379,12 @@ namespace {
             ID3D11RenderTargetView* renderTargets[] = {renderTargetView.Get()};
             m_deviceContext->OMSetRenderTargets((UINT)std::size(renderTargets), renderTargets, depthStencilView.Get());
 
-            const DirectX::XMMATRIX spaceToView = XMMatrixInverse(nullptr, LoadXrPose(layerView.pose));
+            const DirectX::XMMATRIX spaceToView = DirectX::XMMatrixInverse(nullptr, LoadXrPose(layerView.pose));
             DirectX::XMMATRIX projectionMatrix = ComposeProjectionMatrix(layerView.fov, {0.05f, 100.0f});
 
             // Set shaders and constant buffers.
             ViewProjectionConstantBuffer viewProjection;
-            XMStoreFloat4x4(&viewProjection.ViewProjection, XMMatrixTranspose(spaceToView * projectionMatrix));
+            DirectX::XMStoreFloat4x4(&viewProjection.ViewProjection, DirectX::XMMatrixTranspose(spaceToView * projectionMatrix));
             m_deviceContext->UpdateSubresource(m_viewProjectionCBuffer.Get(), 0, nullptr, &viewProjection, 0, 0);
 
             ID3D11Buffer* const constantBuffers[] = {m_modelCBuffer.Get(), m_viewProjectionCBuffer.Get()};
@@ -405,7 +405,8 @@ namespace {
             for (const Cube& cube : cubes) {
                 // Compute and update the model transform.
                 ModelConstantBuffer model;
-                XMStoreFloat4x4(&model.Model,
+                DirectX::XMStoreFloat4x4(
+                    &model.Model,
                     DirectX::XMMatrixTranspose(DirectX::XMMatrixScaling(cube.Scale.x, cube.Scale.y, cube.Scale.z) * LoadXrPose(cube.Pose)));
                 m_deviceContext->UpdateSubresource(m_modelCBuffer.Get(), 0, nullptr, &model, 0, 0);
 
