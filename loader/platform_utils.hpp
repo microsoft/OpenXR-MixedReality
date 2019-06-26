@@ -20,6 +20,7 @@
 #pragma once
 
 #include "xr_dependencies.h"
+#include <string>
 
 #if defined(XR_OS_LINUX)
 #include <unistd.h>
@@ -87,137 +88,6 @@ static inline bool PlatformGetGlobalRuntimeFileName(uint16_t major_version, std:
     return true;
 }
 
-static inline bool PlatformLockGlobalRuntimeFile(uint16_t major_version, GlobalRuntimeFile& global_rt_file) {
-    bool success = false;
-    try {
-        global_rt_file = {};
-        // Get the filename
-        if (PlatformGetGlobalRuntimeFileName(major_version, global_rt_file.file_name)) {
-            // Initialize the global runtime file info
-            // Open a file descriptor to the file.
-            global_rt_file.file_descriptor = open(global_rt_file.file_name.c_str(), O_RDWR);
-            if (0 <= global_rt_file.file_descriptor) {
-                flock fcntl_lock = {};
-                global_rt_file.valid = true;
-
-                // Test to see if a lock's already present
-                fcntl_lock.l_type = F_WRLCK;
-                fcntl_lock.l_whence = SEEK_SET;
-                fcntl_lock.l_start = 0;
-                fcntl_lock.l_len = 0;
-                if (-1 == fcntl(global_rt_file.file_descriptor, F_OFD_GETLK, &fcntl_lock)) {
-                    std::string error_msg = "fcntl(querylock | ";
-                    error_msg += global_rt_file.file_name;
-                    error_msg += ", FD: ";
-                    error_msg += std::to_string(global_rt_file.file_descriptor);
-                    error_msg += ", ErrorNo: ";
-                    error_msg += std::to_string(errno);
-                    error_msg += ")";
-                    perror(error_msg.c_str());
-                } else if (fcntl_lock.l_type == F_RDLCK || fcntl_lock.l_type == F_WRLCK) {
-                    std::cerr << "Process " << std::to_string(fcntl_lock.l_pid) << " has a lock on " << global_rt_file.file_name
-                              << " already!" << std::endl;
-                } else {
-                    // Lock the entire file for writing
-                    fcntl_lock.l_type = F_WRLCK;
-                    fcntl_lock.l_whence = SEEK_SET;
-                    fcntl_lock.l_start = 0;
-                    fcntl_lock.l_len = 0;
-                    if (-1 == fcntl(global_rt_file.file_descriptor, F_OFD_SETLK, &fcntl_lock)) {
-                        std::string error_msg = "fcntl(lock | ";
-                        error_msg += global_rt_file.file_name;
-                        error_msg += ", FD: ";
-                        error_msg += std::to_string(global_rt_file.file_descriptor);
-                        error_msg += ", ErrorNo: ";
-                        error_msg += std::to_string(errno);
-                        error_msg += ")";
-                        perror(error_msg.c_str());
-                    } else {
-                        global_rt_file.locked = true;
-                        success = true;
-                    }
-                }
-                // Get the name of the runtime from the JSON (just crudely)
-                if (success) {
-                    char buffer[4096];
-                    std::string contents = "";
-                    while (read(global_rt_file.file_descriptor, &buffer, 4095) > 0) {
-                        contents += buffer;
-                    }
-                    std::size_t name_index = contents.find("\"name\"");
-                    if (std::string::npos != name_index) {
-                        std::size_t begin_quote_index = contents.find("\"", name_index + 6);
-                        std::size_t end_quote_index = contents.find("\"", begin_quote_index + 1);
-                        if (std::string::npos != begin_quote_index && std::string::npos != end_quote_index) {
-                            global_rt_file.runtime_name =
-                                contents.substr(begin_quote_index + 1, end_quote_index - begin_quote_index - 1);
-                        }
-                    }
-                }
-            } else {
-                std::string error_msg = "open(";
-                error_msg += global_rt_file.file_name;
-                error_msg += ")";
-                perror(error_msg.c_str());
-            }
-        }
-    } catch (...) {
-    }
-    // Cleanup on failure
-    if (!success) {
-        if (global_rt_file.valid) {
-            close(global_rt_file.file_descriptor);
-            global_rt_file.valid = false;
-            global_rt_file.file_name = "";
-        }
-    }
-    return success;
-}
-
-static inline bool PlatformUnlockGlobalRuntimeFile(GlobalRuntimeFile& global_rt_file) {
-    bool success = false;
-    try {
-        if (global_rt_file.valid && global_rt_file.locked) {
-            flock fcntl_lock = {};
-            // Unlock the entire file for writing
-            fcntl_lock.l_type = F_UNLCK;
-            fcntl_lock.l_whence = SEEK_SET;
-            fcntl_lock.l_start = 0;
-            fcntl_lock.l_len = 0;
-            if (-1 == fcntl(global_rt_file.file_descriptor, F_OFD_SETLK, &fcntl_lock)) {
-                std::string error_msg = "fcntl(unlock | ";
-                error_msg += global_rt_file.file_name;
-                error_msg += ", FD: ";
-                error_msg += std::to_string(global_rt_file.file_descriptor);
-                error_msg += ", ErrorNo: ";
-                error_msg += std::to_string(errno);
-                error_msg += ")";
-                perror(error_msg.c_str());
-            } else {
-                global_rt_file.locked = false;
-                success = true;
-            }
-            if (-1 == close(global_rt_file.file_descriptor)) {
-                std::string error_msg = "close(";
-                error_msg += global_rt_file.file_name;
-                error_msg += ", FD: ";
-                error_msg += std::to_string(global_rt_file.file_descriptor);
-                error_msg += ", ErrorNo: ";
-                error_msg += std::to_string(errno);
-                error_msg += ")";
-                perror(error_msg.c_str());
-                success = false;
-            } else {
-                global_rt_file.file_descriptor = -1;
-                global_rt_file.valid = false;
-                global_rt_file.file_name = "";
-            }
-        }
-    } catch (...) {
-    }
-    return success;
-}
-
 #elif defined(XR_OS_APPLE)
 
 static inline char *PlatformUtilsGetEnv(const char *name) { return getenv(name); }
@@ -253,45 +123,97 @@ static inline bool PlatformGetGlobalRuntimeFileName(uint16_t major_version, std:
     return true;
 }
 
-static inline bool PlatformLockGlobalRuntimeFile(uint16_t major_version, GlobalRuntimeFile &global_rt_file) {
-    // Stub func
-    (void)major_version;
-    (void)global_rt_file;
-    return false;
-}
-
-static inline bool PlatformUnlockGlobalRuntimeFile(GlobalRuntimeFile &global_rt_file) {
-    // Stub func
-    (void)global_rt_file;
-    return false;
-}
-
 #elif defined(XR_OS_WINDOWS)
 
-static inline char *PlatformUtilsGetEnv(const char *name) {
-    char *retVal;
-    DWORD valSize;
+#if defined(_DEBUG)
+inline void LogError(const std::string& error) { OutputDebugStringA(error.c_str()); }
+#else
+#define LogError(x)
+#endif
 
-    valSize = GetEnvironmentVariableA(name, nullptr, 0);
+inline std::wstring utf8_to_wide(const std::string& utf8Text) {
+    if (utf8Text.empty()) {
+        return {};
+    }
 
-    // valSize DOES include the null terminator, so for any set variable
-    // will always be at least 1. If it's 0, the variable wasn't set.
+    std::wstring wideText;
+    const int wideLength = ::MultiByteToWideChar(CP_UTF8, 0, utf8Text.data(), (int)utf8Text.size(), nullptr, 0);
+    if (wideLength == 0) {
+        LogError("utf8_to_wide convert string error: " + std::to_string(::GetLastError()));
+        return {};
+    }
+
+    // MultiByteToWideChar returns number of chars of the input buffer, regardless of null terminitor
+    wideText.resize(wideLength, 0);
+    wchar_t* wideString = const_cast<wchar_t*>(wideText.data());  // mutable data() only exists in c++17
+    const int length = ::MultiByteToWideChar(CP_UTF8, 0, utf8Text.data(), (int)utf8Text.size(), wideString, wideLength);
+    if (length != wideLength) {
+        LogError("utf8_to_wide convert string error: " + std::to_string(::GetLastError()));
+        return {};
+    }
+
+    return wideText;
+}
+
+inline std::string wide_to_utf8(const std::wstring& wideText) {
+    if (wideText.empty()) {
+        return {};
+    }
+
+    std::string narrowText;
+    int narrowLength = ::WideCharToMultiByte(CP_UTF8, 0, wideText.data(), (int)wideText.size(), nullptr, 0, nullptr, nullptr);
+    if (narrowLength == 0) {
+        LogError("wide_to_utf8 get size error: " + std::to_string(::GetLastError()));
+        return {};
+    }
+
+    // WideCharToMultiByte returns number of chars of the input buffer, regardless of null terminitor
+    narrowText.resize(narrowLength, 0);
+    char* narrowString = const_cast<char*>(narrowText.data());  // mutable data() only exists in c++17
+    const int length =
+        ::WideCharToMultiByte(CP_UTF8, 0, wideText.data(), (int)wideText.size(), narrowString, narrowLength, nullptr, nullptr);
+    if (length != narrowLength) {
+        LogError("wide_to_utf8 convert string error: " + std::to_string(::GetLastError()));
+        return {};
+    }
+
+    return narrowText;
+}
+
+static inline char* PlatformUtilsGetEnv(const char* name) {
+    const std::wstring wname = utf8_to_wide(name);
+    const DWORD valSize = ::GetEnvironmentVariableW(wname.c_str(), nullptr, 0);
+
+    // GetEnvironmentVariable returns 0 when environment variable does not exist
     if (valSize == 0) {
         return nullptr;
     }
 
-    // Allocate the space necessary for the registry entry
-    retVal = new char[valSize + 1];
-    GetEnvironmentVariableA(name, retVal, valSize);
+    // GetEnvironmentVariable returns size including null terminator for "query size" call.
+    std::wstring wValue(valSize, 0);
+    wchar_t* wValueData = const_cast<wchar_t*>(wValue.data());  // mutable data() only exists in c++17
+
+    // GetEnvironmentVariable returns string length, excluding null terminator for "get value" call.
+    const int length = ::GetEnvironmentVariableW(wname.c_str(), wValueData, (DWORD)wValue.size());
+    if (!length) {
+        LogError("GetEnvironmentVariable get value error: " + std::to_string(::GetLastError()));
+        return nullptr;
+    }
+
+    const std::string value = wide_to_utf8(wValue);
+
+    // Allocate the space necessary for the result
+    char* retVal = new char[value.size() + 1]{};
+    value.copy(retVal, value.size());
     return retVal;
 }
 
-static inline char *PlatformUtilsGetSecureEnv(const char *name) {
+static inline char* PlatformUtilsGetSecureEnv(const char* name) {
     // No secure version for Windows as far as I know
     return PlatformUtilsGetEnv(name);
 }
 
-static inline void PlatformUtilsFreeEnv(char *val) {
+static inline void PlatformUtilsFreeEnv(char* val) {
     if (nullptr != val) {
         delete[] val;
         val = nullptr;
@@ -302,74 +224,7 @@ static inline void PlatformUtilsFreeEnv(char *val) {
 static const std::string rt_file_folder = "\\ProgramData\\Khronos\\OpenXR\\";
 static const std::string rt_file_prefix = "\\openxr_runtime_";
 
-static inline bool PlatformGetGlobalRuntimeFileName(uint16_t major_version, std::string &file_name) {
-    bool ret_value = false;
-    try {
-        char *sys_drive = PlatformUtilsGetSecureEnv("SystemDrive");
-        if (nullptr != sys_drive) {
-            file_name = sys_drive;
-            PlatformUtilsFreeEnv(sys_drive);
-            file_name += rt_file_folder;
-            if (sizeof(void *) == 8) {
-                file_name += "64";
-            } else {
-                file_name += "32";
-            }
-            file_name += rt_file_prefix;
-            file_name += std::to_string(major_version);
-            file_name += ".json";
-            ret_value = true;
-        }
-    } catch (...) {
-    }
-    return ret_value;
-}
-
-static inline bool PlatformLockGlobalRuntimeFile(uint16_t major_version, GlobalRuntimeFile &global_rt_file) {
-    bool ret_value = false;
-    std::string rt_filename;
-    if (PlatformGetGlobalRuntimeFileName(major_version, rt_filename)) {
-        HANDLE file_handle = CreateFileA(rt_filename.c_str(), (GENERIC_READ | GENERIC_WRITE), FILE_SHARE_READ, nullptr,
-                                         OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, nullptr);
-        if (file_handle != INVALID_HANDLE_VALUE) {
-            global_rt_file.valid = true;
-            global_rt_file.locked = true;
-            global_rt_file.file_handle = file_handle;
-            ret_value = true;
-        }
-        // Get the name of the runtime from the JSON (just crudely)
-        if (ret_value) {
-            char buffer[4096];
-            DWORD num_bytes_read = 0;
-            std::string contents = "";
-            while (FALSE != ReadFile(file_handle, buffer, 4095, &num_bytes_read, nullptr)) {
-                if (num_bytes_read == 0) {
-                    break;
-                }
-                contents += buffer;
-            }
-            std::size_t name_index = contents.find("\"name\"");
-            if (std::string::npos != name_index) {
-                std::size_t begin_quote_index = contents.find("\"", name_index + 6);
-                std::size_t end_quote_index = contents.find("\"", begin_quote_index + 1);
-                if (std::string::npos != begin_quote_index && std::string::npos != end_quote_index) {
-                    global_rt_file.runtime_name = contents.substr(begin_quote_index + 1, end_quote_index - begin_quote_index - 1);
-                }
-            }
-        }
-    }
-    return ret_value;
-}
-
-static inline bool PlatformUnlockGlobalRuntimeFile(GlobalRuntimeFile &global_rt_file) {
-    if (global_rt_file.valid && global_rt_file.locked && CloseHandle(global_rt_file.file_handle)) {
-        global_rt_file.valid = false;
-        global_rt_file.locked = false;
-        global_rt_file.file_handle = nullptr;
-        return true;
-    }
-    return false;
-}
+// Unused function in Windows OS: PlatformGetGlobalRuntimeFileName
 
 #else  // Not Linux or Windows
 
@@ -394,19 +249,6 @@ static inline bool PlatformGetGlobalRuntimeFileName(uint16_t major_version, std:
     // Stub func
     (void)major_version;
     (void)file_name;
-    return false;
-}
-
-static inline bool PlatformLockGlobalRuntimeFile(uint16_t major_version, GlobalRuntimeFile &global_rt_file) {
-    // Stub func
-    (void)major_version;
-    (void)global_rt_file;
-    return false;
-}
-
-static inline bool PlatformUnlockGlobalRuntimeFile(GlobalRuntimeFile &global_rt_file) {
-    // Stub func
-    (void)global_rt_file;
     return false;
 }
 

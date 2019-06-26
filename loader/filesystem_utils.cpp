@@ -20,6 +20,7 @@
 
 #include <cstring>
 #include "xr_dependencies.h"
+#include "platform_utils.hpp"
 
 // If the C++ macro is set to the version containing C++17, it must support
 // the final C++17 package
@@ -33,10 +34,6 @@
 // When MSC supports c++17 use <filesystem> package.
 #define USE_EXPERIMENTAL_FS 0
 #define USE_FINAL_FS 1
-#else
-// MSC before c++17 need to use <experimental/filesystem> package.
-#define USE_EXPERIMENTAL_FS 1
-#define USE_FINAL_FS 0
 #endif  // !_HAS_CXX17
 
 // Right now, GCC still only supports the experimental filesystem items starting in GCC 6
@@ -64,9 +61,6 @@
 #include <filesystem>
 #define FS_PREFIX std::filesystem
 #elif USE_EXPERIMENTAL_FS == 1
-#if (WINAPI_FAMILY != WINAPI_FAMILY_DESKTOP_APP)
-#error Windows universal application doesn't support system::experimental::filesystem
-#endif
 #include <experimental/filesystem>
 #define FS_PREFIX std::experimental::filesystem
 #elif defined(XR_USE_PLATFORM_WIN32)
@@ -199,11 +193,12 @@ bool FileSysUtilsFindFilesInPath(const std::string& path, std::vector<std::strin
 
 #elif defined(XR_OS_WINDOWS)
 
-// Workaround for MS VS 2010/2013 don't support the experimental filesystem
+// For pre C++17 compiler that doesn't support experimental filesystem
+#include <shlwapi.h>
 
 bool FileSysUtilsIsRegularFile(const std::string& path) {
     try {
-        return (1 != PathIsDirectory(path.c_str()));
+        return (1 != PathIsDirectoryW(utf8_to_wide(path).c_str()));
     } catch (...) {
         return false;
     }
@@ -211,7 +206,7 @@ bool FileSysUtilsIsRegularFile(const std::string& path) {
 
 bool FileSysUtilsIsDirectory(const std::string& path) {
     try {
-        return (1 == PathIsDirectory(path.c_str()));
+        return (1 == PathIsDirectoryW(utf8_to_wide(path).c_str()));
     } catch (...) {
         return false;
     }
@@ -219,7 +214,7 @@ bool FileSysUtilsIsDirectory(const std::string& path) {
 
 bool FileSysUtilsPathExists(const std::string& path) {
     try {
-        return (1 == PathFileExists(path.c_str()));
+        return (1 == PathFileExistsW(utf8_to_wide(path).c_str()));
     } catch (...) {
         return false;
     }
@@ -237,9 +232,9 @@ bool FileSysUtilsIsAbsolutePath(const std::string& path) {
 
 bool FileSysUtilsGetCurrentPath(std::string& path) {
     try {
-        char tmp_path[MAX_PATH];
-        if (nullptr != _getcwd(tmp_path, MAX_PATH - 1)) {
-            path = tmp_path;
+        wchar_t tmp_path[MAX_PATH];
+        if (nullptr != _wgetcwd(tmp_path, MAX_PATH - 1)) {
+            path = wide_to_utf8(tmp_path);
             return true;
         }
     } catch (...) {
@@ -252,7 +247,7 @@ bool FileSysUtilsGetParentPath(const std::string& file_path, std::string& parent
         std::string full_path;
         if (FileSysUtilsGetAbsolutePath(file_path, full_path)) {
             std::string::size_type lastSeperator = full_path.find_last_of(DIRECTORY_SYMBOL);
-            parent_path = (lastSeperator == 0) ? full_path : full_path.substr(0, lastSeperator - 1);
+            parent_path = (lastSeperator == 0) ? full_path : full_path.substr(0, lastSeperator);
             return true;
         }
     } catch (...) {
@@ -262,9 +257,9 @@ bool FileSysUtilsGetParentPath(const std::string& file_path, std::string& parent
 
 bool FileSysUtilsGetAbsolutePath(const std::string& path, std::string& absolute) {
     try {
-        char tmp_path[MAX_PATH];
-        if (0 != GetFullPathName(path.c_str(), MAX_PATH, tmp_path, NULL)) {
-            absolute = tmp_path;
+        wchar_t tmp_path[MAX_PATH];
+        if (0 != GetFullPathNameW(utf8_to_wide(path).c_str(), MAX_PATH, tmp_path, NULL)) {
+            absolute = wide_to_utf8(tmp_path);
             return true;
         }
     } catch (...) {
@@ -308,14 +303,14 @@ bool FileSysUtilsParsePathList(std::string& path_list, std::vector<std::string>&
 
 bool FileSysUtilsFindFilesInPath(const std::string& path, std::vector<std::string>& files) {
     try {
-        WIN32_FIND_DATA file_data;
-        HANDLE file_handle = FindFirstFile(path.c_str(), &file_data);
+        WIN32_FIND_DATAW file_data;
+        HANDLE file_handle = FindFirstFileW(utf8_to_wide(path).c_str(), &file_data);
         if (file_handle != INVALID_HANDLE_VALUE) {
             do {
                 if (!(file_data.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY)) {
-                    files.push_back(file_data.cFileName);
+                    files.push_back(wide_to_utf8(file_data.cFileName));
                 }
-            } while (FindNextFile(file_handle, &file_data));
+            } while (FindNextFileW(file_handle, &file_data));
             return true;
         }
     } catch (...) {
