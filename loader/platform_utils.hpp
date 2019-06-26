@@ -28,23 +28,6 @@
 #include <iostream>
 #endif
 
-// Structure used to track the global runtime file information
-struct GlobalRuntimeFile {
-    bool valid;
-    bool locked;
-    std::string file_name;
-    std::string runtime_name;
-#if defined(XR_OS_LINUX)
-    int32_t file_descriptor;
-#elif defined(XR_OS_APPLE)
-    // TBD
-#elif defined(XR_OS_WINDOWS)
-    HANDLE file_handle;
-#else
-    // TBD
-#endif
-};
-
 // This is a CMake generated file with #defines for any functions/includes
 // that it found present.  This is currently necessary to properly determine
 // if secure_getenv or __secure_getenv are present
@@ -77,17 +60,6 @@ static inline void PlatformUtilsFreeEnv(char* val) {
     (void)val;
 }
 
-// Prefix for the Linux/Apple global runtime JSON file name
-static const std::string rt_dir_prefix = "/usr/local/share/openxr/";
-static const std::string rt_filename = "/active_runtime.json";
-
-static inline bool PlatformGetGlobalRuntimeFileName(uint16_t major_version, std::string& file_name) {
-    file_name = rt_dir_prefix;
-    file_name += std::to_string(major_version);
-    file_name += rt_filename;
-    return true;
-}
-
 #elif defined(XR_OS_APPLE)
 
 static inline char *PlatformUtilsGetEnv(const char *name) { return getenv(name); }
@@ -112,7 +84,7 @@ static inline void PlatformUtilsFreeEnv(char *val) {
     (void)val;
 }
 
-// Prefix for the Linux/Apple global runtime JSON file name
+// Prefix for the Apple global runtime JSON file name
 static const std::string rt_dir_prefix = "/usr/local/share/openxr/";
 static const std::string rt_filename = "/active_runtime.json";
 
@@ -219,12 +191,6 @@ static inline void PlatformUtilsFreeEnv(char* val) {
         val = nullptr;
     }
 }
-
-// Prefix for the Windows global runtime JSON file name
-static const std::string rt_file_folder = "\\ProgramData\\Khronos\\OpenXR\\";
-static const std::string rt_file_prefix = "\\openxr_runtime_";
-
-// Unused function in Windows OS: PlatformGetGlobalRuntimeFileName
 
 #else  // Not Linux or Windows
 

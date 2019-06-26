@@ -22,6 +22,11 @@
 #include "xr_dependencies.h"
 #include "platform_utils.hpp"
 
+#if defined DISABLE_STD_FILESYSTEM
+#define USE_EXPERIMENTAL_FS 0
+#define USE_FINAL_FS 0
+
+#else
 // If the C++ macro is set to the version containing C++17, it must support
 // the final C++17 package
 #if __cplusplus >= 201703L
@@ -55,6 +60,7 @@
 #else
 #define USE_EXPERIMENTAL_FS 0
 #define USE_FINAL_FS 0
+#endif
 #endif
 
 #if USE_FINAL_FS == 1

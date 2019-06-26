@@ -336,7 +336,7 @@ static void ReadLayerDataFilesInRegistry(ManifestFileType type, const std::strin
         HKEY hkey;
         DWORD access_flags;
         LONG rtn_value;
-        wchar_t name_w[1024];
+        wchar_t name_w[1024]{};
         DWORD value;
         DWORD name_size = 1023;
         DWORD value_size = sizeof(value);
@@ -363,7 +363,7 @@ static void ReadLayerDataFilesInRegistry(ManifestFileType type, const std::strin
             while (ERROR_SUCCESS ==
                    (rtn_value = RegEnumValueW(hkey, key_index++, name_w, &name_size, NULL, NULL, (LPBYTE)&value, &value_size))) {
                 if (value_size == sizeof(value) && value == 0) {
-                    std::string filename = wide_to_utf8(name_w);
+                    const std::string filename = wide_to_utf8(name_w);
                     AddFilesInPath(type, filename, false, manifest_files);
                 }
                 // Reset some items for the next loop
