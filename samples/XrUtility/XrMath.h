@@ -19,6 +19,9 @@
 #include <DirectXMath.h>
 
 namespace xr::math {
+    constexpr float Epsilon = 0.000001f;
+    constexpr DirectX::XMVECTORF32 XMEpsilon = {{{Epsilon, Epsilon, Epsilon, Epsilon}}};
+
     namespace Pose {
         constexpr XrPosef Identity();
         constexpr XrPosef Translation(const XrVector3f& translation);
@@ -34,18 +37,26 @@ namespace xr::math {
         float Far;
     };
 
+    // Type conversion between math types
+    template <typename X, typename Y>
+    const X& cast(const Y& value);
+
     // Convert XR types to DX
+    DirectX::XMVECTOR XM_CALLCONV LoadXrVector2(const XrVector2f& vector);
     DirectX::XMVECTOR XM_CALLCONV LoadXrVector3(const XrVector3f& vector);
     DirectX::XMVECTOR XM_CALLCONV LoadXrVector4(const XrVector4f& vector);
     DirectX::XMVECTOR XM_CALLCONV LoadXrQuaternion(const XrQuaternionf& quaternion);
     DirectX::XMMATRIX XM_CALLCONV LoadXrPose(const XrPosef& rigidTransform);
     DirectX::XMMATRIX XM_CALLCONV LoadInvertedXrPose(const XrPosef& rigidTransform);
+    DirectX::XMVECTOR XM_CALLCONV LoadXrExtent(const XrExtent2Df& extend);
 
     // Convert DX types to XR
+    void XM_CALLCONV StoreXrVector2(XrVector2f* outVec, DirectX::FXMVECTOR inVec);
     void XM_CALLCONV StoreXrVector3(XrVector3f* outVec, DirectX::FXMVECTOR inVec);
     void XM_CALLCONV StoreXrVector4(XrVector4f* outVec, DirectX::FXMVECTOR inVec);
     void XM_CALLCONV StoreXrQuaternion(XrQuaternionf* outQuat, DirectX::FXMVECTOR inQuat);
     bool XM_CALLCONV StoreXrPose(XrPosef* out, DirectX::FXMMATRIX matrix);
+    void XM_CALLCONV StoreXrExtent(XrExtent2Df* extend, DirectX::FXMVECTOR inVec);
 
     // Projection matrix math
     DirectX::XMMATRIX ComposeProjectionMatrix(const XrFovf& fov, const NearFarDistance& nearFar);
@@ -56,79 +67,158 @@ namespace xr::math {
 #pragma region Implementation
 
 namespace xr::math {
-    template <typename T, typename U>
-    T* AsPtr(U* u) {
-        static_assert(sizeof(*u) == sizeof(T), "Pointer content are not the same size.");
-        return reinterpret_cast<T*>(u);
+    namespace detail {
+        template <typename X, typename Y>
+        const X& implement_math_cast(const Y& value) {
+            static_assert(std::is_pod<X>::value, "Unsafe to cast between non-POD types.");
+            static_assert(std::is_pod<Y>::value, "Unsafe to cast between non-POD types.");
+            static_assert(!std::is_pointer<X>::value, "Incorrect cast between pointer types.");
+            static_assert(!std::is_pointer<Y>::value, "Incorrect cast between pointer types.");
+            static_assert(sizeof(X) == sizeof(Y), "Incorrect cast between types with different sizes.");
+            return reinterpret_cast<const X&>(value);
+        }
+
+        template <typename X, typename Y>
+        X& implement_math_cast(Y& value) {
+            static_assert(std::is_pod<X>::value, "Unsafe to cast between non-POD types.");
+            static_assert(std::is_pod<Y>::value, "Unsafe to cast between non-POD types.");
+            static_assert(!std::is_pointer<X>::value, "Incorrect cast between pointer types.");
+            static_assert(!std::is_pointer<Y>::value, "Incorrect cast between pointer types.");
+            static_assert(sizeof(X) == sizeof(Y), "Incorrect cast between types with different sizes.");
+            return reinterpret_cast<X&>(value);
+        }
+    } // namespace detail
+
+    template <typename X, typename Y>
+    const X& cast(const Y& value) {
+        static_assert(false, "Undefined cast from Y to type X");
     }
 
-    template <typename T, typename U>
-    const T* AsPtr(const U* u) {
-        static_assert(sizeof(*u) == sizeof(T), "Pointer content are not the same size.");
-        return reinterpret_cast<const T*>(u);
+#define DEFINE_CAST(X, Y)                             \
+    template <>                                       \
+    inline const X& cast<X, Y>(const Y& value) {      \
+        return detail::implement_math_cast<X>(value); \
     }
 
-    using namespace DirectX;
-    inline XMVECTOR XM_CALLCONV LoadXrVector3(const XrVector3f& vector) {
-        static_assert(offsetof(XMFLOAT3, x) == offsetof(XrVector3f, x));
-        static_assert(offsetof(XMFLOAT3, y) == offsetof(XrVector3f, y));
-        static_assert(offsetof(XMFLOAT3, z) == offsetof(XrVector3f, z));
+    static_assert(offsetof(DirectX::XMFLOAT2, x) == offsetof(XrVector2f, x));
+    static_assert(offsetof(DirectX::XMFLOAT2, y) == offsetof(XrVector2f, y));
+    DEFINE_CAST(XrVector2f, DirectX::XMFLOAT2);
+    DEFINE_CAST(DirectX::XMFLOAT2, XrVector2f);
 
-        return XMLoadFloat3(AsPtr<XMFLOAT3>(&vector));
+    static_assert(offsetof(DirectX::XMFLOAT3, x) == offsetof(XrVector3f, x));
+    static_assert(offsetof(DirectX::XMFLOAT3, y) == offsetof(XrVector3f, y));
+    static_assert(offsetof(DirectX::XMFLOAT3, z) == offsetof(XrVector3f, z));
+    DEFINE_CAST(XrVector3f, DirectX::XMFLOAT3);
+    DEFINE_CAST(DirectX::XMFLOAT3, XrVector3f);
+
+    static_assert(offsetof(DirectX::XMFLOAT4, x) == offsetof(XrVector4f, x));
+    static_assert(offsetof(DirectX::XMFLOAT4, y) == offsetof(XrVector4f, y));
+    static_assert(offsetof(DirectX::XMFLOAT4, z) == offsetof(XrVector4f, z));
+    static_assert(offsetof(DirectX::XMFLOAT4, w) == offsetof(XrVector4f, w));
+    DEFINE_CAST(XrVector4f, DirectX::XMFLOAT4);
+    DEFINE_CAST(DirectX::XMFLOAT4, XrVector4f);
+
+    static_assert(offsetof(DirectX::XMFLOAT4, x) == offsetof(XrQuaternionf, x));
+    static_assert(offsetof(DirectX::XMFLOAT4, y) == offsetof(XrQuaternionf, y));
+    static_assert(offsetof(DirectX::XMFLOAT4, z) == offsetof(XrQuaternionf, z));
+    static_assert(offsetof(DirectX::XMFLOAT4, w) == offsetof(XrQuaternionf, w));
+    DEFINE_CAST(XrQuaternionf, DirectX::XMFLOAT4);
+    DEFINE_CAST(DirectX::XMFLOAT4, XrQuaternionf);
+
+    static_assert(offsetof(DirectX::XMINT2, x) == offsetof(XrExtent2Di, width));
+    static_assert(offsetof(DirectX::XMINT2, y) == offsetof(XrExtent2Di, height));
+    DEFINE_CAST(XrExtent2Di, DirectX::XMINT2);
+    DEFINE_CAST(DirectX::XMINT2, XrExtent2Di);
+
+    static_assert(offsetof(DirectX::XMFLOAT2, x) == offsetof(XrExtent2Df, width));
+    static_assert(offsetof(DirectX::XMFLOAT2, y) == offsetof(XrExtent2Df, height));
+    DEFINE_CAST(XrExtent2Df, DirectX::XMFLOAT2);
+    DEFINE_CAST(DirectX::XMFLOAT2, XrExtent2Df);
+
+    static_assert(offsetof(DirectX::XMFLOAT4, x) == offsetof(XrColor4f, r));
+    static_assert(offsetof(DirectX::XMFLOAT4, y) == offsetof(XrColor4f, g));
+    static_assert(offsetof(DirectX::XMFLOAT4, z) == offsetof(XrColor4f, b));
+    static_assert(offsetof(DirectX::XMFLOAT4, w) == offsetof(XrColor4f, a));
+    DEFINE_CAST(XrColor4f, DirectX::XMFLOAT4);
+    DEFINE_CAST(DirectX::XMFLOAT4, XrColor4f);
+
+#undef DEFINE_CAST
+
+    // Shortcut non-templated overload of cast() function
+#define DEFINE_CAST(X, Y)                             \
+    inline const X& cast(const Y& value) {            \
+        return detail::implement_math_cast<X>(value); \
     }
 
-    inline XMVECTOR XM_CALLCONV LoadXrVector4(const XrVector4f& vector) {
-        static_assert(offsetof(XMFLOAT4, x) == offsetof(XrVector4f, x));
-        static_assert(offsetof(XMFLOAT4, y) == offsetof(XrVector4f, y));
-        static_assert(offsetof(XMFLOAT4, z) == offsetof(XrVector4f, z));
-        static_assert(offsetof(XMFLOAT4, w) == offsetof(XrVector4f, w));
+    DEFINE_CAST(DirectX::XMFLOAT2, XrVector2f);
+    DEFINE_CAST(DirectX::XMFLOAT3, XrVector3f);
+    DEFINE_CAST(DirectX::XMFLOAT4, XrVector4f);
+    DEFINE_CAST(DirectX::XMFLOAT4, XrQuaternionf);
+    DEFINE_CAST(DirectX::XMFLOAT2, XrExtent2Df);
+#undef DEFINE_CAST
 
-        return XMLoadFloat4(AsPtr<XMFLOAT4>(&vector));
+    inline DirectX::XMVECTOR XM_CALLCONV LoadXrVector2(const XrVector2f& vector) {
+        return DirectX::XMLoadFloat2(&xr::math::cast(vector));
     }
 
-    inline XMVECTOR XM_CALLCONV LoadXrQuaternion(const XrQuaternionf& quaternion) {
-        static_assert(offsetof(XMFLOAT4, x) == offsetof(XrQuaternionf, x));
-        static_assert(offsetof(XMFLOAT4, y) == offsetof(XrQuaternionf, y));
-        static_assert(offsetof(XMFLOAT4, z) == offsetof(XrQuaternionf, z));
-        static_assert(offsetof(XMFLOAT4, w) == offsetof(XrQuaternionf, w));
-
-        return XMLoadFloat4(AsPtr<XMFLOAT4>(&quaternion));
+    inline DirectX::XMVECTOR XM_CALLCONV LoadXrVector3(const XrVector3f& vector) {
+        return DirectX::XMLoadFloat3(&xr::math::cast(vector));
     }
 
-    inline XMMATRIX XM_CALLCONV LoadXrPose(const XrPosef& pose) {
-        return XMMatrixAffineTransformation(g_XMOne,  // scale
-                                            g_XMZero, // rotation origin
+    inline DirectX::XMVECTOR XM_CALLCONV LoadXrVector4(const XrVector4f& vector) {
+        return DirectX::XMLoadFloat4(&xr::math::cast(vector));
+    }
+
+    inline DirectX::XMVECTOR XM_CALLCONV LoadXrQuaternion(const XrQuaternionf& quaternion) {
+        return DirectX::XMLoadFloat4(&xr::math::cast(quaternion));
+    }
+
+    inline DirectX::XMVECTOR XM_CALLCONV LoadXrExtent(const XrExtent2Df& extend) {
+        return DirectX::XMLoadFloat2(&xr::math::cast(extend));
+    }
+
+    inline DirectX::XMMATRIX XM_CALLCONV LoadXrPose(const XrPosef& pose) {
+        return XMMatrixAffineTransformation(DirectX::g_XMOne,  // scale
+                                            DirectX::g_XMZero, // rotation origin
                                             LoadXrQuaternion(pose.orientation),
                                             LoadXrVector3(pose.position));
     }
 
     inline DirectX::XMMATRIX XM_CALLCONV LoadInvertedXrPose(const XrPosef& pose) {
-        XMVECTOR position = LoadXrVector3(pose.position);
-        XMVECTOR orientation = LoadXrQuaternion(pose.orientation);
-        XMVECTOR invertOrientation = XMQuaternionConjugate(orientation);
-        XMVECTOR invertPosition = XMVector3Rotate(-position, invertOrientation);
-        return XMMatrixAffineTransformation(g_XMOne,           // scale
-                                            g_XMZero,          // rotation origin
+        DirectX::XMVECTOR position = LoadXrVector3(pose.position);
+        DirectX::XMVECTOR orientation = LoadXrQuaternion(pose.orientation);
+        DirectX::XMVECTOR invertOrientation = DirectX::XMQuaternionConjugate(orientation);
+        DirectX::XMVECTOR invertPosition = DirectX::XMVector3Rotate(DirectX::XMVectorNegate(position), invertOrientation);
+        return XMMatrixAffineTransformation(DirectX::g_XMOne,  // scale
+                                            DirectX::g_XMZero, // rotation origin
                                             invertOrientation, // rotation
                                             invertPosition);   // translation
     }
 
-    inline void XM_CALLCONV StoreXrVector3(XrVector3f* outVec, FXMVECTOR inVec) {
-        XMStoreFloat3(AsPtr<XMFLOAT3>(outVec), inVec);
+    inline void XM_CALLCONV StoreXrVector2(XrVector2f* outVec, DirectX::FXMVECTOR inVec) {
+        DirectX::XMStoreFloat2(&detail::implement_math_cast<DirectX::XMFLOAT2>(*outVec), inVec);
     }
 
-    inline void XM_CALLCONV StoreXrVector4(XrVector4f* outVec, FXMVECTOR inVec) {
-        XMStoreFloat4(AsPtr<XMFLOAT4>(outVec), inVec);
+    inline void XM_CALLCONV StoreXrVector3(XrVector3f* outVec, DirectX::FXMVECTOR inVec) {
+        DirectX::XMStoreFloat3(&detail::implement_math_cast<DirectX::XMFLOAT3>(*outVec), inVec);
     }
 
-    inline void XM_CALLCONV StoreXrQuaternion(XrQuaternionf* outQuat, FXMVECTOR inQuat) {
-        XMStoreFloat4(AsPtr<XMFLOAT4>(outQuat), inQuat);
+    inline void XM_CALLCONV StoreXrVector4(XrVector4f* outVec, DirectX::FXMVECTOR inVec) {
+        DirectX::XMStoreFloat4(&detail::implement_math_cast<DirectX::XMFLOAT4>(*outVec), inVec);
     }
 
-    inline bool XM_CALLCONV StoreXrPose(XrPosef* out, FXMMATRIX matrix) {
-        XMVECTOR position;
-        XMVECTOR orientation;
-        XMVECTOR scale;
+    inline void XM_CALLCONV StoreXrQuaternion(XrQuaternionf* outQuat, DirectX::FXMVECTOR inQuat) {
+        DirectX::XMStoreFloat4(&detail::implement_math_cast<DirectX::XMFLOAT4>(*outQuat), inQuat);
+    }
+
+    inline void XM_CALLCONV StoreXrExtent(XrExtent2Df* outVec, DirectX::FXMVECTOR inVec) {
+        DirectX::XMStoreFloat2(&detail::implement_math_cast<DirectX::XMFLOAT2>(*outVec), inVec);
+    }
+
+    inline bool XM_CALLCONV StoreXrPose(XrPosef* out, DirectX::FXMMATRIX matrix) {
+        DirectX::XMVECTOR position;
+        DirectX::XMVECTOR orientation;
+        DirectX::XMVECTOR scale;
 
         if (!DirectX::XMMatrixDecompose(&scale, &orientation, &position, matrix)) {
             return false; // Non-SRT matrix encountered
@@ -157,18 +247,34 @@ namespace xr::math {
         }
 
         inline bool IsNormalized(const XrQuaternionf& quaternion) {
-            XMVECTOR vector = LoadXrQuaternion(quaternion);
-            XMVECTOR lenth = XMVector4Length(vector);
-            XMVECTOR equal = XMVectorNearEqual(lenth, g_XMOne, g_XMEpsilon);
-            return XMVectorGetX(equal) != 0;
+            DirectX::XMVECTOR vector = LoadXrQuaternion(quaternion);
+            DirectX::XMVECTOR length = DirectX::XMVector4Length(vector);
+            DirectX::XMVECTOR equal = DirectX::XMVectorNearEqual(length, DirectX::g_XMOne, XMEpsilon);
+            return DirectX::XMVectorGetX(equal) != 0;
         }
     } // namespace Quaternion
 
+    inline bool IsValidFov(const XrFovf& fov) {
+        if (fov.angleRight <= fov.angleLeft || fov.angleRight >= DirectX::XM_PIDIV2 || fov.angleLeft <= -DirectX::XM_PIDIV2) {
+            return false;
+        }
+
+        if (fov.angleUp <= fov.angleDown || fov.angleUp >= DirectX::XM_PIDIV2 || fov.angleDown <= -DirectX::XM_PIDIV2) {
+            return false;
+        }
+
+        return true;
+    }
+
     // 2 * n / (r - l)    0                  0                    0
     // 0                  2 * n / (t - b)    0                    0
-    // (r + l) / (r - l)  (t + b) / (t - b)  f / (n - f)          -1
+    // (r + l) / (r - l)  (t + b) / (t - b)  f / (n - f)         -1
     // 0                  0                  n*f / (n - f)        0
     inline DirectX::XMMATRIX ComposeProjectionMatrix(const XrFovf& fov, const NearFarDistance& nearFar) {
+        if (!IsValidFov(fov)) {
+            throw std::runtime_error("Invalid projection specification");
+        }
+
         const float nearPlane = nearFar.Near;
         const float farPlane = nearFar.Far;
         const bool infNearPlane = isinf(nearPlane);
@@ -185,9 +291,7 @@ namespace xr::math {
             t *= nearPlane;
         }
 
-        constexpr float epsilon = 0.00001f;
-        if (nearPlane < 0.f || farPlane < 0.f || r < l || t < b || XMScalarNearEqual(r, l, epsilon) || XMScalarNearEqual(b, t, epsilon) ||
-            XMScalarNearEqual(nearPlane, farPlane, epsilon)) {
+        if (nearPlane < 0.f || farPlane < 0.f || r <= l || t <= b) {
             throw std::runtime_error("Invalid projection specification");
         }
 
@@ -232,9 +336,9 @@ namespace xr::math {
             projectionMatrix._42 = 0.0f;
             projectionMatrix._44 = 0.0f;
 
-            return XMLoadFloat4x4(&projectionMatrix);
+            return DirectX::XMLoadFloat4x4(&projectionMatrix);
         } else {
-            return XMMatrixPerspectiveOffCenterRH(l, r, b, t, nearPlane, farPlane);
+            return DirectX::XMMatrixPerspectiveOffCenterRH(l, r, b, t, nearPlane, farPlane);
         }
     }
 

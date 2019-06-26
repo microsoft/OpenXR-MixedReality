@@ -34,13 +34,13 @@ extern "C" {
     (((major) << 22) | ((minor) << 12) | (patch))
 
 // OpenXR current version number.
-#define XR_CURRENT_API_VERSION XR_MAKE_VERSION(0, 90, 0)
+#define XR_CURRENT_API_VERSION XR_MAKE_VERSION(0, 90, 1)
 
 #define XR_VERSION_MAJOR(version) ((uint32_t)(version) >> 22)
 #define XR_VERSION_MINOR(version) (((uint32_t)(version) >> 12) & 0x3ff)
 #define XR_VERSION_PATCH(version) ((uint32_t)(version) & 0xfff)
 // Version of this file
-#define XR_HEADER_VERSION 42
+#define XR_HEADER_VERSION XR_MAKE_VERSION(0, 90, 1)
 
 
 #if !defined(XR_NULL_HANDLE)
