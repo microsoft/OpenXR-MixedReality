@@ -264,10 +264,10 @@ LOADER_EXPORT XRAPI_ATTR XrResult XRAPI_CALL xrCreateInstance(const XrInstanceCr
         XrInstance created_instance = XR_NULL_HANDLE;
         result = LoaderInstance::CreateInstance(api_layer_interfaces, info, &created_instance);
 
-        if (XR_SUCCESS == result) {
+        if (XR_SUCCEEDED(result)) {
             *instance = created_instance;
 
-            LoaderInstance *loader_instance;
+            LoaderInstance *loader_instance = nullptr;
             {
                 std::unique_lock<std::mutex> lock(g_instance_mutex);
                 loader_instance = g_instance_map[created_instance];
@@ -454,7 +454,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateDebugUtilsMessengerEXT(XrInstance instanc
     try {
         LoaderLogger::LogVerboseMessage("xrCreateDebugUtilsMessengerEXT", "Entering loader trampoline");
 
-        LoaderInstance *loader_instance;
+        LoaderInstance *loader_instance = nullptr;
         {
             std::unique_lock<std::mutex> lock(g_instance_mutex);
             loader_instance = g_instance_map[instance];
@@ -507,7 +507,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrDestroyDebugUtilsMessengerEXT(XrDebugUtilsMesse
             return XR_ERROR_DEBUG_UTILS_MESSENGER_INVALID_EXT;
         }
 
-        LoaderInstance *loader_instance;
+        LoaderInstance *loader_instance = nullptr;
         {
             std::unique_lock<std::mutex> lock(g_debugutilsmessengerext_mutex);
             loader_instance = g_debugutilsmessengerext_map[messenger];
@@ -655,7 +655,7 @@ XRAPI_ATTR XrResult XRAPI_CALL LoaderXrTermSetDebugUtilsObjectNameEXT(XrInstance
 
 XRAPI_ATTR XrResult XRAPI_CALL xrSessionBeginDebugUtilsLabelRegionEXT(XrSession session, const XrDebugUtilsLabelEXT *labelInfo) {
     try {
-        LoaderInstance *loader_instance;
+        LoaderInstance *loader_instance = nullptr;
         {
             std::unique_lock<std::mutex> lock(g_session_mutex);
             loader_instance = g_session_map[session];
@@ -699,7 +699,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSessionBeginDebugUtilsLabelRegionEXT(XrSession 
 
 XRAPI_ATTR XrResult XRAPI_CALL xrSessionEndDebugUtilsLabelRegionEXT(XrSession session) {
     try {
-        LoaderInstance *loader_instance;
+        LoaderInstance *loader_instance = nullptr;
         {
             std::unique_lock<std::mutex> lock(g_session_mutex);
             loader_instance = g_session_map[session];
@@ -733,7 +733,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSessionEndDebugUtilsLabelRegionEXT(XrSession se
 
 XRAPI_ATTR XrResult XRAPI_CALL xrSessionInsertDebugUtilsLabelEXT(XrSession session, const XrDebugUtilsLabelEXT *labelInfo) {
     try {
-        LoaderInstance *loader_instance;
+        LoaderInstance *loader_instance = nullptr;
         {
             std::unique_lock<std::mutex> lock(g_session_mutex);
             loader_instance = g_session_map[session];
