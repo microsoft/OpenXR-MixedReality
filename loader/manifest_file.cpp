@@ -24,6 +24,7 @@
 #include <cstring>
 #include <fstream>
 #include <iostream>
+#include <sstream>
 #include <stdexcept>
 
 #include "filesystem_utils.hpp"
@@ -125,7 +126,6 @@ static void AddFilesInPath(ManifestFileType type, const std::string &search_path
             // This works around issue if multiple path separator follow each other directly.
             last_found = found;
             while (found == last_found) {
-                std::ostringstream stringStream2;
                 last_found = found + 1;
                 found = search_path.find_first_of(PATH_SEPARATOR, last_found);
             }
@@ -152,7 +152,8 @@ static void CopyIncludedPaths(bool is_directory_list, const std::string &cur_pat
         try {
             // Handle any path listings in the string (separated by the appropriate path separator)
             while (found != std::string::npos) {
-                output_path += cur_path.substr(last_found, found);
+                std::size_t length = found - last_found;
+                output_path += cur_path.substr(last_found, length);
                 if (is_directory_list && (cur_path[found - 1] != '\\' && cur_path[found - 1] != '/')) {
                     output_path += DIRECTORY_SYMBOL;
                 }
@@ -166,7 +167,7 @@ static void CopyIncludedPaths(bool is_directory_list, const std::string &cur_pat
             // If there's something remaining in the string, copy it over
             size_t last_char = cur_path.size() - 1;
             if (last_found != last_char) {
-                output_path += cur_path.substr(last_found, found);
+                output_path += cur_path.substr(last_found);
                 if (is_directory_list && (cur_path[last_char] != '\\' && cur_path[last_char] != '/')) {
                     output_path += DIRECTORY_SYMBOL;
                 }
@@ -281,6 +282,79 @@ static void ReadDataFilesInSearchPaths(ManifestFileType type, const std::string 
         throw;
     }
 }
+
+#ifdef XR_OS_LINUX
+
+// If ${name} has a nonempty value, return it; if both other arguments are supplied return
+// ${fallback_env}/fallback_path; otherwise, return whichever of ${fallback_env} and fallback_path
+// is supplied. If ${fallback_env} or ${fallback_env}/... would be returned but that environment
+// variable is unset or empty, return the empty string.
+static std::string GetXDGEnv(const char *name, const char *fallback_env, const char *fallback_path) {
+    char *path = PlatformUtilsGetSecureEnv(name);
+    std::string result;
+    if (path) {
+        result = path;
+        PlatformUtilsFreeEnv(path);
+        if (!result.empty()) {
+            return result;
+        }
+    }
+    if (fallback_env) {
+        char *path = PlatformUtilsGetSecureEnv(fallback_env);
+        if (path) {
+            result = path;
+            PlatformUtilsFreeEnv(path);
+        }
+        if (result.empty()) {
+            return "";
+        }
+        if (fallback_path) {
+            result += "/";
+        }
+    }
+    if (fallback_path) {
+        result += fallback_path;
+    }
+    return result;
+}
+
+// Return the first instance of relative_path occuring in an XDG config dir according to standard
+// precedence order.
+static bool FindXDGConfigFile(const std::string &relative_path, std::string &out) {
+    out = GetXDGEnv("XDG_CONFIG_HOME", "HOME", ".config");
+    if (!out.empty()) {
+        out += "/";
+        out += relative_path;
+        if (FileSysUtilsPathExists(out)) return true;
+    }
+
+    std::istringstream iss(GetXDGEnv("XDG_CONFIG_DIRS", nullptr, FALLBACK_CONFIG_DIRS));
+    std::string path;    
+    while (std::getline(iss, path, PATH_SEPARATOR)) {
+        if (path.empty()) continue;
+        out = path;
+        out += "/";
+        out += relative_path;
+        if (FileSysUtilsPathExists(out)) return true;
+    }
+
+    out = SYSCONFDIR;
+    out += "/";
+    out += relative_path;
+    if (FileSysUtilsPathExists(out)) return true;
+
+#if defined(EXTRASYSCONFDIR)
+    out = EXTRASYSCONFDIR;
+    out += "/";
+    out += relative_path;
+    if (FileSysUtilsPathExists(out)) return true;
+#endif
+
+    out.clear();
+    return false;
+}
+
+#endif
 
 #ifdef XR_OS_WINDOWS
 
@@ -628,7 +702,7 @@ void RuntimeManifestFile::CreateIfValid(std::string filename, std::vector<std::u
                     continue;
                 }
                 std::string original_name = func_it.key().asString();
-                std::string new_name = func_it->asString();
+                std::string new_name = (*func_it).asString();
                 manifest_files.back()->_functions_renamed.insert(std::make_pair(original_name, new_name));
             }
         }
@@ -647,40 +721,52 @@ XrResult RuntimeManifestFile::FindManifestFiles(ManifestFileType type,
             LoaderLogger::LogErrorMessage("", "RuntimeManifestFile::FindManifestFiles - unknown manifest file requested");
             throw std::runtime_error("invalid manifest type");
         }
-        bool override_active = false;
-        std::vector<std::string> filenames;
-        ReadDataFilesInSearchPaths(type, OPENXR_RUNTIME_JSON_ENV_VAR, "", override_active, filenames);
-        if (!override_active) {
+        std::string filename;
+        char *override_path = PlatformUtilsGetSecureEnv(OPENXR_RUNTIME_JSON_ENV_VAR);
+        if (override_path != nullptr && *override_path != '\0') {
+            filename = override_path;
+            PlatformUtilsFreeEnv(override_path);
+            std::string info_message = "RuntimeManifestFile::FindManifestFiles - using environment variable override runtime file ";
+            info_message += filename;
+            LoaderLogger::LogInfoMessage("", info_message);
+        } else {
+            PlatformUtilsFreeEnv(override_path);
 #ifdef XR_OS_WINDOWS
+            std::vector<std::string> filenames;
             ReadRuntimeDataFilesInRegistry(type, "", "ActiveRuntime", filenames);
             if (filenames.size() == 0) {
                 LoaderLogger::LogErrorMessage(
-                    "", "RuntimeManifestFile::findManifestFiles - failed to find active runtime file in registry");
+                    "", "RuntimeManifestFile::FindManifestFiles - failed to find active runtime file in registry");
                 return XR_ERROR_FILE_ACCESS_ERROR;
             }
             if (filenames.size() > 1) {
                 LoaderLogger::LogWarningMessage(
-                    "", "RuntimeManifestFile::findManifestFiles - found too many default runtime files in registry");
+                    "", "RuntimeManifestFile::FindManifestFiles - found too many default runtime files in registry");
+            }
+            filename = filenames[0];
+#elif defined(XR_OS_LINUX)
+            const std::string relative_path = "openxr/"
+                + std::to_string(XR_VERSION_MAJOR(XR_CURRENT_API_VERSION))
+                + "/active_runtime.json";
+            if (!FindXDGConfigFile(relative_path, filename)) {
+                LoaderLogger::LogErrorMessage(
+                    "",
+                    "RuntimeManifestFile::FindManifestFiles - failed to determine active runtime file path for this environment");
+                return XR_ERROR_FILE_ACCESS_ERROR;
             }
 #else
-            std::string global_rt_filename;
-            PlatformGetGlobalRuntimeFileName(XR_VERSION_MAJOR(XR_CURRENT_API_VERSION), global_rt_filename);
-            filenames.push_back(global_rt_filename);
+            if (!PlatformGetGlobalRuntimeFileName(XR_VERSION_MAJOR(XR_CURRENT_API_VERSION), filename)) {
+                LoaderLogger::LogErrorMessage(
+                    "",
+                    "RuntimeManifestFile::FindManifestFiles - failed to determine active runtime file path for this environment");
+                return XR_ERROR_FILE_ACCESS_ERROR;
+            }
 #endif
             std::string info_message = "RuntimeManifestFile::FindManifestFiles - using global runtime file ";
-            info_message += filenames[0];
+            info_message += filename;
             LoaderLogger::LogInfoMessage("", info_message);
-        } else if (filenames.size() > 0) {
-            std::string info_message = "RuntimeManifestFile::FindManifestFiles - using environment variable override runtime file ";
-            info_message += filenames[0];
-            LoaderLogger::LogInfoMessage("", info_message);
-        } else {
-            LoaderLogger::LogErrorMessage("", "RuntimeManifestFile::FindManifestFiles - failed to find any runtime manifest files");
-            result = XR_ERROR_FILE_ACCESS_ERROR;
         }
-        for (std::string &cur_file : filenames) {
-            RuntimeManifestFile::CreateIfValid(cur_file, manifest_files);
-        }
+        RuntimeManifestFile::CreateIfValid(filename, manifest_files);
     } catch (std::bad_alloc &) {
         LoaderLogger::LogErrorMessage("", "RuntimeManifestFile::FindManifestFiles - failed to allocate memory");
         return XR_ERROR_OUT_OF_MEMORY;
@@ -752,22 +838,23 @@ void ApiLayerManifestFile::CreateIfValid(ManifestFileType type, std::string file
                 LoaderLogger::LogErrorMessage("", error_message);
                 return;
             }
-            // If there's an enable environment variable, this has to be enabled before it's used.
+            // Check if there's an enable environment variable provided
             if (!layer_root_node["enable_environment"].isNull() && layer_root_node["enable_environment"].isString()) {
                 char *enable_val = PlatformUtilsGetEnv(layer_root_node["enable_environment"].asString().c_str());
-                // If it's either not defined, or it's 0, disable the layer by default
-                if (NULL == enable_val || atoi(enable_val) == 0) {
+                // If it's not set in the environment, disable the layer
+                if (NULL == enable_val) {
                     enabled = false;
                 }
                 PlatformUtilsFreeEnv(enable_val);
             }
-            // If there's an enable environment variable, this has to be enabled before it's used.
+            // Check for the disable environment variable, which must be provided in the JSON
             char *disable_val = PlatformUtilsGetEnv(layer_root_node["disable_environment"].asString().c_str());
-            // If it's either not defined, or it's 0, disable the layer by default
-            if (NULL != disable_val || atoi(disable_val) == 0) {
+            // If the envar is set, disable the layer. Disable envar overrides enable above
+            if (NULL != disable_val) {
                 enabled = false;
             }
             PlatformUtilsFreeEnv(disable_val);
+
             // Not enabled, so pretend like it isn't even there.
             if (!enabled) {
                 std::string info_message = "ApiLayerManifestFile::CreateIfValid Implicit layer ";
@@ -885,7 +972,7 @@ void ApiLayerManifestFile::CreateIfValid(ManifestFileType type, std::string file
                     continue;
                 }
                 std::string original_name = func_it.key().asString();
-                std::string new_name = func_it->asString();
+                std::string new_name = (*func_it).asString();
                 manifest_files.back()->_functions_renamed.insert(std::make_pair(original_name, new_name));
             }
         }
