@@ -193,14 +193,19 @@ XrResult RuntimeInterface::GetInstanceProcAddr(XrInstance instance, const char* 
 const XrGeneratedDispatchTable* RuntimeInterface::GetDispatchTable(XrInstance instance) {
     XrGeneratedDispatchTable* table = nullptr;
     std::unique_lock<std::mutex> mlock(_single_runtime_interface->_dispatch_table_mutex);
-    table = _single_runtime_interface->_dispatch_table_map[instance];
+    if (0 != _single_runtime_interface->_dispatch_table_map.count(instance)) {
+        table = _single_runtime_interface->_dispatch_table_map[instance];
+    }
     return table;
 }
 
 const XrGeneratedDispatchTable* RuntimeInterface::GetDebugUtilsMessengerDispatchTable(XrDebugUtilsMessengerEXT messenger) {
     try {
         std::unique_lock<std::mutex> mlock(_single_runtime_interface->_messenger_to_instance_mutex);
-        XrInstance runtime_instance = _single_runtime_interface->_messenger_to_instance_map[messenger];
+        XrInstance runtime_instance = XR_NULL_HANDLE;
+        if (0 != _single_runtime_interface->_messenger_to_instance_map.count(messenger)) {
+            runtime_instance = _single_runtime_interface->_messenger_to_instance_map[messenger];
+        }
         mlock.unlock();
         return GetDispatchTable(runtime_instance);
     } catch (...) {
@@ -236,6 +241,10 @@ void RuntimeInterface::GetInstanceExtensionProperties(std::vector<XrExtensionPro
         if (count_output > 0) {
             runtime_extension_properties.resize(count_output);
             count = count_output;
+            for (XrExtensionProperties& ext_prop : runtime_extension_properties) {
+                ext_prop.type = XR_TYPE_EXTENSION_PROPERTIES;
+                ext_prop.next = nullptr;
+            }
             rt_xrEnumerateInstanceExtensionProperties(nullptr, count, &count_output, runtime_extension_properties.data());
         }
         size_t ext_count = runtime_extension_properties.size();
@@ -273,7 +282,7 @@ XrResult RuntimeInterface::CreateInstance(const XrInstanceCreateInfo* info, XrIn
         res = rt_xrCreateInstance(info, instance);
         if (XR_SUCCESS == res) {
             create_succeeded = true;
-            XrGeneratedDispatchTable* dispatch_table = new XrGeneratedDispatchTable;
+            XrGeneratedDispatchTable* dispatch_table = new XrGeneratedDispatchTable();
             GeneratedXrPopulateDispatchTable(dispatch_table, *instance, _get_instant_proc_addr);
             std::unique_lock<std::mutex> mlock(_dispatch_table_mutex);
             _dispatch_table_map[*instance] = dispatch_table;
@@ -302,8 +311,12 @@ XrResult RuntimeInterface::DestroyInstance(XrInstance instance) {
         if (XR_NULL_HANDLE != instance) {
             // Destroy the dispatch table for this instance first
             std::unique_lock<std::mutex> mlock(_dispatch_table_mutex);
-            XrGeneratedDispatchTable* table = _dispatch_table_map[instance];
-            _dispatch_table_map.erase(instance);
+            XrGeneratedDispatchTable* table = nullptr;
+            auto map_iter = _dispatch_table_map.find(instance);
+            if (map_iter != _dispatch_table_map.end()) {
+                table = map_iter->second;
+                _dispatch_table_map.erase(map_iter);
+            }
             mlock.unlock();
 
             if (nullptr != table) {
