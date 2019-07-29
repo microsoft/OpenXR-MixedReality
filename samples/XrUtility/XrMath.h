@@ -19,12 +19,17 @@
 #include <DirectXMath.h>
 
 namespace xr::math {
-    constexpr float Epsilon = 0.000001f;
-    constexpr DirectX::XMVECTORF32 XMEpsilon = {{{Epsilon, Epsilon, Epsilon, Epsilon}}};
+    constexpr float QuaternionEpsilon = 0.01f;
+    constexpr DirectX::XMVECTORF32 XMQuaternionEpsilon = {{{QuaternionEpsilon, QuaternionEpsilon, QuaternionEpsilon, QuaternionEpsilon}}};
 
     namespace Pose {
         constexpr XrPosef Identity();
         constexpr XrPosef Translation(const XrVector3f& translation);
+
+        constexpr bool IsPoseValid(const XrSpaceLocation& location);
+        constexpr bool IsPoseTracked(const XrSpaceLocation& location);
+        constexpr bool IsPoseValid(const XrViewState& viewState);
+        constexpr bool IsPoseTracked(const XrViewState& viewState);
     } // namespace Pose
 
     namespace Quaternion {
@@ -239,6 +244,27 @@ namespace xr::math {
             pose.position = translation;
             return pose;
         }
+
+        constexpr bool IsPoseValid(const XrSpaceLocation& spaceLocation) {
+            constexpr XrSpaceLocationFlags PoseValidFlags = XR_SPACE_LOCATION_POSITION_VALID_BIT | XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
+            return (spaceLocation.locationFlags & PoseValidFlags) == PoseValidFlags;
+        }
+
+        constexpr bool IsPoseTracked(const XrSpaceLocation& spaceLocation) {
+            constexpr XrSpaceLocationFlags PoseTrackedFlags =
+                XR_SPACE_LOCATION_POSITION_TRACKED_BIT | XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT;
+            return (spaceLocation.locationFlags & PoseTrackedFlags) == PoseTrackedFlags;
+        }
+
+        constexpr bool IsPoseValid(const XrViewState& viewState) {
+            constexpr XrViewStateFlags PoseValidFlags = XR_VIEW_STATE_POSITION_VALID_BIT | XR_VIEW_STATE_ORIENTATION_VALID_BIT;
+            return (viewState.viewStateFlags & PoseValidFlags) == PoseValidFlags;
+        }
+
+        constexpr bool IsPoseTracked(const XrViewState& viewState) {
+            constexpr XrViewStateFlags PoseTrackedFlags = XR_VIEW_STATE_POSITION_TRACKED_BIT | XR_VIEW_STATE_ORIENTATION_TRACKED_BIT;
+            return (viewState.viewStateFlags & PoseTrackedFlags) == PoseTrackedFlags;
+        }
     } // namespace Pose
 
     namespace Quaternion {
@@ -249,17 +275,17 @@ namespace xr::math {
         inline bool IsNormalized(const XrQuaternionf& quaternion) {
             DirectX::XMVECTOR vector = LoadXrQuaternion(quaternion);
             DirectX::XMVECTOR length = DirectX::XMVector4Length(vector);
-            DirectX::XMVECTOR equal = DirectX::XMVectorNearEqual(length, DirectX::g_XMOne, XMEpsilon);
+            DirectX::XMVECTOR equal = DirectX::XMVectorNearEqual(length, DirectX::g_XMOne, XMQuaternionEpsilon);
             return DirectX::XMVectorGetX(equal) != 0;
         }
     } // namespace Quaternion
 
     inline bool IsValidFov(const XrFovf& fov) {
-        if (fov.angleRight <= fov.angleLeft || fov.angleRight >= DirectX::XM_PIDIV2 || fov.angleLeft <= -DirectX::XM_PIDIV2) {
+        if (fov.angleRight >= DirectX::XM_PIDIV2 || fov.angleLeft <= -DirectX::XM_PIDIV2) {
             return false;
         }
 
-        if (fov.angleUp <= fov.angleDown || fov.angleUp >= DirectX::XM_PIDIV2 || fov.angleDown <= -DirectX::XM_PIDIV2) {
+        if (fov.angleUp >= DirectX::XM_PIDIV2 || fov.angleDown <= -DirectX::XM_PIDIV2) {
             return false;
         }
 
@@ -291,7 +317,7 @@ namespace xr::math {
             t *= nearPlane;
         }
 
-        if (nearPlane < 0.f || farPlane < 0.f || r <= l || t <= b) {
+        if (nearPlane < 0.f || farPlane < 0.f) {
             throw std::runtime_error("Invalid projection specification");
         }
 

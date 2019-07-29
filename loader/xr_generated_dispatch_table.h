@@ -22,6 +22,10 @@
 //
 
 #pragma once
+#include "xr_dependencies.h"
+#include <openxr/openxr.h>
+#include <openxr/openxr_platform.h>
+
 
 #ifdef __cplusplus
 extern "C" { 
@@ -29,7 +33,7 @@ extern "C" {
 // Generated dispatch table
 struct XrGeneratedDispatchTable {
 
-    // ---- Core 0.90 commands
+    // ---- Core 1.0 commands
     PFN_xrGetInstanceProcAddr GetInstanceProcAddr;
     PFN_xrEnumerateApiLayerProperties EnumerateApiLayerProperties;
     PFN_xrEnumerateInstanceExtensionProperties EnumerateInstanceExtensionProperties;
@@ -62,6 +66,7 @@ struct XrGeneratedDispatchTable {
     PFN_xrReleaseSwapchainImage ReleaseSwapchainImage;
     PFN_xrBeginSession BeginSession;
     PFN_xrEndSession EndSession;
+    PFN_xrRequestExitSession RequestExitSession;
     PFN_xrWaitFrame WaitFrame;
     PFN_xrBeginFrame BeginFrame;
     PFN_xrEndFrame EndFrame;
@@ -72,14 +77,15 @@ struct XrGeneratedDispatchTable {
     PFN_xrDestroyActionSet DestroyActionSet;
     PFN_xrCreateAction CreateAction;
     PFN_xrDestroyAction DestroyAction;
-    PFN_xrSetInteractionProfileSuggestedBindings SetInteractionProfileSuggestedBindings;
+    PFN_xrSuggestInteractionProfileBindings SuggestInteractionProfileBindings;
+    PFN_xrAttachSessionActionSets AttachSessionActionSets;
     PFN_xrGetCurrentInteractionProfile GetCurrentInteractionProfile;
     PFN_xrGetActionStateBoolean GetActionStateBoolean;
-    PFN_xrGetActionStateVector1f GetActionStateVector1f;
+    PFN_xrGetActionStateFloat GetActionStateFloat;
     PFN_xrGetActionStateVector2f GetActionStateVector2f;
     PFN_xrGetActionStatePose GetActionStatePose;
-    PFN_xrSyncActionData SyncActionData;
-    PFN_xrGetBoundSourcesForAction GetBoundSourcesForAction;
+    PFN_xrSyncActions SyncActions;
+    PFN_xrEnumerateBoundSourcesForAction EnumerateBoundSourcesForAction;
     PFN_xrGetInputSourceLocalizedName GetInputSourceLocalizedName;
     PFN_xrApplyHapticFeedback ApplyHapticFeedback;
     PFN_xrStopHapticFeedback StopHapticFeedback;
@@ -117,11 +123,6 @@ struct XrGeneratedDispatchTable {
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
     PFN_xrGetVulkanGraphicsRequirementsKHR GetVulkanGraphicsRequirementsKHR;
 #endif // defined(XR_USE_GRAPHICS_API_VULKAN)
-
-    // ---- XR_KHR_D3D10_enable extension commands
-#if defined(XR_USE_GRAPHICS_API_D3D10)
-    PFN_xrGetD3D10GraphicsRequirementsKHR GetD3D10GraphicsRequirementsKHR;
-#endif // defined(XR_USE_GRAPHICS_API_D3D10)
 
     // ---- XR_KHR_D3D11_enable extension commands
 #if defined(XR_USE_GRAPHICS_API_D3D11)
@@ -166,25 +167,6 @@ struct XrGeneratedDispatchTable {
     PFN_xrSessionBeginDebugUtilsLabelRegionEXT SessionBeginDebugUtilsLabelRegionEXT;
     PFN_xrSessionEndDebugUtilsLabelRegionEXT SessionEndDebugUtilsLabelRegionEXT;
     PFN_xrSessionInsertDebugUtilsLabelEXT SessionInsertDebugUtilsLabelEXT;
-
-    // ---- XR_MSFT_spatial_perception_bridge extension commands
-#if defined(XR_USE_PLATFORM_WIN32)
-    PFN_xrCreateSpaceFromSpatialCoordinateSystemMSFT CreateSpaceFromSpatialCoordinateSystemMSFT;
-#endif // defined(XR_USE_PLATFORM_WIN32)
-
-    // ---- XR_MSFT_controller_render_model extension commands
-    PFN_xrLoadControllerRenderModelMSFT LoadControllerRenderModelMSFT;
-
-    // ---- XR_MSFT_spatial_anchor extension commands
-    PFN_xrCreateSpatialAnchorSpaceMSFT CreateSpatialAnchorSpaceMSFT;
-    PFN_xrCreateSpatialAnchorMSFT CreateSpatialAnchorMSFT;
-    PFN_xrDestroySpatialAnchorMSFT DestroySpatialAnchorMSFT;
-
-    // ---- XR_MSFT_spatial_anchor_storage extension commands
-    PFN_xrStoreSpatialAnchorMSFT StoreSpatialAnchorMSFT;
-    PFN_xrEnumerateStoredSpatialAnchorsMSFT EnumerateStoredSpatialAnchorsMSFT;
-    PFN_xrCreateSpatialAnchorFromStoredAnchorNameMSFT CreateSpatialAnchorFromStoredAnchorNameMSFT;
-    PFN_xrDeleteStoredSpatialAnchorMSFT DeleteStoredSpatialAnchorMSFT;
 };
 
 

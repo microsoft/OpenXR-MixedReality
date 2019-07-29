@@ -26,7 +26,13 @@
 #include <thread>
 #include <mutex>
 
+#include "xr_dependencies.h"
+#include "openxr/openxr.h"
+#include "openxr/openxr_platform.h"
+
 #include "loader_interfaces.h"
+
+#include "loader_instance.hpp"
 
 
 #ifdef __cplusplus
@@ -36,7 +42,7 @@ extern "C" {
 // Loader manually generated function prototypes
 
 
-// ---- Core 0.90 loader manual functions
+// ---- Core 1.0 loader manual functions
 XRAPI_ATTR XrResult XRAPI_CALL xrGetInstanceProcAddr(
     XrInstance                                  instance,
     const char*                                 name,
@@ -89,6 +95,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSystemProperties(
 XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateEnvironmentBlendModes(
     XrInstance                                  instance,
     XrSystemId                                  systemId,
+    XrViewConfigurationType                     viewConfigurationType,
     uint32_t                                    environmentBlendModeCapacityInput,
     uint32_t*                                   environmentBlendModeCountOutput,
     XrEnvironmentBlendMode*                     environmentBlendModes);
@@ -124,6 +131,13 @@ XRAPI_ATTR XrResult XRAPI_CALL xrPathToString(
     uint32_t                                    bufferCapacityInput,
     uint32_t*                                   bufferCountOutput,
     char*                                       buffer);
+XRAPI_ATTR XrResult XRAPI_CALL xrCreateActionSet(
+    XrInstance                                  instance,
+    const XrActionSetCreateInfo*                createInfo,
+    XrActionSet*                                actionSet);
+XRAPI_ATTR XrResult XRAPI_CALL xrSuggestInteractionProfileBindings(
+    XrInstance                                  instance,
+    const XrInteractionProfileSuggestedBinding* suggestedBindings);
 
 // ---- XR_KHR_opengl_enable loader manual functions
 #if defined(XR_USE_GRAPHICS_API_OPENGL)
@@ -146,17 +160,17 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetOpenGLESGraphicsRequirementsKHR(
 XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanInstanceExtensionsKHR(
     XrInstance                                  instance,
     XrSystemId                                  systemId,
-    uint32_t                                    namesCapacityInput,
-    uint32_t*                                   namesCountOutput,
-    char*                                       namesString);
+    uint32_t                                    bufferCapacityInput,
+    uint32_t*                                   bufferCountOutput,
+    char*                                       buffer);
 #endif // defined(XR_USE_GRAPHICS_API_VULKAN)
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
 XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanDeviceExtensionsKHR(
     XrInstance                                  instance,
     XrSystemId                                  systemId,
-    uint32_t                                    namesCapacityInput,
-    uint32_t*                                   namesCountOutput,
-    char*                                       namesString);
+    uint32_t                                    bufferCapacityInput,
+    uint32_t*                                   bufferCountOutput,
+    char*                                       buffer);
 #endif // defined(XR_USE_GRAPHICS_API_VULKAN)
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
 XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsDeviceKHR(
@@ -171,14 +185,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsRequirementsKHR(
     XrSystemId                                  systemId,
     XrGraphicsRequirementsVulkanKHR*            graphicsRequirements);
 #endif // defined(XR_USE_GRAPHICS_API_VULKAN)
-
-// ---- XR_KHR_D3D10_enable loader manual functions
-#if defined(XR_USE_GRAPHICS_API_D3D10)
-XRAPI_ATTR XrResult XRAPI_CALL xrGetD3D10GraphicsRequirementsKHR(
-    XrInstance                                  instance,
-    XrSystemId                                  systemId,
-    XrGraphicsRequirementsD3D10KHR*             graphicsRequirements);
-#endif // defined(XR_USE_GRAPHICS_API_D3D10)
 
 // ---- XR_KHR_D3D11_enable loader manual functions
 #if defined(XR_USE_GRAPHICS_API_D3D11)
@@ -243,12 +249,12 @@ XRAPI_ATTR XrResult XRAPI_CALL xrDestroyDebugUtilsMessengerEXT(
     XrDebugUtilsMessengerEXT                    messenger);
 XRAPI_ATTR XrResult XRAPI_CALL LoaderXrTermDestroyDebugUtilsMessengerEXT(
     XrDebugUtilsMessengerEXT                    messenger);
-XRAPI_ATTR XrResult XRAPI_CALL xrSubmitDebugUtilsMessageEXT(
+XRAPI_ATTR XrResult                                    XRAPI_CALL xrSubmitDebugUtilsMessageEXT(
     XrInstance                                  instance,
     XrDebugUtilsMessageSeverityFlagsEXT         messageSeverity,
     XrDebugUtilsMessageTypeFlagsEXT             messageTypes,
     const XrDebugUtilsMessengerCallbackDataEXT* callbackData);
-XRAPI_ATTR XrResult XRAPI_CALL LoaderXrTermSubmitDebugUtilsMessageEXT(
+XRAPI_ATTR XrResult                                    XRAPI_CALL LoaderXrTermSubmitDebugUtilsMessageEXT(
     XrInstance                                  instance,
     XrDebugUtilsMessageSeverityFlagsEXT         messageSeverity,
     XrDebugUtilsMessageTypeFlagsEXT             messageTypes,
@@ -286,25 +292,16 @@ void LoaderGenInitInstanceDispatchTable(XrInstance runtime_instance,
 #endif
 
 // Unordered maps and mutexes to lookup the instance for a given object type
-extern std::unordered_map<XrInstance, class LoaderInstance*> g_instance_map;
-extern std::mutex g_instance_mutex;
-extern std::unordered_map<XrSession, class LoaderInstance*> g_session_map;
-extern std::mutex g_session_mutex;
-extern std::unordered_map<XrSpace, class LoaderInstance*> g_space_map;
-extern std::mutex g_space_mutex;
-extern std::unordered_map<XrAction, class LoaderInstance*> g_action_map;
-extern std::mutex g_action_mutex;
-extern std::unordered_map<XrSwapchain, class LoaderInstance*> g_swapchain_map;
-extern std::mutex g_swapchain_mutex;
-extern std::unordered_map<XrActionSet, class LoaderInstance*> g_actionset_map;
-extern std::mutex g_actionset_mutex;
-extern std::unordered_map<XrDebugUtilsMessengerEXT, class LoaderInstance*> g_debugutilsmessengerext_map;
-extern std::mutex g_debugutilsmessengerext_mutex;
-extern std::unordered_map<XrSpatialAnchorMSFT, class LoaderInstance*> g_spatialanchormsft_map;
-extern std::mutex g_spatialanchormsft_mutex;
+extern HandleLoaderMap<XrInstance> g_instance_map;
+extern HandleLoaderMap<XrSession> g_session_map;
+extern HandleLoaderMap<XrSpace> g_space_map;
+extern HandleLoaderMap<XrAction> g_action_map;
+extern HandleLoaderMap<XrSwapchain> g_swapchain_map;
+extern HandleLoaderMap<XrActionSet> g_actionset_map;
+extern HandleLoaderMap<XrDebugUtilsMessengerEXT> g_debugutilsmessengerext_map;
 
 // Function used to clean up any residual map values that point to an instance prior to that
 // instance being deleted.
-void LoaderCleanUpMapsForInstance(class LoaderInstance *instance);
+void LoaderCleanUpMapsForInstance(LoaderInstance *instance);
 
 

@@ -19,26 +19,61 @@
 
 #pragma once
 
+#include "extra_algorithms.h"
+
+#include <openxr/openxr.h>
+
+#include <cmath>
+#include <memory>
+#include <mutex>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
-#include "loader_platform.hpp"
-#include "platform_utils.hpp"
-#include "runtime_interface.hpp"
-#include "api_layer_interface.hpp"
-#include "xr_generated_dispatch_table.h"
+class LoaderInstance;
+class ApiLayerInterface;
+struct XrGeneratedDispatchTable;
+
+typedef std::unique_lock<std::mutex> UniqueLock;
+template <typename HandleType>
+class HandleLoaderMap {
+   public:
+    using handle_t = HandleType;
+    using map_t = std::unordered_map<HandleType, LoaderInstance*>;
+    using value_t = typename map_t::value_type;
+
+    /// Lookup a handle.
+    /// Returns nullptr if not found.
+    LoaderInstance* Get(HandleType handle);
+
+    /// Insert an info for the supplied handle.
+    /// Returns XR_ERROR_RUNTIME_FAILURE if it's null.
+    /// Does not error if already there, because the loader is not currently very good at cleaning up handles.
+    XrResult Insert(HandleType handle, LoaderInstance& loader);
+
+    /// Remove the info associated with the supplied handle.
+    /// Returns XR_ERROR_RUNTIME_FAILURE if it's null or not there.
+    XrResult Erase(HandleType handle);
+
+    /// Removes handles associated with a loader instance.
+    void RemoveHandlesForLoader(LoaderInstance& loader);
+
+   protected:
+    map_t instance_map_;
+    std::mutex mutex_;
+};
 
 class LoaderInstance {
    public:
     // Factory method
-    static XrResult CreateInstance(std::vector<std::unique_ptr<ApiLayerInterface>>& layer_interfaces,
+    static XrResult CreateInstance(std::vector<std::unique_ptr<ApiLayerInterface>>&& layer_interfaces,
                                    const XrInstanceCreateInfo* info, XrInstance* instance);
 
-    LoaderInstance(std::vector<std::unique_ptr<ApiLayerInterface>>& api_layer_interfaces);
+    LoaderInstance(std::vector<std::unique_ptr<ApiLayerInterface>>&& api_layer_interfaces);
     virtual ~LoaderInstance();
 
     bool IsValid() { return _unique_id == 0xDECAFBAD; }
-    uint32_t ApiVersion() { return _api_version; }
+    XrVersion ApiVersion() { return _api_version; }
     XrResult CreateDispatchTable(XrInstance instance);
     void SetRuntimeInstance(XrInstance instance) { _runtime_instance = instance; }
     const std::unique_ptr<XrGeneratedDispatchTable>& DispatchTable() { return _dispatch_table; }
@@ -51,7 +86,7 @@ class LoaderInstance {
 
    private:
     uint32_t _unique_id;  // 0xDECAFBAD - for debugging
-    uint32_t _api_version;
+    XrVersion _api_version;
     std::vector<std::unique_ptr<ApiLayerInterface>> _api_layer_interfaces;
     XrInstance _runtime_instance;
     bool _dispatch_valid;
@@ -61,3 +96,60 @@ class LoaderInstance {
     // Internal debug messenger created during xrCreateInstance
     XrDebugUtilsMessengerEXT _messenger;
 };
+
+template <typename HandleType>
+inline LoaderInstance* HandleLoaderMap<HandleType>::Get(HandleType handle) {
+    if (handle == XR_NULL_HANDLE) {
+        return nullptr;
+    }
+    // Try to find the handle in the appropriate map
+    UniqueLock lock(mutex_);
+    auto entry_returned = instance_map_.find(handle);
+    if (entry_returned == instance_map_.end()) {
+        return nullptr;
+    }
+    return entry_returned->second;
+}
+
+template <typename HandleType>
+inline XrResult HandleLoaderMap<HandleType>::Insert(HandleType handle, LoaderInstance& loader) {
+    if (handle == XR_NULL_HANDLE) {
+        // Internal error in loader or runtime.
+        return XR_ERROR_RUNTIME_FAILURE;
+    }
+    UniqueLock lock(mutex_);
+    //! @todo This check is currently disabled, because the loader is not good at cleaning up handles when their parent handles are
+    //! destroyed.
+#if 0
+    auto entry_returned = instance_map_.find(handle);
+    if (entry_returned != instance_map_.end()) {
+        // Internal error in loader or runtime.
+        return XR_ERROR_RUNTIME_FAILURE;
+    }
+#endif
+    instance_map_[handle] = &loader;
+    return XR_SUCCESS;
+}
+
+template <typename HandleType>
+inline XrResult HandleLoaderMap<HandleType>::Erase(HandleType handle) {
+    if (handle == XR_NULL_HANDLE) {
+        // Internal error in loader or runtime.
+        return XR_ERROR_RUNTIME_FAILURE;
+    }
+    UniqueLock lock(mutex_);
+    auto entry_returned = instance_map_.find(handle);
+    if (entry_returned == instance_map_.end()) {
+        // Internal error in loader or runtime.
+        return XR_ERROR_RUNTIME_FAILURE;
+    }
+    instance_map_.erase(handle);
+    return XR_SUCCESS;
+}
+
+template <typename HandleType>
+inline void HandleLoaderMap<HandleType>::RemoveHandlesForLoader(LoaderInstance& loader) {
+    UniqueLock lock(mutex_);
+    auto search_value = &loader;
+    map_erase_if(instance_map_, [=](value_t const& data) { return data.second && data.second == search_value; });
+}

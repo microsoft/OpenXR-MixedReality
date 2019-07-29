@@ -29,6 +29,7 @@ namespace {
 
         void Run() override {
             CreateInstance();
+            CreateActions();
 
             bool requestRestart = false;
             do {
@@ -100,10 +101,71 @@ namespace {
             CHECK(AddExtIfSupported(XR_KHR_D3D11_ENABLE_EXTENSION_NAME));
 
             // Additional optional extensions for enhanced functionality. Track whether enabled in m_optionalExtensions.
-            m_optionalExtensions.UnboundedRefSpaceSupported = AddExtIfSupported(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
-            m_optionalExtensions.SpatialAnchorSupported = AddExtIfSupported(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
+            m_optionalExtensions.UnboundedRefSpaceSupported = false; // coming soon ... XR_MSFT_unbounded_reference_space extension
+            m_optionalExtensions.SpatialAnchorSupported = false;     // coming soon ... XR_MSFT_spatial_anchor extension
 
             return enabledExtensions;
+        }
+
+        void CreateActions() {
+            CHECK(m_instance.Get() != XR_NULL_HANDLE);
+
+            // Create an action set.
+            {
+                XrActionSetCreateInfo actionSetInfo{XR_TYPE_ACTION_SET_CREATE_INFO};
+                strcpy_s(actionSetInfo.actionSetName, "place_hologram_action_set");
+                strcpy_s(actionSetInfo.localizedActionSetName, "Placement");
+                CHECK_XRCMD(xrCreateActionSet(m_instance.Get(), &actionSetInfo, m_actionSet.Put()));
+            }
+
+            // Create actions.
+            {
+                // Enable subaction path filtering for left or right hand.
+                m_subactionPaths[LeftSide] = GetXrPath("/user/hand/left");
+                m_subactionPaths[RightSide] = GetXrPath("/user/hand/right");
+
+                // Create an input action to place a hologram.
+                XrActionCreateInfo actionInfo{XR_TYPE_ACTION_CREATE_INFO};
+                actionInfo.actionType = XR_ACTION_TYPE_BOOLEAN_INPUT;
+                strcpy_s(actionInfo.actionName, "place_hologram");
+                strcpy_s(actionInfo.localizedActionName, "Place Hologram");
+                actionInfo.countSubactionPaths = (uint32_t)m_subactionPaths.size();
+                actionInfo.subactionPaths = m_subactionPaths.data();
+                CHECK_XRCMD(xrCreateAction(m_actionSet.Get(), &actionInfo, m_placeAction.Put()));
+
+                // Create an input action getting the left and right hand poses.
+                actionInfo.actionType = XR_ACTION_TYPE_POSE_INPUT;
+                strcpy_s(actionInfo.actionName, "hand_pose");
+                strcpy_s(actionInfo.localizedActionName, "Hand Pose");
+                actionInfo.countSubactionPaths = (uint32_t)m_subactionPaths.size();
+                actionInfo.subactionPaths = m_subactionPaths.data();
+                CHECK_XRCMD(xrCreateAction(m_actionSet.Get(), &actionInfo, m_poseAction.Put()));
+
+                // Create output actions for vibrating the left and right controller.
+                actionInfo.actionType = XR_ACTION_TYPE_VIBRATION_OUTPUT;
+                strcpy_s(actionInfo.actionName, "vibrate");
+                strcpy_s(actionInfo.localizedActionName, "Vibrate");
+                actionInfo.countSubactionPaths = (uint32_t)m_subactionPaths.size();
+                actionInfo.subactionPaths = m_subactionPaths.data();
+                CHECK_XRCMD(xrCreateAction(m_actionSet.Get(), &actionInfo, m_vibrateAction.Put()));
+            }
+
+            // Setup suggest bindings for simple controller.
+            {
+                std::vector<XrActionSuggestedBinding> bindings;
+                bindings.push_back({m_placeAction.Get(), GetXrPath("/user/hand/right/input/select/click")});
+                bindings.push_back({m_placeAction.Get(), GetXrPath("/user/hand/left/input/select/click")});
+                bindings.push_back({m_poseAction.Get(), GetXrPath("/user/hand/right/input/grip/pose")});
+                bindings.push_back({m_poseAction.Get(), GetXrPath("/user/hand/left/input/grip/pose")});
+                bindings.push_back({m_vibrateAction.Get(), GetXrPath("/user/hand/right/output/haptic")});
+                bindings.push_back({m_vibrateAction.Get(), GetXrPath("/user/hand/left/output/haptic")});
+
+                XrInteractionProfileSuggestedBinding suggestedBindings{XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+                suggestedBindings.interactionProfile = GetXrPath("/interaction_profiles/khr/simple_controller");
+                suggestedBindings.suggestedBindings = bindings.data();
+                suggestedBindings.countSuggestedBindings = (uint32_t)bindings.size();
+                CHECK_XRCMD(xrSuggestInteractionProfileBindings(m_instance.Get(), &suggestedBindings));
+            }
         }
 
         void InitializeSystem() {
@@ -117,8 +179,9 @@ namespace {
                 if (SUCCEEDED(result)) {
                     break;
                 } else if (result == XR_ERROR_FORM_FACTOR_UNAVAILABLE) {
+                    DEBUG_PRINT("No headset detected.  Trying again in one second...");
                     using namespace std::chrono_literals;
-                    std::this_thread::sleep_for(250ms);
+                    std::this_thread::sleep_for(1s);
                 } else {
                     CHECK_XRRESULT(result, "xrGetSystem");
                 }
@@ -131,18 +194,16 @@ namespace {
             CHECK(m_instance.Get() != XR_NULL_HANDLE);
             CHECK(m_systemId != XR_NULL_SYSTEM_ID);
 
-            // Fetch the list of supported environment blend mode of give system
+            // Fetch the list of supported environment blend modes for the current system
             uint32_t count;
-            CHECK_XRCMD(xrEnumerateEnvironmentBlendModes(m_instance.Get(), m_systemId, 0, &count, nullptr));
+            CHECK_XRCMD(xrEnumerateEnvironmentBlendModes(m_instance.Get(), m_systemId, m_primaryViewConfigurationType, 0, &count, nullptr));
+            CHECK(count > 0); // A system must support at least one environment blend mode.
+
             std::vector<XrEnvironmentBlendMode> environmentBlendModes(count);
-            CHECK_XRCMD(xrEnumerateEnvironmentBlendModes(m_instance.Get(), m_systemId, count, &count, environmentBlendModes.data()));
+            CHECK_XRCMD(xrEnumerateEnvironmentBlendModes(
+                m_instance.Get(), m_systemId, m_primaryViewConfigurationType, count, &count, environmentBlendModes.data()));
 
-            auto it = std::find_if(environmentBlendModes.begin(), environmentBlendModes.end(), [](auto&& blendMode) {
-                return blendMode == XR_ENVIRONMENT_BLEND_MODE_ADDITIVE || blendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
-            });
-
-            CHECK(it != environmentBlendModes.end()); // This system does not have a supported blend mode.
-            return *it;
+            return environmentBlendModes[0]; // This sample app supports all modes, pick the system's preferred one.
         }
 
         void InitializeSession() {
@@ -157,71 +218,14 @@ namespace {
             createInfo.systemId = m_systemId;
             CHECK_XRCMD(xrCreateSession(m_instance.Get(), &createInfo, m_session.Put()));
 
-            CreateActions();
+            XrSessionActionSetsAttachInfo attachInfo{XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
+            std::vector<XrActionSet> actionSets = {m_actionSet.Get()};
+            attachInfo.countActionSets = (uint32_t)actionSets.size();
+            attachInfo.actionSets = actionSets.data();
+            CHECK_XRCMD(xrAttachSessionActionSets(m_session.Get(), &attachInfo));
+
             CreateSpaces();
             CreateSwapchains();
-        }
-
-        void CreateActions() {
-            CHECK(m_instance.Get() != XR_NULL_HANDLE);
-            CHECK(m_session.Get() != XR_NULL_HANDLE);
-
-            // Create an action set.
-            {
-                XrActionSetCreateInfo actionSetInfo{XR_TYPE_ACTION_SET_CREATE_INFO};
-                strcpy_s(actionSetInfo.actionSetName, "place_hologram_action_set");
-                strcpy_s(actionSetInfo.localizedActionSetName, "Placement");
-                CHECK_XRCMD(xrCreateActionSet(m_session.Get(), &actionSetInfo, m_actionSet.Put()));
-            }
-
-            // Create actions.
-            {
-                // Enable subaction path filtering for left or right hand.
-                m_subactionPaths[LeftSide] = GetXrPath("/user/hand/left");
-                m_subactionPaths[RightSide] = GetXrPath("/user/hand/right");
-
-                // Create an input action to place a hologram.
-                XrActionCreateInfo actionInfo{XR_TYPE_ACTION_CREATE_INFO};
-                actionInfo.actionType = XR_INPUT_ACTION_TYPE_BOOLEAN;
-                strcpy_s(actionInfo.actionName, "place_hologram");
-                strcpy_s(actionInfo.localizedActionName, "Place Hologram");
-                actionInfo.countSubactionPaths = (uint32_t)m_subactionPaths.size();
-                actionInfo.subactionPaths = m_subactionPaths.data();
-                CHECK_XRCMD(xrCreateAction(m_actionSet.Get(), &actionInfo, m_placeAction.Put()));
-
-                // Create an input action getting the left and right hand poses.
-                actionInfo.actionType = XR_INPUT_ACTION_TYPE_POSE;
-                strcpy_s(actionInfo.actionName, "hand_pose");
-                strcpy_s(actionInfo.localizedActionName, "Hand Pose");
-                actionInfo.countSubactionPaths = (uint32_t)m_subactionPaths.size();
-                actionInfo.subactionPaths = m_subactionPaths.data();
-                CHECK_XRCMD(xrCreateAction(m_actionSet.Get(), &actionInfo, m_poseAction.Put()));
-
-                // Create output actions for vibrating the left and right controller.
-                actionInfo.actionType = XR_OUTPUT_ACTION_TYPE_VIBRATION;
-                strcpy_s(actionInfo.actionName, "vibrate");
-                strcpy_s(actionInfo.localizedActionName, "Vibrate");
-                actionInfo.countSubactionPaths = (uint32_t)m_subactionPaths.size();
-                actionInfo.subactionPaths = m_subactionPaths.data();
-                CHECK_XRCMD(xrCreateAction(m_actionSet.Get(), &actionInfo, m_vibrateAction.Put()));
-            }
-
-            // Setup suggest bindings for simple controller.
-            {
-                std::vector<XrActionSuggestedBinding> bindings;
-                bindings.push_back({m_placeAction.Get(), GetXrPath("/user/hand/right/input/select/click")});
-                bindings.push_back({m_placeAction.Get(), GetXrPath("/user/hand/left/input/select/click")});
-                bindings.push_back({m_poseAction.Get(), GetXrPath("/user/hand/right/input/palm/pose")});
-                bindings.push_back({m_poseAction.Get(), GetXrPath("/user/hand/left/input/palm/pose")});
-                bindings.push_back({m_vibrateAction.Get(), GetXrPath("/user/hand/right/output/haptic")});
-                bindings.push_back({m_vibrateAction.Get(), GetXrPath("/user/hand/left/output/haptic")});
-
-                XrInteractionProfileSuggestedBinding suggestedBindings{XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
-                suggestedBindings.interactionProfile = GetXrPath("/interaction_profiles/khr/simple_controller");
-                suggestedBindings.suggestedBindings = bindings.data();
-                suggestedBindings.countSuggestedBindings = (uint32_t)bindings.size();
-                CHECK_XRCMD(xrSetInteractionProfileSuggestedBindings(m_session.Get(), &suggestedBindings));
-            }
         }
 
         void CreateSpaces() {
@@ -229,11 +233,11 @@ namespace {
 
             // Create a space to place a cube in the world.
             {
-                XrReferenceSpaceType referenceSpaceType;
+                XrReferenceSpaceType referenceSpaceType{};
 
                 if (m_optionalExtensions.UnboundedRefSpaceSupported) {
                     // Unbounded reference space provides the best scene space for world-scale experiences.
-                    referenceSpaceType = XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT;
+                    // coming soon ... referenceSpaceType = XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT;
                 } else {
                     // If running on a platform that does not support world-scale experiences, fall back to local space.
                     referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
@@ -254,9 +258,10 @@ namespace {
             // Create a space for each hand pointer pose.
             for (uint32_t side : {LeftSide, RightSide}) {
                 XrActionSpaceCreateInfo createInfo{XR_TYPE_ACTION_SPACE_CREATE_INFO};
+                createInfo.action = m_poseAction.Get();
                 createInfo.poseInActionSpace = Pose::Identity();
                 createInfo.subactionPath = m_subactionPaths[side];
-                CHECK_XRCMD(xrCreateActionSpace(m_poseAction.Get(), &createInfo, m_spacesInHand[side].Put()));
+                CHECK_XRCMD(xrCreateActionSpace(m_session.Get(), &createInfo, m_spacesInHand[side].Put()));
                 m_cubesInHand[side].Space = m_spacesInHand[side].Get();
                 m_cubesInHand[side].Scale = {0.1f, 0.1f, 0.1f}; // Display a small cube at hand tracking pose.
             }
@@ -404,58 +409,58 @@ namespace {
             }
 
             // Get updated action states.
-            XrActiveActionSet activeActionSet{XR_TYPE_ACTIVE_ACTION_SET};
-            activeActionSet.actionSet = m_actionSet.Get();
-            CHECK_XRCMD(xrSyncActionData(m_session.Get(), 1, &activeActionSet));
+            std::vector<XrActiveActionSet> activeActionSets = {{m_actionSet.Get(), XR_NULL_PATH}};
+            XrActionsSyncInfo syncInfo{XR_TYPE_ACTIONS_SYNC_INFO};
+            syncInfo.countActiveActionSets = (uint32_t)activeActionSets.size();
+            syncInfo.activeActionSets = activeActionSets.data();
+            CHECK_XRCMD(xrSyncActions(m_session.Get(), &syncInfo));
 
             // Check the state of the actions for left and right hands separately.
             for (uint32_t side : {LeftSide, RightSide}) {
                 const XrPath subactionPath = m_subactionPaths[side];
 
                 XrActionStateBoolean placeActionValue{XR_TYPE_ACTION_STATE_BOOLEAN};
-                CHECK_XRCMD(xrGetActionStateBoolean(m_placeAction.Get(), 1, &subactionPath, &placeActionValue));
+                {
+                    XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
+                    getInfo.action = m_placeAction.Get();
+                    getInfo.subactionPath = subactionPath;
+                    CHECK_XRCMD(xrGetActionStateBoolean(m_session.Get(), &getInfo, &placeActionValue));
+                }
 
                 if (placeActionValue.changedSinceLastSync && placeActionValue.currentState) {
                     // Apply a tiny vibration to controller to indicate that action is detected.
                     {
+                        XrHapticActionInfo actionInfo{XR_TYPE_HAPTIC_ACTION_INFO};
+                        actionInfo.action = m_vibrateAction.Get();
+                        actionInfo.subactionPath = subactionPath;
+
                         XrHapticVibration vibration{XR_TYPE_HAPTIC_VIBRATION};
                         vibration.amplitude = 0.5f;
                         vibration.duration = XR_MIN_HAPTIC_DURATION;
                         vibration.frequency = XR_FREQUENCY_UNSPECIFIED;
-                        CHECK_XRCMD(xrApplyHapticFeedback(m_vibrateAction.Get(), 1, &subactionPath, (XrHapticBaseHeader*)&vibration));
+                        CHECK_XRCMD(xrApplyHapticFeedback(m_session.Get(), &actionInfo, (XrHapticBaseHeader*)&vibration));
                     }
 
                     // Locate the hand in the scene.
-                    const XrSpace handSpace = m_spacesInHand[side].Get();
-                    XrSpaceRelation spaceRelation{XR_TYPE_SPACE_RELATION};
-                    CHECK_XRCMD(xrLocateSpace(handSpace, m_sceneSpace.Get(), placeActionValue.lastChangeTime, &spaceRelation));
+                    XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
+                    {
+                        const XrSpace handSpace = m_spacesInHand[side].Get();
+                        CHECK_XRCMD(xrLocateSpace(handSpace, m_sceneSpace.Get(), placeActionValue.lastChangeTime, &spaceLocation));
+                    }
 
                     // Ensure we have tracking before placing a cube in the scene, so that it stays reliably at a physical location.
-                    constexpr XrSpaceRelationFlags PoseValidFlags =
-                        XR_SPACE_RELATION_POSITION_TRACKED_BIT | XR_SPACE_RELATION_ORIENTATION_TRACKED_BIT;
-                    if ((spaceRelation.relationFlags & PoseValidFlags) != PoseValidFlags) {
+                    if (!xr::math::Pose::IsPoseValid(spaceLocation)) {
                         DEBUG_PRINT("Cube cannot be placed when positional tracking is lost.");
                     } else {
                         if (m_optionalExtensions.SpatialAnchorSupported) {
                             // Anchors provide the best stability when moving beyond 5 meters, so if the extension is enabled,
                             // create an anchor at the hand location and use the resulting anchor space.
-                            XrSpatialAnchorCreateInfoMSFT createInfo{XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT};
-                            createInfo.space = m_sceneSpace.Get();
-                            createInfo.pose = spaceRelation.pose;
-                            createInfo.time = placeActionValue.lastChangeTime;
-                            XrSpatialAnchorHandle spatialAnchor;
-                            XrResult r = xrCreateSpatialAnchorMSFT(m_session.Get(), &createInfo, spatialAnchor.Put());
-                            if (XR_SUCCEEDED(r)) {
-                                CHECK_XRCMD(xrCreateSpatialAnchorSpaceMSFT(m_session.Get(), spatialAnchor.Get(), m_placedCubeSpace.Put()));
-                                m_spatialAnchor = std::move(spatialAnchor);
-                            } else if (r != XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT) {
-                                CHECK_XRRESULT(r, "xrCreateSpatialAnchorSpaceMSFT");
-                            }
+                            // coming soon ...
                         } else {
                             // If the anchor extension is not available, create a local space with an origin at the hand location.
                             XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
                             createInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
-                            createInfo.poseInReferenceSpace = spaceRelation.pose;
+                            createInfo.poseInReferenceSpace = spaceLocation.pose;
                             CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &createInfo, m_placedCubeSpace.Put()));
                         }
 
@@ -507,6 +512,7 @@ namespace {
             uint32_t viewCountOutput;
 
             XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
+            viewLocateInfo.viewConfigurationType = m_primaryViewConfigurationType;
             viewLocateInfo.displayTime = predictedDisplayTime;
             viewLocateInfo.space = m_sceneSpace.Get();
             CHECK_XRCMD(xrLocateViews(m_session.Get(), &viewLocateInfo, &viewState, viewCapacityInput, &viewCountOutput, m_views.data()));
@@ -514,8 +520,7 @@ namespace {
             CHECK(viewCountOutput == m_configViews.size());
             CHECK(viewCountOutput == m_swapchains.size());
 
-            constexpr XrViewStateFlags viewPoseValidFlags = XR_VIEW_STATE_POSITION_VALID_BIT | XR_VIEW_STATE_ORIENTATION_VALID_BIT;
-            if ((viewState.viewStateFlags & viewPoseValidFlags) != viewPoseValidFlags) {
+            if (!xr::math::Pose::IsPoseValid(viewState)) {
                 DEBUG_PRINT("xrLocateViews returned an invalid pose.");
                 return false;
             }
@@ -525,13 +530,11 @@ namespace {
             // Update cubes location with latest space relation
             for (auto cube : {m_placedCube, m_cubesInHand[LeftSide], m_cubesInHand[RightSide]}) {
                 if (cube.Space != XR_NULL_HANDLE) {
-                    XrSpaceRelation spaceRelation{XR_TYPE_SPACE_RELATION};
-                    CHECK_XRCMD(xrLocateSpace(cube.Space, m_sceneSpace.Get(), predictedDisplayTime, &spaceRelation));
+                    XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
+                    CHECK_XRCMD(xrLocateSpace(cube.Space, m_sceneSpace.Get(), predictedDisplayTime, &spaceLocation));
 
-                    constexpr XrViewStateFlags poseValidFlags =
-                        XR_SPACE_RELATION_POSITION_VALID_BIT | XR_SPACE_RELATION_ORIENTATION_VALID_BIT;
-                    if ((spaceRelation.relationFlags & poseValidFlags) == poseValidFlags) {
-                        cube.Pose = spaceRelation.pose;
+                    if (xr::math::Pose::IsPoseValid(spaceLocation)) {
+                        cube.Pose = spaceLocation.pose;
                         visibleCubes.push_back(cube);
                     }
                 }
@@ -612,7 +615,6 @@ namespace {
 
         XrSpaceHandle m_sceneSpace;
 
-        XrSpatialAnchorHandle m_spatialAnchor;
         XrSpaceHandle m_placedCubeSpace;
         Cube m_placedCube; // Placed in local or anchor space.
 

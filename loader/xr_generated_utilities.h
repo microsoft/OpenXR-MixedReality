@@ -21,8 +21,9 @@
 // Author: Mark Young <marky@lunarg.com>
 //
 
-#ifndef XR_GENERATED_UTILITIES_HEADER_FILE
-#define XR_GENERATED_UTILITIES_HEADER_FILE
+#pragma once
+
+#include <openxr/openxr.h>
 
 
 #ifdef __cplusplus
@@ -39,5 +40,4 @@ XrResult GeneratedXrUtilitiesStructureTypeToString(XrStructureType struct_type,
 
 // Current API version of the utililties
 #define XR_UTILITIES_API_VERSION XR_CURRENT_API_VERSION
-#endif // XR_GENERATED_UTILITIES_HEADER_FILE
 

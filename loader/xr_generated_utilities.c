@@ -26,14 +26,12 @@
 #define  _CRT_SECURE_NO_WARNINGS 1
 #endif // _WIN32
 
+#include "xr_generated_utilities.h"
+
+#include <openxr/openxr.h>
+
 #include <stdio.h>
 #include <string.h>
-
-#include "xr_dependencies.h"
-#include <openxr/openxr.h>
-#include <openxr/openxr_platform.h>
-
-#include "xr_generated_utilities.h"
 
 
 #ifdef __cplusplus
@@ -42,6 +40,9 @@ extern "C" {
 
 XrResult GeneratedXrUtilitiesResultToString(XrResult result,
                                             char buffer[XR_MAX_RESULT_STRING_SIZE]) {
+    if (NULL == buffer) {
+        return XR_ERROR_VALIDATION_FAILURE;
+    }
     XrResult int_result = XR_SUCCESS;
     switch (result) {
         case XR_SUCCESS:
@@ -50,20 +51,11 @@ XrResult GeneratedXrUtilitiesResultToString(XrResult result,
         case XR_TIMEOUT_EXPIRED:
             strncpy(buffer, "XR_TIMEOUT_EXPIRED", XR_MAX_RESULT_STRING_SIZE);
             break;
-        case XR_SESSION_VISIBILITY_UNAVAILABLE:
-            strncpy(buffer, "XR_SESSION_VISIBILITY_UNAVAILABLE", XR_MAX_RESULT_STRING_SIZE);
-            break;
         case XR_SESSION_LOSS_PENDING:
             strncpy(buffer, "XR_SESSION_LOSS_PENDING", XR_MAX_RESULT_STRING_SIZE);
             break;
         case XR_EVENT_UNAVAILABLE:
             strncpy(buffer, "XR_EVENT_UNAVAILABLE", XR_MAX_RESULT_STRING_SIZE);
-            break;
-        case XR_STATE_UNAVAILABLE:
-            strncpy(buffer, "XR_STATE_UNAVAILABLE", XR_MAX_RESULT_STRING_SIZE);
-            break;
-        case XR_STATE_TYPE_UNAVAILABLE:
-            strncpy(buffer, "XR_STATE_TYPE_UNAVAILABLE", XR_MAX_RESULT_STRING_SIZE);
             break;
         case XR_SPACE_BOUNDS_UNAVAILABLE:
             strncpy(buffer, "XR_SPACE_BOUNDS_UNAVAILABLE", XR_MAX_RESULT_STRING_SIZE);
@@ -83,11 +75,8 @@ XrResult GeneratedXrUtilitiesResultToString(XrResult result,
         case XR_ERROR_OUT_OF_MEMORY:
             strncpy(buffer, "XR_ERROR_OUT_OF_MEMORY", XR_MAX_RESULT_STRING_SIZE);
             break;
-        case XR_ERROR_RUNTIME_VERSION_INCOMPATIBLE:
-            strncpy(buffer, "XR_ERROR_RUNTIME_VERSION_INCOMPATIBLE", XR_MAX_RESULT_STRING_SIZE);
-            break;
-        case XR_ERROR_DRIVER_INCOMPATIBLE:
-            strncpy(buffer, "XR_ERROR_DRIVER_INCOMPATIBLE", XR_MAX_RESULT_STRING_SIZE);
+        case XR_ERROR_API_VERSION_UNSUPPORTED:
+            strncpy(buffer, "XR_ERROR_API_VERSION_UNSUPPORTED", XR_MAX_RESULT_STRING_SIZE);
             break;
         case XR_ERROR_INITIALIZATION_FAILED:
             strncpy(buffer, "XR_ERROR_INITIALIZATION_FAILED", XR_MAX_RESULT_STRING_SIZE);
@@ -134,6 +123,9 @@ XrResult GeneratedXrUtilitiesResultToString(XrResult result,
         case XR_ERROR_PATH_FORMAT_INVALID:
             strncpy(buffer, "XR_ERROR_PATH_FORMAT_INVALID", XR_MAX_RESULT_STRING_SIZE);
             break;
+        case XR_ERROR_PATH_UNSUPPORTED:
+            strncpy(buffer, "XR_ERROR_PATH_UNSUPPORTED", XR_MAX_RESULT_STRING_SIZE);
+            break;
         case XR_ERROR_LAYER_INVALID:
             strncpy(buffer, "XR_ERROR_LAYER_INVALID", XR_MAX_RESULT_STRING_SIZE);
             break;
@@ -148,6 +140,15 @@ XrResult GeneratedXrUtilitiesResultToString(XrResult result,
             break;
         case XR_ERROR_ACTION_TYPE_MISMATCH:
             strncpy(buffer, "XR_ERROR_ACTION_TYPE_MISMATCH", XR_MAX_RESULT_STRING_SIZE);
+            break;
+        case XR_ERROR_SESSION_NOT_READY:
+            strncpy(buffer, "XR_ERROR_SESSION_NOT_READY", XR_MAX_RESULT_STRING_SIZE);
+            break;
+        case XR_ERROR_SESSION_NOT_STOPPING:
+            strncpy(buffer, "XR_ERROR_SESSION_NOT_STOPPING", XR_MAX_RESULT_STRING_SIZE);
+            break;
+        case XR_ERROR_TIME_INVALID:
+            strncpy(buffer, "XR_ERROR_TIME_INVALID", XR_MAX_RESULT_STRING_SIZE);
             break;
         case XR_ERROR_REFERENCE_SPACE_UNSUPPORTED:
             strncpy(buffer, "XR_ERROR_REFERENCE_SPACE_UNSUPPORTED", XR_MAX_RESULT_STRING_SIZE);
@@ -185,14 +186,23 @@ XrResult GeneratedXrUtilitiesResultToString(XrResult result,
         case XR_ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED:
             strncpy(buffer, "XR_ERROR_ENVIRONMENT_BLEND_MODE_UNSUPPORTED", XR_MAX_RESULT_STRING_SIZE);
             break;
-        case XR_ERROR_BINDINGS_DUPLICATED:
-            strncpy(buffer, "XR_ERROR_BINDINGS_DUPLICATED", XR_MAX_RESULT_STRING_SIZE);
-            break;
         case XR_ERROR_NAME_DUPLICATED:
             strncpy(buffer, "XR_ERROR_NAME_DUPLICATED", XR_MAX_RESULT_STRING_SIZE);
             break;
         case XR_ERROR_NAME_INVALID:
             strncpy(buffer, "XR_ERROR_NAME_INVALID", XR_MAX_RESULT_STRING_SIZE);
+            break;
+        case XR_ERROR_ACTIONSET_NOT_ATTACHED:
+            strncpy(buffer, "XR_ERROR_ACTIONSET_NOT_ATTACHED", XR_MAX_RESULT_STRING_SIZE);
+            break;
+        case XR_ERROR_ACTIONSETS_ALREADY_ATTACHED:
+            strncpy(buffer, "XR_ERROR_ACTIONSETS_ALREADY_ATTACHED", XR_MAX_RESULT_STRING_SIZE);
+            break;
+        case XR_ERROR_LOCALIZED_NAME_DUPLICATED:
+            strncpy(buffer, "XR_ERROR_LOCALIZED_NAME_DUPLICATED", XR_MAX_RESULT_STRING_SIZE);
+            break;
+        case XR_ERROR_LOCALIZED_NAME_INVALID:
+            strncpy(buffer, "XR_ERROR_LOCALIZED_NAME_INVALID", XR_MAX_RESULT_STRING_SIZE);
             break;
         case XR_ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR:
             strncpy(buffer, "XR_ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR", XR_MAX_RESULT_STRING_SIZE);
@@ -200,20 +210,13 @@ XrResult GeneratedXrUtilitiesResultToString(XrResult result,
         case XR_ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR:
             strncpy(buffer, "XR_ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR", XR_MAX_RESULT_STRING_SIZE);
             break;
-        case XR_ERROR_DEBUG_UTILS_MESSENGER_INVALID_EXT:
-            strncpy(buffer, "XR_ERROR_DEBUG_UTILS_MESSENGER_INVALID_EXT", XR_MAX_RESULT_STRING_SIZE);
-            break;
-        case XR_ERROR_CONTROLLER_RENDER_MODEL_UNAVAILABLE_MSFT:
-            strncpy(buffer, "XR_ERROR_CONTROLLER_RENDER_MODEL_UNAVAILABLE_MSFT", XR_MAX_RESULT_STRING_SIZE);
-            break;
-        case XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT:
-            strncpy(buffer, "XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT", XR_MAX_RESULT_STRING_SIZE);
-            break;
-        case XR_ERROR_STORE_SPATIAL_ANCHOR_FAILED_MSFT:
-            strncpy(buffer, "XR_ERROR_STORE_SPATIAL_ANCHOR_FAILED_MSFT", XR_MAX_RESULT_STRING_SIZE);
-            break;
         default:
             // Unknown result type
+            if (XR_SUCCEEDED(result)) {
+                snprintf(buffer, XR_MAX_RESULT_STRING_SIZE, "XR_UNKNOWN_SUCCESS_%d", result);
+            } else {
+                snprintf(buffer, XR_MAX_RESULT_STRING_SIZE, "XR_UNKNOWN_FAILURE_%d", result);
+            }
             int_result = XR_ERROR_VALIDATION_FAILURE;
             break;
     }
@@ -222,6 +225,9 @@ XrResult GeneratedXrUtilitiesResultToString(XrResult result,
 
 XrResult GeneratedXrUtilitiesStructureTypeToString(XrStructureType struct_type,
                                             char buffer[XR_MAX_STRUCTURE_NAME_SIZE]) {
+    if (NULL == buffer) {
+        return XR_ERROR_VALIDATION_FAILURE;
+    }
     XrResult int_result = XR_SUCCESS;
     switch (struct_type) {
         case XR_TYPE_UNKNOWN:
@@ -278,8 +284,8 @@ XrResult GeneratedXrUtilitiesStructureTypeToString(XrStructureType struct_type,
         case XR_TYPE_ACTION_STATE_BOOLEAN:
             strncpy(buffer, "XR_TYPE_ACTION_STATE_BOOLEAN", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
-        case XR_TYPE_ACTION_STATE_VECTOR1F:
-            strncpy(buffer, "XR_TYPE_ACTION_STATE_VECTOR1F", XR_MAX_STRUCTURE_NAME_SIZE);
+        case XR_TYPE_ACTION_STATE_FLOAT:
+            strncpy(buffer, "XR_TYPE_ACTION_STATE_FLOAT", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
         case XR_TYPE_ACTION_STATE_VECTOR2F:
             strncpy(buffer, "XR_TYPE_ACTION_STATE_VECTOR2F", XR_MAX_STRUCTURE_NAME_SIZE);
@@ -311,14 +317,17 @@ XrResult GeneratedXrUtilitiesStructureTypeToString(XrStructureType struct_type,
         case XR_TYPE_ACTION_SPACE_CREATE_INFO:
             strncpy(buffer, "XR_TYPE_ACTION_SPACE_CREATE_INFO", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
-        case XR_TYPE_SPACE_RELATION:
-            strncpy(buffer, "XR_TYPE_SPACE_RELATION", XR_MAX_STRUCTURE_NAME_SIZE);
-            break;
         case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
             strncpy(buffer, "XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
         case XR_TYPE_VIEW_CONFIGURATION_VIEW:
             strncpy(buffer, "XR_TYPE_VIEW_CONFIGURATION_VIEW", XR_MAX_STRUCTURE_NAME_SIZE);
+            break;
+        case XR_TYPE_SPACE_LOCATION:
+            strncpy(buffer, "XR_TYPE_SPACE_LOCATION", XR_MAX_STRUCTURE_NAME_SIZE);
+            break;
+        case XR_TYPE_SPACE_VELOCITY:
+            strncpy(buffer, "XR_TYPE_SPACE_VELOCITY", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
         case XR_TYPE_FRAME_STATE:
             strncpy(buffer, "XR_TYPE_FRAME_STATE", XR_MAX_STRUCTURE_NAME_SIZE);
@@ -341,11 +350,8 @@ XrResult GeneratedXrUtilitiesStructureTypeToString(XrStructureType struct_type,
         case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED:
             strncpy(buffer, "XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
-        case XR_TYPE_INTERACTION_PROFILE_INFO:
-            strncpy(buffer, "XR_TYPE_INTERACTION_PROFILE_INFO", XR_MAX_STRUCTURE_NAME_SIZE);
-            break;
-        case XR_TYPE_ACTIVE_ACTION_SET:
-            strncpy(buffer, "XR_TYPE_ACTIVE_ACTION_SET", XR_MAX_STRUCTURE_NAME_SIZE);
+        case XR_TYPE_INTERACTION_PROFILE_STATE:
+            strncpy(buffer, "XR_TYPE_INTERACTION_PROFILE_STATE", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
         case XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO:
             strncpy(buffer, "XR_TYPE_SWAPCHAIN_IMAGE_ACQUIRE_INFO", XR_MAX_STRUCTURE_NAME_SIZE);
@@ -355,6 +361,24 @@ XrResult GeneratedXrUtilitiesStructureTypeToString(XrStructureType struct_type,
             break;
         case XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO:
             strncpy(buffer, "XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO", XR_MAX_STRUCTURE_NAME_SIZE);
+            break;
+        case XR_TYPE_ACTION_STATE_GET_INFO:
+            strncpy(buffer, "XR_TYPE_ACTION_STATE_GET_INFO", XR_MAX_STRUCTURE_NAME_SIZE);
+            break;
+        case XR_TYPE_HAPTIC_ACTION_INFO:
+            strncpy(buffer, "XR_TYPE_HAPTIC_ACTION_INFO", XR_MAX_STRUCTURE_NAME_SIZE);
+            break;
+        case XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO:
+            strncpy(buffer, "XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO", XR_MAX_STRUCTURE_NAME_SIZE);
+            break;
+        case XR_TYPE_ACTIONS_SYNC_INFO:
+            strncpy(buffer, "XR_TYPE_ACTIONS_SYNC_INFO", XR_MAX_STRUCTURE_NAME_SIZE);
+            break;
+        case XR_TYPE_BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO:
+            strncpy(buffer, "XR_TYPE_BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO", XR_MAX_STRUCTURE_NAME_SIZE);
+            break;
+        case XR_TYPE_INPUT_SOURCE_LOCALIZED_NAME_GET_INFO:
+            strncpy(buffer, "XR_TYPE_INPUT_SOURCE_LOCALIZED_NAME_GET_INFO", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
         case XR_TYPE_COMPOSITION_LAYER_CUBE_KHR:
             strncpy(buffer, "XR_TYPE_COMPOSITION_LAYER_CUBE_KHR", XR_MAX_STRUCTURE_NAME_SIZE);
@@ -425,15 +449,6 @@ XrResult GeneratedXrUtilitiesStructureTypeToString(XrStructureType struct_type,
         case XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN_KHR:
             strncpy(buffer, "XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN_KHR", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
-        case XR_TYPE_GRAPHICS_BINDING_D3D10_KHR:
-            strncpy(buffer, "XR_TYPE_GRAPHICS_BINDING_D3D10_KHR", XR_MAX_STRUCTURE_NAME_SIZE);
-            break;
-        case XR_TYPE_SWAPCHAIN_IMAGE_D3D10_KHR:
-            strncpy(buffer, "XR_TYPE_SWAPCHAIN_IMAGE_D3D10_KHR", XR_MAX_STRUCTURE_NAME_SIZE);
-            break;
-        case XR_TYPE_GRAPHICS_REQUIREMENTS_D3D10_KHR:
-            strncpy(buffer, "XR_TYPE_GRAPHICS_REQUIREMENTS_D3D10_KHR", XR_MAX_STRUCTURE_NAME_SIZE);
-            break;
         case XR_TYPE_GRAPHICS_BINDING_D3D11_KHR:
             strncpy(buffer, "XR_TYPE_GRAPHICS_BINDING_D3D11_KHR", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
@@ -458,17 +473,9 @@ XrResult GeneratedXrUtilitiesStructureTypeToString(XrStructureType struct_type,
         case XR_TYPE_EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR:
             strncpy(buffer, "XR_TYPE_EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR", XR_MAX_STRUCTURE_NAME_SIZE);
             break;
-        case XR_TYPE_SPATIAL_COORDINATE_SYSTEM_SPACE_CREATE_INFO_MSFT:
-            strncpy(buffer, "XR_TYPE_SPATIAL_COORDINATE_SYSTEM_SPACE_CREATE_INFO_MSFT", XR_MAX_STRUCTURE_NAME_SIZE);
-            break;
-        case XR_TYPE_ACTION_STATE_POSE_CONTROLLER_RENDER_MODEL_MSFT:
-            strncpy(buffer, "XR_TYPE_ACTION_STATE_POSE_CONTROLLER_RENDER_MODEL_MSFT", XR_MAX_STRUCTURE_NAME_SIZE);
-            break;
-        case XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT:
-            strncpy(buffer, "XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT", XR_MAX_STRUCTURE_NAME_SIZE);
-            break;
         default:
-            // Unknown result type
+            // Unknown structure type
+            snprintf(buffer, XR_MAX_STRUCTURE_NAME_SIZE, "XR_UNKNOWN_STRUCTURE_TYPE_%d", struct_type);
             int_result = XR_ERROR_VALIDATION_FAILURE;
             break;
     }

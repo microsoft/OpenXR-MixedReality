@@ -35,7 +35,7 @@ void GeneratedXrPopulateDispatchTable(struct XrGeneratedDispatchTable *table,
                                       XrInstance instance,
                                       PFN_xrGetInstanceProcAddr get_inst_proc_addr) {
 
-    // ---- Core 0.90 commands
+    // ---- Core 1.0 commands
     table->GetInstanceProcAddr = get_inst_proc_addr;
     (get_inst_proc_addr(instance, "xrCreateInstance", (PFN_xrVoidFunction*)&table->CreateInstance));
     (get_inst_proc_addr(instance, "xrDestroyInstance", (PFN_xrVoidFunction*)&table->DestroyInstance));
@@ -66,6 +66,7 @@ void GeneratedXrPopulateDispatchTable(struct XrGeneratedDispatchTable *table,
     (get_inst_proc_addr(instance, "xrReleaseSwapchainImage", (PFN_xrVoidFunction*)&table->ReleaseSwapchainImage));
     (get_inst_proc_addr(instance, "xrBeginSession", (PFN_xrVoidFunction*)&table->BeginSession));
     (get_inst_proc_addr(instance, "xrEndSession", (PFN_xrVoidFunction*)&table->EndSession));
+    (get_inst_proc_addr(instance, "xrRequestExitSession", (PFN_xrVoidFunction*)&table->RequestExitSession));
     (get_inst_proc_addr(instance, "xrWaitFrame", (PFN_xrVoidFunction*)&table->WaitFrame));
     (get_inst_proc_addr(instance, "xrBeginFrame", (PFN_xrVoidFunction*)&table->BeginFrame));
     (get_inst_proc_addr(instance, "xrEndFrame", (PFN_xrVoidFunction*)&table->EndFrame));
@@ -76,14 +77,15 @@ void GeneratedXrPopulateDispatchTable(struct XrGeneratedDispatchTable *table,
     (get_inst_proc_addr(instance, "xrDestroyActionSet", (PFN_xrVoidFunction*)&table->DestroyActionSet));
     (get_inst_proc_addr(instance, "xrCreateAction", (PFN_xrVoidFunction*)&table->CreateAction));
     (get_inst_proc_addr(instance, "xrDestroyAction", (PFN_xrVoidFunction*)&table->DestroyAction));
-    (get_inst_proc_addr(instance, "xrSetInteractionProfileSuggestedBindings", (PFN_xrVoidFunction*)&table->SetInteractionProfileSuggestedBindings));
+    (get_inst_proc_addr(instance, "xrSuggestInteractionProfileBindings", (PFN_xrVoidFunction*)&table->SuggestInteractionProfileBindings));
+    (get_inst_proc_addr(instance, "xrAttachSessionActionSets", (PFN_xrVoidFunction*)&table->AttachSessionActionSets));
     (get_inst_proc_addr(instance, "xrGetCurrentInteractionProfile", (PFN_xrVoidFunction*)&table->GetCurrentInteractionProfile));
     (get_inst_proc_addr(instance, "xrGetActionStateBoolean", (PFN_xrVoidFunction*)&table->GetActionStateBoolean));
-    (get_inst_proc_addr(instance, "xrGetActionStateVector1f", (PFN_xrVoidFunction*)&table->GetActionStateVector1f));
+    (get_inst_proc_addr(instance, "xrGetActionStateFloat", (PFN_xrVoidFunction*)&table->GetActionStateFloat));
     (get_inst_proc_addr(instance, "xrGetActionStateVector2f", (PFN_xrVoidFunction*)&table->GetActionStateVector2f));
     (get_inst_proc_addr(instance, "xrGetActionStatePose", (PFN_xrVoidFunction*)&table->GetActionStatePose));
-    (get_inst_proc_addr(instance, "xrSyncActionData", (PFN_xrVoidFunction*)&table->SyncActionData));
-    (get_inst_proc_addr(instance, "xrGetBoundSourcesForAction", (PFN_xrVoidFunction*)&table->GetBoundSourcesForAction));
+    (get_inst_proc_addr(instance, "xrSyncActions", (PFN_xrVoidFunction*)&table->SyncActions));
+    (get_inst_proc_addr(instance, "xrEnumerateBoundSourcesForAction", (PFN_xrVoidFunction*)&table->EnumerateBoundSourcesForAction));
     (get_inst_proc_addr(instance, "xrGetInputSourceLocalizedName", (PFN_xrVoidFunction*)&table->GetInputSourceLocalizedName));
     (get_inst_proc_addr(instance, "xrApplyHapticFeedback", (PFN_xrVoidFunction*)&table->ApplyHapticFeedback));
     (get_inst_proc_addr(instance, "xrStopHapticFeedback", (PFN_xrVoidFunction*)&table->StopHapticFeedback));
@@ -121,11 +123,6 @@ void GeneratedXrPopulateDispatchTable(struct XrGeneratedDispatchTable *table,
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
     (get_inst_proc_addr(instance, "xrGetVulkanGraphicsRequirementsKHR", (PFN_xrVoidFunction*)&table->GetVulkanGraphicsRequirementsKHR));
 #endif // defined(XR_USE_GRAPHICS_API_VULKAN)
-
-    // ---- XR_KHR_D3D10_enable extension commands
-#if defined(XR_USE_GRAPHICS_API_D3D10)
-    (get_inst_proc_addr(instance, "xrGetD3D10GraphicsRequirementsKHR", (PFN_xrVoidFunction*)&table->GetD3D10GraphicsRequirementsKHR));
-#endif // defined(XR_USE_GRAPHICS_API_D3D10)
 
     // ---- XR_KHR_D3D11_enable extension commands
 #if defined(XR_USE_GRAPHICS_API_D3D11)
@@ -170,25 +167,6 @@ void GeneratedXrPopulateDispatchTable(struct XrGeneratedDispatchTable *table,
     (get_inst_proc_addr(instance, "xrSessionBeginDebugUtilsLabelRegionEXT", (PFN_xrVoidFunction*)&table->SessionBeginDebugUtilsLabelRegionEXT));
     (get_inst_proc_addr(instance, "xrSessionEndDebugUtilsLabelRegionEXT", (PFN_xrVoidFunction*)&table->SessionEndDebugUtilsLabelRegionEXT));
     (get_inst_proc_addr(instance, "xrSessionInsertDebugUtilsLabelEXT", (PFN_xrVoidFunction*)&table->SessionInsertDebugUtilsLabelEXT));
-
-    // ---- XR_MSFT_spatial_perception_bridge extension commands
-#if defined(XR_USE_PLATFORM_WIN32)
-    (get_inst_proc_addr(instance, "xrCreateSpaceFromSpatialCoordinateSystemMSFT", (PFN_xrVoidFunction*)&table->CreateSpaceFromSpatialCoordinateSystemMSFT));
-#endif // defined(XR_USE_PLATFORM_WIN32)
-
-    // ---- XR_MSFT_controller_render_model extension commands
-    (get_inst_proc_addr(instance, "xrLoadControllerRenderModelMSFT", (PFN_xrVoidFunction*)&table->LoadControllerRenderModelMSFT));
-
-    // ---- XR_MSFT_spatial_anchor extension commands
-    (get_inst_proc_addr(instance, "xrCreateSpatialAnchorSpaceMSFT", (PFN_xrVoidFunction*)&table->CreateSpatialAnchorSpaceMSFT));
-    (get_inst_proc_addr(instance, "xrCreateSpatialAnchorMSFT", (PFN_xrVoidFunction*)&table->CreateSpatialAnchorMSFT));
-    (get_inst_proc_addr(instance, "xrDestroySpatialAnchorMSFT", (PFN_xrVoidFunction*)&table->DestroySpatialAnchorMSFT));
-
-    // ---- XR_MSFT_spatial_anchor_storage extension commands
-    (get_inst_proc_addr(instance, "xrStoreSpatialAnchorMSFT", (PFN_xrVoidFunction*)&table->StoreSpatialAnchorMSFT));
-    (get_inst_proc_addr(instance, "xrEnumerateStoredSpatialAnchorsMSFT", (PFN_xrVoidFunction*)&table->EnumerateStoredSpatialAnchorsMSFT));
-    (get_inst_proc_addr(instance, "xrCreateSpatialAnchorFromStoredAnchorNameMSFT", (PFN_xrVoidFunction*)&table->CreateSpatialAnchorFromStoredAnchorNameMSFT));
-    (get_inst_proc_addr(instance, "xrDeleteStoredSpatialAnchorMSFT", (PFN_xrVoidFunction*)&table->DeleteStoredSpatialAnchorMSFT));
 }
 
 #ifdef __cplusplus
