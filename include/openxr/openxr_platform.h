@@ -1,10 +1,6 @@
 #ifndef OPENXR_PLATFORM_H_
 #define OPENXR_PLATFORM_H_ 1
 
-#ifdef __cplusplus
-extern "C" {
-#endif
-
 /*
 ** Copyright (c) 2017-2019 The Khronos Group Inc.
 **
@@ -26,11 +22,17 @@ extern "C" {
 **
 */
 
+#include "openxr.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 #ifdef XR_USE_PLATFORM_ANDROID
 
 #define XR_KHR_android_thread_settings 1
-#define XR_KHR_android_thread_settings_SPEC_VERSION 4
+#define XR_KHR_android_thread_settings_SPEC_VERSION 5
 #define XR_KHR_ANDROID_THREAD_SETTINGS_EXTENSION_NAME "XR_KHR_android_thread_settings"
 
 typedef enum XrAndroidThreadTypeKHR {
@@ -69,7 +71,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateSwapchainAndroidSurfaceKHR(
 #ifdef XR_USE_PLATFORM_ANDROID
 
 #define XR_KHR_android_create_instance 1
-#define XR_KHR_android_create_instance_SPEC_VERSION 2
+#define XR_KHR_android_create_instance_SPEC_VERSION 3
 #define XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME "XR_KHR_android_create_instance"
 typedef struct XrInstanceCreateInfoAndroidKHR {
     XrStructureType             type;
@@ -83,7 +85,7 @@ typedef struct XrInstanceCreateInfoAndroidKHR {
 #ifdef XR_USE_GRAPHICS_API_VULKAN
 
 #define XR_KHR_vulkan_swapchain_format_list 1
-#define XR_KHR_vulkan_swapchain_format_list_SPEC_VERSION 1
+#define XR_KHR_vulkan_swapchain_format_list_SPEC_VERSION 2
 #define XR_KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME "XR_KHR_vulkan_swapchain_format_list"
 typedef struct XrVulkanSwapchainFormatListCreateInfoKHR {
     XrStructureType             type;
@@ -97,7 +99,7 @@ typedef struct XrVulkanSwapchainFormatListCreateInfoKHR {
 #ifdef XR_USE_GRAPHICS_API_OPENGL
 
 #define XR_KHR_opengl_enable 1
-#define XR_KHR_opengl_enable_SPEC_VERSION 1
+#define XR_KHR_opengl_enable_SPEC_VERSION 7
 #define XR_KHR_OPENGL_ENABLE_EXTENSION_NAME "XR_KHR_opengl_enable"
 #ifdef XR_USE_PLATFORM_WIN32
 typedef struct XrGraphicsBindingOpenGLWin32KHR {
@@ -125,7 +127,7 @@ typedef struct XrGraphicsBindingOpenGLXcbKHR {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
     xcb_connection_t*           connection;
-    uint32_t                    screen_number;
+    uint32_t                    screenNumber;
     xcb_glx_fbconfig_t          fbconfigid;
     xcb_visualid_t              visualid;
     xcb_glx_drawable_t          glxDrawable;
@@ -150,8 +152,8 @@ typedef struct XrSwapchainImageOpenGLKHR {
 typedef struct XrGraphicsRequirementsOpenGLKHR {
     XrStructureType       type;
     void* XR_MAY_ALIAS    next;
-    uint32_t              minApiVersionSupported;
-    uint32_t              maxApiVersionSupported;
+    XrVersion             minApiVersionSupported;
+    XrVersion             maxApiVersionSupported;
 } XrGraphicsRequirementsOpenGLKHR;
 
 typedef XrResult (XRAPI_PTR *PFN_xrGetOpenGLGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsOpenGLKHR* graphicsRequirements);
@@ -167,7 +169,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetOpenGLGraphicsRequirementsKHR(
 #ifdef XR_USE_GRAPHICS_API_OPENGL_ES
 
 #define XR_KHR_opengl_es_enable 1
-#define XR_KHR_opengl_es_enable_SPEC_VERSION 1
+#define XR_KHR_opengl_es_enable_SPEC_VERSION 6
 #define XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME "XR_KHR_opengl_es_enable"
 #ifdef XR_USE_PLATFORM_ANDROID
 typedef struct XrGraphicsBindingOpenGLESAndroidKHR {
@@ -188,8 +190,8 @@ typedef struct XrSwapchainImageOpenGLESKHR {
 typedef struct XrGraphicsRequirementsOpenGLESKHR {
     XrStructureType       type;
     void* XR_MAY_ALIAS    next;
-    uint32_t              minApiVersionSupported;
-    uint32_t              maxApiVersionSupported;
+    XrVersion             minApiVersionSupported;
+    XrVersion             maxApiVersionSupported;
 } XrGraphicsRequirementsOpenGLESKHR;
 
 typedef XrResult (XRAPI_PTR *PFN_xrGetOpenGLESGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsOpenGLESKHR* graphicsRequirements);
@@ -226,12 +228,12 @@ typedef struct XrSwapchainImageVulkanKHR {
 typedef struct XrGraphicsRequirementsVulkanKHR {
     XrStructureType       type;
     void* XR_MAY_ALIAS    next;
-    uint32_t              minApiVersionSupported;
-    uint32_t              maxApiVersionSupported;
+    XrVersion             minApiVersionSupported;
+    XrVersion             maxApiVersionSupported;
 } XrGraphicsRequirementsVulkanKHR;
 
-typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanInstanceExtensionsKHR)(XrInstance instance, XrSystemId systemId, uint32_t namesCapacityInput, uint32_t* namesCountOutput, char* namesString);
-typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanDeviceExtensionsKHR)(XrInstance instance, XrSystemId systemId, uint32_t namesCapacityInput, uint32_t* namesCountOutput, char* namesString);
+typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanInstanceExtensionsKHR)(XrInstance instance, XrSystemId systemId, uint32_t bufferCapacityInput, uint32_t* bufferCountOutput, char* buffer);
+typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanDeviceExtensionsKHR)(XrInstance instance, XrSystemId systemId, uint32_t bufferCapacityInput, uint32_t* bufferCountOutput, char* buffer);
 typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsDeviceKHR)(XrInstance instance, XrSystemId systemId, VkInstance vkInstance, VkPhysicalDevice* vkPhysicalDevice);
 typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkanKHR* graphicsRequirements);
 
@@ -239,16 +241,16 @@ typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsRequirementsKHR)(XrInstance 
 XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanInstanceExtensionsKHR(
     XrInstance                                  instance,
     XrSystemId                                  systemId,
-    uint32_t                                    namesCapacityInput,
-    uint32_t*                                   namesCountOutput,
-    char*                                       namesString);
+    uint32_t                                    bufferCapacityInput,
+    uint32_t*                                   bufferCountOutput,
+    char*                                       buffer);
 
 XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanDeviceExtensionsKHR(
     XrInstance                                  instance,
     XrSystemId                                  systemId,
-    uint32_t                                    namesCapacityInput,
-    uint32_t*                                   namesCountOutput,
-    char*                                       namesString);
+    uint32_t                                    bufferCapacityInput,
+    uint32_t*                                   bufferCountOutput,
+    char*                                       buffer);
 
 XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsDeviceKHR(
     XrInstance                                  instance,
@@ -263,44 +265,10 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsRequirementsKHR(
 #endif
 #endif /* XR_USE_GRAPHICS_API_VULKAN */
 
-#ifdef XR_USE_GRAPHICS_API_D3D10
-
-#define XR_KHR_D3D10_enable 1
-#define XR_KHR_D3D10_enable_SPEC_VERSION  1
-#define XR_KHR_D3D10_ENABLE_EXTENSION_NAME "XR_KHR_D3D10_enable"
-typedef struct XrGraphicsBindingD3D10KHR {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    ID3D10Device*               device;
-} XrGraphicsBindingD3D10KHR;
-
-typedef struct XrSwapchainImageD3D10KHR {
-    XrStructureType       type;
-    void* XR_MAY_ALIAS    next;
-    ID3D10Texture2D*      texture;
-} XrSwapchainImageD3D10KHR;
-
-typedef struct XrGraphicsRequirementsD3D10KHR {
-    XrStructureType         type;
-    void* XR_MAY_ALIAS      next;
-    LUID                    adapterLuid;
-    D3D10_FEATURE_LEVEL1    minFeatureLevel;
-} XrGraphicsRequirementsD3D10KHR;
-
-typedef XrResult (XRAPI_PTR *PFN_xrGetD3D10GraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsD3D10KHR* graphicsRequirements);
-
-#ifndef XR_NO_PROTOTYPES
-XRAPI_ATTR XrResult XRAPI_CALL xrGetD3D10GraphicsRequirementsKHR(
-    XrInstance                                  instance,
-    XrSystemId                                  systemId,
-    XrGraphicsRequirementsD3D10KHR*             graphicsRequirements);
-#endif
-#endif /* XR_USE_GRAPHICS_API_D3D10 */
-
 #ifdef XR_USE_GRAPHICS_API_D3D11
 
 #define XR_KHR_D3D11_enable 1
-#define XR_KHR_D3D11_enable_SPEC_VERSION  1
+#define XR_KHR_D3D11_enable_SPEC_VERSION  4
 #define XR_KHR_D3D11_ENABLE_EXTENSION_NAME "XR_KHR_D3D11_enable"
 typedef struct XrGraphicsBindingD3D11KHR {
     XrStructureType             type;
@@ -309,7 +277,7 @@ typedef struct XrGraphicsBindingD3D11KHR {
 } XrGraphicsBindingD3D11KHR;
 
 typedef struct XrSwapchainImageD3D11KHR {
-    XrStructureType       type;
+     XrStructureType      type;
     void* XR_MAY_ALIAS    next;
     ID3D11Texture2D*      texture;
 } XrSwapchainImageD3D11KHR;
@@ -334,7 +302,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetD3D11GraphicsRequirementsKHR(
 #ifdef XR_USE_GRAPHICS_API_D3D12
 
 #define XR_KHR_D3D12_enable 1
-#define XR_KHR_D3D12_enable_SPEC_VERSION  1
+#define XR_KHR_D3D12_enable_SPEC_VERSION  5
 #define XR_KHR_D3D12_ENABLE_EXTENSION_NAME "XR_KHR_D3D12_enable"
 typedef struct XrGraphicsBindingD3D12KHR {
     XrStructureType             type;
@@ -344,7 +312,7 @@ typedef struct XrGraphicsBindingD3D12KHR {
 } XrGraphicsBindingD3D12KHR;
 
 typedef struct XrSwapchainImageD3D12KHR {
-    XrStructureType       type;
+     XrStructureType      type;
     void* XR_MAY_ALIAS    next;
     ID3D12Resource*       texture;
 } XrSwapchainImageD3D12KHR;
@@ -372,7 +340,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetD3D12GraphicsRequirementsKHR(
 #define XR_KHR_win32_convert_performance_counter_time_SPEC_VERSION 1
 #define XR_KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME "XR_KHR_win32_convert_performance_counter_time"
 typedef XrResult (XRAPI_PTR *PFN_xrConvertWin32PerformanceCounterToTimeKHR)(XrInstance instance, const LARGE_INTEGER* performanceCounter, XrTime* time);
-typedef XrResult (XRAPI_PTR *PFN_xrConvertTimeToWin32PerformanceCounterKHR)(XrInstance instance, XrTime time, LARGE_INTEGER* performanceCounter);
+typedef XrResult (XRAPI_PTR *PFN_xrConvertTimeToWin32PerformanceCounterKHR)(XrInstance instance, XrTime   time, LARGE_INTEGER* performanceCounter);
 
 #ifndef XR_NO_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrConvertWin32PerformanceCounterToTimeKHR(
@@ -393,7 +361,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimeToWin32PerformanceCounterKHR(
 #define XR_KHR_convert_timespec_time_SPEC_VERSION 1
 #define XR_KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME "XR_KHR_convert_timespec_time"
 typedef XrResult (XRAPI_PTR *PFN_xrConvertTimespecTimeToTimeKHR)(XrInstance instance, const struct timespec* timespecTime, XrTime* time);
-typedef XrResult (XRAPI_PTR *PFN_xrConvertTimeToTimespecTimeKHR)(XrInstance instance, XrTime time, struct timespec* timespecTime);
+typedef XrResult (XRAPI_PTR *PFN_xrConvertTimeToTimespecTimeKHR)(XrInstance instance, XrTime   time, struct timespec* timespecTime);
 
 #ifndef XR_NO_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimespecTimeToTimeKHR(
@@ -407,30 +375,6 @@ XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimeToTimespecTimeKHR(
     struct timespec*                            timespecTime);
 #endif
 #endif /* XR_USE_TIMESPEC */
-
-#ifdef XR_USE_PLATFORM_WIN32
-
-#define XR_MSFT_spatial_perception_bridge 1
-#define XR_MSFT_spatial_perception_bridge_SPEC_VERSION 1
-#define XR_MSFT_SPATIAL_PERCEPTION_BRIDGE_EXTENSION_NAME "XR_MSFT_spatial_perception_bridge"
-#ifdef XR_USE_PLATFORM_WIN32
-typedef struct XrSpatialCoordinateSystemSpaceCreateInfoMSFT {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    XrPosef                     pose;
-    IUnknown*                   spatialCoordinateSystem;
-} XrSpatialCoordinateSystemSpaceCreateInfoMSFT;
-#endif // XR_USE_PLATFORM_WIN32
-
-typedef XrResult (XRAPI_PTR *PFN_xrCreateSpaceFromSpatialCoordinateSystemMSFT)(XrSession session, const XrSpatialCoordinateSystemSpaceCreateInfoMSFT*spaceCreateInfo, XrSpace*space);
-
-#ifndef XR_NO_PROTOTYPES
-XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpaceFromSpatialCoordinateSystemMSFT(
-    XrSession                                   session,
-    const XrSpatialCoordinateSystemSpaceCreateInfoMSFT* spaceCreateInfo,
-    XrSpace*                                    space);
-#endif
-#endif /* XR_USE_PLATFORM_WIN32 */
 
 #ifdef __cplusplus
 }

@@ -12,6 +12,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenXR", "OpenXR", "{47AF7B
 		include\openxr\openxr.h = include\openxr\openxr.h
 		include\openxr\openxr_platform.h = include\openxr\openxr_platform.h
 		include\openxr\openxr_platform_defines.h = include\openxr\openxr_platform_defines.h
+		include\openxr\openxr_reflection.h = include\openxr\openxr_reflection.h
 	EndProjectSection
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xrUtility", "xrUtility", "{D71728CE-842F-4FA7-94AE-01AEA60BC45A}"
@@ -19,6 +20,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xrUtility", "xrUtility", "{
 		samples\XrUtility\XrError.h = samples\XrUtility\XrError.h
 		samples\XrUtility\XrHandle.h = samples\XrUtility\XrHandle.h
 		samples\XrUtility\XrMath.h = samples\XrUtility\XrMath.h
+		samples\XrUtility\XrString.h = samples\XrUtility\XrString.h
+		samples\XrUtility\XrToString.h = samples\XrUtility\XrToString.h
 	EndProjectSection
 EndProject
 Global

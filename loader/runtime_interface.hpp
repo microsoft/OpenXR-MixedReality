@@ -19,13 +19,17 @@
 
 #pragma once
 
+#include "loader_platform.hpp"
+
+#include <openxr/openxr.h>
+
 #include <string>
 #include <vector>
 #include <unordered_map>
 #include <mutex>
+#include <memory>
 
-#include "loader_platform.hpp"
-#include "xr_generated_dispatch_table.h"
+struct XrGeneratedDispatchTable;
 
 class RuntimeInterface {
    public:
@@ -39,25 +43,29 @@ class RuntimeInterface {
     static const XrGeneratedDispatchTable* GetDispatchTable(XrInstance instance);
     static const XrGeneratedDispatchTable* GetDebugUtilsMessengerDispatchTable(XrDebugUtilsMessengerEXT messenger);
 
-    void GetInstanceExtensionProperties(std::vector<XrExtensionProperties>& props);
+    void GetInstanceExtensionProperties(std::vector<XrExtensionProperties>& extension_properties);
     bool SupportsExtension(const std::string& extension_name);
     XrResult CreateInstance(const XrInstanceCreateInfo* info, XrInstance* instance);
     XrResult DestroyInstance(XrInstance instance);
     bool TrackDebugMessenger(XrInstance instance, XrDebugUtilsMessengerEXT messenger);
     void ForgetDebugMessenger(XrDebugUtilsMessengerEXT messenger);
 
-   private:
-    RuntimeInterface();
+    // No default construction
+    RuntimeInterface() = delete;
+
+    // Non-copyable
     RuntimeInterface(const RuntimeInterface&) = delete;
-    RuntimeInterface(LoaderPlatformLibraryHandle runtime_library, PFN_xrGetInstanceProcAddr get_instant_proc_addr);
     RuntimeInterface& operator=(const RuntimeInterface&) = delete;
+
+   private:
+    RuntimeInterface(LoaderPlatformLibraryHandle runtime_library, PFN_xrGetInstanceProcAddr get_instant_proc_addr);
     void SetSupportedExtensions(std::vector<std::string>& supported_extensions);
 
     static std::unique_ptr<RuntimeInterface> _single_runtime_interface;
     static uint32_t _single_runtime_count;
     LoaderPlatformLibraryHandle _runtime_library;
     PFN_xrGetInstanceProcAddr _get_instant_proc_addr;
-    std::unordered_map<XrInstance, XrGeneratedDispatchTable*> _dispatch_table_map;
+    std::unordered_map<XrInstance, std::unique_ptr<XrGeneratedDispatchTable>> _dispatch_table_map;
     std::mutex _dispatch_table_mutex;
     std::unordered_map<XrDebugUtilsMessengerEXT, XrInstance> _messenger_to_instance_map;
     std::mutex _messenger_to_instance_mutex;

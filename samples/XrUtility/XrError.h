@@ -15,6 +15,8 @@
 //*********************************************************
 #pragma once
 
+#include "XrToString.h"
+
 #define CHECK_XRCMD(cmd) xr::detail::_CheckXrResult(cmd, #cmd, FILE_AND_LINE);
 #define CHECK_XRRESULT(res, cmdStr) xr::detail::_CheckXrResult(res, cmdStr, FILE_AND_LINE);
 
@@ -74,7 +76,7 @@ namespace xr::detail {
     }
 
     [[noreturn]] inline void _ThrowXrResult(XrResult res, const char* originator = nullptr, const char* sourceLocation = nullptr) {
-        xr::detail::_Throw(xr::detail::_Fmt("XrResult failure [%d]", res), originator, sourceLocation);
+        xr::detail::_Throw(_Fmt("XrResult failure [%s]", xr::ToCString(res)), originator, sourceLocation);
     }
 
     inline XrResult _CheckXrResult(XrResult res, const char* originator = nullptr, const char* sourceLocation = nullptr) {
@@ -97,4 +99,3 @@ namespace xr::detail {
         return hr;
     }
 } // namespace xr::detail
-
