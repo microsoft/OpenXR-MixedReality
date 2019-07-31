@@ -379,8 +379,8 @@ namespace {
             ID3D11RenderTargetView* renderTargets[] = {renderTargetView.Get()};
             m_deviceContext->OMSetRenderTargets((UINT)std::size(renderTargets), renderTargets, depthStencilView.Get());
 
-            const DirectX::XMMATRIX spaceToView = DirectX::XMMatrixInverse(nullptr, LoadXrPose(layerView.pose));
-            DirectX::XMMATRIX projectionMatrix = ComposeProjectionMatrix(layerView.fov, {0.05f, 100.0f});
+            const DirectX::XMMATRIX spaceToView = LoadInvertedXrPose(layerView.pose);
+            DirectX::XMMATRIX projectionMatrix = ComposeProjectionMatrix(layerView.fov, {0.15f, 15.0f});
 
             // Set shaders and constant buffers.
             ViewProjectionConstantBuffer viewProjection;
