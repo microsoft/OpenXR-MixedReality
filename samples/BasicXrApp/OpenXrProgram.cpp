@@ -486,6 +486,10 @@ namespace {
 
             // The projection layer consists of projection layer views.
             XrCompositionLayerProjection layer{XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+
+            // Inform the runtime to consider alpha channel during composition
+            layer.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
+
             std::vector<XrCompositionLayerProjectionView> projectionLayerViews;
 
             // Only render when session is visible. otherwise submit zero layers
