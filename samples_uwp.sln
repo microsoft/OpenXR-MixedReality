@@ -5,17 +5,17 @@ VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BasicXrApp_uwp", "samples\BasicXrApp\BasicXrApp_uwp.vcxproj", "{1B09B21C-2D7A-4278-81C8-84A47D5834A7}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openxr_loader_uwp", "loader\openxr_loader_uwp.vcxproj", "{8C468E0D-E516-492A-90C5-2974D3F0CC76}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openxr_loader_uwp", "openxr_loader_uwp.vcxproj", "{8C468E0D-E516-492A-90C5-2974D3F0CC76}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenXR", "OpenXR", "{47AF7B6C-150D-4BC8-855B-5B8A1EEFDA30}"
 	ProjectSection(SolutionItems) = preProject
-		include\openxr\openxr.h = include\openxr\openxr.h
-		include\openxr\openxr_platform.h = include\openxr\openxr_platform.h
-		include\openxr\openxr_platform_defines.h = include\openxr\openxr_platform_defines.h
-		include\openxr\openxr_reflection.h = include\openxr\openxr_reflection.h
+		OpenXR-SDK\include\openxr\openxr.h = OpenXR-SDK\include\openxr\openxr.h
+		OpenXR-SDK\include\openxr\openxr_platform.h = OpenXR-SDK\include\openxr\openxr_platform.h
+		OpenXR-SDK\include\openxr\openxr_platform_defines.h = OpenXR-SDK\include\openxr\openxr_platform_defines.h
+		OpenXR-SDK\include\openxr\openxr_reflection.h = OpenXR-SDK\include\openxr\openxr_reflection.h
 	EndProjectSection
 EndProject
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xrUtility", "xrUtility", "{D71728CE-842F-4FA7-94AE-01AEA60BC45A}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xrUtility", "xrUtility", "{B430D390-A296-41B9-97C1-F1C109BFC850}"
 	ProjectSection(SolutionItems) = preProject
 		samples\XrUtility\XrError.h = samples\XrUtility\XrError.h
 		samples\XrUtility\XrHandle.h = samples\XrUtility\XrHandle.h

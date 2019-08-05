@@ -35,40 +35,35 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="filesystem_utils.cpp" />
-    <ClCompile Include="api_layer_interface.cpp" />
-    <ClCompile Include="hex_and_handles.cpp" />
-    <ClCompile Include="loader_core.cpp" />
-    <ClCompile Include="loader_instance.cpp" />
-    <ClCompile Include="loader_logger.cpp" />
-    <ClCompile Include="loader_logger_recorders.cpp" />
-    <ClCompile Include="manifest_file.cpp" />
-    <ClCompile Include="runtime_interface.cpp" />
-    <ClCompile Include="jsoncpp.cpp" />
-    <ClCompile Include="xr_generated_dispatch_table.c" />
-    <ClCompile Include="xr_generated_loader.cpp" />
-    <ClCompile Include="xr_generated_utilities.c" />
+    <ClCompile Include="OpenXR-SDK\src\common\filesystem_utils.cpp" />
+    <ClCompile Include="OpenXR-SDK\src\common\hex_and_handles.cpp" />
+    <ClCompile Include="OpenXR-SDK\src\external\jsoncpp\src\lib_json\json_reader.cpp" />
+    <ClCompile Include="OpenXR-SDK\src\external\jsoncpp\src\lib_json\json_value.cpp" />
+    <ClCompile Include="OpenXR-SDK\src\external\jsoncpp\src\lib_json\json_writer.cpp" />
+    <ClCompile Include="OpenXR-SDK\src\loader\api_layer_interface.cpp" />
+    <ClCompile Include="OpenXR-SDK\src\loader\loader_core.cpp" />
+    <ClCompile Include="OpenXR-SDK\src\loader\loader_instance.cpp" />
+    <ClCompile Include="OpenXR-SDK\src\loader\loader_logger.cpp" />
+    <ClCompile Include="OpenXR-SDK\src\loader\loader_logger_recorders.cpp" />
+    <ClCompile Include="OpenXR-SDK\src\loader\manifest_file.cpp" />
+    <ClCompile Include="OpenXR-SDK\src\loader\runtime_interface.cpp" />
+    <ClCompile Include="OpenXR-SDK\src\xr_generated_dispatch_table.c" />
+    <ClCompile Include="OpenXR-SDK\src\loader\xr_generated_loader.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="api_layer_interface.hpp" />
-    <ClInclude Include="extra_algorithms.h" />
-    <ClInclude Include="filesystem_utils.hpp" />
-    <ClInclude Include="hex_and_handles.h" />
-    <ClInclude Include="json\json-forwards.h" />
-    <ClInclude Include="json\json.h" />
-    <ClInclude Include="loader_instance.hpp" />
-    <ClInclude Include="loader_interfaces.h" />
-    <ClInclude Include="loader_logger.hpp" />
-    <ClInclude Include="loader_logger_recorders.hpp" />
-    <ClInclude Include="loader_platform.hpp" />
-    <ClInclude Include="manifest_file.hpp" />
-    <ClInclude Include="platform_utils.hpp" />
-    <ClInclude Include="runtime_interface.hpp" />
-    <ClInclude Include="common_cmake_config.h" />
-    <ClInclude Include="xr_dependencies.h" />
-    <ClInclude Include="xr_generated_dispatch_table.h" />
-    <ClInclude Include="xr_generated_utilities.h" />
-    <ClInclude Include="xr_generated_loader.hpp" />
+    <ClInclude Include="OpenXR-SDK\src\common\filesystem_utils.hpp" />
+    <ClInclude Include="OpenXR-SDK\src\common\loader_interfaces.h" />
+    <ClInclude Include="OpenXR-SDK\src\common\hex_and_handles.h" />
+    <ClInclude Include="OpenXR-SDK\src\loader\api_layer_interface.hpp" />
+    <ClInclude Include="OpenXR-SDK\src\loader\loader_instance.hpp" />
+    <ClInclude Include="OpenXR-SDK\src\loader\loader_logger.hpp" />
+    <ClInclude Include="OpenXR-SDK\src\loader\loader_platform.hpp" />
+    <ClInclude Include="OpenXR-SDK\src\loader\manifest_file.hpp" />
+    <ClInclude Include="OpenXR-SDK\src\common\platform_utils.hpp" />
+    <ClInclude Include="OpenXR-SDK\src\loader\runtime_interface.hpp" />
+    <ClInclude Include="OpenXR-SDK\src\common\xr_dependencies.h" />
+    <ClInclude Include="OpenXR-SDK\src\xr_generated_dispatch_table.h" />
+    <ClInclude Include="OpenXR-SDK\src\loader\xr_generated_loader.hpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{8C468E0D-E516-492A-90C5-2974D3F0CC76}</ProjectGuid>
@@ -152,7 +147,7 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup>
-    <IncludePath>..\include;$(ProjectDir);$(IncludePath);</IncludePath>
+    <IncludePath>OpenXR-SDK\include;OpenXR-SDK\src;OpenXR-SDK\src\common;OpenXR-SDK\src\external\jsoncpp\include;$(ProjectDir);$(IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -160,7 +155,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRLOADER_ENABLE_EXCEPTION_HANDLING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -179,7 +174,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRLOADER_ENABLE_EXCEPTION_HANDLING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -198,7 +193,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRLOADER_ENABLE_EXCEPTION_HANDLING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -217,7 +212,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRLOADER_ENABLE_EXCEPTION_HANDLING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -238,7 +233,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRLOADER_ENABLE_EXCEPTION_HANDLING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -261,7 +256,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRLOADER_ENABLE_EXCEPTION_HANDLING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -284,7 +279,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRLOADER_ENABLE_EXCEPTION_HANDLING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -307,7 +302,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_SILENCE_CXX17_CODECVT_HEADER_DEPRECATION_WARNING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>XRLOADER_ENABLE_EXCEPTION_HANDLING;XR_USE_PLATFORM_WIN32;XR_USE_GRAPHICS_API_OPENGL;XR_USE_GRAPHICS_API_D3D11;XR_USE_GRAPHICS_API_D3D12;XR_OS_WINDOWS;NDEBUG;_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
       <CompileAsWinRT>false</CompileAsWinRT>
