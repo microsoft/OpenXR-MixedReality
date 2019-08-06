@@ -101,8 +101,8 @@ namespace {
             CHECK(AddExtIfSupported(XR_KHR_D3D11_ENABLE_EXTENSION_NAME));
 
             // Additional optional extensions for enhanced functionality. Track whether enabled in m_optionalExtensions.
-            m_optionalExtensions.UnboundedRefSpaceSupported = false; // coming soon ... XR_MSFT_unbounded_reference_space extension
-            m_optionalExtensions.SpatialAnchorSupported = false;     // coming soon ... XR_MSFT_spatial_anchor extension
+            m_optionalExtensions.UnboundedRefSpaceSupported = AddExtIfSupported(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
+            m_optionalExtensions.SpatialAnchorSupported = AddExtIfSupported(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
 
             return enabledExtensions;
         }
@@ -237,7 +237,7 @@ namespace {
 
                 if (m_optionalExtensions.UnboundedRefSpaceSupported) {
                     // Unbounded reference space provides the best scene space for world-scale experiences.
-                    // coming soon ... referenceSpaceType = XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT;
+                    referenceSpaceType = XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT;
                 } else {
                     // If running on a platform that does not support world-scale experiences, fall back to local space.
                     referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
@@ -455,7 +455,23 @@ namespace {
                         if (m_optionalExtensions.SpatialAnchorSupported) {
                             // Anchors provide the best stability when moving beyond 5 meters, so if the extension is enabled,
                             // create an anchor at the hand location and use the resulting anchor space.
-                            // coming soon ...
+                            XrSpatialAnchorCreateInfoMSFT createInfo{XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT};
+                            createInfo.space = m_sceneSpace.Get();
+                            createInfo.pose = spaceLocation.pose;
+                            createInfo.time = placeActionValue.lastChangeTime;
+                            XrSpatialAnchorHandle spatialAnchor;
+                            XrResult r = xrCreateSpatialAnchorMSFT(m_session.Get(), &createInfo, spatialAnchor.Put());
+                            if (r == XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT) {
+                                DEBUG_PRINT("Anchor cannot be created, likely due to lost positional tracking.");
+                            } else if (XR_SUCCEEDED(r)) {
+                                XrSpatialAnchorSpaceCreateInfoMSFT createSpaceInfo{XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT};
+                                createSpaceInfo.anchor = spatialAnchor.Get();
+                                createSpaceInfo.poseInAnchorSpace = xr::math::Pose::Identity();
+                                CHECK_XRCMD(xrCreateSpatialAnchorSpaceMSFT(m_session.Get(), &createSpaceInfo, m_placedCubeSpace.Put()));
+                                m_spatialAnchor = std::move(spatialAnchor);
+                            } else {
+                                CHECK_XRRESULT(r, "xrCreateSpatialAnchorMSFT");
+                            }
                         } else {
                             // If the anchor extension is not available, create a local space with an origin at the hand location.
                             XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
@@ -486,11 +502,10 @@ namespace {
 
             // The projection layer consists of projection layer views.
             XrCompositionLayerProjection layer{XR_TYPE_COMPOSITION_LAYER_PROJECTION};
+            std::vector<XrCompositionLayerProjectionView> projectionLayerViews;
 
             // Inform the runtime to consider alpha channel during composition
             layer.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
-
-            std::vector<XrCompositionLayerProjectionView> projectionLayerViews;
 
             // Only render when session is visible. otherwise submit zero layers
             if (IsSessionVisible()) {
@@ -619,6 +634,7 @@ namespace {
 
         XrSpaceHandle m_sceneSpace;
 
+        XrSpatialAnchorHandle m_spatialAnchor;
         XrSpaceHandle m_placedCubeSpace;
         Cube m_placedCube; // Placed in local or anchor space.
 
