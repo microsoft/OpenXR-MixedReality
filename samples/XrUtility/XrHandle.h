@@ -16,21 +16,21 @@
 #pragma once
 
 namespace xr {
-    template <typename HandleType, XrResult(XRAPI_PTR *DestroyFunction)(HandleType)>
-    class XrHandle {
+    template <typename HandleType, XrResult(XRAPI_PTR* DestroyFunction)(HandleType)>
+    class UniqueHandle {
     public:
-        XrHandle() = default;
-        XrHandle(const XrHandle&) = delete;
-        XrHandle(XrHandle&& other) noexcept {
+        UniqueHandle() = default;
+        UniqueHandle(const UniqueHandle&) = delete;
+        UniqueHandle(UniqueHandle&& other) noexcept {
             *this = std::move(other);
         }
 
-        ~XrHandle() noexcept {
+        ~UniqueHandle() noexcept {
             Reset();
         }
 
-        XrHandle& operator=(const XrHandle&) = delete;
-        XrHandle& operator=(XrHandle&& other) noexcept {
+        UniqueHandle& operator=(const UniqueHandle&) = delete;
+        UniqueHandle& operator=(UniqueHandle&& other) noexcept {
             m_handle = other.m_handle;
             other.m_handle = XR_NULL_HANDLE;
             return *this;
@@ -56,11 +56,11 @@ namespace xr {
         HandleType m_handle{XR_NULL_HANDLE};
     };
 
-    using XrActionHandle = XrHandle<XrAction, xrDestroyAction>;
-    using XrActionSetHandle = XrHandle<XrActionSet, xrDestroyActionSet>;
-    using XrInstanceHandle = XrHandle<XrInstance, xrDestroyInstance>;
-    using XrSessionHandle = XrHandle<XrSession, xrDestroySession>;
-    using XrSpaceHandle = XrHandle<XrSpace, xrDestroySpace>;
-    using XrSwapchainHandle = XrHandle<XrSwapchain, xrDestroySwapchain>;
-    using XrSpatialAnchorHandle = XrHandle<XrSpatialAnchorMSFT, xrDestroySpatialAnchorMSFT>;
+    using ActionHandle = UniqueHandle<XrAction, xrDestroyAction>;
+    using ActionSetHandle = UniqueHandle<XrActionSet, xrDestroyActionSet>;
+    using InstanceHandle = UniqueHandle<XrInstance, xrDestroyInstance>;
+    using SessionHandle = UniqueHandle<XrSession, xrDestroySession>;
+    using SpaceHandle = UniqueHandle<XrSpace, xrDestroySpace>;
+    using SwapchainHandle = UniqueHandle<XrSwapchain, xrDestroySwapchain>;
+    using SpatialAnchorHandle = UniqueHandle<XrSpatialAnchorMSFT, xrDestroySpatialAnchorMSFT>;
 } // namespace xr

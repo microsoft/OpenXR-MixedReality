@@ -24,8 +24,16 @@ constexpr const char* ProgramName = "BasicXrApp_uwp";
 #endif
 
 int __stdcall wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) {
-    std::unique_ptr<xr::IGraphicsPlugin> graphics = xr::CreateCubeGraphics();
-    std::unique_ptr<xr::IOpenXrProgram> program = xr::CreateOpenXrProgram(ProgramName, std::move(graphics));
-    program->Run();
+    try {
+        auto graphics = xr::sample::CreateCubeGraphics();
+        auto program = xr::sample::CreateOpenXrProgram(ProgramName, std::move(graphics));
+        program->Run();
+    } catch (const std::exception& ex) {
+        DEBUG_PRINT("Unhandled Exception: %s\n", ex.what());
+        return 1;
+    } catch (...) {
+        DEBUG_PRINT("Unhandled Exception\n");
+        return 1;
+    }
     return 0;
 }
