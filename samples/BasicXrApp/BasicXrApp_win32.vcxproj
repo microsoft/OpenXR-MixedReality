@@ -62,6 +62,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>%(AdditionalOptions) /permissive- /bigobj</AdditionalOptions>
       <DisableSpecificWarnings>4447</DisableSpecificWarnings>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -69,7 +70,7 @@
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalDependencies>shlwapi.lib;advapi32.lib;kernel32.lib;user32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>shlwapi.lib;advapi32.lib;windowsapp.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -102,8 +103,10 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="App.cpp" />
+    <ClInclude Include="DxUtility.h" />
     <ClCompile Include="OpenXrProgram.cpp" />
     <ClCompile Include="CubeGraphics.cpp" />
+    <ClCompile Include="DxUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\loader\openxr_loader_win32.vcxproj">
