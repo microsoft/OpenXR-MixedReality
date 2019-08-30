@@ -44,7 +44,7 @@ Always use `XR_KHR_composition_layer_depth_extension` and submit the depth buffe
 
 ## Choose a reasonable depth range
 
-Prefer a narrower depth range to scope the virtual content to help hologram stability on HoloLens. For example, the OpenXrProgram.cpp sample is using 0.1 to 20 meters. Using [reversed-Z](https://developer.nvidia.com/content/depth-precision-visualized) for a more uniformed depth resolution.  Note, on HoloLens 2, using the preferred `DXGI_FORMAT_D16_UNORM` depth format can help achieve better frame rate and performance.  Therefore above practice for depth range is more important.
+Prefer a narrower depth range to scope the virtual content to help hologram stability on HoloLens. For example, the OpenXrProgram.cpp sample is using 0.1 to 20 meters. Use [reversed-Z](https://developer.nvidia.com/content/depth-precision-visualized) for a more uniformed depth resolution.  Note, on HoloLens 2, using the preferred `DXGI_FORMAT_D16_UNORM` depth format can help achieve better frame rate and performance.  Therefore above practice for depth range is more important.
 
 ## Prepare for different environment blend modes
 
