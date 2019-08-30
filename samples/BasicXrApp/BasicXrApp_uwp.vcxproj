@@ -81,9 +81,9 @@
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>4447</DisableSpecificWarnings>
+      <AdditionalOptions>%(AdditionalOptions) /permissive-</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
     <Link>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
