@@ -368,27 +368,67 @@ namespace {
             // The texture array has the size of viewCount, and they are rendered in a single pass using VPRT.
             const uint32_t textureArraySize = viewCount;
             m_renderResources->ColorSwapchain =
-                sample::dx::CreateSwapchainD3D11(m_session.Get(),
-                                                 colorSwapchainFormat,
-                                                 view.recommendedImageRectWidth,
-                                                 view.recommendedImageRectHeight,
-                                                 textureArraySize,
-                                                 view.recommendedSwapchainSampleCount,
-                                                 0,
-                                                 XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT);
+                CreateSwapchainD3D11(m_session.Get(),
+                                     colorSwapchainFormat,
+                                     view.recommendedImageRectWidth,
+                                     view.recommendedImageRectHeight,
+                                     textureArraySize,
+                                     view.recommendedSwapchainSampleCount,
+                                     0,
+                                     XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT);
 
             m_renderResources->DepthSwapchain =
-                sample::dx::CreateSwapchainD3D11(m_session.Get(),
-                                                 depthSwapchainFormat,
-                                                 view.recommendedImageRectWidth,
-                                                 view.recommendedImageRectHeight,
-                                                 textureArraySize,
-                                                 view.recommendedSwapchainSampleCount,
-                                                 0,
-                                                 XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
+                CreateSwapchainD3D11(m_session.Get(),
+                                     depthSwapchainFormat,
+                                     view.recommendedImageRectWidth,
+                                     view.recommendedImageRectHeight,
+                                     textureArraySize,
+                                     view.recommendedSwapchainSampleCount,
+                                     0,
+                                     XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
             // Preallocate view buffers for xrLocateViews later inside frame loop.
             m_renderResources->Views.resize(viewCount, {XR_TYPE_VIEW});
+        }
+
+        struct SwapchainD3D11;
+        SwapchainD3D11 CreateSwapchainD3D11(XrSession session,
+                                            DXGI_FORMAT format,
+                                            int32_t width,
+                                            int32_t height,
+                                            uint32_t arraySize,
+                                            uint32_t sampleCount,
+                                            XrSwapchainCreateFlags createFlags,
+                                            XrSwapchainUsageFlags usageFlags) {
+            SwapchainD3D11 swapchain;
+            swapchain.Format = format;
+            swapchain.Width = width;
+            swapchain.Height = height;
+            swapchain.ArraySize = arraySize;
+
+            XrSwapchainCreateInfo swapchainCreateInfo{XR_TYPE_SWAPCHAIN_CREATE_INFO};
+            swapchainCreateInfo.arraySize = arraySize;
+            swapchainCreateInfo.format = format;
+            swapchainCreateInfo.width = width;
+            swapchainCreateInfo.height = height;
+            swapchainCreateInfo.mipCount = 1;
+            swapchainCreateInfo.faceCount = 1;
+            swapchainCreateInfo.sampleCount = sampleCount;
+            swapchainCreateInfo.createFlags = createFlags;
+            swapchainCreateInfo.usageFlags = usageFlags;
+
+            CHECK_XRCMD(xrCreateSwapchain(session, &swapchainCreateInfo, swapchain.Handle.Put()));
+
+            uint32_t chainLength;
+            CHECK_XRCMD(xrEnumerateSwapchainImages(swapchain.Handle.Get(), 0, &chainLength, nullptr));
+
+            swapchain.Images.resize(chainLength, {XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR});
+            CHECK_XRCMD(xrEnumerateSwapchainImages(swapchain.Handle.Get(),
+                                                   (uint32_t)swapchain.Images.size(),
+                                                   &chainLength,
+                                                   reinterpret_cast<XrSwapchainImageBaseHeader*>(swapchain.Images.data())));
+
+            return swapchain;
         }
 
         // Return true if an event is available, otherwise return false.
@@ -629,8 +669,8 @@ namespace {
                 m_session.Get(), &viewLocateInfo, &viewState, viewCapacityInput, &viewCountOutput, m_renderResources->Views.data()));
             CHECK(viewCountOutput == viewCapacityInput);
             CHECK(viewCountOutput == m_renderResources->ConfigViews.size());
-            CHECK(viewCountOutput == m_renderResources->ColorSwapchain.ArrayLength);
-            CHECK(viewCountOutput == m_renderResources->DepthSwapchain.ArrayLength);
+            CHECK(viewCountOutput == m_renderResources->ColorSwapchain.ArraySize);
+            CHECK(viewCountOutput == m_renderResources->DepthSwapchain.ArraySize);
 
             if (!xr::math::Pose::IsPoseValid(viewState)) {
                 DEBUG_PRINT("xrLocateViews returned an invalid pose.");
@@ -665,8 +705,8 @@ namespace {
             }
 
             // Swapchain is acquired, rendered to, and released together for all views as texture array
-            const sample::dx::SwapchainD3D11& colorSwapchain = m_renderResources->ColorSwapchain;
-            const sample::dx::SwapchainD3D11& depthSwapchain = m_renderResources->DepthSwapchain;
+            const SwapchainD3D11& colorSwapchain = m_renderResources->ColorSwapchain;
+            const SwapchainD3D11& depthSwapchain = m_renderResources->DepthSwapchain;
 
             // Use the full range of recommended image size to achieve optimum resolution
             const XrRect2Di imageRect = {{0, 0}, {colorSwapchain.Width, colorSwapchain.Height}};
@@ -785,11 +825,20 @@ namespace {
         XrEnvironmentBlendMode m_environmentBlendMode{};
         xr::math::NearFar m_nearFar{};
 
+        struct SwapchainD3D11 {
+            xr::SwapchainHandle Handle;
+            DXGI_FORMAT Format{DXGI_FORMAT_UNKNOWN};
+            int32_t Width{0};
+            int32_t Height{0};
+            uint32_t ArraySize{0};
+            std::vector<XrSwapchainImageD3D11KHR> Images;
+        };
+
         struct RenderResources {
             std::vector<XrView> Views;
             std::vector<XrViewConfigurationView> ConfigViews;
-            sample::dx::SwapchainD3D11 ColorSwapchain;
-            sample::dx::SwapchainD3D11 DepthSwapchain;
+            SwapchainD3D11 ColorSwapchain;
+            SwapchainD3D11 DepthSwapchain;
             std::vector<XrCompositionLayerProjectionView> ProjectionLayerViews;
             std::vector<XrCompositionLayerDepthInfoKHR> DepthInfoViews;
         };

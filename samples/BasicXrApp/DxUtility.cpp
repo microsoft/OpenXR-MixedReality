@@ -100,44 +100,4 @@ namespace sample::dx {
 
         return compiled;
     }
-
-    SwapchainD3D11 CreateSwapchainD3D11(XrSession session,
-                                        DXGI_FORMAT format,
-                                        int32_t width,
-                                        int32_t height,
-                                        uint32_t arrayLength,
-                                        uint32_t sampleCount,
-                                        XrSwapchainCreateFlags createFlags,
-                                        XrSwapchainUsageFlags usageFlags) {
-        SwapchainD3D11 swapchain;
-        swapchain.Format = format;
-        swapchain.Width = width;
-        swapchain.Height = height;
-        swapchain.ArrayLength = arrayLength;
-
-        XrSwapchainCreateInfo swapchainCreateInfo{XR_TYPE_SWAPCHAIN_CREATE_INFO};
-        swapchainCreateInfo.arraySize = arrayLength;
-        swapchainCreateInfo.format = format;
-        swapchainCreateInfo.width = width;
-        swapchainCreateInfo.height = height;
-        swapchainCreateInfo.mipCount = 1;
-        swapchainCreateInfo.faceCount = 1;
-        swapchainCreateInfo.sampleCount = sampleCount;
-        swapchainCreateInfo.createFlags = createFlags;
-        swapchainCreateInfo.usageFlags = usageFlags;
-
-        CHECK_XRCMD(xrCreateSwapchain(session, &swapchainCreateInfo, swapchain.Handle.Put()));
-
-        uint32_t chainLength;
-        CHECK_XRCMD(xrEnumerateSwapchainImages(swapchain.Handle.Get(), 0, &chainLength, nullptr));
-
-        swapchain.Images.resize(chainLength, {XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR});
-        CHECK_XRCMD(xrEnumerateSwapchainImages(swapchain.Handle.Get(),
-                                               (uint32_t)swapchain.Images.size(),
-                                               &chainLength,
-                                               reinterpret_cast<XrSwapchainImageBaseHeader*>(swapchain.Images.data())));
-
-        return swapchain;
-    }
-
 } // namespace sample::dx

@@ -28,23 +28,4 @@ namespace sample::dx {
                                      ID3D11DeviceContext** deviceContext);
 
     winrt::com_ptr<ID3DBlob> CompileShader(const char* hlsl, const char* entrypoint, const char* shaderTarget);
-
-    struct SwapchainD3D11 {
-        xr::SwapchainHandle Handle;
-        DXGI_FORMAT Format{DXGI_FORMAT_UNKNOWN};
-        int32_t Width{0};
-        int32_t Height{0};
-        uint32_t ArrayLength{0};
-        std::vector<XrSwapchainImageD3D11KHR> Images;
-    };
-
-    SwapchainD3D11 CreateSwapchainD3D11(XrSession session,
-                                        DXGI_FORMAT format,
-                                        int32_t width,
-                                        int32_t height,
-                                        uint32_t arrayLength,
-                                        uint32_t sampleCount,
-                                        XrSwapchainCreateFlags createFlags,
-                                        XrSwapchainUsageFlags usageFlags);
-
 } // namespace sample::dx
