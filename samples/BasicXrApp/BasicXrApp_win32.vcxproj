@@ -60,6 +60,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level4</WarningLevel>
+      <TreatWarningAsError>true</TreatWarningAsError>
       <AdditionalOptions>%(AdditionalOptions) /permissive- /bigobj</AdditionalOptions>
       <DisableSpecificWarnings>4447</DisableSpecificWarnings>
       <LanguageStandard>stdcpp17</LanguageStandard>
@@ -100,8 +101,10 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="App.cpp" />
+    <ClInclude Include="DxUtility.h" />
     <ClCompile Include="OpenXrProgram.cpp" />
     <ClCompile Include="CubeGraphics.cpp" />
+    <ClCompile Include="DxUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
