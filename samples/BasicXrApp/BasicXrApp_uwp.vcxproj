@@ -73,16 +73,7 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros">
-    <GenerateAppInstallerFile>False</GenerateAppInstallerFile>
-    <AppxPackageSigningEnabled>False</AppxPackageSigningEnabled>
-    <AppxAutoIncrementPackageRevision>True</AppxAutoIncrementPackageRevision>
-    <GenerateTestArtifacts>True</GenerateTestArtifacts>
-    <AppxBundle>Never</AppxBundle>
-    <AppxBundlePlatforms>x86|x64|arm|arm64</AppxBundlePlatforms>
-    <HoursBetweenUpdateChecks>0</HoursBetweenUpdateChecks>
-    <AppxSymbolPackageEnabled>False</AppxSymbolPackageEnabled>
-  </PropertyGroup>
+  <PropertyGroup Label="UserMacros" />
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
