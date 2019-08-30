@@ -16,9 +16,9 @@
 
 #pragma once
 
-namespace xr::sample {
+namespace sample {
     struct Cube {
-        XrSpace Space{XR_NULL_HANDLE};
+        xr::SpaceHandle Space;
         XrPosef Pose = xr::math::Pose::Identity();
         XrVector3f Scale{0.1f, 0.1f, 0.1f};
     };
@@ -32,27 +32,24 @@ namespace xr::sample {
         virtual ~IGraphicsPluginD3D11() = default;
 
         // Create an instance of this graphics api for the provided instance and systemId.
-        virtual void InitializeDevice(XrInstance instance, XrSystemId systemId) = 0;
+        virtual ID3D11Device* InitializeDevice(LUID adapterLuid, const std::vector<D3D_FEATURE_LEVEL>& featureLevels) = 0;
 
         // List of color pixel formats supported by this app.
         virtual const std::vector<DXGI_FORMAT>& SupportedColorFormats() const = 0;
         virtual const std::vector<DXGI_FORMAT>& SupportedDepthFormats() const = 0;
 
-        // Get the graphics binding header for session creation.
-        virtual const XrGraphicsBindingD3D11KHR* GetGraphicsBinding() const = 0;
-
-        // Render to swapchain images for a projection view.
-        virtual void RenderView(const XrCompositionLayerProjectionView& layerView,
+        // Render to swapchain images using stereo image array
+        virtual void RenderView(const XrRect2Di& imageRect,
+                                const float renderTargetClearColor[4],
+                                const std::vector<xr::math::ViewProjection>& viewProjections,
                                 DXGI_FORMAT colorSwapchainFormat,
-                                const XrSwapchainImageD3D11KHR& colorSwapchainImage,
+                                ID3D11Texture2D* colorTexture,
                                 DXGI_FORMAT depthSwapchainFormat,
-                                const XrSwapchainImageD3D11KHR& depthSwapchainImage,
-                                const XrEnvironmentBlendMode environmentBlendMode,
-                                const xr::math::NearFarDistance& nearFar,
-                                const std::vector<Cube>& cubes) = 0;
+                                ID3D11Texture2D* depthTexture,
+                                const std::vector<const sample::Cube*>& cubes) = 0;
     };
 
     std::unique_ptr<IGraphicsPluginD3D11> CreateCubeGraphics();
     std::unique_ptr<IOpenXrProgram> CreateOpenXrProgram(std::string applicationName, std::unique_ptr<IGraphicsPluginD3D11> graphicsPlugin);
 
-} // namespace xr::sample
+} // namespace sample

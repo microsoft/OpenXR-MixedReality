@@ -16,10 +16,11 @@
 
 #include "pch.h"
 #include "App.h"
+#include "DxUtility.h"
 
 namespace {
-    struct ImplementOpenXrProgram : xr::sample::IOpenXrProgram {
-        ImplementOpenXrProgram(std::string applicationName, std::unique_ptr<xr::sample::IGraphicsPluginD3D11> graphicsPlugin)
+    struct ImplementOpenXrProgram : sample::IOpenXrProgram {
+        ImplementOpenXrProgram(std::string applicationName, std::unique_ptr<sample::IGraphicsPluginD3D11> graphicsPlugin)
             : m_applicationName(std::move(applicationName))
             , m_graphicsPlugin(std::move(graphicsPlugin)) {
         }
@@ -221,7 +222,8 @@ namespace {
             }
 
             // Choose a reasonable depth range can help improve hologram visual quality.
-            m_nearFar = {0.1f, 20.f};
+            // Use reversed Z (near > far) for more uniformed Z resolution.
+            m_nearFar = {20.f, 0.1f};
         }
 
         void InitializeSession() {
@@ -229,10 +231,30 @@ namespace {
             CHECK(m_systemId != XR_NULL_SYSTEM_ID);
             CHECK(m_session.Get() == XR_NULL_HANDLE);
 
-            m_graphicsPlugin->InitializeDevice(m_instance.Get(), m_systemId);
+            // Create the D3D11 device for the adapter associated with the system.
+            XrGraphicsRequirementsD3D11KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
+            CHECK_XRCMD(xrGetD3D11GraphicsRequirementsKHR(m_instance.Get(), m_systemId, &graphicsRequirements));
+
+            // Create a list of feature levels which are both supported by the OpenXR runtime and this application.
+            std::vector<D3D_FEATURE_LEVEL> featureLevels = {D3D_FEATURE_LEVEL_12_1,
+                                                            D3D_FEATURE_LEVEL_12_0,
+                                                            D3D_FEATURE_LEVEL_11_1,
+                                                            D3D_FEATURE_LEVEL_11_0,
+                                                            D3D_FEATURE_LEVEL_10_1,
+                                                            D3D_FEATURE_LEVEL_10_0};
+            featureLevels.erase(std::remove_if(featureLevels.begin(),
+                                               featureLevels.end(),
+                                               [&](D3D_FEATURE_LEVEL fl) { return fl < graphicsRequirements.minFeatureLevel; }),
+                                featureLevels.end());
+            CHECK_MSG(featureLevels.size() != 0, "Unsupported minimum feature level!");
+
+            ID3D11Device* device = m_graphicsPlugin->InitializeDevice(graphicsRequirements.adapterLuid, featureLevels);
+
+            XrGraphicsBindingD3D11KHR graphicsBinding{XR_TYPE_GRAPHICS_BINDING_D3D11_KHR};
+            graphicsBinding.device = device;
 
             XrSessionCreateInfo createInfo{XR_TYPE_SESSION_CREATE_INFO};
-            createInfo.next = m_graphicsPlugin->GetGraphicsBinding();
+            createInfo.next = &graphicsBinding;
             createInfo.systemId = m_systemId;
             CHECK_XRCMD(xrCreateSession(m_instance.Get(), &createInfo, m_session.Put()));
 
@@ -264,11 +286,11 @@ namespace {
                 spaceCreateInfo.poseInReferenceSpace = xr::math::Pose::Identity();
                 CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &spaceCreateInfo, m_sceneSpace.Put()));
 
-                // Initialize the placed cube 1 meter in front of user.
+                // Initialize a cube 1 meter in front of user.
+                Hologram hologram{};
                 spaceCreateInfo.poseInReferenceSpace = xr::math::Pose::Translation({0, 0, -1});
-                CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &spaceCreateInfo, m_placedCubeSpace.Put()));
-                m_placedCube.Space = m_placedCubeSpace.Get();
-                m_placedCube.Scale = {0.1f, 0.1f, 0.1f};
+                CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &spaceCreateInfo, hologram.Cube.Space.Put()));
+                m_holograms.push_back(std::move(hologram));
             }
 
             // Create a space for each hand pointer pose.
@@ -277,44 +299,11 @@ namespace {
                 createInfo.action = m_poseAction.Get();
                 createInfo.poseInActionSpace = xr::math::Pose::Identity();
                 createInfo.subactionPath = m_subactionPaths[side];
-                CHECK_XRCMD(xrCreateActionSpace(m_session.Get(), &createInfo, m_spacesInHand[side].Put()));
-                m_cubesInHand[side].Space = m_spacesInHand[side].Get();
-                m_cubesInHand[side].Scale = {0.1f, 0.1f, 0.1f}; // Display a small cube at hand tracking pose.
+                CHECK_XRCMD(xrCreateActionSpace(m_session.Get(), &createInfo, m_cubesInHand[side].Space.Put()));
             }
         }
 
-        struct SwapchainData;
-        std::unique_ptr<SwapchainData> CreateSwapchainData(const XrViewConfigurationView& view,
-                                                           uint64_t format,
-                                                           XrSwapchainUsageFlags usageFlags) {
-            XrSwapchainCreateInfo swapchainCreateInfo{XR_TYPE_SWAPCHAIN_CREATE_INFO};
-            swapchainCreateInfo.arraySize = 1;
-            swapchainCreateInfo.format = format;
-            swapchainCreateInfo.width = view.recommendedImageRectWidth;
-            swapchainCreateInfo.height = view.recommendedImageRectHeight;
-            swapchainCreateInfo.mipCount = 1;
-            swapchainCreateInfo.faceCount = 1;
-            swapchainCreateInfo.sampleCount = view.recommendedSwapchainSampleCount;
-            swapchainCreateInfo.usageFlags = usageFlags;
-
-            auto swapchainData = std::make_unique<SwapchainData>();
-            swapchainData->width = swapchainCreateInfo.width;
-            swapchainData->height = swapchainCreateInfo.height;
-
-            CHECK_XRCMD(xrCreateSwapchain(m_session.Get(), &swapchainCreateInfo, &swapchainData->handle));
-
-            uint32_t chainLength;
-            CHECK_XRCMD(xrEnumerateSwapchainImages(swapchainData->handle, 0, &chainLength, nullptr));
-
-            swapchainData->images.resize(chainLength, {XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR});
-            CHECK_XRCMD(xrEnumerateSwapchainImages(swapchainData->handle,
-                                                   (uint32_t)swapchainData->images.size(),
-                                                   &chainLength,
-                                                   reinterpret_cast<XrSwapchainImageBaseHeader*>(swapchainData->images.data())));
-            return swapchainData;
-        }
-
-        void SelectSwapchainPixelFormats() {
+        std::tuple<DXGI_FORMAT, DXGI_FORMAT> SelectSwapchainPixelFormats() {
             CHECK(m_session.Get() != XR_NULL_HANDLE);
 
             // Query runtime preferred swapchain formats.
@@ -338,8 +327,10 @@ namespace {
                 return (DXGI_FORMAT)*found;
             };
 
-            m_colorSwapchainFormat = SelectPixelFormat(swapchainFormats, m_graphicsPlugin->SupportedColorFormats());
-            m_depthSwapchainFormat = SelectPixelFormat(swapchainFormats, m_graphicsPlugin->SupportedDepthFormats());
+            DXGI_FORMAT colorSwapchainFormat = SelectPixelFormat(swapchainFormats, m_graphicsPlugin->SupportedColorFormats());
+            DXGI_FORMAT depthSwapchainFormat = SelectPixelFormat(swapchainFormats, m_graphicsPlugin->SupportedDepthFormats());
+
+            return {colorSwapchainFormat, depthSwapchainFormat};
         }
 
         void CreateSwapchains() {
@@ -352,33 +343,92 @@ namespace {
             XrSystemProperties systemProperties{XR_TYPE_SYSTEM_PROPERTIES};
             CHECK_XRCMD(xrGetSystemProperties(m_instance.Get(), m_systemId, &systemProperties));
 
+            // Select color and depth swapchain pixel formats
+            const auto [colorSwapchainFormat, depthSwapchainFormat] = SelectSwapchainPixelFormats();
+
             // Query and cache view configuration views.
             uint32_t viewCount;
             CHECK_XRCMD(xrEnumerateViewConfigurationViews(m_instance.Get(), m_systemId, m_primaryViewConfigType, 0, &viewCount, nullptr));
-            CHECK(viewCount > 0); // A system must support at least one view to render into.
+            CHECK(viewCount == m_stereoViewCount);
 
             m_renderResources->ConfigViews.resize(viewCount, {XR_TYPE_VIEW_CONFIGURATION_VIEW});
             CHECK_XRCMD(xrEnumerateViewConfigurationViews(
                 m_instance.Get(), m_systemId, m_primaryViewConfigType, viewCount, &viewCount, m_renderResources->ConfigViews.data()));
 
+            // Using texture array for better performance, but requiring left/right views have identical sizes.
+            const XrViewConfigurationView& view = m_renderResources->ConfigViews[0];
+            CHECK(m_renderResources->ConfigViews[0].recommendedImageRectWidth ==
+                  m_renderResources->ConfigViews[1].recommendedImageRectWidth);
+            CHECK(m_renderResources->ConfigViews[0].recommendedImageRectHeight ==
+                  m_renderResources->ConfigViews[1].recommendedImageRectHeight);
+            CHECK(m_renderResources->ConfigViews[0].recommendedSwapchainSampleCount ==
+                  m_renderResources->ConfigViews[1].recommendedSwapchainSampleCount);
+
+            // Create swapchains with texture array for color and depth images.
+            // The texture array has the size of viewCount, and they are rendered in a single pass using VPRT.
+            const uint32_t textureArraySize = viewCount;
+            m_renderResources->ColorSwapchain =
+                CreateSwapchainD3D11(m_session.Get(),
+                                     colorSwapchainFormat,
+                                     view.recommendedImageRectWidth,
+                                     view.recommendedImageRectHeight,
+                                     textureArraySize,
+                                     view.recommendedSwapchainSampleCount,
+                                     0,
+                                     XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT);
+
+            m_renderResources->DepthSwapchain =
+                CreateSwapchainD3D11(m_session.Get(),
+                                     depthSwapchainFormat,
+                                     view.recommendedImageRectWidth,
+                                     view.recommendedImageRectHeight,
+                                     textureArraySize,
+                                     view.recommendedSwapchainSampleCount,
+                                     0,
+                                     XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
+
             // Preallocate view buffers for xrLocateViews later inside frame loop.
             m_renderResources->Views.resize(viewCount, {XR_TYPE_VIEW});
+        }
 
-            // Select color and depth swapchain pixel formats
-            SelectSwapchainPixelFormats();
+        struct SwapchainD3D11;
+        SwapchainD3D11 CreateSwapchainD3D11(XrSession session,
+                                            DXGI_FORMAT format,
+                                            int32_t width,
+                                            int32_t height,
+                                            uint32_t arraySize,
+                                            uint32_t sampleCount,
+                                            XrSwapchainCreateFlags createFlags,
+                                            XrSwapchainUsageFlags usageFlags) {
+            SwapchainD3D11 swapchain;
+            swapchain.Format = format;
+            swapchain.Width = width;
+            swapchain.Height = height;
+            swapchain.ArraySize = arraySize;
 
-            // Create a swapchain for each view and get the images.
-            for (uint32_t i = 0; i < viewCount; i++) {
-                const XrViewConfigurationView& view = m_renderResources->ConfigViews[i];
+            XrSwapchainCreateInfo swapchainCreateInfo{XR_TYPE_SWAPCHAIN_CREATE_INFO};
+            swapchainCreateInfo.arraySize = arraySize;
+            swapchainCreateInfo.format = format;
+            swapchainCreateInfo.width = width;
+            swapchainCreateInfo.height = height;
+            swapchainCreateInfo.mipCount = 1;
+            swapchainCreateInfo.faceCount = 1;
+            swapchainCreateInfo.sampleCount = sampleCount;
+            swapchainCreateInfo.createFlags = createFlags;
+            swapchainCreateInfo.usageFlags = usageFlags;
 
-                std::unique_ptr<SwapchainData> colorSwapchainData = CreateSwapchainData(
-                    view, m_colorSwapchainFormat, XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT);
-                m_renderResources->ColorSwapchains.push_back(std::move(colorSwapchainData));
+            CHECK_XRCMD(xrCreateSwapchain(session, &swapchainCreateInfo, swapchain.Handle.Put()));
 
-                std::unique_ptr<SwapchainData> depthSwapchainData = CreateSwapchainData(
-                    view, m_depthSwapchainFormat, XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
-                m_renderResources->DepthSwapchains.push_back(std::move(depthSwapchainData));
-            }
+            uint32_t chainLength;
+            CHECK_XRCMD(xrEnumerateSwapchainImages(swapchain.Handle.Get(), 0, &chainLength, nullptr));
+
+            swapchain.Images.resize(chainLength, {XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR});
+            CHECK_XRCMD(xrEnumerateSwapchainImages(swapchain.Handle.Get(),
+                                                   (uint32_t)swapchain.Images.size(),
+                                                   &chainLength,
+                                                   reinterpret_cast<XrSwapchainImageBaseHeader*>(swapchain.Images.data())));
+
+            return swapchain;
         }
 
         // Return true if an event is available, otherwise return false.
@@ -450,10 +500,9 @@ namespace {
             }
         }
 
-        void PlaceHologramInScene(const XrSpaceLocation& location,
-                                  XrTime placementTime,
-                                  XrSpace* placementSpace,
-                                  XrSpatialAnchorMSFT* placementAnchor) const {
+        struct Hologram;
+        Hologram CreateHologram(const XrSpaceLocation& location, XrTime placementTime) const {
+            Hologram hologram{};
             if (m_optionalExtensions.SpatialAnchorSupported) {
                 // Anchors provide the best stability when moving beyond 5 meters, so if the extension is enabled,
                 // create an anchor at the hand location and use the resulting anchor space.
@@ -462,14 +511,14 @@ namespace {
                 createInfo.pose = location.pose;
                 createInfo.time = placementTime;
 
-                XrResult r = xrCreateSpatialAnchorMSFT(m_session.Get(), &createInfo, placementAnchor);
+                XrResult r = xrCreateSpatialAnchorMSFT(m_session.Get(), &createInfo, hologram.Anchor.Put());
                 if (r == XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT) {
                     DEBUG_PRINT("Anchor cannot be created, likely due to lost positional tracking.");
                 } else if (XR_SUCCEEDED(r)) {
                     XrSpatialAnchorSpaceCreateInfoMSFT createSpaceInfo{XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT};
-                    createSpaceInfo.anchor = *placementAnchor;
+                    createSpaceInfo.anchor = hologram.Anchor.Get();
                     createSpaceInfo.poseInAnchorSpace = xr::math::Pose::Identity();
-                    CHECK_XRCMD(xrCreateSpatialAnchorSpaceMSFT(m_session.Get(), &createSpaceInfo, placementSpace));
+                    CHECK_XRCMD(xrCreateSpatialAnchorSpaceMSFT(m_session.Get(), &createSpaceInfo, hologram.Cube.Space.Put()));
                 } else {
                     CHECK_XRRESULT(r, "xrCreateSpatialAnchorMSFT");
                 }
@@ -478,8 +527,9 @@ namespace {
                 XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
                 createInfo.referenceSpaceType = m_sceneSpaceType;
                 createInfo.poseInReferenceSpace = location.pose;
-                CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &createInfo, placementSpace));
+                CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &createInfo, hologram.Cube.Space.Put()));
             }
+            return hologram;
         }
 
         void PollActions() {
@@ -526,35 +576,31 @@ namespace {
 
                     // Locate the hand in the scene.
                     XrSpaceLocation handLocation{XR_TYPE_SPACE_LOCATION};
-                    {
-                        const XrSpace handSpace = m_spacesInHand[side].Get();
-                        CHECK_XRCMD(xrLocateSpace(handSpace, m_sceneSpace.Get(), placementTime, &handLocation));
-                    }
+                    CHECK_XRCMD(xrLocateSpace(m_cubesInHand[side].Space.Get(), m_sceneSpace.Get(), placementTime, &handLocation));
 
                     // Ensure we have tracking before placing a cube in the scene, so that it stays reliably at a physical location.
                     if (!xr::math::Pose::IsPoseValid(handLocation)) {
                         DEBUG_PRINT("Cube cannot be placed when positional tracking is lost.");
                     } else {
-                        // Place the cube at the given location and time, and remember output placement space and anchor.
-                        PlaceHologramInScene(handLocation, placementTime, m_placedCubeSpace.Put(), m_placedCubeAnchor.Put());
-                        m_placedCube.Space = m_placedCubeSpace.Get();
+                        // Place a new cube at the given location and time, and remember output placement space and anchor.
+                        m_holograms.push_back(CreateHologram(handLocation, placementTime));
                     }
 
                     ApplyVibration();
                 }
 
-                XrActionStateBoolean exitActionValue{XR_TYPE_ACTION_STATE_BOOLEAN};
+                // This sample, when menu button is released, requests to quit the session, and therefore quit the application.
                 {
+                    XrActionStateBoolean exitActionValue{XR_TYPE_ACTION_STATE_BOOLEAN};
                     XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
                     getInfo.action = m_exitAction.Get();
                     getInfo.subactionPath = subactionPath;
                     CHECK_XRCMD(xrGetActionStateBoolean(m_session.Get(), &getInfo, &exitActionValue));
-                }
 
-                // When menu button is released, request to quit the session, and therefore quit the application.
-                if (exitActionValue.isActive && exitActionValue.changedSinceLastSync && !exitActionValue.currentState) {
-                    CHECK_XRCMD(xrRequestExitSession(m_session.Get()));
-                    ApplyVibration();
+                    if (exitActionValue.isActive && exitActionValue.changedSinceLastSync && !exitActionValue.currentState) {
+                        CHECK_XRCMD(xrRequestExitSession(m_session.Get()));
+                        ApplyVibration();
+                    }
                 }
             }
         }
@@ -576,10 +622,12 @@ namespace {
             XrCompositionLayerProjection layer{XR_TYPE_COMPOSITION_LAYER_PROJECTION};
 
             // Inform the runtime to consider alpha channel during composition
+            // The primary display on Hololens has additive environment blend mode. It will ignore alpha channel.
+            // But mixed reality capture has alpha blend mode display and use alpha channel to blend content to environment.
             layer.layerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
 
             // Only render when session is visible. otherwise submit zero layers
-            if (IsSessionVisible()) {
+            if (frameState.shouldRender) {
                 if (RenderLayer(frameState.predictedDisplayTime, layer)) {
                     layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&layer));
                 }
@@ -607,39 +655,48 @@ namespace {
         }
 
         bool RenderLayer(XrTime predictedDisplayTime, XrCompositionLayerProjection& layer) {
-            XrViewState viewState{XR_TYPE_VIEW_STATE};
-            std::vector<XrView>& views = m_renderResources->Views;
-            uint32_t viewCapacityInput = (uint32_t)views.size();
+            // The output view count of xrLocateViews is always same as xrEnumerateViewConfigurationViews
+            // Therefore Views can be preallocated and avoid two call idiom here.
+            uint32_t viewCapacityInput = (uint32_t)m_renderResources->Views.size();
             uint32_t viewCountOutput;
 
+            XrViewState viewState{XR_TYPE_VIEW_STATE};
             XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
             viewLocateInfo.viewConfigurationType = m_primaryViewConfigType;
             viewLocateInfo.displayTime = predictedDisplayTime;
             viewLocateInfo.space = m_sceneSpace.Get();
-            CHECK_XRCMD(xrLocateViews(m_session.Get(), &viewLocateInfo, &viewState, viewCapacityInput, &viewCountOutput, views.data()));
+            CHECK_XRCMD(xrLocateViews(
+                m_session.Get(), &viewLocateInfo, &viewState, viewCapacityInput, &viewCountOutput, m_renderResources->Views.data()));
             CHECK(viewCountOutput == viewCapacityInput);
             CHECK(viewCountOutput == m_renderResources->ConfigViews.size());
-            CHECK(viewCountOutput == m_renderResources->ColorSwapchains.size());
-            CHECK(viewCountOutput == m_renderResources->DepthSwapchains.size());
+            CHECK(viewCountOutput == m_renderResources->ColorSwapchain.ArraySize);
+            CHECK(viewCountOutput == m_renderResources->DepthSwapchain.ArraySize);
 
             if (!xr::math::Pose::IsPoseValid(viewState)) {
                 DEBUG_PRINT("xrLocateViews returned an invalid pose.");
                 return false;
             }
 
-            std::vector<xr::sample::Cube> visibleCubes;
+            std::vector<const sample::Cube*> visibleCubes;
 
-            // Update cubes location with latest space relation
-            for (auto cube : {m_placedCube, m_cubesInHand[LeftSide], m_cubesInHand[RightSide]}) {
-                if (cube.Space != XR_NULL_HANDLE) {
+            auto UpdateVisibleCube = [&](sample::Cube& cube) {
+                if (cube.Space.Get() != XR_NULL_HANDLE) {
                     XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
-                    CHECK_XRCMD(xrLocateSpace(cube.Space, m_sceneSpace.Get(), predictedDisplayTime, &spaceLocation));
+                    CHECK_XRCMD(xrLocateSpace(cube.Space.Get(), m_sceneSpace.Get(), predictedDisplayTime, &spaceLocation));
 
+                    // Update cubes location with latest space relation
                     if (xr::math::Pose::IsPoseValid(spaceLocation)) {
                         cube.Pose = spaceLocation.pose;
-                        visibleCubes.push_back(cube);
+                        visibleCubes.push_back(&cube);
                     }
                 }
+            };
+
+            UpdateVisibleCube(m_cubesInHand[LeftSide]);
+            UpdateVisibleCube(m_cubesInHand[RightSide]);
+
+            for (auto& hologram : m_holograms) {
+                UpdateVisibleCube(hologram.Cube);
             }
 
             m_renderResources->ProjectionLayerViews.resize(viewCountOutput);
@@ -647,22 +704,29 @@ namespace {
                 m_renderResources->DepthInfoViews.resize(viewCountOutput);
             }
 
-            // Render view to the appropriate part of the swapchain image.
-            for (uint32_t i = 0; i < viewCountOutput; i++) {
-                // Each view has a separate swapchain which is acquired, rendered to, and released.
-                const SwapchainData& colorSwapchain = *m_renderResources->ColorSwapchains[i];
-                const SwapchainData& depthSwapchain = *m_renderResources->DepthSwapchains[i];
+            // Swapchain is acquired, rendered to, and released together for all views as texture array
+            const SwapchainD3D11& colorSwapchain = m_renderResources->ColorSwapchain;
+            const SwapchainD3D11& depthSwapchain = m_renderResources->DepthSwapchain;
 
-                const uint32_t colorSwapchainImageIndex = AquireAndWaitForSwapchainImage(colorSwapchain.handle);
-                const uint32_t depthSwapchainImageIndex = AquireAndWaitForSwapchainImage(depthSwapchain.handle);
+            // Use the full range of recommended image size to achieve optimum resolution
+            const XrRect2Di imageRect = {{0, 0}, {colorSwapchain.Width, colorSwapchain.Height}};
+            CHECK(colorSwapchain.Width == depthSwapchain.Width);
+            CHECK(colorSwapchain.Height == depthSwapchain.Height);
+
+            const uint32_t colorSwapchainImageIndex = AquireAndWaitForSwapchainImage(colorSwapchain.Handle.Get());
+            const uint32_t depthSwapchainImageIndex = AquireAndWaitForSwapchainImage(depthSwapchain.Handle.Get());
+
+            // Prepare rendering parameters of each view for swapchain texture arrays
+            std::vector<xr::math::ViewProjection> viewProjections(viewCountOutput);
+            for (uint32_t i = 0; i < viewCountOutput; i++) {
+                viewProjections[i] = {m_renderResources->Views[i].pose, m_renderResources->Views[i].fov, m_nearFar};
 
                 m_renderResources->ProjectionLayerViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
                 m_renderResources->ProjectionLayerViews[i].pose = m_renderResources->Views[i].pose;
                 m_renderResources->ProjectionLayerViews[i].fov = m_renderResources->Views[i].fov;
-                m_renderResources->ProjectionLayerViews[i].subImage.swapchain = colorSwapchain.handle;
-                m_renderResources->ProjectionLayerViews[i].subImage.imageRect.offset = {0, 0};
-                m_renderResources->ProjectionLayerViews[i].subImage.imageRect.extent = {colorSwapchain.width, colorSwapchain.height};
-                m_renderResources->ProjectionLayerViews[i].subImage.imageArrayIndex = 0;
+                m_renderResources->ProjectionLayerViews[i].subImage.swapchain = colorSwapchain.Handle.Get();
+                m_renderResources->ProjectionLayerViews[i].subImage.imageRect = imageRect;
+                m_renderResources->ProjectionLayerViews[i].subImage.imageArrayIndex = i;
 
                 if (m_optionalExtensions.DepthExtensionSupported) {
                     m_renderResources->DepthInfoViews[i] = {XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR};
@@ -670,28 +734,33 @@ namespace {
                     m_renderResources->DepthInfoViews[i].maxDepth = 1;
                     m_renderResources->DepthInfoViews[i].nearZ = m_nearFar.Near;
                     m_renderResources->DepthInfoViews[i].farZ = m_nearFar.Far;
-                    m_renderResources->DepthInfoViews[i].subImage.swapchain = depthSwapchain.handle;
-                    m_renderResources->DepthInfoViews[i].subImage.imageRect.offset = {0, 0};
-                    m_renderResources->DepthInfoViews[i].subImage.imageRect.extent = {depthSwapchain.width, depthSwapchain.height};
-                    m_renderResources->DepthInfoViews[i].subImage.imageArrayIndex = 0;
+                    m_renderResources->DepthInfoViews[i].subImage.swapchain = depthSwapchain.Handle.Get();
+                    m_renderResources->DepthInfoViews[i].subImage.imageRect = imageRect;
+                    m_renderResources->DepthInfoViews[i].subImage.imageArrayIndex = i;
 
                     // Chain depth info struct to the corresponding projection layer views's next
                     m_renderResources->ProjectionLayerViews[i].next = &m_renderResources->DepthInfoViews[i];
                 }
-
-                m_graphicsPlugin->RenderView(m_renderResources->ProjectionLayerViews[i],
-                                             m_colorSwapchainFormat,
-                                             colorSwapchain.images[colorSwapchainImageIndex],
-                                             m_depthSwapchainFormat,
-                                             depthSwapchain.images[depthSwapchainImageIndex],
-                                             m_environmentBlendMode,
-                                             m_nearFar,
-                                             visibleCubes);
-
-                XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
-                CHECK_XRCMD(xrReleaseSwapchainImage(colorSwapchain.handle, &releaseInfo));
-                CHECK_XRCMD(xrReleaseSwapchainImage(depthSwapchain.handle, &releaseInfo));
             }
+
+            // For Hololens additive display, best to clear render target with transparent black color (0,0,0,0)
+            constexpr DirectX::XMVECTORF32 opaqueColor = {0.184313729f, 0.309803933f, 0.309803933f, 1.000000000f};
+            constexpr DirectX::XMVECTORF32 transparent = {0.000000000f, 0.000000000f, 0.000000000f, 0.000000000f};
+            const DirectX::XMVECTORF32 renderTargetClearColor =
+                (m_environmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE) ? opaqueColor : transparent;
+
+            m_graphicsPlugin->RenderView(imageRect,
+                                         renderTargetClearColor,
+                                         viewProjections,
+                                         colorSwapchain.Format,
+                                         colorSwapchain.Images[colorSwapchainImageIndex].texture,
+                                         depthSwapchain.Format,
+                                         depthSwapchain.Images[depthSwapchainImageIndex].texture,
+                                         visibleCubes);
+
+            XrSwapchainImageReleaseInfo releaseInfo{XR_TYPE_SWAPCHAIN_IMAGE_RELEASE_INFO};
+            CHECK_XRCMD(xrReleaseSwapchainImage(colorSwapchain.Handle.Get(), &releaseInfo));
+            CHECK_XRCMD(xrReleaseSwapchainImage(depthSwapchain.Handle.Get(), &releaseInfo));
 
             layer.space = m_sceneSpace.Get();
             layer.viewCount = (uint32_t)m_renderResources->ProjectionLayerViews.size();
@@ -700,13 +769,10 @@ namespace {
         }
 
         void PrepareSessionRestart() {
+            m_holograms.clear();
             m_renderResources.reset();
             m_session.Reset();
             m_systemId = XR_NULL_SYSTEM_ID;
-        }
-
-        constexpr bool IsSessionVisible() const {
-            return m_sessionState == XR_SESSION_STATE_VISIBLE || m_sessionState == XR_SESSION_STATE_FOCUSED;
         }
 
         constexpr bool IsSessionFocused() const {
@@ -718,11 +784,12 @@ namespace {
         }
 
     private:
-        const XrFormFactor m_formFactor{XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY};
-        const XrViewConfigurationType m_primaryViewConfigType{XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO};
+        constexpr static XrFormFactor m_formFactor{XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY};
+        constexpr static XrViewConfigurationType m_primaryViewConfigType{XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO};
+        constexpr static uint32_t m_stereoViewCount = 2; // PRIMARY_STEREO view configuration always has 2 views
 
         const std::string m_applicationName;
-        const std::unique_ptr<xr::sample::IGraphicsPluginD3D11> m_graphicsPlugin;
+        const std::unique_ptr<sample::IGraphicsPluginD3D11> m_graphicsPlugin;
 
         xr::InstanceHandle m_instance;
         xr::SessionHandle m_session;
@@ -737,15 +804,17 @@ namespace {
         xr::SpaceHandle m_sceneSpace;
         XrReferenceSpaceType m_sceneSpaceType{};
 
-        xr::SpatialAnchorHandle m_placedCubeAnchor;
-        xr::SpaceHandle m_placedCubeSpace;
-        xr::sample::Cube m_placedCube; // Placed in local or anchor space.
+        struct Hologram {
+            sample::Cube Cube;
+            xr::SpatialAnchorHandle Anchor;
+        };
+
+        std::vector<Hologram> m_holograms;
 
         constexpr static uint32_t LeftSide = 0;
         constexpr static uint32_t RightSide = 1;
         std::array<XrPath, 2> m_subactionPaths{};
-        std::array<xr::SpaceHandle, 2> m_spacesInHand{};
-        std::array<xr::sample::Cube, 2> m_cubesInHand{};
+        std::array<sample::Cube, 2> m_cubesInHand{};
 
         xr::ActionSetHandle m_actionSet;
         xr::ActionHandle m_placeAction;
@@ -753,23 +822,23 @@ namespace {
         xr::ActionHandle m_poseAction;
         xr::ActionHandle m_vibrateAction;
 
-        struct SwapchainData {
-            XrSwapchain handle = {XR_NULL_HANDLE};
-            int32_t width{0};
-            int32_t height{0};
-            std::vector<XrSwapchainImageD3D11KHR> images;
-        };
-
-        DXGI_FORMAT m_colorSwapchainFormat{};
-        DXGI_FORMAT m_depthSwapchainFormat{};
         XrEnvironmentBlendMode m_environmentBlendMode{};
-        xr::math::NearFarDistance m_nearFar{};
+        xr::math::NearFar m_nearFar{};
+
+        struct SwapchainD3D11 {
+            xr::SwapchainHandle Handle;
+            DXGI_FORMAT Format{DXGI_FORMAT_UNKNOWN};
+            int32_t Width{0};
+            int32_t Height{0};
+            uint32_t ArraySize{0};
+            std::vector<XrSwapchainImageD3D11KHR> Images;
+        };
 
         struct RenderResources {
             std::vector<XrView> Views;
             std::vector<XrViewConfigurationView> ConfigViews;
-            std::vector<std::unique_ptr<SwapchainData>> ColorSwapchains;
-            std::vector<std::unique_ptr<SwapchainData>> DepthSwapchains;
+            SwapchainD3D11 ColorSwapchain;
+            SwapchainD3D11 DepthSwapchain;
             std::vector<XrCompositionLayerProjectionView> ProjectionLayerViews;
             std::vector<XrCompositionLayerDepthInfoKHR> DepthInfoViews;
         };
@@ -781,9 +850,9 @@ namespace {
     };
 } // namespace
 
-namespace xr::sample {
-    std::unique_ptr<xr::sample::IOpenXrProgram> CreateOpenXrProgram(std::string applicationName,
-                                                                    std::unique_ptr<xr::sample::IGraphicsPluginD3D11> graphicsPlugin) {
+namespace sample {
+    std::unique_ptr<sample::IOpenXrProgram> CreateOpenXrProgram(std::string applicationName,
+                                                                std::unique_ptr<sample::IGraphicsPluginD3D11> graphicsPlugin) {
         return std::make_unique<ImplementOpenXrProgram>(std::move(applicationName), std::move(graphicsPlugin));
     }
-} // namespace xr::sample
+} // namespace sample

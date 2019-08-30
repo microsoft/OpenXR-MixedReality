@@ -18,7 +18,7 @@
 #include <winrt/base.h> // winrt::com_ptr
 #include <d3dcommon.h>  //ID3DBlob
 
-namespace xr::dx {
+namespace sample::dx {
 
     winrt::com_ptr<IDXGIAdapter1> GetAdapter(LUID adapterId);
 
@@ -28,6 +28,4 @@ namespace xr::dx {
                                      ID3D11DeviceContext** deviceContext);
 
     winrt::com_ptr<ID3DBlob> CompileShader(const char* hlsl, const char* entrypoint, const char* shaderTarget);
-
-    std::vector<D3D_FEATURE_LEVEL> SelectFeatureLevels(D3D_FEATURE_LEVEL minimumFeatureLevel);
-} // namespace xr::dx
+} // namespace sample::dx

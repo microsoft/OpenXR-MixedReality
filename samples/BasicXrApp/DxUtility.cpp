@@ -14,14 +14,15 @@
 //
 //*********************************************************
 #include "pch.h"
+#include "DxUtility.h"
 #include <D3Dcompiler.h>
 #pragma comment(lib, "D3DCompiler.lib")
 
-namespace xr::dx {
+namespace sample::dx {
     winrt::com_ptr<IDXGIAdapter1> GetAdapter(LUID adapterId) {
         // Create the DXGI factory.
         winrt::com_ptr<IDXGIFactory1> dxgiFactory;
-        CHECK_HRCMD(CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(dxgiFactory.put())));
+        CHECK_HRCMD(CreateDXGIFactory1(winrt::guid_of<IDXGIFactory1>(), dxgiFactory.put_void()));
 
         for (UINT adapterIndex = 0;; adapterIndex++) {
             // EnumAdapters1 will fail with DXGI_ERROR_NOT_FOUND when there are no more adapters to enumerate.
@@ -99,22 +100,4 @@ namespace xr::dx {
 
         return compiled;
     }
-
-    // Create a list of feature levels which are both supported by the OpenXR runtime and this application.
-    std::vector<D3D_FEATURE_LEVEL> SelectFeatureLevels(D3D_FEATURE_LEVEL minimumFeatureLevel) {
-        // Create a list of feature levels which are both supported by the OpenXR runtime and this application.
-        std::vector<D3D_FEATURE_LEVEL> featureLevels = {D3D_FEATURE_LEVEL_12_1,
-                                                        D3D_FEATURE_LEVEL_12_0,
-                                                        D3D_FEATURE_LEVEL_11_1,
-                                                        D3D_FEATURE_LEVEL_11_0,
-                                                        D3D_FEATURE_LEVEL_10_1,
-                                                        D3D_FEATURE_LEVEL_10_0};
-        featureLevels.erase(std::remove_if(featureLevels.begin(),
-                                           featureLevels.end(),
-                                           [&](D3D_FEATURE_LEVEL fl) { return fl < minimumFeatureLevel; }),
-                            featureLevels.end());
-        CHECK_MSG(featureLevels.size() != 0, "Unsupported minimum feature level!");
-        return featureLevels;
-    }
-
-} // namespace xr::dx
+} // namespace sample::dx
