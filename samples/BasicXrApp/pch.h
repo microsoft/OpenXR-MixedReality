@@ -40,9 +40,9 @@
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
 
-#include "..\XrUtility\XrError.h"
-#include "..\XrUtility\XrHandle.h"
-#include "..\XrUtility\XrMath.h"
-#include "..\XrUtility\XrString.h"
+#include "../XrUtility/XrError.h"
+#include "../XrUtility/XrHandle.h"
+#include "../XrUtility/XrMath.h"
+#include "../XrUtility/XrString.h"
 
 #include <winrt/base.h>                // winrt::com_ptr

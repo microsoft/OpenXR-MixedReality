@@ -37,9 +37,15 @@ namespace xr::math {
         bool IsNormalized(const XrQuaternionf& quaternion);
     } // namespace Quaternion
 
-    struct NearFarDistance {
+    struct NearFar {
         float Near;
         float Far;
+    };
+
+    struct ViewProjection {
+        XrPosef Pose;
+        XrFovf Fov;
+        NearFar NearFar;
     };
 
     // Type conversion between math types
@@ -64,8 +70,8 @@ namespace xr::math {
     void XM_CALLCONV StoreXrExtent(XrExtent2Df* extend, DirectX::FXMVECTOR inVec);
 
     // Projection matrix math
-    DirectX::XMMATRIX ComposeProjectionMatrix(const XrFovf& fov, const NearFarDistance& nearFar);
-    NearFarDistance GetProjectionNearFarDistance(const DirectX::XMFLOAT4X4& projectionMatrix);
+    DirectX::XMMATRIX ComposeProjectionMatrix(const XrFovf& fov, const NearFar& nearFar);
+    NearFar GetProjectionNearFar(const DirectX::XMFLOAT4X4& projectionMatrix);
     XrFovf DecomposeProjectionMatrix(const DirectX::XMFLOAT4X4& projectionMatrix);
 } // namespace xr::math
 
@@ -296,7 +302,7 @@ namespace xr::math {
     // 0                  2 * n / (t - b)    0                    0
     // (r + l) / (r - l)  (t + b) / (t - b)  f / (n - f)         -1
     // 0                  0                  n*f / (n - f)        0
-    inline DirectX::XMMATRIX ComposeProjectionMatrix(const XrFovf& fov, const NearFarDistance& nearFar) {
+    inline DirectX::XMMATRIX ComposeProjectionMatrix(const XrFovf& fov, const NearFar& nearFar) {
         if (!IsValidFov(fov)) {
             throw std::runtime_error("Invalid projection specification");
         }
@@ -387,10 +393,10 @@ namespace xr::math {
         }
     }
 
-    inline NearFarDistance GetProjectionNearFarDistance(const DirectX::XMFLOAT4X4& p) {
+    inline NearFar GetProjectionNearFar(const DirectX::XMFLOAT4X4& p) {
         ValidateProjectionMatrix(p);
 
-        NearFarDistance d;
+        NearFar d;
 
         if (IsInfiniteNearPlaneProjectionMatrix(p)) {
             d.Near = std::numeric_limits<float>::infinity();

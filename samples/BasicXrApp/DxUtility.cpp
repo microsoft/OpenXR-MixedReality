@@ -14,14 +14,15 @@
 //
 //*********************************************************
 #include "pch.h"
+#include "DxUtility.h"
 #include <D3Dcompiler.h>
 #pragma comment(lib, "D3DCompiler.lib")
 
-namespace xr::dx {
+namespace sample::dx {
     winrt::com_ptr<IDXGIAdapter1> GetAdapter(LUID adapterId) {
         // Create the DXGI factory.
         winrt::com_ptr<IDXGIFactory1> dxgiFactory;
-        CHECK_HRCMD(CreateDXGIFactory1(__uuidof(IDXGIFactory1), reinterpret_cast<void**>(dxgiFactory.put())));
+        CHECK_HRCMD(CreateDXGIFactory1(winrt::guid_of<IDXGIFactory1>(), dxgiFactory.put_void()));
 
         for (UINT adapterIndex = 0;; adapterIndex++) {
             // EnumAdapters1 will fail with DXGI_ERROR_NOT_FOUND when there are no more adapters to enumerate.
@@ -100,21 +101,43 @@ namespace xr::dx {
         return compiled;
     }
 
-    // Create a list of feature levels which are both supported by the OpenXR runtime and this application.
-    std::vector<D3D_FEATURE_LEVEL> SelectFeatureLevels(D3D_FEATURE_LEVEL minimumFeatureLevel) {
-        // Create a list of feature levels which are both supported by the OpenXR runtime and this application.
-        std::vector<D3D_FEATURE_LEVEL> featureLevels = {D3D_FEATURE_LEVEL_12_1,
-                                                        D3D_FEATURE_LEVEL_12_0,
-                                                        D3D_FEATURE_LEVEL_11_1,
-                                                        D3D_FEATURE_LEVEL_11_0,
-                                                        D3D_FEATURE_LEVEL_10_1,
-                                                        D3D_FEATURE_LEVEL_10_0};
-        featureLevels.erase(std::remove_if(featureLevels.begin(),
-                                           featureLevels.end(),
-                                           [&](D3D_FEATURE_LEVEL fl) { return fl < minimumFeatureLevel; }),
-                            featureLevels.end());
-        CHECK_MSG(featureLevels.size() != 0, "Unsupported minimum feature level!");
-        return featureLevels;
+    SwapchainD3D11 CreateSwapchainD3D11(XrSession session,
+                                        DXGI_FORMAT format,
+                                        int32_t width,
+                                        int32_t height,
+                                        uint32_t arrayLength,
+                                        uint32_t sampleCount,
+                                        XrSwapchainCreateFlags createFlags,
+                                        XrSwapchainUsageFlags usageFlags) {
+        SwapchainD3D11 swapchain;
+        swapchain.Format = format;
+        swapchain.Width = width;
+        swapchain.Height = height;
+        swapchain.ArrayLength = arrayLength;
+
+        XrSwapchainCreateInfo swapchainCreateInfo{XR_TYPE_SWAPCHAIN_CREATE_INFO};
+        swapchainCreateInfo.arraySize = arrayLength;
+        swapchainCreateInfo.format = format;
+        swapchainCreateInfo.width = width;
+        swapchainCreateInfo.height = height;
+        swapchainCreateInfo.mipCount = 1;
+        swapchainCreateInfo.faceCount = 1;
+        swapchainCreateInfo.sampleCount = sampleCount;
+        swapchainCreateInfo.createFlags = createFlags;
+        swapchainCreateInfo.usageFlags = usageFlags;
+
+        CHECK_XRCMD(xrCreateSwapchain(session, &swapchainCreateInfo, swapchain.Handle.Put()));
+
+        uint32_t chainLength;
+        CHECK_XRCMD(xrEnumerateSwapchainImages(swapchain.Handle.Get(), 0, &chainLength, nullptr));
+
+        swapchain.Images.resize(chainLength, {XR_TYPE_SWAPCHAIN_IMAGE_D3D11_KHR});
+        CHECK_XRCMD(xrEnumerateSwapchainImages(swapchain.Handle.Get(),
+                                               (uint32_t)swapchain.Images.size(),
+                                               &chainLength,
+                                               reinterpret_cast<XrSwapchainImageBaseHeader*>(swapchain.Images.data())));
+
+        return swapchain;
     }
 
-} // namespace xr::dx
+} // namespace sample::dx
