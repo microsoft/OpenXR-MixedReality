@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\OpenXR.Loader.1.0.2\build\native\OpenXR.Loader.props" Condition="Exists('..\..\packages\OpenXR.Loader.1.0.2\build\native\OpenXR.Loader.props')" />
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1b09b21c-2d7a-4278-81c8-84a47d5834a7}</ProjectGuid>
     <Keyword>HolographicApp</Keyword>
@@ -73,9 +74,6 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
-  <PropertyGroup>
-    <IncludePath>$(VC_IncludePath);$(WindowsSDK_IncludePath);../../include</IncludePath>
-  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -83,12 +81,11 @@
       <PrecompiledHeaderOutputFile>$(IntDir)pch.pch</PrecompiledHeaderOutputFile>
       <WarningLevel>Level4</WarningLevel>
       <TreatWarningAsError>true</TreatWarningAsError>
-      <AdditionalOptions>%(AdditionalOptions)</AdditionalOptions>
-      <DisableSpecificWarnings>4447</DisableSpecificWarnings>
+      <AdditionalOptions>%(AdditionalOptions) /permissive-</AdditionalOptions>
       <LanguageStandard>stdcpp17</LanguageStandard>
+      <CompileAsWinRT>false</CompileAsWinRT>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>shlwapi.lib;advapi32.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
     </Link>
   </ItemDefinitionGroup>
@@ -138,16 +135,20 @@
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="BasicXrApp_TemporaryKey.pfx" />
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\..\loader\openxr_loader_uwp.vcxproj">
-      <Project>{8c468e0d-e516-492a-90c5-2974d3f0cc76}</Project>
-    </ProjectReference>
+    <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="$(VSINSTALLDIR)\Common7\IDE\Extensions\Microsoft\VsGraphics\ImageContentTask.targets" />
     <Import Project="$(VSINSTALLDIR)\Common7\IDE\Extensions\Microsoft\VsGraphics\MeshContentTask.targets" />
     <Import Project="$(VSINSTALLDIR)\Common7\IDE\Extensions\Microsoft\VsGraphics\ShaderGraphContentTask.targets" />
+    <Import Project="..\..\packages\OpenXR.Loader.1.0.2\build\native\OpenXR.Loader.targets" Condition="Exists('..\..\packages\OpenXR.Loader.1.0.2\build\native\OpenXR.Loader.targets')" />
   </ImportGroup>
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\..\packages\OpenXR.Loader.1.0.2\build\native\OpenXR.Loader.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenXR.Loader.1.0.2\build\native\OpenXR.Loader.props'))" />
+    <Error Condition="!Exists('..\..\packages\OpenXR.Loader.1.0.2\build\native\OpenXR.Loader.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenXR.Loader.1.0.2\build\native\OpenXR.Loader.targets'))" />
+  </Target>
 </Project>

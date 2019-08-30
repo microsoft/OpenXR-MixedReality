@@ -3,14 +3,6 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.28307.421
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "OpenXR", "OpenXR", "{47AF7B6C-150D-4BC8-855B-5B8A1EEFDA30}"
-	ProjectSection(SolutionItems) = preProject
-		include\openxr\openxr.h = include\openxr\openxr.h
-		include\openxr\openxr_platform.h = include\openxr\openxr_platform.h
-		include\openxr\openxr_platform_defines.h = include\openxr\openxr_platform_defines.h
-		include\openxr\openxr_reflection.h = include\openxr\openxr_reflection.h
-	EndProjectSection
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xrUtility", "xrUtility", "{D71728CE-842F-4FA7-94AE-01AEA60BC45A}"
 	ProjectSection(SolutionItems) = preProject
 		samples\XrUtility\XrError.h = samples\XrUtility\XrError.h
@@ -21,8 +13,6 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xrUtility", "xrUtility", "{
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BasicXrApp_win32", "samples\BasicXrApp\BasicXrApp_win32.vcxproj", "{A75A907B-8952-4ED2-BC2D-A68F09CEBD83}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "openxr_loader", "loader\openxr_loader_win32.vcxproj", "{F5627A09-BB7F-4CEB-B178-66762F92773A}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -40,14 +30,6 @@ Global
 		{A75A907B-8952-4ED2-BC2D-A68F09CEBD83}.Release|x64.Build.0 = Release|x64
 		{A75A907B-8952-4ED2-BC2D-A68F09CEBD83}.Release|x86.ActiveCfg = Release|Win32
 		{A75A907B-8952-4ED2-BC2D-A68F09CEBD83}.Release|x86.Build.0 = Release|Win32
-		{F5627A09-BB7F-4CEB-B178-66762F92773A}.Debug|x64.ActiveCfg = Debug|x64
-		{F5627A09-BB7F-4CEB-B178-66762F92773A}.Debug|x64.Build.0 = Debug|x64
-		{F5627A09-BB7F-4CEB-B178-66762F92773A}.Debug|x86.ActiveCfg = Debug|Win32
-		{F5627A09-BB7F-4CEB-B178-66762F92773A}.Debug|x86.Build.0 = Debug|Win32
-		{F5627A09-BB7F-4CEB-B178-66762F92773A}.Release|x64.ActiveCfg = Release|x64
-		{F5627A09-BB7F-4CEB-B178-66762F92773A}.Release|x64.Build.0 = Release|x64
-		{F5627A09-BB7F-4CEB-B178-66762F92773A}.Release|x86.ActiveCfg = Release|Win32
-		{F5627A09-BB7F-4CEB-B178-66762F92773A}.Release|x86.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

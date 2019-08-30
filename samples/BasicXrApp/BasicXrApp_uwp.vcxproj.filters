@@ -47,5 +47,6 @@
     <None Include="BasicXrApp_TemporaryKey.pfx">
       <Filter>Assets</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
