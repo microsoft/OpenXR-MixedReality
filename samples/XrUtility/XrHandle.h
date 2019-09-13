@@ -31,8 +31,12 @@ namespace xr {
 
         UniqueHandle& operator=(const UniqueHandle&) = delete;
         UniqueHandle& operator=(UniqueHandle&& other) noexcept {
-            m_handle = other.m_handle;
-            other.m_handle = XR_NULL_HANDLE;
+            if (m_handle != other.m_handle) {
+                Reset();
+
+                m_handle = other.m_handle;
+                other.m_handle = XR_NULL_HANDLE;
+            }
             return *this;
         }
 

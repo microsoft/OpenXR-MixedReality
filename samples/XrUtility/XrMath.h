@@ -22,9 +22,14 @@ namespace xr::math {
     constexpr float QuaternionEpsilon = 0.01f;
     constexpr DirectX::XMVECTORF32 XMQuaternionEpsilon = {{{QuaternionEpsilon, QuaternionEpsilon, QuaternionEpsilon, QuaternionEpsilon}}};
 
+    // A large number that can be used as maximum finite depth value, beyond which a value can be treated as infinity
+    constexpr float OneOverFloatEpsilon = 1.0f / std::numeric_limits<float>::epsilon();
+
     namespace Pose {
         constexpr XrPosef Identity();
         constexpr XrPosef Translation(const XrVector3f& translation);
+
+        XrPosef LookAt(const XrVector3f& origin, const XrVector3f& forward, const XrVector3f& up);
 
         constexpr bool IsPoseValid(const XrSpaceLocation& location);
         constexpr bool IsPoseTracked(const XrSpaceLocation& location);
@@ -35,6 +40,8 @@ namespace xr::math {
     namespace Quaternion {
         constexpr XrQuaternionf Identity();
         bool IsNormalized(const XrQuaternionf& quaternion);
+        XrQuaternionf RotateAxisAngle(const XrVector3f& axis, float angleInRadians);
+        XrQuaternionf RotateRollPitchYaw(const XrVector3f& equlaAnglesInRadians);
     } // namespace Quaternion
 
     struct NearFar {
@@ -50,7 +57,7 @@ namespace xr::math {
 
     // Type conversion between math types
     template <typename X, typename Y>
-    const X& cast(const Y& value);
+    constexpr const X& cast(const Y& value);
 
     // Convert XR types to DX
     DirectX::XMVECTOR XM_CALLCONV LoadXrVector2(const XrVector2f& vector);
@@ -80,7 +87,7 @@ namespace xr::math {
 namespace xr::math {
     namespace detail {
         template <typename X, typename Y>
-        const X& implement_math_cast(const Y& value) {
+        constexpr const X& implement_math_cast(const Y& value) {
             static_assert(std::is_pod<X>::value, "Unsafe to cast between non-POD types.");
             static_assert(std::is_pod<Y>::value, "Unsafe to cast between non-POD types.");
             static_assert(!std::is_pointer<X>::value, "Incorrect cast between pointer types.");
@@ -90,7 +97,7 @@ namespace xr::math {
         }
 
         template <typename X, typename Y>
-        X& implement_math_cast(Y& value) {
+        constexpr X& implement_math_cast(Y& value) {
             static_assert(std::is_pod<X>::value, "Unsafe to cast between non-POD types.");
             static_assert(std::is_pod<Y>::value, "Unsafe to cast between non-POD types.");
             static_assert(!std::is_pointer<X>::value, "Incorrect cast between pointer types.");
@@ -101,13 +108,13 @@ namespace xr::math {
     } // namespace detail
 
     template <typename X, typename Y>
-    const X& cast(const Y& value) {
+    constexpr const X& cast(const Y& value) {
         static_assert(false, "Undefined cast from Y to type X");
     }
 
 #define DEFINE_CAST(X, Y)                             \
     template <>                                       \
-    inline const X& cast<X, Y>(const Y& value) {      \
+    constexpr const X& cast<X, Y>(const Y& value) {   \
         return detail::implement_math_cast<X>(value); \
     }
 
@@ -157,7 +164,10 @@ namespace xr::math {
 
     // Shortcut non-templated overload of cast() function
 #define DEFINE_CAST(X, Y)                             \
-    inline const X& cast(const Y& value) {            \
+    constexpr const X& cast(const Y& value) {         \
+        return detail::implement_math_cast<X>(value); \
+    }                                                 \
+    constexpr X& cast(Y& value) {                     \
         return detail::implement_math_cast<X>(value); \
     }
 
@@ -241,13 +251,22 @@ namespace xr::math {
     }
 
     namespace Pose {
-        constexpr inline XrPosef Identity() {
+        constexpr XrPosef Identity() {
             return {{0, 0, 0, 1}, {0, 0, 0}};
         }
 
-        constexpr inline XrPosef Translation(const XrVector3f& translation) {
+        constexpr XrPosef Translation(const XrVector3f& translation) {
             XrPosef pose = Identity();
             pose.position = translation;
+            return pose;
+        }
+
+        inline XrPosef LookAt(const XrVector3f& origin, const XrVector3f& forward, const XrVector3f& up) {
+            DirectX::XMMATRIX virtualToGazeOrientation =
+                DirectX::XMMatrixLookToRH(xr::math::LoadXrVector3(origin), xr::math::LoadXrVector3(forward), xr::math::LoadXrVector3(up));
+            XrPosef pose;
+            xr::math::StoreXrPose(&pose, DirectX::XMMatrixInverse(nullptr, virtualToGazeOrientation));
+
             return pose;
         }
 
@@ -283,6 +302,18 @@ namespace xr::math {
             DirectX::XMVECTOR length = DirectX::XMVector4Length(vector);
             DirectX::XMVECTOR equal = DirectX::XMVectorNearEqual(length, DirectX::g_XMOne, XMQuaternionEpsilon);
             return DirectX::XMVectorGetX(equal) != 0;
+        }
+
+        inline XrQuaternionf RotateAxisAngle(const XrVector3f& axis, float angleInRadians) {
+            XrQuaternionf q;
+            StoreXrQuaternion(&q, DirectX::XMQuaternionRotationAxis(LoadXrVector3(axis), angleInRadians));
+            return q;
+        }
+
+        inline XrQuaternionf RotateRollPitchYaw(const XrVector3f& anglesInRadians) {
+            XrQuaternionf q;
+            StoreXrQuaternion(&q, DirectX::XMQuaternionRotationRollPitchYaw(anglesInRadians.x, anglesInRadians.y, anglesInRadians.z));
+            return q;
         }
     } // namespace Quaternion
 

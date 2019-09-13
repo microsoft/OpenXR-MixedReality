@@ -44,7 +44,7 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="BasicXrApp_TemporaryKey.pfx">
+    <None Include="BasicXrApp_uwp_TemporaryKey.pfx">
       <Filter>Assets</Filter>
     </None>
     <None Include="packages.config" />
