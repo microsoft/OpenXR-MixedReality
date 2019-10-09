@@ -72,6 +72,19 @@ namespace {
             createInfo.applicationInfo = {"", 1, "OpenXR Sample", 1, XR_CURRENT_API_VERSION};
             strcpy_s(createInfo.applicationInfo.applicationName, m_applicationName.c_str());
             CHECK_XRCMD(xrCreateInstance(&createInfo, m_instance.Put()));
+
+            // Get function pointers for enabled extensions.
+            CHECK_XRCMD(xrGetInstanceProcAddr(
+                m_instance.Get(), "xrGetD3D11GraphicsRequirementsKHR", (PFN_xrVoidFunction*)&m_xrExts.xrGetD3D11GraphicsRequirementsKHR));
+
+            if (m_optionalExtensions.SpatialAnchorSupported) {
+                CHECK_XRCMD(xrGetInstanceProcAddr(
+                    m_instance.Get(), "xrCreateSpatialAnchorMSFT", (PFN_xrVoidFunction*)&m_xrExts.xrCreateSpatialAnchorMSFT));
+                CHECK_XRCMD(xrGetInstanceProcAddr(
+                    m_instance.Get(), "xrDestroySpatialAnchorMSFT", (PFN_xrVoidFunction*)&m_xrExts.xrDestroySpatialAnchorMSFT));
+                CHECK_XRCMD(xrGetInstanceProcAddr(
+                    m_instance.Get(), "xrCreateSpatialAnchorSpaceMSFT", (PFN_xrVoidFunction*)&m_xrExts.xrCreateSpatialAnchorSpaceMSFT));
+            }
         }
 
         std::vector<const char*> SelectExtensions() {
@@ -233,7 +246,7 @@ namespace {
 
             // Create the D3D11 device for the adapter associated with the system.
             XrGraphicsRequirementsD3D11KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
-            CHECK_XRCMD(xrGetD3D11GraphicsRequirementsKHR(m_instance.Get(), m_systemId, &graphicsRequirements));
+            CHECK_XRCMD(m_xrExts.xrGetD3D11GraphicsRequirementsKHR(m_instance.Get(), m_systemId, &graphicsRequirements));
 
             // Create a list of feature levels which are both supported by the OpenXR runtime and this application.
             std::vector<D3D_FEATURE_LEVEL> featureLevels = {D3D_FEATURE_LEVEL_12_1,
@@ -511,14 +524,14 @@ namespace {
                 createInfo.pose = location.pose;
                 createInfo.time = placementTime;
 
-                XrResult r = xrCreateSpatialAnchorMSFT(m_session.Get(), &createInfo, hologram.Anchor.Put());
+                XrResult r = m_xrExts.xrCreateSpatialAnchorMSFT(m_session.Get(), &createInfo, hologram.Anchor.Put(m_xrExts.xrDestroySpatialAnchorMSFT));
                 if (r == XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT) {
                     DEBUG_PRINT("Anchor cannot be created, likely due to lost positional tracking.");
                 } else if (XR_SUCCEEDED(r)) {
                     XrSpatialAnchorSpaceCreateInfoMSFT createSpaceInfo{XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT};
                     createSpaceInfo.anchor = hologram.Anchor.Get();
                     createSpaceInfo.poseInAnchorSpace = xr::math::Pose::Identity();
-                    CHECK_XRCMD(xrCreateSpatialAnchorSpaceMSFT(m_session.Get(), &createSpaceInfo, hologram.Cube.Space.Put()));
+                    CHECK_XRCMD(m_xrExts.xrCreateSpatialAnchorSpaceMSFT(m_session.Get(), &createSpaceInfo, hologram.Cube.Space.Put()));
                 } else {
                     CHECK_XRRESULT(r, "xrCreateSpatialAnchorMSFT");
                 }
@@ -800,6 +813,13 @@ namespace {
             bool UnboundedRefSpaceSupported{false};
             bool SpatialAnchorSupported{false};
         } m_optionalExtensions;
+
+        struct {
+            PFN_xrGetD3D11GraphicsRequirementsKHR xrGetD3D11GraphicsRequirementsKHR;
+            PFN_xrCreateSpatialAnchorMSFT xrCreateSpatialAnchorMSFT;
+            PFN_xrDestroySpatialAnchorMSFT xrDestroySpatialAnchorMSFT;
+            PFN_xrCreateSpatialAnchorSpaceMSFT xrCreateSpatialAnchorSpaceMSFT;
+        } m_xrExts;
 
         xr::SpaceHandle m_sceneSpace;
         XrReferenceSpaceType m_sceneSpaceType{};
