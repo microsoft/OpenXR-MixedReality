@@ -20,7 +20,6 @@
 
 namespace xr::math {
     constexpr float QuaternionEpsilon = 0.01f;
-    constexpr DirectX::XMVECTORF32 XMQuaternionEpsilon = {{{QuaternionEpsilon, QuaternionEpsilon, QuaternionEpsilon, QuaternionEpsilon}}};
 
     // A large number that can be used as maximum finite depth value, beyond which a value can be treated as infinity
     constexpr float OneOverFloatEpsilon = 1.0f / std::numeric_limits<float>::epsilon();
@@ -322,11 +321,13 @@ namespace xr::math {
             return {0, 0, 0, 1};
         }
 
-        inline bool IsNormalized(const XrQuaternionf& quaternion) {
+        inline float Length(const XrQuaternionf& quaternion) {
             DirectX::XMVECTOR vector = LoadXrQuaternion(quaternion);
-            DirectX::XMVECTOR length = DirectX::XMVector4Length(vector);
-            DirectX::XMVECTOR equal = DirectX::XMVectorNearEqual(length, DirectX::g_XMOne, XMQuaternionEpsilon);
-            return DirectX::XMVectorGetX(equal) != 0;
+            return DirectX::XMVectorGetX(DirectX::XMVector4Length(vector));
+        }
+
+        inline bool IsNormalized(const XrQuaternionf& quaternion) {
+            return fabs(1 - Length(quaternion)) <= QuaternionEpsilon;
         }
 
         inline XrQuaternionf RotationAxisAngle(const XrVector3f& axis, float angleInRadians) {
