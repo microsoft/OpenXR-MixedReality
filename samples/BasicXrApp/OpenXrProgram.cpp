@@ -709,7 +709,7 @@ namespace {
                 // Let spinning cube rotate around the main cube at y axis.
                 XrPosef pose;
                 pose.position = {radius * std::sin(angle), 0, radius * std::cos(angle)};
-                pose.orientation = {0, std::sin(angle / 2), 0, std::cos(angle / 2)};
+                pose.orientation = xr::math::Quaternion::RotationAxisAngle({0, 1, 0}, angle);
                 m_holograms[m_spinningCubeIndex.value()].Cube.PoseInSpace = pose;
             }
         }
