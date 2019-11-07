@@ -271,7 +271,7 @@ namespace {
         void CreateSpaces() {
             CHECK(m_session.Get() != XR_NULL_HANDLE);
 
-            // Create a space to place a cube in the world.
+            // Create a scene space to bridge interactions and all holograms.
             {
                 if (m_optionalExtensions.UnboundedRefSpaceSupported) {
                     // Unbounded reference space provides the best scene space for world-scale experiences.
@@ -285,12 +285,6 @@ namespace {
                 spaceCreateInfo.referenceSpaceType = m_sceneSpaceType;
                 spaceCreateInfo.poseInReferenceSpace = xr::math::Pose::Identity();
                 CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &spaceCreateInfo, m_sceneSpace.Put()));
-
-                // Initialize a cube 1 meter in front of user.
-                Hologram hologram{};
-                spaceCreateInfo.poseInReferenceSpace = xr::math::Pose::Translation({0, 0, -1});
-                CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &spaceCreateInfo, hologram.Cube.Space.Put()));
-                m_holograms.push_back(std::move(hologram));
             }
 
             // Create a space for each hand pointer pose.
@@ -364,27 +358,32 @@ namespace {
             CHECK(m_renderResources->ConfigViews[0].recommendedSwapchainSampleCount ==
                   m_renderResources->ConfigViews[1].recommendedSwapchainSampleCount);
 
+            // Use recommended rendering parameters for a balance between quality and performance
+            const uint32_t imageRectWidth = view.recommendedImageRectWidth;
+            const uint32_t imageRectHeight = view.recommendedImageRectHeight;
+            const uint32_t swapchainSampleCount = view.recommendedSwapchainSampleCount;
+
             // Create swapchains with texture array for color and depth images.
             // The texture array has the size of viewCount, and they are rendered in a single pass using VPRT.
             const uint32_t textureArraySize = viewCount;
             m_renderResources->ColorSwapchain =
                 CreateSwapchainD3D11(m_session.Get(),
                                      colorSwapchainFormat,
-                                     view.recommendedImageRectWidth,
-                                     view.recommendedImageRectHeight,
+                                     imageRectWidth,
+                                     imageRectHeight,
                                      textureArraySize,
-                                     view.recommendedSwapchainSampleCount,
-                                     0,
+                                     swapchainSampleCount,
+                                     0 /*createFlags*/,
                                      XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT);
 
             m_renderResources->DepthSwapchain =
                 CreateSwapchainD3D11(m_session.Get(),
                                      depthSwapchainFormat,
-                                     view.recommendedImageRectWidth,
-                                     view.recommendedImageRectHeight,
+                                     imageRectWidth,
+                                     imageRectHeight,
                                      textureArraySize,
-                                     view.recommendedSwapchainSampleCount,
-                                     0,
+                                     swapchainSampleCount,
+                                     0 /*createFlags*/,
                                      XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT);
 
             // Preallocate view buffers for xrLocateViews later inside frame loop.
@@ -394,8 +393,8 @@ namespace {
         struct SwapchainD3D11;
         SwapchainD3D11 CreateSwapchainD3D11(XrSession session,
                                             DXGI_FORMAT format,
-                                            int32_t width,
-                                            int32_t height,
+                                            uint32_t width,
+                                            uint32_t height,
                                             uint32_t arraySize,
                                             uint32_t sampleCount,
                                             XrSwapchainCreateFlags createFlags,
@@ -501,14 +500,14 @@ namespace {
         }
 
         struct Hologram;
-        Hologram CreateHologram(const XrSpaceLocation& location, XrTime placementTime) const {
+        Hologram CreateHologram(const XrPosef& poseInScene, XrTime placementTime) const {
             Hologram hologram{};
             if (m_optionalExtensions.SpatialAnchorSupported) {
                 // Anchors provide the best stability when moving beyond 5 meters, so if the extension is enabled,
-                // create an anchor at the hand location and use the resulting anchor space.
+                // create an anchor at given location and place the hologram at the resulting anchor space.
                 XrSpatialAnchorCreateInfoMSFT createInfo{XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT};
                 createInfo.space = m_sceneSpace.Get();
-                createInfo.pose = location.pose;
+                createInfo.pose = poseInScene;
                 createInfo.time = placementTime;
 
                 XrResult r = xrCreateSpatialAnchorMSFT(m_session.Get(), &createInfo, hologram.Anchor.Put());
@@ -524,19 +523,16 @@ namespace {
                 }
             } else {
                 // If the anchor extension is not available, place it in the scene space.
+                // This works fine as long as user doesn't move far away from scene space origin.
                 XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
                 createInfo.referenceSpaceType = m_sceneSpaceType;
-                createInfo.poseInReferenceSpace = location.pose;
+                createInfo.poseInReferenceSpace = poseInScene;
                 CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &createInfo, hologram.Cube.Space.Put()));
             }
             return hologram;
         }
 
         void PollActions() {
-            if (!IsSessionFocused()) {
-                return;
-            }
-
             // Get updated action states.
             std::vector<XrActiveActionSet> activeActionSets = {{m_actionSet.Get(), XR_NULL_PATH}};
             XrActionsSyncInfo syncInfo{XR_TYPE_ACTIONS_SYNC_INFO};
@@ -583,7 +579,7 @@ namespace {
                         DEBUG_PRINT("Cube cannot be placed when positional tracking is lost.");
                     } else {
                         // Place a new cube at the given location and time, and remember output placement space and anchor.
-                        m_holograms.push_back(CreateHologram(handLocation, placementTime));
+                        m_holograms.push_back(CreateHologram(handLocation.pose, placementTime));
                     }
 
                     ApplyVibration();
@@ -628,6 +624,31 @@ namespace {
 
             // Only render when session is visible. otherwise submit zero layers
             if (frameState.shouldRender) {
+                // First update the viewState and views using latest predicted display time.
+                {
+                    XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
+                    viewLocateInfo.viewConfigurationType = m_primaryViewConfigType;
+                    viewLocateInfo.displayTime = frameState.predictedDisplayTime;
+                    viewLocateInfo.space = m_sceneSpace.Get();
+
+                    // The output view count of xrLocateViews is always same as xrEnumerateViewConfigurationViews
+                    // Therefore Views can be preallocated and avoid two call idiom here.
+                    uint32_t viewCapacityInput = (uint32_t)m_renderResources->Views.size();
+                    uint32_t viewCountOutput;
+                    CHECK_XRCMD(xrLocateViews(m_session.Get(),
+                                              &viewLocateInfo,
+                                              &m_renderResources->ViewState,
+                                              viewCapacityInput,
+                                              &viewCountOutput,
+                                              m_renderResources->Views.data()));
+
+                    CHECK(viewCountOutput == viewCapacityInput);
+                    CHECK(viewCountOutput == m_renderResources->ConfigViews.size());
+                    CHECK(viewCountOutput == m_renderResources->ColorSwapchain.ArraySize);
+                    CHECK(viewCountOutput == m_renderResources->DepthSwapchain.ArraySize);
+                }
+
+                // Then render projection layer into each view.
                 if (RenderLayer(frameState.predictedDisplayTime, layer)) {
                     layers.push_back(reinterpret_cast<XrCompositionLayerBaseHeader*>(&layer));
                 }
@@ -654,43 +675,73 @@ namespace {
             return swapchainImageIndex;
         }
 
+        void UpdateSpinningCube(XrTime predictedDisplayTime) {
+            if (!m_mainCubeIndex) {
+                // Initialize a big cube 1 meter in front of user.
+                Hologram hologram = CreateHologram(xr::math::Pose::Translation({0, 0, -1}), predictedDisplayTime);
+                hologram.Cube.Scale = {0.25f, 0.25f, 0.25f};
+                m_holograms.push_back(std::move(hologram));
+                m_mainCubeIndex = (uint32_t)m_holograms.size() - 1;
+            }
+
+            if (!m_spinningCubeIndex) {
+                // Initialize a small cube and remember the time when animation is started.
+                Hologram hologram = CreateHologram(xr::math::Pose::Translation({0, 0, -1}), predictedDisplayTime);
+                hologram.Cube.Scale = {0.1f, 0.1f, 0.1f};
+                m_holograms.push_back(std::move(hologram));
+                m_spinningCubeIndex = (uint32_t)m_holograms.size() - 1;
+
+                m_spinningCubeStartTime = predictedDisplayTime;
+            }
+
+            // Pause spinning cube animation when app lost 3D focus
+            if (IsSessionFocused()) {
+                auto convertToSeconds = [](XrDuration nanoSeconds) {
+                    using namespace std::chrono;
+                    return duration_cast<duration<float>>(duration<XrDuration, std::nano>(nanoSeconds)).count();
+                };
+
+                const XrDuration duration = predictedDisplayTime - m_spinningCubeStartTime;
+                const float seconds = convertToSeconds(duration);
+                const float angle = DirectX::XM_PIDIV2 * seconds; // Rotate 90 degrees per second
+                const float radius = 0.5f;                        // Rotation radius in meters
+
+                // Let spinning cube rotate around the main cube at y axis.
+                XrPosef pose;
+                pose.position = {radius * std::sin(angle), 0, radius * std::cos(angle)};
+                pose.orientation = xr::math::Quaternion::RotationAxisAngle({0, 1, 0}, angle);
+                m_holograms[m_spinningCubeIndex.value()].Cube.PoseInSpace = pose;
+            }
+        }
+
         bool RenderLayer(XrTime predictedDisplayTime, XrCompositionLayerProjection& layer) {
-            // The output view count of xrLocateViews is always same as xrEnumerateViewConfigurationViews
-            // Therefore Views can be preallocated and avoid two call idiom here.
-            uint32_t viewCapacityInput = (uint32_t)m_renderResources->Views.size();
-            uint32_t viewCountOutput;
+            const uint32_t viewCount = (uint32_t)m_renderResources->ConfigViews.size();
 
-            XrViewState viewState{XR_TYPE_VIEW_STATE};
-            XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
-            viewLocateInfo.viewConfigurationType = m_primaryViewConfigType;
-            viewLocateInfo.displayTime = predictedDisplayTime;
-            viewLocateInfo.space = m_sceneSpace.Get();
-            CHECK_XRCMD(xrLocateViews(
-                m_session.Get(), &viewLocateInfo, &viewState, viewCapacityInput, &viewCountOutput, m_renderResources->Views.data()));
-            CHECK(viewCountOutput == viewCapacityInput);
-            CHECK(viewCountOutput == m_renderResources->ConfigViews.size());
-            CHECK(viewCountOutput == m_renderResources->ColorSwapchain.ArraySize);
-            CHECK(viewCountOutput == m_renderResources->DepthSwapchain.ArraySize);
-
-            if (!xr::math::Pose::IsPoseValid(viewState)) {
+            if (!xr::math::Pose::IsPoseValid(m_renderResources->ViewState)) {
                 DEBUG_PRINT("xrLocateViews returned an invalid pose.");
-                return false;
+                return false; // Skip rendering layers if view location is invalid
             }
 
             std::vector<const sample::Cube*> visibleCubes;
 
             auto UpdateVisibleCube = [&](sample::Cube& cube) {
                 if (cube.Space.Get() != XR_NULL_HANDLE) {
-                    XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
-                    CHECK_XRCMD(xrLocateSpace(cube.Space.Get(), m_sceneSpace.Get(), predictedDisplayTime, &spaceLocation));
+                    XrSpaceLocation cubeSpaceInScene{XR_TYPE_SPACE_LOCATION};
+                    CHECK_XRCMD(xrLocateSpace(cube.Space.Get(), m_sceneSpace.Get(), predictedDisplayTime, &cubeSpaceInScene));
 
                     // Update cubes location with latest space relation
-                    if (xr::math::Pose::IsPoseValid(spaceLocation)) {
-                        cube.Pose = spaceLocation.pose;
+                    if (xr::math::Pose::IsPoseValid(cubeSpaceInScene)) {
+                        if (cube.PoseInSpace.has_value()) {
+                            cube.PoseInScene = xr::math::Pose::Multiply(cube.PoseInSpace.value(), cubeSpaceInScene.pose);
+                        } else {
+                            cube.PoseInScene = cubeSpaceInScene.pose;
+                        }
                         visibleCubes.push_back(&cube);
                     }
                 }
             };
+
+            UpdateSpinningCube(predictedDisplayTime);
 
             UpdateVisibleCube(m_cubesInHand[LeftSide]);
             UpdateVisibleCube(m_cubesInHand[RightSide]);
@@ -699,9 +750,9 @@ namespace {
                 UpdateVisibleCube(hologram.Cube);
             }
 
-            m_renderResources->ProjectionLayerViews.resize(viewCountOutput);
+            m_renderResources->ProjectionLayerViews.resize(viewCount);
             if (m_optionalExtensions.DepthExtensionSupported) {
-                m_renderResources->DepthInfoViews.resize(viewCountOutput);
+                m_renderResources->DepthInfoViews.resize(viewCount);
             }
 
             // Swapchain is acquired, rendered to, and released together for all views as texture array
@@ -709,7 +760,7 @@ namespace {
             const SwapchainD3D11& depthSwapchain = m_renderResources->DepthSwapchain;
 
             // Use the full range of recommended image size to achieve optimum resolution
-            const XrRect2Di imageRect = {{0, 0}, {colorSwapchain.Width, colorSwapchain.Height}};
+            const XrRect2Di imageRect = {{0, 0}, {(int32_t)colorSwapchain.Width, (int32_t)colorSwapchain.Height}};
             CHECK(colorSwapchain.Width == depthSwapchain.Width);
             CHECK(colorSwapchain.Height == depthSwapchain.Height);
 
@@ -717,8 +768,8 @@ namespace {
             const uint32_t depthSwapchainImageIndex = AquireAndWaitForSwapchainImage(depthSwapchain.Handle.Get());
 
             // Prepare rendering parameters of each view for swapchain texture arrays
-            std::vector<xr::math::ViewProjection> viewProjections(viewCountOutput);
-            for (uint32_t i = 0; i < viewCountOutput; i++) {
+            std::vector<xr::math::ViewProjection> viewProjections(viewCount);
+            for (uint32_t i = 0; i < viewCount; i++) {
                 viewProjections[i] = {m_renderResources->Views[i].pose, m_renderResources->Views[i].fov, m_nearFar};
 
                 m_renderResources->ProjectionLayerViews[i] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
@@ -769,6 +820,7 @@ namespace {
         }
 
         void PrepareSessionRestart() {
+            m_mainCubeIndex = m_spinningCubeIndex = {};
             m_holograms.clear();
             m_renderResources.reset();
             m_session.Reset();
@@ -808,8 +860,11 @@ namespace {
             sample::Cube Cube;
             xr::SpatialAnchorHandle Anchor;
         };
-
         std::vector<Hologram> m_holograms;
+
+        std::optional<uint32_t> m_mainCubeIndex;
+        std::optional<uint32_t> m_spinningCubeIndex;
+        XrTime m_spinningCubeStartTime;
 
         constexpr static uint32_t LeftSide = 0;
         constexpr static uint32_t RightSide = 1;
@@ -828,13 +883,14 @@ namespace {
         struct SwapchainD3D11 {
             xr::SwapchainHandle Handle;
             DXGI_FORMAT Format{DXGI_FORMAT_UNKNOWN};
-            int32_t Width{0};
-            int32_t Height{0};
+            uint32_t Width{0};
+            uint32_t Height{0};
             uint32_t ArraySize{0};
             std::vector<XrSwapchainImageD3D11KHR> Images;
         };
 
         struct RenderResources {
+            XrViewState ViewState{XR_TYPE_VIEW_STATE};
             std::vector<XrView> Views;
             std::vector<XrViewConfigurationView> ConfigViews;
             SwapchainD3D11 ColorSwapchain;

@@ -20,7 +20,6 @@
 
 namespace xr::math {
     constexpr float QuaternionEpsilon = 0.01f;
-    constexpr DirectX::XMVECTORF32 XMQuaternionEpsilon = {{{QuaternionEpsilon, QuaternionEpsilon, QuaternionEpsilon, QuaternionEpsilon}}};
 
     // A large number that can be used as maximum finite depth value, beyond which a value can be treated as infinity
     constexpr float OneOverFloatEpsilon = 1.0f / std::numeric_limits<float>::epsilon();
@@ -30,6 +29,7 @@ namespace xr::math {
         constexpr XrPosef Translation(const XrVector3f& translation);
 
         XrPosef LookAt(const XrVector3f& origin, const XrVector3f& forward, const XrVector3f& up);
+        XrPosef Multiply(const XrPosef& a, const XrPosef& b);
 
         constexpr bool IsPoseValid(const XrSpaceLocation& location);
         constexpr bool IsPoseTracked(const XrSpaceLocation& location);
@@ -40,8 +40,8 @@ namespace xr::math {
     namespace Quaternion {
         constexpr XrQuaternionf Identity();
         bool IsNormalized(const XrQuaternionf& quaternion);
-        XrQuaternionf RotateAxisAngle(const XrVector3f& axis, float angleInRadians);
-        XrQuaternionf RotateRollPitchYaw(const XrVector3f& equlaAnglesInRadians);
+        XrQuaternionf RotationAxisAngle(const XrVector3f& axis, float angleInRadians);
+        XrQuaternionf RotationRollPitchYaw(const XrVector3f& eulerAnglesInRadians);
     } // namespace Quaternion
 
     struct NearFar {
@@ -199,21 +199,23 @@ namespace xr::math {
     }
 
     inline DirectX::XMMATRIX XM_CALLCONV LoadXrPose(const XrPosef& pose) {
-        return XMMatrixAffineTransformation(DirectX::g_XMOne,  // scale
-                                            DirectX::g_XMZero, // rotation origin
-                                            LoadXrQuaternion(pose.orientation),
-                                            LoadXrVector3(pose.position));
+        DirectX::XMVECTOR orientation = LoadXrQuaternion(pose.orientation);
+        DirectX::XMVECTOR position = LoadXrVector3(pose.position);
+        DirectX::XMMATRIX matrix = DirectX::XMMatrixRotationQuaternion(orientation);
+        matrix.r[3] = DirectX::XMVectorAdd(matrix.r[3], position);
+        return matrix;
     }
 
     inline DirectX::XMMATRIX XM_CALLCONV LoadInvertedXrPose(const XrPosef& pose) {
-        DirectX::XMVECTOR position = LoadXrVector3(pose.position);
         DirectX::XMVECTOR orientation = LoadXrQuaternion(pose.orientation);
         DirectX::XMVECTOR invertOrientation = DirectX::XMQuaternionConjugate(orientation);
+
+        DirectX::XMVECTOR position = LoadXrVector3(pose.position);
         DirectX::XMVECTOR invertPosition = DirectX::XMVector3Rotate(DirectX::XMVectorNegate(position), invertOrientation);
-        return XMMatrixAffineTransformation(DirectX::g_XMOne,  // scale
-                                            DirectX::g_XMZero, // rotation origin
-                                            invertOrientation, // rotation
-                                            invertPosition);   // translation
+
+        DirectX::XMMATRIX matrix = DirectX::XMMatrixRotationQuaternion(invertOrientation);
+        matrix.r[3] = DirectX::XMVectorAdd(matrix.r[3], invertPosition);
+        return matrix;
     }
 
     inline void XM_CALLCONV StoreXrVector2(XrVector2f* outVec, DirectX::FXMVECTOR inVec) {
@@ -270,6 +272,28 @@ namespace xr::math {
             return pose;
         }
 
+        inline XrPosef Multiply(const XrPosef& a, const XrPosef& b) {
+            // Q: Quaternion, P: Position, R:Rotation, T:Translation
+            //   (Qa Pa) * (Qb Pb)
+            //   = Ra * Ta * Rb * Tb
+            //   = Ra * (Ta * Rb) * Tb
+            //   = Ra * RotationOf(Ta * Rb) * TranslationOf(Ta * Rb) * Tb
+            // => Rc = Ra * RotationOf(Ta * Rb)
+            //    Qc = Qa * Qb;
+            // => Tc = TranslationOf(Ta * Rb) * Tb
+            //    Pc = XMVector3Rotate(Pa, Qb) + Pb;
+
+            const DirectX::XMVECTOR pa = LoadXrVector3(a.position);
+            const DirectX::XMVECTOR qa = LoadXrQuaternion(a.orientation);
+            const DirectX::XMVECTOR pb = LoadXrVector3(b.position);
+            const DirectX::XMVECTOR qb = LoadXrQuaternion(b.orientation);
+
+            XrPosef c;
+            StoreXrQuaternion(&c.orientation, DirectX::XMQuaternionMultiply(qa, qb));
+            StoreXrVector3(&c.position, DirectX::XMVectorAdd(DirectX::XMVector3Rotate(pa, qb), pb));
+            return c;
+        }
+
         constexpr bool IsPoseValid(const XrSpaceLocation& spaceLocation) {
             constexpr XrSpaceLocationFlags PoseValidFlags = XR_SPACE_LOCATION_POSITION_VALID_BIT | XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
             return (spaceLocation.locationFlags & PoseValidFlags) == PoseValidFlags;
@@ -297,20 +321,22 @@ namespace xr::math {
             return {0, 0, 0, 1};
         }
 
-        inline bool IsNormalized(const XrQuaternionf& quaternion) {
+        inline float Length(const XrQuaternionf& quaternion) {
             DirectX::XMVECTOR vector = LoadXrQuaternion(quaternion);
-            DirectX::XMVECTOR length = DirectX::XMVector4Length(vector);
-            DirectX::XMVECTOR equal = DirectX::XMVectorNearEqual(length, DirectX::g_XMOne, XMQuaternionEpsilon);
-            return DirectX::XMVectorGetX(equal) != 0;
+            return DirectX::XMVectorGetX(DirectX::XMVector4Length(vector));
         }
 
-        inline XrQuaternionf RotateAxisAngle(const XrVector3f& axis, float angleInRadians) {
+        inline bool IsNormalized(const XrQuaternionf& quaternion) {
+            return fabs(1 - Length(quaternion)) <= QuaternionEpsilon;
+        }
+
+        inline XrQuaternionf RotationAxisAngle(const XrVector3f& axis, float angleInRadians) {
             XrQuaternionf q;
             StoreXrQuaternion(&q, DirectX::XMQuaternionRotationAxis(LoadXrVector3(axis), angleInRadians));
             return q;
         }
 
-        inline XrQuaternionf RotateRollPitchYaw(const XrVector3f& anglesInRadians) {
+        inline XrQuaternionf RotationRollPitchYaw(const XrVector3f& anglesInRadians) {
             XrQuaternionf q;
             StoreXrQuaternion(&q, DirectX::XMQuaternionRotationRollPitchYaw(anglesInRadians.x, anglesInRadians.y, anglesInRadians.z));
             return q;
