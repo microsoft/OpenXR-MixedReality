@@ -26,7 +26,7 @@ All OpenXR API usage patterns can be found in [OpenXRProgram.cpp](https://github
 
 Always enumerate supported pixel formats using `xrEnumerateSwapchainFormats`, and choose the first color and depth pixel format from the runtime that the app supports, because that's what the runtime prefers. Note, on HoloLens 2, `DXGI_FORMAT_B8G8R8A8_UNORM_SRGB` and `DXGI_FORMAT_D16_UNORM` is typically the first choice to achieve better rendering performance. This preference can be different on VR headsets running on a Desktop PC.  
   
-**Performance Warning:** Using a format other than the primary texture format will result in runtime post-processing which comes at a significant performance penalty.
+**Performance Warning:** Using a format other than the primary swapchain color format will result in runtime post-processing which comes at a significant performance penalty.
 
 ## Gamma-correct rendering
 
@@ -36,7 +36,7 @@ Although this applies to all OpenXR runtimes, care must be taken to ensure the r
 
 HoloLens 2 has limited GPU power for applications to render content. Always using a single projection layer can help the application's framerate, hologram stability and visual quality.  
   
-**Performance Warning:** Using more than a single projection layer will result in runtime post-processing which comes at a significant performance penalty.
+**Performance Warning:** Submitting anything but a single protection layer will result in runtime post-processing which comes at a significant performance penalty.
 
 ## Render with texture array and VPRT
 
