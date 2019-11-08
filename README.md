@@ -24,8 +24,8 @@ All OpenXR API usage patterns can be found in [OpenXRProgram.cpp](https://github
 
 ## Select a pixel format
 
-Always enumerate supported pixel formats using `xrEnumerateSwapchainFormats`, and choose the first color and depth pixel format from the runtime that the app supports, because that's what the runtime prefers. Note, on HoloLens 2, `DXGI_FORMAT_B8G8R8A8_UNORM_SRGB` and `DXGI_FORMAT_D16_UNORM` is typically the first choice to achieve better rendering performance. This preference can be different on VR headsets running on a Desktop PC.
-**Performance Warning** Using a format other than the primary texture format will result in runtime post-processing which comes at a significant performance penalty.
+Always enumerate supported pixel formats using `xrEnumerateSwapchainFormats`, and choose the first color and depth pixel format from the runtime that the app supports, because that's what the runtime prefers. Note, on HoloLens 2, `DXGI_FORMAT_B8G8R8A8_UNORM_SRGB` and `DXGI_FORMAT_D16_UNORM` is typically the first choice to achieve better rendering performance. This preference can be different on VR headsets running on a Desktop PC.  
+**Performance Warning:** Using a format other than the primary texture format will result in runtime post-processing which comes at a significant performance penalty.
 
 ## Gamma-correct rendering
 
@@ -33,8 +33,8 @@ Although this applies to all OpenXR runtimes, care must be taken to ensure the r
 
 ## Use a single projection layer
 
-HoloLens 2 has limited GPU power for applications to render content. Always using a single projection layer can help the application's framerate, hologram stability and visual quality.
-**Performance Warning** Using more than a single projection layer will result in runtime post-processing which comes at a significant performance penalty.
+HoloLens 2 has limited GPU power for applications to render content. Always using a single projection layer can help the application's framerate, hologram stability and visual quality.  
+**Performance Warning:** Using more than a single projection layer will result in runtime post-processing which comes at a significant performance penalty.
 
 ## Render with texture array and VPRT
 
@@ -67,8 +67,8 @@ Always use a distinct spatial anchor through `xrCreateSpatialAnchorSpaceMSFT` ex
 
 ## Support mixed reality capture
 
-Although HoloLens 2's primary display uses additive environment blending, when the user initiates mixed reality capture, the app's rendering content might be alpha blended with the environment video stream. To achieve the best visual quality in mixed reality capture videos, it's better to set the `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` in the projection layer's `layerFlags`.
-**Performance Warning** Omitting the `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` flag on the single project layer will result in runtime post-processing which comes at a significant performance penalty.
+Although HoloLens 2's primary display uses additive environment blending, when the user initiates mixed reality capture, the app's rendering content might be alpha blended with the environment video stream. To achieve the best visual quality in mixed reality capture videos, it's better to set the `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` in the projection layer's `layerFlags`.  
+**Performance Warning:** Omitting the `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` flag on the single project layer will result in runtime post-processing which comes at a significant performance penalty.
 
 # Contributing
 
