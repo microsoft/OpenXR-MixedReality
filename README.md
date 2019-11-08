@@ -16,11 +16,9 @@ These OpenXR samples are using C++17 and D3D11. The same source code works acros
 
 - Open the sample_uwp.sln or sample_win32.sln file in Visual Studio. F5 to build and run the sample. You typically choose ARM64 platform when running on HoloLens 2 devices, or choose x64 platform when running on a Windows Desktop PC with Mixed Reality headset or the HoloLens 2 Emulator.
 
-# Understand OpenXR samples and best practices for HoloLens 2
+- Most OpenXR API usage patterns can be found in [OpenXRProgram.cpp](https://github.com/microsoft/OpenXR-SDK-VisualStudio/blob/master/samples/BasicXrApp/OpenXrProgram.cpp) file. The Run() function at the beginning captures a typical OpenXR app code flow from initialization to the event and rendering loop.
 
-## A typical code flow
-
-All OpenXR API usage patterns can be found in [OpenXRProgram.cpp](https://github.com/microsoft/OpenXR-SDK-VisualStudio/blob/master/samples/BasicXrApp/OpenXrProgram.cpp) file. The Run() function at the beginning captures a typical OpenXR app code flow from initialization to the event and rendering loop.
+# OpenXR app best practices for HoloLens 2
 
 ## Select a pixel format
 
@@ -30,48 +28,87 @@ Always enumerate supported pixel formats using `xrEnumerateSwapchainFormats`, an
 
 ## Gamma-correct rendering
 
-Although this applies to all OpenXR runtimes, care must be taken to ensure the rendering pipeline is gamma-correct. When rendering to a swapchain, the render-target view format should match the swapchain format (e.g. DXGI_FORMAT_B8G8R8A8_UNORM_SRGB for both the swapchain format and the render-target view). The exception is if the app's rendering pipeline does a manual sRGB conversion in shader code, in which case the app should request an sRGB swapchain format but use the linear format for the render-target view (e.g. request DXGI_FORMAT_B8G8R8A8_UNORM_SRGB as the swapchain format but use DXGI_FORMAT_B8G8R8A8_UNORM as the render-target view) to prevent content from being double-gamma corrected.
+Although this applies to all OpenXR runtimes, care must be taken to ensure the rendering pipeline is gamma-correct. When rendering to a swapchain, the render-target view format should match the swapchain format (e.g. DXGI_FORMAT_B8G8R8A8_UNORM_SRGB for both the swapchain format and the render-target view).
+The exception is if the app's rendering pipeline does a manual sRGB conversion in shader code, in which case the app should request an sRGB swapchain format but use the linear format for the render-target view (e.g. request DXGI_FORMAT_B8G8R8A8_UNORM_SRGB as the swapchain format but use DXGI_FORMAT_B8G8R8A8_UNORM as the render-target view) to prevent content from being double-gamma corrected.
 
 ## Use a single projection layer
 
-HoloLens 2 has limited GPU power for applications to render content. Always using a single projection layer can help the application's framerate, hologram stability and visual quality.  
+HoloLens 2 has limited GPU power for applications to render content.
+Always using a single projection layer can help the application's framerate, hologram stability and visual quality.  
   
 **Performance Warning:** Submitting anything but a single protection layer will result in runtime post-processing which comes at a significant performance penalty.
 
 ## Render with texture array and VPRT
 
-Create one `xrSwapchain` for both left and right eye using `arraySize=2` for color swapchain, and one for depth. Use a shader with VPRT and instanced draw calls for stereoscopic rendering to minimize GPU load. This also enables the runtime's optimization to achieve the best performance on HoloLens 2.
+Create one `xrSwapchain` for both left and right eye using `arraySize=2` for color swapchain, and one for depth.
+Render the left eye into slice 0 and the right eye into slice 1.
+Use a shader with VPRT and instanced draw calls for stereoscopic rendering to minimize GPU load.
+This also enables the runtime's optimization to achieve the best performance on HoloLens 2.
 Alternatives to using a texture array, such as double-wide rendering or a separate swapchain per eye, will result in runtime post-processing which comes at a significant performance penalty.
 
 ## Render with recommended rendering parameters and frame timing
 
-Always render with the recommended view configuration width/height, and always use `xrLocateViews` API to query for the recommended view pose, fov, and other rendering parameters before rendering. Always use the `XrFrameEndInfo.predictedDisplayTime` from the latest `xrWaitFrame` call when querying for poses and views. This allow HoloLens to adjust rendering and optimize visual quality for the person who is wearing the HoloLens.
+Always render with the recommended view configuration width/height (`recommendedImageRectWidth` and `recommendedImageRectHeight` from `XrViewConfigurationView`), and always use `xrLocateViews` API to query for the recommended view pose, fov, and other rendering parameters before rendering.
+Always use the `XrFrameEndInfo.predictedDisplayTime` from the latest `xrWaitFrame` call when querying for poses and views.
+This allow HoloLens to adjust rendering and optimize visual quality for the person who is wearing the HoloLens.
 
 ## Submit depth buffer for projection layers
 
-Always use `XR_KHR_composition_layer_depth_extension` and submit the depth buffer together with the projection layer when submitting a frame to `xrEndFrame`.   This can help hologram stability by enabling the hardware depth reprojection on HoloLens 2.
+Always use `XR_KHR_composition_layer_depth_extension` and submit the depth buffer together with the projection layer when submitting a frame to `xrEndFrame`.
+This can help hologram stability by enabling the hardware depth reprojection on HoloLens 2.
 
 ## Choose a reasonable depth range
 
-Prefer a narrower depth range to scope the virtual content to help hologram stability on HoloLens. For example, the OpenXrProgram.cpp sample is using 0.1 to 20 meters. Use [reversed-Z](https://developer.nvidia.com/content/depth-precision-visualized) for a more uniformed depth resolution.  Note, on HoloLens 2, using the preferred `DXGI_FORMAT_D16_UNORM` depth format can help achieve better frame rate and performance.  Therefore above practice for depth range is more important.
+Prefer a narrower depth range to scope the virtual content to help hologram stability on HoloLens.
+For example, the OpenXrProgram.cpp sample is using 0.1 to 20 meters.
+Use [reversed-Z](https://developer.nvidia.com/content/depth-precision-visualized) for a more uniformed depth resolution.
+Note, on HoloLens 2, using the preferred `DXGI_FORMAT_D16_UNORM` depth format can help achieve better frame rate and performance.
+Therefore above practice for depth range is more important.
 
 ## Prepare for different environment blend modes
 
-Always enumerate supported environment blend mode using `xrEnumerateEnvironmentBlendModes` API, and prepare rendering content accordingly. For example, for a system with `XR_ENVIRONMENT_BLEND_MODE_ADDITIVE` such as the HoloLens, the app should use transparent as clear color, but for a system with `XR_ENVIRONMENT_BLEND_MODE_OPAQUE`, the app should use some opaque color as background.
+Always enumerate supported environment blend mode using `xrEnumerateEnvironmentBlendModes` API, and prepare rendering content accordingly.
+For example, for a system with `XR_ENVIRONMENT_BLEND_MODE_ADDITIVE` such as the HoloLens, the app should use transparent as clear color, but for a system with `XR_ENVIRONMENT_BLEND_MODE_OPAQUE`, the app should use some opaque color as background.
 
 ## Choose unbounded space as application's root space
 
-An application typically uses an intermediate space to connect views, actions and holograms together. Use `XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT` when the extension is supported to avoid undesired hologram drift when the user moves afar (e.g. 5 meters away) from where the app starts. Use `XR_REFERENCE_SPACE_TYPE_LOCAL` as a fallback if the unbounded space extension doesn't exist.
+An application typically uses an intermediate space to connect views, actions and holograms together.
+Use `XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT` when the extension is supported to avoid undesired hologram drift when the user moves afar (e.g. 5 meters away) from where the app starts.
+Use `XR_REFERENCE_SPACE_TYPE_LOCAL` as a fallback if the unbounded space extension doesn't exist.
 
 ## Associate hologram with spatial anchor
 
-Always use a distinct spatial anchor through `xrCreateSpatialAnchorSpaceMSFT` extension for any hologram that's locked into the environment. This allows the hologram stay put even if user walked away to other rooms and comes back. The spatial anchor can remember and locate the hologram where it was created.
+Always use a distinct spatial anchor through `xrCreateSpatialAnchorSpaceMSFT` extension for any hologram that's locked into the environment.
+This allows the hologram stay put even if user walked away to other rooms and comes back.
+The spatial anchor can remember and locate the hologram where it was created.
 
 ## Support mixed reality capture
 
-Although HoloLens 2's primary display uses additive environment blending, when the user initiates mixed reality capture, the app's rendering content might be alpha blended with the environment video stream. To achieve the best visual quality in mixed reality capture videos, it's better to set the `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` in the projection layer's `layerFlags`.  
+Although HoloLens 2's primary display uses additive environment blending, when the user initiates mixed reality capture, the app's rendering content might be alpha blended with the environment video stream.
+To achieve the best visual quality in mixed reality capture videos, it's better to set the `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` in the projection layer's `layerFlags`.  
   
 **Performance Warning:** Omitting the `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` flag on the single projection layer will result in runtime post-processing which comes at a significant performance penalty.
+
+## Avoid quad layers
+
+Rather than submitting quad layers as composition layers with `XrCompositionLayerQuad`, render the quad content directly into the projection swapchain.
+
+**Performance Warning:** Providing additional layers beyond a single projection layer, such as quad layers, will result in runtime post-processing which comes at a significant performance penalty.
+
+# OpenXR app performance on the HoloLens 2
+
+On the HoloLens 2, there are a number of ways to submit composition data through `xrEndFrame` which will result in post-processing that will have a noticeable performance penalty.
+To avoid performance penalities, [submit a single `XrCompositionProjectionLayer`](#Use-a-single-projection-layer) with the following characteristics:
+* [Use a texture array swapchain](#Render-with-texture-array-and-VPRT)
+* [Use the primary color swapchain format](#Select-a-pixel-format)
+* [Set the alpha blending flag](#Support-mixed-reality-capture)
+* [Use the recommended view dimensions](#Render-with-recommended-rendering-parameters-and-frame-timing)
+* Do not set the `XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT` flag
+* Set the `XrCompositionLayerDepthInfoKHR` `minDepth` to 0.0f and `maxDepth` to 1.0f
+
+Additional considerations will result in better performance:
+* [Use the 16-bit depth format](#Choose-a-reasonable-depth-range)
+* [Use instanced rendering](#Render-with-texture-array-and-VPRT)
 
 # Contributing
 
