@@ -24,15 +24,22 @@ All OpenXR API usage patterns can be found in [OpenXRProgram.cpp](https://github
 
 ## Select a pixel format
 
-Always enumerate supported pixel formats using `xrEnumerateSwapchainFormats`, and choose the first color and depth pixel format from the runtime that the app supports, because that's what the runtime prefers. Note, on HoloLens 2, `DXGI_FORMAT_B8G8R8A8_UNORM` and `DXGI_FORMAT_D16_UNORM` is typically the first choice to achieve better rendering performance. This preference can be different on VR headsets running on a Desktop PC.
+Always enumerate supported pixel formats using `xrEnumerateSwapchainFormats`, and choose the first color and depth pixel format from the runtime that the app supports, because that's what the runtime prefers. Note, on HoloLens 2, `DXGI_FORMAT_B8G8R8A8_UNORM_SRGB` and `DXGI_FORMAT_D16_UNORM` is typically the first choice to achieve better rendering performance. This preference can be different on VR headsets running on a Desktop PC.
+**Performance Warning** Using a format other than the primary texture format will result in runtime post-processing which comes at a significant performance penalty.
+
+## Gamma-correct rendering
+
+Although this applies to all OpenXR runtimes, care must be taken to ensure the rendering pipeline is gamma-correct. When rendering to a swapchain, the render-target view format should match the swapchain format (e.g. DXGI_FORMAT_B8G8R8A8_UNORM_SRGB for both the swapchain format and the render-target view). The exception is if the app's rendering pipeline does a manual sRGB conversion in shader code, in which case the app should request an sRGB swapchain format but use the linear format for the render-target view (e.g. request DXGI_FORMAT_B8G8R8A8_UNORM_SRGB as the swapchain format but use DXGI_FORMAT_B8G8R8A8_UNORM as the render-target view) to prevent content from being double-gamma corrected.
 
 ## Use a single projection layer
 
 HoloLens 2 has limited GPU power for applications to render content. Always using a single projection layer can help the application's framerate, hologram stability and visual quality.
+**Performance Warning** Using more than a single projection layer will result in runtime post-processing which comes at a significant performance penalty.
 
 ## Render with texture array and VPRT
 
 Create one `xrSwapchain` for both left and right eye using `arraySize=2` for color swapchain, and one for depth. Use a shader with VPRT and instanced draw calls for stereoscopic rendering to minimize GPU load. This also enables the runtime's optimization to achieve the best performance on HoloLens 2.
+Alternatives to using a texture array, such as double-wide rendering or a separate swapchain per eye, will result in runtime post-processing which comes at a significant performance penalty.
 
 ## Render with recommended rendering parameters and frame timing
 
@@ -48,7 +55,7 @@ Prefer a narrower depth range to scope the virtual content to help hologram stab
 
 ## Prepare for different environment blend modes
 
-Always enumerate supported environment blend mode using `xrEnumerateEnvironmentBlendModes` API, and prepare rendering content accordingly. For example, for a system with `XR_ENVIRONMENT_BLEND_MODE_ADDITIVE`, the app should use transparent as clear color, but for a system with `XR_ENVIRONMENT_BLEND_MODE_OPAQUE`, the app should use some opaque color as background.
+Always enumerate supported environment blend mode using `xrEnumerateEnvironmentBlendModes` API, and prepare rendering content accordingly. For example, for a system with `XR_ENVIRONMENT_BLEND_MODE_ADDITIVE` such as the HoloLens, the app should use transparent as clear color, but for a system with `XR_ENVIRONMENT_BLEND_MODE_OPAQUE`, the app should use some opaque color as background.
 
 ## Choose unbounded space as application's root space
 
@@ -60,7 +67,8 @@ Always use a distinct spatial anchor through `xrCreateSpatialAnchorSpaceMSFT` ex
 
 ## Support mixed reality capture
 
-Although HoloLens 2's primary display uses additive environment blending, when the user initiates mixed reality capture, the app's rendering content might be alpha blended with the environment video stream. To achieve the best visual quality in mixed reality capture videos, it's better to set the  `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` in the projection layer's `layerFlags`.
+Although HoloLens 2's primary display uses additive environment blending, when the user initiates mixed reality capture, the app's rendering content might be alpha blended with the environment video stream. To achieve the best visual quality in mixed reality capture videos, it's better to set the `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` in the projection layer's `layerFlags`.
+**Performance Warning** Omitting the `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` flag on the single project layer will result in runtime post-processing which comes at a significant performance penalty.
 
 # Contributing
 
