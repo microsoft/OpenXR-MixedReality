@@ -20,11 +20,11 @@ These OpenXR samples are using C++17 and D3D11. The same source code works acros
 
 # OpenXR app best practices for HoloLens 2
 
-## Select a pixel format
+## Select a swapchain format
 
-Always enumerate supported pixel formats using `xrEnumerateSwapchainFormats`, and choose the first color and depth pixel format from the runtime that the app supports, because that's what the runtime prefers. Note, on HoloLens 2, `DXGI_FORMAT_B8G8R8A8_UNORM_SRGB` and `DXGI_FORMAT_D16_UNORM` is typically the first choice to achieve better rendering performance. This preference can be different on VR headsets running on a Desktop PC.  
-  
-**Performance Warning:** Using a format other than the primary swapchain color format will result in runtime post-processing which comes at a significant performance penalty.
+Always enumerate supported pixel formats using `xrEnumerateSwapchainFormats`, and choose the first color and depth pixel format from the runtime that the app supports, because that's what the runtime prefers. Note, on HoloLens 2, `DXGI_FORMAT_B8G8R8A8_UNORM_SRGB` and `DXGI_FORMAT_D16_UNORM` is typically the first choice to achieve better rendering performance. This preference can be different on VR headsets running on a Desktop PC.
+
+**Performance Warning:** Using a format other than the primary swapchain format will result in runtime post-processing which comes at a significant performance penalty.
 
 ## Gamma-correct rendering
 
@@ -87,8 +87,6 @@ The spatial anchor can remember and locate the hologram where it was created.
 Although HoloLens 2's primary display uses additive environment blending, when the user initiates mixed reality capture, the app's rendering content might be alpha blended with the environment video stream.
 To achieve the best visual quality in mixed reality capture videos, it's better to set the `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` in the projection layer's `layerFlags`.  
   
-**Performance Warning:** Omitting the `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` flag on the single projection layer will result in runtime post-processing which comes at a significant performance penalty.
-
 ## Avoid quad layers
 
 Rather than submitting quad layers as composition layers with `XrCompositionLayerQuad`, render the quad content directly into the projection swapchain.
@@ -100,8 +98,7 @@ Rather than submitting quad layers as composition layers with `XrCompositionLaye
 On the HoloLens 2, there are a number of ways to submit composition data through `xrEndFrame` which will result in post-processing that will have a noticeable performance penalty.
 To avoid performance penalities, [submit a single `XrCompositionProjectionLayer`](#Use-a-single-projection-layer) with the following characteristics:
 * [Use a texture array swapchain](#Render-with-texture-array-and-VPRT)
-* [Use the primary color swapchain format](#Select-a-pixel-format)
-* [Set the alpha blending flag](#Support-mixed-reality-capture)
+* [Use the primary swapchain format](#Select-a-swapchain-format)
 * [Use the recommended view dimensions](#Render-with-recommended-rendering-parameters-and-frame-timing)
 * Do not set the `XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT` flag
 * Set the `XrCompositionLayerDepthInfoKHR` `minDepth` to 0.0f and `maxDepth` to 1.0f
