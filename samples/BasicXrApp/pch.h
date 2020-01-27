@@ -40,18 +40,10 @@
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
 
-// Look up an XR function pointer on the spot. Typesafe!
-#define GET_XR_PROC(__instance, __name)                                                                     \
-    [&]() -> PFN_##__name {                                                                                 \
-        PFN_##__name __xrFunc{nullptr};                                                                     \
-        (void)xrGetInstanceProcAddr(__instance, #__name, reinterpret_cast<PFN_xrVoidFunction*>(&__xrFunc)); \
-        return __xrFunc;                                                                                    \
-    }                                                                                                       \
-    ();
-
 #include "../XrUtility/XrError.h"
 #include "../XrUtility/XrHandle.h"
 #include "../XrUtility/XrMath.h"
 #include "../XrUtility/XrString.h"
+#include "../XrUtility/XrExtensions.h"
 
 #include <winrt/base.h> // winrt::com_ptr

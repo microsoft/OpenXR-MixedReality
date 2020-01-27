@@ -72,6 +72,8 @@ namespace {
             createInfo.applicationInfo = {"", 1, "OpenXR Sample", 1, XR_CURRENT_API_VERSION};
             strcpy_s(createInfo.applicationInfo.applicationName, m_applicationName.c_str());
             CHECK_XRCMD(xrCreateInstance(&createInfo, m_instance.Put()));
+
+            m_extensions = std::make_unique<xr::ExtensionDispatchTable>(m_instance.Get());
         }
 
         std::vector<const char*> SelectExtensions() {
@@ -231,11 +233,9 @@ namespace {
             CHECK(m_systemId != XR_NULL_SYSTEM_ID);
             CHECK(m_session.Get() == XR_NULL_HANDLE);
 
-            auto xrGetD3D11GraphicsRequirementsKHR = GET_XR_PROC(m_instance.Get(), xrGetD3D11GraphicsRequirementsKHR);
-
             // Create the D3D11 device for the adapter associated with the system.
             XrGraphicsRequirementsD3D11KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
-            CHECK_XRCMD(xrGetD3D11GraphicsRequirementsKHR(m_instance.Get(), m_systemId, &graphicsRequirements));
+            CHECK_XRCMD(m_extensions->xrGetD3D11GraphicsRequirementsKHR(m_instance.Get(), m_systemId, &graphicsRequirements));
 
             // Create a list of feature levels which are both supported by the OpenXR runtime and this application.
             std::vector<D3D_FEATURE_LEVEL> featureLevels = {D3D_FEATURE_LEVEL_12_1,
@@ -512,19 +512,17 @@ namespace {
                 createInfo.pose = poseInScene;
                 createInfo.time = placementTime;
 
-                auto xrCreateSpatialAnchorMSFT = GET_XR_PROC(m_instance.Get(), xrCreateSpatialAnchorMSFT);
-                auto xrDestroySpatialAnchorMSFT = GET_XR_PROC(m_instance.Get(), xrDestroySpatialAnchorMSFT);                
-                XrResult r = xrCreateSpatialAnchorMSFT(m_session.Get(), &createInfo, hologram.Anchor.Put(xrDestroySpatialAnchorMSFT));
-                if (r == XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT) {
-                    DEBUG_PRINT("Anchor cannot be created, likely due to lost positional tracking.");
-                } else if (XR_SUCCEEDED(r)) {
+                XrResult result = m_extensions->xrCreateSpatialAnchorMSFT(
+                    m_session.Get(), &createInfo, hologram.Anchor.Put(m_extensions->xrDestroySpatialAnchorMSFT));
+                if (XR_SUCCEEDED(result)) {
                     XrSpatialAnchorSpaceCreateInfoMSFT createSpaceInfo{XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT};
                     createSpaceInfo.anchor = hologram.Anchor.Get();
                     createSpaceInfo.poseInAnchorSpace = xr::math::Pose::Identity();
-                    auto xrCreateSpatialAnchorSpaceMSFT = GET_XR_PROC(m_instance.Get(), xrCreateSpatialAnchorSpaceMSFT);
-                    CHECK_XRCMD(xrCreateSpatialAnchorSpaceMSFT(m_session.Get(), &createSpaceInfo, hologram.Cube.Space.Put()));
+                    CHECK_XRCMD(m_extensions->xrCreateSpatialAnchorSpaceMSFT(m_session.Get(), &createSpaceInfo, hologram.Cube.Space.Put()));
+                } else if (result == XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT) {
+                    DEBUG_PRINT("Anchor cannot be created, likely due to lost positional tracking.");
                 } else {
-                    CHECK_XRRESULT(r, "xrCreateSpatialAnchorMSFT");
+                    CHECK_XRRESULT(result, "xrCreateSpatialAnchorMSFT");
                 }
             } else {
                 // If the anchor extension is not available, place it in the scene space.
@@ -851,6 +849,7 @@ namespace {
         xr::InstanceHandle m_instance;
         xr::SessionHandle m_session;
         uint64_t m_systemId{XR_NULL_SYSTEM_ID};
+        std::unique_ptr<xr::ExtensionDispatchTable> m_extensions;
 
         struct {
             bool DepthExtensionSupported{false};
