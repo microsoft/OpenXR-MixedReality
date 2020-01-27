@@ -18,7 +18,7 @@
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
 
-#define EXTENSION_FUNCS_LIST(_)                  \
+#define FOR_EACH_EXTENSION_FUNCTION(_)           \
     _(xrCreateSpatialAnchorMSFT)                 \
     _(xrCreateSpatialAnchorSpaceMSFT)            \
     _(xrDestroySpatialAnchorMSFT)                \
@@ -26,20 +26,20 @@
     _(xrGetD3D11GraphicsRequirementsKHR)         \
     _(xrGetVisibilityMaskKHR)
 
-#define GET_XR_PROC(name) \
+#define GET_INSTANCE_PROC_ADDRESS(name) \
     (void)xrGetInstanceProcAddr(instance, #name, reinterpret_cast<PFN_xrVoidFunction*>(const_cast<PFN_##name*>(&name)));
 #define DEFINE_PROC_MEMBER(name) const PFN_##name name{nullptr};
 
 namespace xr {
     struct ExtensionDispatchTable {
-        EXTENSION_FUNCS_LIST(DEFINE_PROC_MEMBER);
+        FOR_EACH_EXTENSION_FUNCTION(DEFINE_PROC_MEMBER);
 
         explicit ExtensionDispatchTable(XrInstance instance) {
-            EXTENSION_FUNCS_LIST(GET_XR_PROC);
+            FOR_EACH_EXTENSION_FUNCTION(GET_INSTANCE_PROC_ADDRESS);
         }
     };
 } // namespace xr
 
-#undef GET_XR_PROC
 #undef DEFINE_PROC_MEMBER
-#undef EXTENSION_FUNCS_LIST
+#undef GET_INSTANCE_PROC_ADDRESS
+#undef FOR_EACH_EXTENSION_FUNCTION
