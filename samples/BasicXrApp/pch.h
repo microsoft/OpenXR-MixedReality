@@ -44,5 +44,6 @@
 #include "../XrUtility/XrHandle.h"
 #include "../XrUtility/XrMath.h"
 #include "../XrUtility/XrString.h"
+#include "../XrUtility/XrExtensions.h"
 
-#include <winrt/base.h>                // winrt::com_ptr
+#include <winrt/base.h> // winrt::com_ptr
