@@ -432,34 +432,25 @@ namespace {
             return swapchain;
         }
 
-        // Return true if an event is available, otherwise return false.
-        bool TryReadNextEvent(XrEventDataBuffer* buffer) const {
-            // Reset buffer header for every xrPollEvent function call.
-            *buffer = {XR_TYPE_EVENT_DATA_BUFFER};
-            const XrResult xr = CHECK_XRCMD(xrPollEvent(m_instance.Get(), buffer));
-            if (xr == XR_EVENT_UNAVAILABLE) {
-                return false;
-            } else {
-                return true;
-            }
-        }
-
         void ProcessEvents(bool* exitRenderLoop, bool* requestRestart) {
             *exitRenderLoop = *requestRestart = false;
 
-            XrEventDataBuffer buffer{XR_TYPE_EVENT_DATA_BUFFER};
-            XrEventDataBaseHeader* header = reinterpret_cast<XrEventDataBaseHeader*>(&buffer);
+            auto pollEvent = [&](XrEventDataBuffer& eventData) -> bool {
+                eventData.type = XR_TYPE_EVENT_DATA_BUFFER;
+                eventData.next = nullptr;
+                return CHECK_XRCMD(xrPollEvent(m_instance.Get(), &eventData)) == XR_SUCCESS;
+            };
 
-            // Process all pending messages.
-            while (TryReadNextEvent(&buffer)) {
-                switch (header->type) {
+            XrEventDataBuffer eventData{};
+            while (pollEvent(eventData)) {
+                switch (eventData.type) {
                 case XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING: {
                     *exitRenderLoop = true;
                     *requestRestart = false;
                     return;
                 }
                 case XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED: {
-                    const auto stateEvent = *reinterpret_cast<const XrEventDataSessionStateChanged*>(header);
+                    const auto stateEvent = *reinterpret_cast<const XrEventDataSessionStateChanged*>(&eventData);
                     CHECK(m_session.Get() != XR_NULL_HANDLE && m_session.Get() == stateEvent.session);
                     m_sessionState = stateEvent.state;
                     switch (m_sessionState) {
@@ -473,7 +464,7 @@ namespace {
                     }
                     case XR_SESSION_STATE_STOPPING: {
                         m_sessionRunning = false;
-                        CHECK_XRCMD(xrEndSession(m_session.Get()))
+                        CHECK_XRCMD(xrEndSession(m_session.Get()));
                         break;
                     }
                     case XR_SESSION_STATE_EXITING: {
@@ -494,7 +485,7 @@ namespace {
                 case XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING:
                 case XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED:
                 default: {
-                    DEBUG_PRINT("Ignoring event type %d", header->type);
+                    DEBUG_PRINT("Ignoring event type %d", eventData.type);
                     break;
                 }
                 }

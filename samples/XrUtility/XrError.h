@@ -17,11 +17,11 @@
 
 #include "XrToString.h"
 
-#define CHECK_XRCMD(cmd) xr::detail::_CheckXrResult(cmd, #cmd, FILE_AND_LINE);
-#define CHECK_XRRESULT(res, cmdStr) xr::detail::_CheckXrResult(res, cmdStr, FILE_AND_LINE);
+#define CHECK_XRCMD(cmd) xr::detail::_CheckXrResult(cmd, #cmd, FILE_AND_LINE)
+#define CHECK_XRRESULT(res, cmdStr) xr::detail::_CheckXrResult(res, cmdStr, FILE_AND_LINE)
 
-#define CHECK_HRCMD(cmd) xr::detail::_CheckHResult(cmd, #cmd, FILE_AND_LINE);
-#define CHECK_HRESULT(res, cmdStr) xr::detail::_CheckHResult(res, cmdStr, FILE_AND_LINE);
+#define CHECK_HRCMD(cmd) xr::detail::_CheckHResult(cmd, #cmd, FILE_AND_LINE)
+#define CHECK_HRESULT(res, cmdStr) xr::detail::_CheckHResult(res, cmdStr, FILE_AND_LINE)
 
 #define DEBUG_PRINT(...) ::OutputDebugStringA((xr::detail::_Fmt(__VA_ARGS__) + "\n").c_str())
 
@@ -61,7 +61,7 @@ namespace xr::detail {
         throw std::logic_error(failureMessage);
     }
 
-#define THROW(msg) xr::detail::_Throw(msg, nullptr, FILE_AND_LINE);
+#define THROW(msg) xr::detail::_Throw(msg, nullptr, FILE_AND_LINE)
 #define CHECK(exp)                                                   \
     {                                                                \
         if (!(exp)) {                                                \
