@@ -14,6 +14,7 @@ ConstructorInitializerAllOnOneLineOrOnePerLine: 'false'
 IndentCaseLabels: 'false'
 IndentWidth: '4'
 IndentWrappedFunctionNames: 'false'
+ForEachMacros: ['TEST_CLASS']
 KeepEmptyLinesAtTheStartOfBlocks: 'false'
 MaxEmptyLinesToKeep: '1'
 NamespaceIndentation: All

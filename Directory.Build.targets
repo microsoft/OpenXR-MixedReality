@@ -1,0 +1,9 @@
+<Project>
+
+    <ItemDefinitionGroup>
+        <ClCompile>
+            <AdditionalIncludeDirectories>$(OpenXrSdkPath)\include;$(SharedPath);$(SharedPath)\ext;$(IntDir)\CompiledShaders;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
+        </ClCompile>
+    </ItemDefinitionGroup>
+
+</Project>

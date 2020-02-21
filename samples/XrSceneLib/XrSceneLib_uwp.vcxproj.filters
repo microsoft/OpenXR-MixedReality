@@ -1,0 +1,82 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="App.cpp" />
+    <ClCompile Include="TextQuadObject.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="PbrModelObject.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="QuadLayerObject.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneObject.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="StereoVisibleMask.cpp">
+      <Filter>Contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="ProjectionLayer.cpp">
+      <Filter>Contexts</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp" />
+    <ClCompile Include="TextTexture.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="App.h" />
+    <ClInclude Include="ActionContext.h">
+      <Filter>Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="TextQuadObject.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="PbrModelObject.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadLayerObject.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneObject.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="VisibilityMask.h">
+      <Filter>Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectionLayer.h">
+      <Filter>Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="CompositionLayers.h">
+      <Filter>Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="FrameTime.h">
+      <Filter>Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h" />
+    <ClInclude Include="SceneContext.h">
+      <Filter>Contexts</Filter>
+    </ClInclude>
+    <ClInclude Include="TextTexture.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Shaders">
+      <UniqueIdentifier>{d2e588b6-4392-42b8-aadc-9cb00ca97458}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Objects">
+      <UniqueIdentifier>{15a8b794-5b3c-4b3b-b082-ad2956aa9cee}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Contexts">
+      <UniqueIdentifier>{757d01b5-59f7-4d8a-8faa-53ea62f2ec25}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <FxCompile Include="StereoVisibleMaskVertexShader.hlsl">
+      <Filter>Shaders</Filter>
+    </FxCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+</Project>
