@@ -111,7 +111,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ActionContext.h" />
     <ClInclude Include="TextTexture.h" />
     <ClInclude Include="PbrModelObject.h" />
     <ClInclude Include="pch.h" />

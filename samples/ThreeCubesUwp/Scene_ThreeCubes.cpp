@@ -35,7 +35,7 @@ namespace {
     struct ThreeCubesScene : public Scene {
         ThreeCubesScene(SceneContext* sceneContext)
             : Scene(sceneContext, L"Three Cubes", true) {
-            SceneActionSet& actionSet =
+            xr::ActionSet& actionSet =
                 m_sceneContext->ActionContext.CreateActionSet("three_cubes_scene_actions", "Three Cubes Scene Actions");
 
             const std::vector<std::string> subactionPathBothHands = {"/user/hand/right", "/user/hand/left"};

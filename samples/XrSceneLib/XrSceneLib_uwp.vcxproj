@@ -119,7 +119,6 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="ActionContext.h" />
     <ClInclude Include="PbrModelObject.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="QuadLayerObject.h" />

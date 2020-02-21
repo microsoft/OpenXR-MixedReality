@@ -28,9 +28,6 @@
     <ClInclude Include="pch.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="App.h" />
-    <ClInclude Include="ActionContext.h">
-      <Filter>Contexts</Filter>
-    </ClInclude>
     <ClInclude Include="CompositionLayers.h">
       <Filter>Contexts</Filter>
     </ClInclude>

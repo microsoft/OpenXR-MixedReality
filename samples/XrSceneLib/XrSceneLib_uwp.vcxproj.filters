@@ -27,9 +27,6 @@
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.h" />
-    <ClInclude Include="ActionContext.h">
-      <Filter>Contexts</Filter>
-    </ClInclude>
     <ClInclude Include="TextQuadObject.h">
       <Filter>Objects</Filter>
     </ClInclude>

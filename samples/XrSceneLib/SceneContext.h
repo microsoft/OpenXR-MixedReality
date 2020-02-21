@@ -17,9 +17,9 @@
 
 #include <pbr/PbrResources.h>
 #include <XrUtility/XrString.h>
-#include <XrUtility/XrInstanceContext.h>
 #include <XrUtility/XrExtensions.h>
-#include "ActionContext.h"
+#include <XrUtility/XrInstanceContext.h>
+#include <XrUtility/XrActionContext.h>
 
 // Session-related resources shared across multiple Scenes.
 struct SceneContext final {
@@ -30,7 +30,7 @@ struct SceneContext final {
                  Pbr::Resources pbrResources,
                  winrt::com_ptr<ID3D11Device> device,
                  winrt::com_ptr<ID3D11DeviceContext> deviceContext,
-                 IActionContext& actionContext,
+                 xr::ActionContext& actionContext,
                  XrEnvironmentBlendMode primaryViewConfigEnvironmentBlendMode)
         : Instance(std::move(instance))
         , System(std::move(system))
@@ -59,7 +59,7 @@ struct SceneContext final {
     const winrt::com_ptr<ID3D11Device> Device;
     Pbr::Resources PbrResources;
 
-    IActionContext& ActionContext;
+    xr::ActionContext& ActionContext;
     std::atomic<XrSessionState> SessionState;
 
     const XrPath RightHand;

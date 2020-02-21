@@ -21,6 +21,12 @@
 
 #include <optional>
 
+namespace scenes::priorities {
+    constexpr uint32_t Default = 0;
+    constexpr uint32_t ControllerRendering = 0;
+    constexpr uint32_t Menu = 1;
+} // namespace scenes::priorities
+
 struct Scene {
     virtual ~Scene() = default;
     Scene(SceneContext* sceneContext, std::wstring sceneName, bool defaultActive);

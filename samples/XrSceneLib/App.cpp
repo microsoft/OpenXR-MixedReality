@@ -134,7 +134,7 @@ namespace {
         });
 
         std::unique_ptr<::SceneContext> m_sceneContext;
-        std::unique_ptr<ActionContext> m_actionContext;
+        std::unique_ptr<xr::ActionContext> m_actionContext;
         winrt::com_ptr<ID3D11Device> m_d3d11Device;
 
         struct ViewConfigStates {
@@ -254,7 +254,7 @@ namespace {
         CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &spaceCreateInfo, m_sceneSpace.Put()));
 
         Pbr::Resources pbrResources = sample::InitializePbrResources(device.get());
-        m_actionContext = std::make_unique<ActionContext>(instance.Handle());
+        m_actionContext = std::make_unique<xr::ActionContext>(instance.Handle());
 
         m_sceneContext = std::make_unique<::SceneContext>(std::move(instance),
                                                           std::move(system),

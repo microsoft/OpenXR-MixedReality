@@ -31,6 +31,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "win32", "win32", "{279ABC91
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XrUtility", "XrUtility", "{AF0F6DD8-1BC3-4818-919E-9B239B544B5E}"
 	ProjectSection(SolutionItems) = preProject
+		shared\XrUtility\XrActionContext.h = shared\XrUtility\XrActionContext.h
 		shared\XrUtility\XrEnumerate.h = shared\XrUtility\XrEnumerate.h
 		shared\XrUtility\XrError.h = shared\XrUtility\XrError.h
 		shared\XrUtility\XrInstanceContext.h = shared\XrUtility\XrInstanceContext.h
