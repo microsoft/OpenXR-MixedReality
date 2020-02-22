@@ -1,0 +1,60 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="DirectXTK\DDSTextureLoader.cpp">
+      <Filter>DirectXTK</Filter>
+    </ClCompile>
+    <ClCompile Include="FileUtility.cpp" />
+    <ClCompile Include="DxUtility.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+    <ClInclude Include="DirectXTK\dds.h">
+      <Filter>DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DDSTextureLoader.h">
+      <Filter>DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\DirectXHelpers.h">
+      <Filter>DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\LoaderHelpers.h">
+      <Filter>DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="DirectXTK\PlatformHelpers.h">
+      <Filter>DirectXTK</Filter>
+    </ClInclude>
+    <ClInclude Include="FileUtility.h" />
+    <ClInclude Include="DxUtility.h" />
+    <ClInclude Include="Trace.h" />
+    <ClInclude Include="ScopeGuard.h" />
+    <ClInclude Include="ThreadPool.h" />
+    <ClInclude Include="Guid.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="DirectXTK">
+      <UniqueIdentifier>{fae7caa5-87c8-49d7-9ac1-6f7e2466a532}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="UWPAssets">
+      <UniqueIdentifier>{3f7fd9dc-72ea-462c-b880-45d9cbba4afd}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="UWPAssets\smallTile-sdk.png">
+      <Filter>UWPAssets</Filter>
+    </Image>
+    <Image Include="UWPAssets\splash-sdk.png">
+      <Filter>UWPAssets</Filter>
+    </Image>
+    <Image Include="UWPAssets\squareTile-sdk.png">
+      <Filter>UWPAssets</Filter>
+    </Image>
+    <Image Include="UWPAssets\storeLogo-sdk.png">
+      <Filter>UWPAssets</Filter>
+    </Image>
+  </ItemGroup>
+</Project>

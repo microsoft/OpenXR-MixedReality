@@ -44,9 +44,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="BasicXrApp_uwp_TemporaryKey.pfx">
+    <None Include="TemporaryKey.pfx">
       <Filter>Assets</Filter>
     </None>
     <None Include="packages.config" />
+    <None Include="$(OpenXRLoaderBinaryRoot)\bin\openxr_loader.dll" />
   </ItemGroup>
 </Project>

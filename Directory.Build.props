@@ -8,5 +8,8 @@
     <OutDir Condition="$(OutDir)==''">$(SolutionDir)bin\$(Configuration)\$(Platform)\</OutDir>
     <IntermediateOutputPath Condition="$(IntermediateOutputPath)==''">$(SolutionDir)obj\$(Configuration)\$(Platform)\$(MSBuildProjectName)\</IntermediateOutputPath>
     <GeneratedFilesDir Condition="$(GeneratedFilesDir)==''">$(SolutionDir)obj\$(Configuration)\$(Platform)\$(MSBuildProjectName)\GeneratedFiles</GeneratedFilesDir>
+
+    <SharedPath>$(MSBuildThisFileDirectory)shared</SharedPath>
+    <OpenXrSdkPath>$(MSBuildThisFileDirectory)openxr_preview</OpenXrSdkPath>
   </PropertyGroup>
 </Project>

@@ -19,6 +19,8 @@
 [Rr]eleases/
 x64/
 x86/
+ARM/
+ARM64/
 bld/
 [Bb]in/
 [Oo]bj/
@@ -26,6 +28,7 @@ bld/
 
 # Visual Studio 2015/2017 cache/options directory
 .vs/
+.vscode/
 # Uncomment if you have tasks that create the project's static files in wwwroot
 #wwwroot/
 
@@ -84,6 +87,8 @@ StyleCopReport.xml
 *.pidb
 *.svclog
 *.scc
+*.idb
+*.tlog
 
 # Chutzpah Test files
 _Chutzpah*
@@ -203,6 +208,7 @@ BundleArtifacts/
 Package.StoreAssociation.xml
 _pkginfo.txt
 *.appx
+*.msix
 
 # Visual Studio cache files
 # files ending in .cache can be ignored

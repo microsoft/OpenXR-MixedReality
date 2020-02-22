@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="pch.cpp" />
+    <ClCompile Include="Scene_HandTracking.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="pch.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
+    <None Include="$(SharedPath)\pbr\brdf_lut.png">
+      <Filter>DeploymentContent</Filter>
+    </None>
+    <None Include="$(SharedPath)\SampleShared\Sample_DiffuseHDR.dds">
+      <Filter>DeploymentContent</Filter>
+    </None>
+    <None Include="$(SharedPath)\SampleShared\Sample_SpecularHDR.dds">
+      <Filter>DeploymentContent</Filter>
+    </None>
+    <None Include="TemporaryKey.pfx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="DeploymentContent">
+      <UniqueIdentifier>{f0e9b0db-7d42-4f9e-b789-fa0c1172575c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" />
+  </ItemGroup>
+</Project>
