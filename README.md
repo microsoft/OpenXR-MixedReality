@@ -1,111 +1,41 @@
 # OpenXR Samples for Visual Studio Developers
 
-This repository contains a few OpenXR code samples tailored for developers who are familiar with and using Visual Studio tool chain, e.g. HoloLens 2 developers.
+This repository contains OpenXR code samples tailored for developers who are familiar with and using the Visual Studio toolchain, e.g. HoloLens 2 developers.
 
-These OpenXR samples are using C++17 and D3D11. The same source code works across UWP applications running on HoloLens 2 and Win32 applications running on Windows Desktop with the Mixed Reality headset.
+These OpenXR samples use C++17 and D3D11. The same source code works across UWP applications running on HoloLens 2 and Win32 applications running on Windows Desktop with Windows Mixed Reality immersive headsets.
 
 # Prepare, build and run the samples
 
-- Understand [what is OpenXR](https://docs.microsoft.com/en-us/windows/mixed-reality/openxr#what-is-openxr) and [why OpenXR](https://docs.microsoft.com/en-us/windows/mixed-reality/openxr#why-openxr).  Read [latest OpenXR 1.0 spec (HTML)](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html) and [latest openxr.h header file (Khronos GitHub)](https://github.com/KhronosGroup/OpenXR-SDK/blob/master/include/openxr/openxr.h).
+- Understand [what is OpenXR](https://docs.microsoft.com/windows/mixed-reality/openxr#what-is-openxr) and [why OpenXR](https://docs.microsoft.com/windows/mixed-reality/openxr#why-openxr).  Read the [latest OpenXR 1.0 spec (HTML)](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html) and the [latest openxr.h header file (Khronos GitHub)](https://github.com/KhronosGroup/OpenXR-SDK/blob/master/include/openxr/openxr.h).
 
-- Prepare [Windows 10 May 2019 Update (1903)](https://www.microsoft.com/en-us/software-download/windows10) and [Visual Studio 2019 latest version](https://visualstudio.microsoft.com/downloads/).
+- Update to [Windows 10 May 2019 Update (1903) or later](https://www.microsoft.com/software-download/windows10) and [Visual Studio 2017 or 2019](https://visualstudio.microsoft.com/downloads/).  If you will be deploying to a HoloLens 2, you should install [Visual Studio 2019 16.2 or later](https://visualstudio.microsoft.com/downloads/).
 
-- Prepare [HoloLens 2 device](https://docs.microsoft.com/en-us/windows/mixed-reality/openxr#getting-started-with-openxr-for-hololens-2) or [Windows Mixed Reality device](https://docs.microsoft.com/en-us/windows/mixed-reality/openxr#getting-started-with-openxr-for-windows-mixed-reality-headsets).
+- Prepare a [HoloLens 2 device](https://docs.microsoft.com/windows/mixed-reality/openxr#getting-started-with-openxr-for-hololens-2) or [Windows Mixed Reality device](https://docs.microsoft.com/en-us/windows/mixed-reality/openxr#getting-started-with-openxr-for-windows-mixed-reality-headsets).
 
-- Clone this sample repo: `git clone https://github.com/microsoft/OpenXR-SDK-VisualStudio.git`
+- Clone the samples repo: `git clone https://github.com/microsoft/OpenXR-SDK-VisualStudio.git`
 
-- Open the sample_uwp.sln or sample_win32.sln file in Visual Studio. F5 to build and run the sample. You typically choose ARM64 platform when running on HoloLens 2 devices, or choose x64 platform when running on a Windows Desktop PC with Mixed Reality headset or the HoloLens 2 Emulator.
+- Open the BasicXrApp.sln or Samples.sln file in Visual Studio. F5 to build and run the sample. You typically choose ARM64 platform when running on HoloLens 2 devices, or choose x64 platform when running on a Windows Desktop PC with the HoloLens 2 Emulator or a Windows Mixed Reality immersive headset (or simulator).
 
-- Most OpenXR API usage patterns can be found in [OpenXRProgram.cpp](https://github.com/microsoft/OpenXR-SDK-VisualStudio/blob/master/samples/BasicXrApp/OpenXrProgram.cpp) file. The Run() function at the beginning captures a typical OpenXR app code flow from initialization to the event and rendering loop.
+- The core OpenXR API usage patterns can be found in the [OpenXRProgram.cpp](https://github.com/microsoft/OpenXR-SDK-VisualStudio/blob/master/samples/BasicXrApp/OpenXrProgram.cpp) file. The Run() function at the beginning captures a typical OpenXR app code flow for session initialization, event handling, the frame loop and input actions.
 
 # OpenXR app best practices for HoloLens 2
 
-## Select a swapchain format
+The [BasicXrApp](https://github.com/microsoft/OpenXR-SDK-VisualStudio/tree/master/samples/BasicXrApp) demonstrates the best practices for an OpenXR app to achieve full frame rate and low latency.
 
-Always enumerate supported pixel formats using `xrEnumerateSwapchainFormats`, and choose the first color and depth pixel format from the runtime that the app supports, because that's what the runtime prefers. Note, on HoloLens 2, `DXGI_FORMAT_B8G8R8A8_UNORM_SRGB` and `DXGI_FORMAT_D16_UNORM` is typically the first choice to achieve better rendering performance. This preference can be different on VR headsets running on a Desktop PC.
+For more detailed information on getting the best visual quality and performance on HoloLens 2, see the [best practices for HoloLens 2](https://aka.ms/openxr-best).
 
-**Performance Warning:** Using a format other than the primary swapchain format will result in runtime post-processing which comes at a significant performance penalty.
+# OpenXR preview extensions
 
-## Gamma-correct rendering
+The [openxr_preview](https://github.com/microsoft/OpenXR-SDK-VisualStudio/tree/master/openxr_preview) folder contains a set of [preview header files](https://github.com/microsoft/OpenXR-SDK-VisualStudio/tree/master/openxr_preview/include/openxr) containing the following preview OpenXR extensions:
 
-Although this applies to all OpenXR runtimes, care must be taken to ensure the rendering pipeline is gamma-correct. When rendering to a swapchain, the render-target view format should match the swapchain format (e.g. DXGI_FORMAT_B8G8R8A8_UNORM_SRGB for both the swapchain format and the render-target view).
-The exception is if the app's rendering pipeline does a manual sRGB conversion in shader code, in which case the app should request an sRGB swapchain format but use the linear format for the render-target view (e.g. request DXGI_FORMAT_B8G8R8A8_UNORM_SRGB as the swapchain format but use DXGI_FORMAT_B8G8R8A8_UNORM as the render-target view) to prevent content from being double-gamma corrected.
+1. [XR_MSFT_hand_interaction_preview](https://microsoft.github.io/OpenXR-SDK-VisualStudio/openxr_preview/specs/openxr.html#XR_MSFT_hand_interaction_preview)
+1. [XR_MSFT_hand_tracking_preview](https://microsoft.github.io/OpenXR-SDK-VisualStudio/openxr_preview/specs/openxr.html#XR_MSFT_hand_tracking_preview)
+1. [XR_MSFT_hand_tracking_mesh_preview](https://microsoft.github.io/OpenXR-SDK-VisualStudio/openxr_preview/specs/openxr.html#XR_MSFT_hand_tracking_mesh_preview)
+1. [XR_MSFT_secondary_view_configuration_preview](https://microsoft.github.io/OpenXR-SDK-VisualStudio/openxr_preview/specs/openxr.html#XR_MSFT_secondary_view_configuration_preview)
+1. [XR_MSFT_first_person_observer_preview](https://microsoft.github.io/OpenXR-SDK-VisualStudio/openxr_preview/specs/openxr.html#XR_MSFT_first_person_observer_preview)
+1. [XR_MSFT_spatial_graph_bridge_preview](https://microsoft.github.io/OpenXR-SDK-VisualStudio/openxr_preview/specs/openxr.html#XR_MSFT_spatial_graph_bridge_preview)
 
-## Use a single projection layer
-
-HoloLens 2 has limited GPU power for applications to render content.
-Always using a single projection layer can help the application's framerate, hologram stability and visual quality.  
-  
-**Performance Warning:** Submitting anything but a single protection layer will result in runtime post-processing which comes at a significant performance penalty.
-
-## Render with texture array and VPRT
-
-Create one `xrSwapchain` for both left and right eye using `arraySize=2` for color swapchain, and one for depth.
-Render the left eye into slice 0 and the right eye into slice 1.
-Use a shader with VPRT and instanced draw calls for stereoscopic rendering to minimize GPU load.
-This also enables the runtime's optimization to achieve the best performance on HoloLens 2.
-Alternatives to using a texture array, such as double-wide rendering or a separate swapchain per eye, will result in runtime post-processing which comes at a significant performance penalty.
-
-## Render with recommended rendering parameters and frame timing
-
-Always render with the recommended view configuration width/height (`recommendedImageRectWidth` and `recommendedImageRectHeight` from `XrViewConfigurationView`), and always use `xrLocateViews` API to query for the recommended view pose, fov, and other rendering parameters before rendering.
-Always use the `XrFrameEndInfo.predictedDisplayTime` from the latest `xrWaitFrame` call when querying for poses and views.
-This allow HoloLens to adjust rendering and optimize visual quality for the person who is wearing the HoloLens.
-
-## Submit depth buffer for projection layers
-
-Always use `XR_KHR_composition_layer_depth_extension` and submit the depth buffer together with the projection layer when submitting a frame to `xrEndFrame`.
-This can help hologram stability by enabling the hardware depth reprojection on HoloLens 2.
-
-## Choose a reasonable depth range
-
-Prefer a narrower depth range to scope the virtual content to help hologram stability on HoloLens.
-For example, the OpenXrProgram.cpp sample is using 0.1 to 20 meters.
-Use [reversed-Z](https://developer.nvidia.com/content/depth-precision-visualized) for a more uniformed depth resolution.
-Note, on HoloLens 2, using the preferred `DXGI_FORMAT_D16_UNORM` depth format can help achieve better frame rate and performance.
-Therefore above practice for depth range is more important.
-
-## Prepare for different environment blend modes
-
-Always enumerate supported environment blend mode using `xrEnumerateEnvironmentBlendModes` API, and prepare rendering content accordingly.
-For example, for a system with `XR_ENVIRONMENT_BLEND_MODE_ADDITIVE` such as the HoloLens, the app should use transparent as clear color, but for a system with `XR_ENVIRONMENT_BLEND_MODE_OPAQUE`, the app should use some opaque color as background.
-
-## Choose unbounded space as application's root space
-
-An application typically uses an intermediate space to connect views, actions and holograms together.
-Use `XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT` when the extension is supported to avoid undesired hologram drift when the user moves afar (e.g. 5 meters away) from where the app starts.
-Use `XR_REFERENCE_SPACE_TYPE_LOCAL` as a fallback if the unbounded space extension doesn't exist.
-
-## Associate hologram with spatial anchor
-
-Always use a distinct spatial anchor through `xrCreateSpatialAnchorSpaceMSFT` extension for any hologram that's locked into the environment.
-This allows the hologram stay put even if user walked away to other rooms and comes back.
-The spatial anchor can remember and locate the hologram where it was created.
-
-## Support mixed reality capture
-
-Although HoloLens 2's primary display uses additive environment blending, when the user initiates mixed reality capture, the app's rendering content might be alpha blended with the environment video stream.
-To achieve the best visual quality in mixed reality capture videos, it's better to set the `XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT` in the projection layer's `layerFlags`.  
-  
-## Avoid quad layers
-
-Rather than submitting quad layers as composition layers with `XrCompositionLayerQuad`, render the quad content directly into the projection swapchain.
-
-**Performance Warning:** Providing additional layers beyond a single projection layer, such as quad layers, will result in runtime post-processing which comes at a significant performance penalty.
-
-# OpenXR app performance on the HoloLens 2
-
-On the HoloLens 2, there are a number of ways to submit composition data through `xrEndFrame` which will result in post-processing that will have a noticeable performance penalty.
-To avoid performance penalities, [submit a single `XrCompositionProjectionLayer`](#Use-a-single-projection-layer) with the following characteristics:
-* [Use a texture array swapchain](#Render-with-texture-array-and-VPRT)
-* [Use the primary swapchain format](#Select-a-swapchain-format)
-* [Use the recommended view dimensions](#Render-with-recommended-rendering-parameters-and-frame-timing)
-* Do not set the `XR_COMPOSITION_LAYER_UNPREMULTIPLIED_ALPHA_BIT` flag
-* Set the `XrCompositionLayerDepthInfoKHR` `minDepth` to 0.0f and `maxDepth` to 1.0f
-
-Additional considerations will result in better performance:
-* [Use the 16-bit depth format](#Choose-a-reasonable-depth-range)
-* [Use instanced rendering](#Render-with-texture-array-and-VPRT)
+For sample code demonstrating how to use the preview extensions above, see the [SampleSceneUwp](https://github.com/microsoft/OpenXR-SDK-VisualStudio/tree/master/samples/SampleSceneUwp), [ThreeCubes](https://github.com/microsoft/OpenXR-SDK-VisualStudio/tree/master/samples/ThreeCubesUwp) and [XrSceneLib](https://github.com/microsoft/OpenXR-SDK-VisualStudio/tree/master/samples/XrSceneLib) preview extensions.  Please file feedback on these preview extensions as [GitHub issues](https://github.com/microsoft/OpenXR-SDK-VisualStudio/issues).  We are planning to incorporate your feedback and finalize these extensions as vendor extensions (MSFT) or cross-vendor extensions (EXT) in the central Khronos OpenXR [headers](https://github.com/KhronosGroup/OpenXR-SDK/tree/master/include/openxr) and [spec](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html) over the coming months.
 
 # Contributing
 
