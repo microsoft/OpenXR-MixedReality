@@ -75,14 +75,12 @@ stages:
             inputs:
               solution: BasicXrApp.sln
               verbosity: Detailed
-              nuGetVersion: 4.0.0.2283
 
           - task: NuGetInstaller@1
             displayName: "NuGet Restore"
             inputs:
               solution: Samples.sln
               verbosity: Detailed
-              nuGetVersion: 4.0.0.2283
 
           - task: VSBuild@2
             displayName: "Build BasicXrApp.sln"
