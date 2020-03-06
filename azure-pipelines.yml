@@ -6,6 +6,9 @@
 trigger:
   - master
 
+pr:
+  - master
+
 pool:
   vmImage: "windows-latest"
 
@@ -20,51 +23,27 @@ stages:
             Debug x86:
               BuildConfiguration: Debug
               BuildPlatform: x86
-              BuildPlatformDir: Win32
-              PublishMui: false
-              RunVSTest: true
             Debug x64:
               BuildConfiguration: Debug
               BuildPlatform: x64
-              BuildPlatformDir: x64
-              PublishMui: false
-              RunVSTest: true
             Debug ARM:
               BuildConfiguration: Debug
               BuildPlatform: ARM
-              BuildPlatformDir: Arm
-              PublishMui: false
-              RunVSTest: false
             Debug ARM64:
               BuildConfiguration: Debug
               BuildPlatform: ARM64
-              BuildPlatformDir: Arm64
-              PublishMui: false
-              RunVSTest: false
             Release x86:
               BuildConfiguration: Release
               BuildPlatform: x86
-              BuildPlatformDir: Win32
-              PublishMui: true
-              RunVSTest: true
             Release x64:
               BuildConfiguration: Release
               BuildPlatform: x64
-              BuildPlatformDir: x64
-              PublishMui: false
-              RunVSTest: true
             Release ARM:
               BuildConfiguration: Release
               BuildPlatform: ARM
-              BuildPlatformDir: Arm
-              PublishMui: false
-              RunVSTest: false
             Release ARM64:
               BuildConfiguration: Release
               BuildPlatform: ARM64
-              BuildPlatformDir: Arm64
-              PublishMui: false
-              RunVSTest: false
         steps:
           - checkout: self
             clean: true
