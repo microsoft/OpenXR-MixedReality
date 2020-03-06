@@ -66,16 +66,21 @@ stages:
               PublishMui: false
               RunVSTest: false
         steps:
-          - task: VSBuild@1
-            displayName: "Build BasicXrApp.sln"
+          - checkout: self
+            clean: true
+            lfs: true
+
+          - task: NuGetInstaller@0
+            displayName: "NuGet Restore"
             inputs:
-              solution: 'BasicXrApp.sln'
-              vsVersion: '16.0'
-              msbuildArgs: '/fl /flp:LogFile=$(System.DefaultWorkingDirectory)\bin\Logs\MsBuild_$(BuildConfiguration)_$(BuildPlatform).log;Verbosity=diagnostic'
-              platform: '$(BuildPlatform)'
-              configuration: '$(BuildConfiguration)'
-              maximumCpuCount: true
-              restoreNugetPackages: true
+              solution: BasicXrApp.sln
+              verbosity: Detailed
+
+          - task: NuGetInstaller@0
+            displayName: "NuGet Restore"
+            inputs:
+              solution: Samples.sln
+              verbosity: Detailed
 
           - task: VSBuild@1
             displayName: "Build Samples.sln"
@@ -86,4 +91,13 @@ stages:
               platform: $(BuildPlatform)
               configuration: $(BuildConfiguration)
               maximumCpuCount: true
-              restoreNugetPackages: true
+
+          - task: VSBuild@1
+            displayName: "Build BasicXrApp.sln"
+            inputs:
+              solution: "BasicXrApp.sln"
+              vsVersion: "16.0"
+              msbuildArgs: '/fl /flp:LogFile=$(System.DefaultWorkingDirectory)\bin\Logs\MsBuild_$(BuildConfiguration)_$(BuildPlatform).log;Verbosity=diagnostic'
+              platform: "$(BuildPlatform)"
+              configuration: "$(BuildConfiguration)"
+              maximumCpuCount: true
