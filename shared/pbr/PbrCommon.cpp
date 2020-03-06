@@ -32,13 +32,13 @@ namespace Pbr {
     };
 
     RGBAColor XM_CALLCONV FromSRGB(DirectX::XMVECTOR color) {
-        RGBAColor linearColor;
+        RGBAColor linearColor{};
         DirectX::XMStoreFloat4(&linearColor, DirectX::XMColorSRGBToRGB(color));
         return linearColor;
     }
 
     RGBColor XM_CALLCONV RGBFromSRGB(DirectX::XMVECTOR color) {
-        RGBColor linearColor;
+        RGBColor linearColor{};
         DirectX::XMStoreFloat3(&linearColor, DirectX::XMColorSRGBToRGB(color));
         return linearColor;
     }

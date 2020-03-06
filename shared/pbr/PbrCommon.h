@@ -36,8 +36,9 @@ namespace Pbr {
 
     namespace RGBA {
         constexpr RGBAColor White{1, 1, 1, 1};
-        constexpr RGBAColor Black{0, 0, 0, 0};
+        constexpr RGBAColor Black{0, 0, 0, 1};
         constexpr RGBAColor FlatNormal{0.5f, 0.5f, 1, 1};
+        constexpr RGBAColor Transparent{0, 0, 0, 0};
     } // namespace RGBA
 
     namespace RGB {

@@ -129,7 +129,6 @@
     <ClInclude Include="ProjectionLayer.h" />
     <ClInclude Include="FrameTime.h" />
     <ClInclude Include="SceneContext.h" />
-    <ClInclude Include="TextQuadObject.h" />
     <ClInclude Include="TextTexture.h" />
     <ClInclude Include="VisibilityMask.h" />
   </ItemGroup>
@@ -144,8 +143,8 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="ProjectionLayer.cpp" />
     <ClCompile Include="StereoVisibleMask.cpp" />
-    <ClCompile Include="TextQuadObject.cpp" />
     <ClCompile Include="TextTexture.cpp" />
+    <ClCompile Include="Scene_Title.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SharedPath)\gltf\Gltf_uwp.vcxproj">

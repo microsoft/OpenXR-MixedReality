@@ -47,5 +47,3 @@
 #include <XrUtility/XrMath.h>
 #include <SampleShared/Trace.h>
 #include <SampleShared/ScopeGuard.h>
-
-#include <fmt/format.h>

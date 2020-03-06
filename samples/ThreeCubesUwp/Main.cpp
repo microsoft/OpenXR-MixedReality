@@ -16,6 +16,7 @@
 #include "pch.h"
 #include "App.h"
 
+std::unique_ptr<Scene> CreateTitleScene(SceneContext* sceneContext);
 std::unique_ptr<Scene> CreateThreeCubesScene(SceneContext* sceneContext);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
@@ -30,6 +31,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         };
 
         auto app = CreateXrApp({"ThreeCubesUwp", 1}, requiredExtensions);
+        app->AddScene(CreateTitleScene(app->SceneContext()));
         app->AddScene(CreateThreeCubesScene(app->SceneContext()));
         app->Run();
     } catch (const std::exception& ex) {

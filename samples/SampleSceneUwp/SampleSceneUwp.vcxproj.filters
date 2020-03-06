@@ -17,17 +17,17 @@
     <None Include="packages.config" />
     <None Include="$(OpenXRLoaderBinaryRoot)\bin\openxr_loader.dll" />
     <None Include="$(SharedPath)\pbr\brdf_lut.png">
-      <Filter>Assets</Filter>
+      <Filter>DeploymentContent</Filter>
     </None>
     <None Include="$(SharedPath)\SampleShared\Sample_DiffuseHDR.dds">
-      <Filter>Assets</Filter>
+      <Filter>DeploymentContent</Filter>
     </None>
     <None Include="$(SharedPath)\SampleShared\Sample_SpecularHDR.dds">
-      <Filter>Assets</Filter>
+      <Filter>DeploymentContent</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Assets">
+    <Filter Include="DeploymentContent">
       <UniqueIdentifier>{8eb32a1e-ec4a-4c3c-881e-2e7e281f7df2}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
