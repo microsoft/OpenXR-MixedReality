@@ -10,7 +10,7 @@ These OpenXR samples use C++17 and D3D11. The same source code works across UWP 
 
 - Update to [Windows 10 May 2019 Update (1903) or later](https://www.microsoft.com/software-download/windows10) and [Visual Studio 2017 or 2019](https://visualstudio.microsoft.com/downloads/).  If you will be deploying to a HoloLens 2, you should install [Visual Studio 2019 16.2 or later](https://visualstudio.microsoft.com/downloads/).
 
-- Prepare a [HoloLens 2 device](https://docs.microsoft.com/windows/mixed-reality/openxr#getting-started-with-openxr-for-hololens-2) or [Windows Mixed Reality device](https://docs.microsoft.com/en-us/windows/mixed-reality/openxr#getting-started-with-openxr-for-windows-mixed-reality-headsets).
+- Prepare a [HoloLens 2 device](https://docs.microsoft.com/windows/mixed-reality/openxr#getting-started-with-openxr-for-hololens-2) or [Windows Mixed Reality device](https://docs.microsoft.com/windows/mixed-reality/openxr#getting-started-with-openxr-for-windows-mixed-reality-headsets).
 
 - Clone the samples repo: `git clone https://github.com/microsoft/OpenXR-SDK-VisualStudio.git`
 

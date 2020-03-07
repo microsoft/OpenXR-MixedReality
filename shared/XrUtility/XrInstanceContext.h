@@ -37,11 +37,15 @@ namespace xr {
 
     class InstanceContext final {
     public:
+        NameVersion AppInfo;
+        NameVersion EngineInfo;
         ExtensionContext Extensions;
         XrInstanceProperties InstanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
 
     public:
-        InstanceContext(const NameVersion& appInfo, const NameVersion& engineInfo, const std::vector<const char*>& desiredExtensions);
+        InstanceContext(const NameVersion& appInfo,
+                        const NameVersion& engineInfo,
+                        const std::vector<const char*>& desiredExtensions);
 
         InstanceContext() = delete;
         InstanceContext(InstanceContext&) = delete;
@@ -64,7 +68,9 @@ namespace xr {
 #pragma region Implementation details
     inline InstanceContext::InstanceContext(const NameVersion& appInfo,
                                             const NameVersion& engineInfo,
-                                            const std::vector<const char*>& desiredExtensions) {
+                                            const std::vector<const char*>& desiredExtensions)
+        : AppInfo(appInfo)
+        , EngineInfo(engineInfo) {
         // Filter extensions to make sure all are supported by current runtime
         std::vector<const char*> supportedExtensions = FilterSupportedExtensions(desiredExtensions);
 

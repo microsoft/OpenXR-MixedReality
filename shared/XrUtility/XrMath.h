@@ -32,6 +32,7 @@ namespace xr::math {
 
         XrPosef LookAt(const XrVector3f& origin, const XrVector3f& forward, const XrVector3f& up);
         XrPosef Multiply(const XrPosef& a, const XrPosef& b);
+        XrPosef Slerp(const XrPosef& a, const XrPosef& b, float alpha);
 
         constexpr bool IsPoseValid(const XrSpaceLocation& location);
         constexpr bool IsPoseTracked(const XrSpaceLocation& location);
@@ -47,6 +48,7 @@ namespace xr::math {
         bool IsNormalized(const XrQuaternionf& quaternion);
         XrQuaternionf RotationAxisAngle(const XrVector3f& axis, float angleInRadians);
         XrQuaternionf RotationRollPitchYaw(const XrVector3f& eulerAnglesInRadians);
+        XrQuaternionf Slerp(const XrQuaternionf& a, const XrQuaternionf& b, float alpha);
     } // namespace Quaternion
 
     struct NearFar {
@@ -183,6 +185,36 @@ namespace xr::math {
     DEFINE_CAST(DirectX::XMFLOAT2, XrExtent2Df);
 #undef DEFINE_CAST
 
+#define VECTOR3F_OPERATOR(op)                                                    \
+    constexpr XrVector3f operator op(const XrVector3f& a, const XrVector3f& b) { \
+        return XrVector3f{a.x op b.x, a.y op b.y, a.z op b.z};                   \
+    }
+    VECTOR3F_OPERATOR(+);
+    VECTOR3F_OPERATOR(-);
+    VECTOR3F_OPERATOR(*);
+    VECTOR3F_OPERATOR(/);
+#undef VECTOR3F_OPERATOR
+
+#define VECTOR3F_OPERATOR(op)                                        \
+    constexpr XrVector3f operator op(const XrVector3f& a, float s) { \
+        return XrVector3f{a.x op s, a.y op s, a.z op s};             \
+    }
+    VECTOR3F_OPERATOR(+);
+    VECTOR3F_OPERATOR(-);
+    VECTOR3F_OPERATOR(*);
+    VECTOR3F_OPERATOR(/);
+#undef VECTOR3F_OPERATOR
+
+#define VECTOR3F_OPERATOR(op)                                        \
+    constexpr XrVector3f operator op(float s, const XrVector3f& a) { \
+        return XrVector3f{s op a.x, s op a.y, s op a.z};             \
+    }
+    VECTOR3F_OPERATOR(+);
+    VECTOR3F_OPERATOR(-);
+    VECTOR3F_OPERATOR(*);
+    VECTOR3F_OPERATOR(/);
+#undef VECTOR3F_OPERATOR
+
     inline DirectX::XMVECTOR XM_CALLCONV LoadXrVector2(const XrVector2f& vector) {
         return DirectX::XMLoadFloat2(&xr::math::cast(vector));
     }
@@ -277,6 +309,10 @@ namespace xr::math {
             return pose;
         }
 
+        inline XrPosef Slerp(const XrPosef& a, const XrPosef& b, float alpha) {
+            return MakePose(Quaternion::Slerp(a.orientation, b.orientation, alpha), a.position + (b.position - a.position) * alpha);
+        }
+
         inline XrPosef Multiply(const XrPosef& a, const XrPosef& b) {
             // Q: Quaternion, P: Position, R:Rotation, T:Translation
             //   (Qa Pa) * (Qb Pb)
@@ -351,7 +387,29 @@ namespace xr::math {
             StoreXrQuaternion(&q, DirectX::XMQuaternionRotationRollPitchYaw(anglesInRadians.x, anglesInRadians.y, anglesInRadians.z));
             return q;
         }
+
+        inline XrQuaternionf Slerp(const XrQuaternionf& a, const XrQuaternionf& b, float alpha) {
+            DirectX::XMVECTOR qa = LoadXrQuaternion(a);
+            DirectX::XMVECTOR qb = LoadXrQuaternion(b);
+            DirectX::XMVECTOR qr = DirectX::XMQuaternionSlerp(qa, qb, alpha);
+            XrQuaternionf result;
+            StoreXrQuaternion(&result, qr);
+            return result;
+        }
+
     } // namespace Quaternion
+
+    inline XrPosef operator*(const XrPosef& a, const XrPosef& b) {
+        return Pose::Multiply(a, b);
+    }
+
+    inline float Dot(const XrVector3f& a, const XrVector3f& b) {
+        return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
+    inline XrVector3f Normalize(const XrVector3f& a) {
+        return a / std::sqrt(Dot(a, a));
+    }
 
     inline bool IsValidFov(const XrFovf& fov) {
         if (fov.angleRight >= DirectX::XM_PIDIV2 || fov.angleLeft <= -DirectX::XM_PIDIV2) {

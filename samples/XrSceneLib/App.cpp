@@ -196,7 +196,7 @@ namespace {
         const xr::SystemContext& system = systemOpt.value();
 
         // Create the D3D11 device for the adapter associated with the system.
-        _Analysis_assume_(m_extensionContext.xrGetD3D11GraphicsRequirementsKHR != nullptr);
+        _Analysis_assume_(instance.Extensions.xrGetD3D11GraphicsRequirementsKHR != nullptr);
         XrGraphicsRequirementsD3D11KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
         CHECK_XRCMD(instance.Extensions.xrGetD3D11GraphicsRequirementsKHR(instance.Handle(), system.Id, &graphicsRequirements));
         const winrt::com_ptr<IDXGIAdapter1> adapter = sample::dx::GetAdapter(graphicsRequirements.adapterLuid);

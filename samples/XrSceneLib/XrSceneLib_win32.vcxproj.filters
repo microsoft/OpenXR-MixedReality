@@ -19,10 +19,9 @@
     <ClCompile Include="StereoVisibleMask.cpp">
       <Filter>Contexts</Filter>
     </ClCompile>
-    <ClCompile Include="TextQuadObject.cpp">
+    <ClCompile Include="TextTexture.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
-    <ClCompile Include="TextTexture.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -52,10 +51,9 @@
     <ClInclude Include="VisibilityMask.h">
       <Filter>Contexts</Filter>
     </ClInclude>
-    <ClInclude Include="TextQuadObject.h">
+    <ClInclude Include="TextTexture.h">
       <Filter>Objects</Filter>
     </ClInclude>
-    <ClInclude Include="TextTexture.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">

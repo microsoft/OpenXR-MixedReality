@@ -107,15 +107,17 @@ struct Scene {
 protected:
     ::SceneContext* const m_sceneContext;
 
-    virtual void OnUpdate(const FrameTime& frameTime) {
+    virtual void OnUpdate(const FrameTime& frameTime [[maybe_unused]]) {
     }
-    virtual void OnRender(const FrameTime& frameTime) const {
+    virtual void OnRender(const FrameTime& frameTime [[maybe_unused]]) const {
     }
     virtual void OnInteractionProfileChanged() {
     }
-    virtual void OnSpaceChanging(XrReferenceSpaceType referenceSpaceType, XrTime changeTime, const std::optional<XrPosef>& pose) {
+    virtual void OnSpaceChanging(XrReferenceSpaceType referenceSpaceType [[maybe_unused]],
+                                 XrTime changeTime [[maybe_unused]],
+                                 const std::optional<XrPosef>& pose [[maybe_unused]]) {
     }
-    virtual void OnActiveChanged(bool toActive) {
+    virtual void OnActiveChanged(bool toActive [[maybe_unused]]) {
     }
     virtual void OnMenuButtonPressed() {
         SetActive(!IsActive());

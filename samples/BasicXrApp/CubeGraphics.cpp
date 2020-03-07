@@ -15,7 +15,7 @@
 //*********************************************************
 
 #include "pch.h"
-#include "App.h"
+#include "OpenXrProgram.h"
 #include "DxUtility.h"
 
 namespace {

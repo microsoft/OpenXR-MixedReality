@@ -1,11 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="App.cpp" />
-    <ClCompile Include="TextQuadObject.cpp">
-      <Filter>Objects</Filter>
-    </ClCompile>
     <ClCompile Include="PbrModelObject.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
@@ -22,14 +19,13 @@
       <Filter>Contexts</Filter>
     </ClCompile>
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="TextTexture.cpp" />
+    <ClCompile Include="TextTexture.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
     <ClInclude Include="App.h" />
-    <ClInclude Include="TextQuadObject.h">
-      <Filter>Objects</Filter>
-    </ClInclude>
     <ClInclude Include="PbrModelObject.h">
       <Filter>Objects</Filter>
     </ClInclude>
@@ -55,7 +51,9 @@
     <ClInclude Include="SceneContext.h">
       <Filter>Contexts</Filter>
     </ClInclude>
-    <ClInclude Include="TextTexture.h" />
+    <ClInclude Include="TextTexture.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
@@ -75,5 +73,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="$(OpenXRLoaderBinaryRoot)\bin\openxr_loader.dll" />
   </ItemGroup>
 </Project>
+

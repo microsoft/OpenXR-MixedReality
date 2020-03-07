@@ -15,7 +15,7 @@
 //*********************************************************
 
 #include "pch.h"
-#include "App.h"
+#include "OpenXrProgram.h"
 
 #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 constexpr const char* ProgramName = "BasicXrApp_win32";
