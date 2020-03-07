@@ -1,0 +1,82 @@
+# Universal Windows Platform
+# Build a Universal Windows Platform project using Visual Studio.
+# Add steps that test and distribute an app, save build artifacts, and more:
+# https://aka.ms/yaml
+
+trigger:
+  - master
+
+pr:
+  - master
+
+pool:
+  vmImage: "windows-latest"
+
+stages:
+  - stage: Build
+    jobs:
+      - job: Build
+        timeoutInMinutes: 30
+        strategy:
+          maxParallel: 8
+          matrix:
+            Debug x86:
+              BuildConfiguration: Debug
+              BuildPlatform: x86
+            Debug x64:
+              BuildConfiguration: Debug
+              BuildPlatform: x64
+            Debug ARM:
+              BuildConfiguration: Debug
+              BuildPlatform: ARM
+            Debug ARM64:
+              BuildConfiguration: Debug
+              BuildPlatform: ARM64
+            Release x86:
+              BuildConfiguration: Release
+              BuildPlatform: x86
+            Release x64:
+              BuildConfiguration: Release
+              BuildPlatform: x64
+            Release ARM:
+              BuildConfiguration: Release
+              BuildPlatform: ARM
+            Release ARM64:
+              BuildConfiguration: Release
+              BuildPlatform: ARM64
+        steps:
+          - checkout: self
+            clean: true
+            lfs: true
+
+          - task: NuGetInstaller@0
+            displayName: "NuGet Restore"
+            inputs:
+              solution: BasicXrApp.sln
+              verbosity: Detailed
+
+          - task: NuGetInstaller@0
+            displayName: "NuGet Restore"
+            inputs:
+              solution: Samples.sln
+              verbosity: Detailed
+
+          - task: VSBuild@1
+            displayName: "Build Samples.sln"
+            inputs:
+              solution: Samples.sln
+              vsVersion: "16.0"
+              msbuildArgs: '/fl /flp:LogFile=$(System.DefaultWorkingDirectory)\bin\Logs\MsBuild_$(BuildConfiguration)_$(BuildPlatform).log;Verbosity=diagnostic'
+              platform: $(BuildPlatform)
+              configuration: $(BuildConfiguration)
+              maximumCpuCount: true
+
+          - task: VSBuild@1
+            displayName: "Build BasicXrApp.sln"
+            inputs:
+              solution: "BasicXrApp.sln"
+              vsVersion: "16.0"
+              msbuildArgs: '/fl /flp:LogFile=$(System.DefaultWorkingDirectory)\bin\Logs\MsBuild_$(BuildConfiguration)_$(BuildPlatform).log;Verbosity=diagnostic'
+              platform: "$(BuildPlatform)"
+              configuration: "$(BuildConfiguration)"
+              maximumCpuCount: true
