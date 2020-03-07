@@ -50,3 +50,6 @@
 #include <XrUtility/XrHandle.h>
 
 #include <winrt/base.h> // for winrt::com_ptr
+
+#define FMT_HEADER_ONLY
+#include <fmt/format.h>

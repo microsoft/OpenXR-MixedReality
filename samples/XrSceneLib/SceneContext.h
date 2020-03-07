@@ -30,7 +30,7 @@ struct SceneContext final {
                  Pbr::Resources pbrResources,
                  winrt::com_ptr<ID3D11Device> device,
                  winrt::com_ptr<ID3D11DeviceContext> deviceContext,
-                 xr::ActionContext& actionContext,
+                 xr::IActionContext& actionContext,
                  XrEnvironmentBlendMode primaryViewConfigEnvironmentBlendMode)
         : Instance(std::move(instance))
         , System(std::move(system))
@@ -59,24 +59,10 @@ struct SceneContext final {
     const winrt::com_ptr<ID3D11Device> Device;
     Pbr::Resources PbrResources;
 
-    xr::ActionContext& ActionContext;
+    xr::IActionContext& ActionContext;
     std::atomic<XrSessionState> SessionState;
 
     const XrPath RightHand;
     const XrPath LeftHand;
     const XrPath GamePad;
-
-    XrPath PrimaryHand() const {
-        return m_primaryIsRight ? RightHand : LeftHand;
-    }
-    XrPath SecondaryHand() const {
-        return m_primaryIsRight ? LeftHand : RightHand;
-    }
-    void SetPrimaryHand(XrPath path) {
-        assert(path == RightHand || path == LeftHand);
-        m_primaryIsRight = (path == RightHand);
-    }
-
-private:
-    bool m_primaryIsRight{true};
 };

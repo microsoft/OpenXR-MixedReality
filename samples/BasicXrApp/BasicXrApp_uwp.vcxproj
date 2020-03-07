@@ -51,7 +51,9 @@
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
-    <ConfigurationType>Application</ConfigurationType>
+    <!-- PREfast builds only compile code, not link them. Set the uwp projects to static lib to skip package generation problems. -->
+    <ConfigurationType Condition="'$(LinkCompiled)'!='false'">Application</ConfigurationType>
+    <ConfigurationType Condition="'$(LinkCompiled)'=='false'">StaticLibrary</ConfigurationType>
     <PlatformToolset>v140</PlatformToolset>
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '15.0'">v141</PlatformToolset>
     <PlatformToolset Condition="'$(VisualStudioVersion)' == '16.0'">v142</PlatformToolset>
@@ -129,7 +131,6 @@
     <Image Include="Assets\Wide310x150Logo.scale-200.png" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="App.h" />
     <ClInclude Include="DxUtility.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
@@ -137,6 +138,7 @@
     <ClCompile Include="App.cpp" />
     <ClCompile Include="CubeGraphics.cpp" />
     <ClCompile Include="DxUtility.cpp" />
+    <ClInclude Include="OpenXrProgram.h" />
     <ClCompile Include="OpenXrProgram.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

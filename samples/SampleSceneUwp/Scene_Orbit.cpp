@@ -26,30 +26,80 @@ namespace {
     //
     // This sample displays a simple orbit in front of the user using local reference space
     // and shows how to pause the animation when the session lost focus while it continues rendering.
+    // Also demos Gaze-Select interaction, that the user can air tap to move the orbit in front of the user.
     //
     struct OrbitScene : public Scene {
         OrbitScene(SceneContext* sceneContext)
             : Scene(sceneContext, L"Orbit Scene", true) {
-            XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
-            createInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
-            createInfo.poseInReferenceSpace = Pose::Translation({0, 0, -2}); // 2 meters in front
-            CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext->Session, &createInfo, m_centerSpace.Put()));
+            xr::ActionSet& actionSet = m_sceneContext->ActionContext.CreateActionSet("orbit_scene_actions", "Orbit Scene Actions");
+
+            const std::vector<std::string> subactionPathBothHands = {"/user/hand/right", "/user/hand/left"};
+            m_selectAction = actionSet.CreateAction("select_action", "Select Action", XR_ACTION_TYPE_BOOLEAN_INPUT, subactionPathBothHands);
+
+            m_sceneContext->ActionContext.SuggestInteractionProfileBindings("/interaction_profiles/khr/simple_controller",
+                                                                            {
+                                                                                {m_selectAction, "/user/hand/right/input/select/click"},
+                                                                                {m_selectAction, "/user/hand/left/input/select/click"},
+                                                                            });
+
+            if (sceneContext->Extensions.SupportsHandInteraction) {
+                m_sceneContext->ActionContext.SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction_preview",
+                                                                                {
+                                                                                    {m_selectAction, "/user/hand/right/input/select/value"},
+                                                                                    {m_selectAction, "/user/hand/left/input/select/value"},
+                                                                                });
+            }
 
             m_sun = AddSceneObject(MakeSphere(m_sceneContext->PbrResources, 0.5f, 20, Pbr::FromSRGB(Colors::OrangeRed)));
+            m_sun->SetVisible(false); // invisible until tracking is valid and placement succeeded.
+
             m_earth = AddSceneObject(MakeSphere(m_sceneContext->PbrResources, 0.1f, 20, Pbr::FromSRGB(Colors::SeaGreen)));
             m_earth->SetParent(m_sun);
+
+            XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
+            createInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
+            createInfo.poseInReferenceSpace = Pose::Identity();
+            CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext->Session, &createInfo, m_viewSpace.Put()));
         }
 
         void OnUpdate(const FrameTime& frameTime) override {
-            XrSpaceLocation location = {XR_TYPE_SPACE_LOCATION};
-            CHECK_XRCMD(xrLocateSpace(m_centerSpace.Get(), m_sceneContext->SceneSpace, frameTime.PredictedDisplayTime, &location));
-            if (Pose::IsPoseValid(location)) {
-                m_sun->Pose() = location.pose;
+            XrActionStateBoolean state{XR_TYPE_ACTION_STATE_BOOLEAN};
+            XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
+            getInfo.action = m_selectAction;
+            CHECK_XRCMD(xrGetActionStateBoolean(m_sceneContext->Session, &getInfo, &state));
+            const bool isSelectPressed = state.isActive && state.changedSinceLastSync && state.currentState;
+            const bool firstUpdate = !m_sun->IsVisible();
+
+            if (firstUpdate || isSelectPressed) {
+                const XrTime time = state.isActive ? state.lastChangeTime : frameTime.PredictedDisplayTime;
+                XrSpaceLocation viewInScene = {XR_TYPE_SPACE_LOCATION};
+                CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_sceneContext->SceneSpace, time, &viewInScene));
+
+                if (Pose::IsPoseValid(viewInScene)) {
+                    // Project the forward of the view to the scene's horizontal plane
+                    const XrPosef viewFrontInView = {{0, 0, 0, 1}, {0, 0, -1}};
+                    const XrPosef viewFrontInScene = viewFrontInView * viewInScene.pose;
+                    const XrVector3f viewForwardInScene = viewFrontInScene.position - viewInScene.pose.position;
+                    const XrVector3f viewForwardInGravity = Dot(viewForwardInScene, {0, -1, 0}) * XrVector3f{0, -1, 0};
+                    const XrVector3f userForwardInScene = Normalize(viewForwardInScene - viewForwardInGravity);
+
+                    // Put the sun 2 meters in front of the user at eye level
+                    const XrVector3f sunInScene = viewInScene.pose.position + 2.f * userForwardInScene;
+                    m_targetPoseInScene = Pose::LookAt(sunInScene, userForwardInScene, {0, 1, 0});
+
+                    if (firstUpdate) {
+                        m_sun->SetVisible(true);
+                        m_sun->Pose() = m_targetPoseInScene;
+                    }
+                }
             }
 
+            // Slowly ease the sun to the target location
+            m_sun->Pose() = Pose::Slerp(m_sun->Pose(), m_targetPoseInScene, 0.05f);
+
+            // Animate the earth orbiting the sun, and pause when app lost focus.
             if (m_sceneContext->SessionState == XR_SESSION_STATE_FOCUSED) {
-                const float seconds = duration_cast<duration<float>>(frameTime.TotalElapsed).count();
-                const float angle = seconds * XM_PI; // half circle a second
+                const float angle = frameTime.TotalElapsedSeconds * XM_PI; // half circle a second
 
                 XrVector3f earthPosition;
                 earthPosition.x = 0.6f * sin(angle);
@@ -60,9 +110,11 @@ namespace {
         }
 
     private:
-        xr::SpaceHandle m_centerSpace;
+        XrAction m_selectAction{XR_NULL_HANDLE};
+        XrPosef m_targetPoseInScene = Pose::Identity();
         std::shared_ptr<PbrModelObject> m_sun;
         std::shared_ptr<PbrModelObject> m_earth;
+        xr::SpaceHandle m_viewSpace;
     };
 } // namespace
 

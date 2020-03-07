@@ -16,7 +16,9 @@
 #include "pch.h"
 #include "App.h"
 
-int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
+std::unique_ptr<Scene> CreateTitleScene(SceneContext* sceneContext);
+
+int APIENTRY wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int) {
     try {
         CHECK_HRCMD(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
         auto on_exit = MakeScopeGuard([] { ::CoUninitialize(); });
@@ -24,6 +26,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         const std::vector<const char*> requiredExtensions = {};
 
         auto app = CreateXrApp({"SampleSceneWin32", 1}, requiredExtensions);
+        app->AddScene(CreateTitleScene(app->SceneContext()));
         app->Run();
     } catch (const std::exception& ex) {
         sample::Trace("Unhandled Exception: {}\n", ex.what());

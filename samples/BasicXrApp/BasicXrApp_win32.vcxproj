@@ -97,12 +97,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="App.h" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="App.cpp" />
     <ClInclude Include="DxUtility.h" />
+    <ClInclude Include="OpenXrProgram.h" />
     <ClCompile Include="OpenXrProgram.cpp" />
     <ClCompile Include="CubeGraphics.cpp" />
     <ClCompile Include="DxUtility.cpp" />

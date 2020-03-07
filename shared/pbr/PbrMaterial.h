@@ -18,6 +18,8 @@ namespace Pbr {
     // A Material contains the metallic roughness parameters and textures.
     // Primitives specify which Material to use when being rendered.
     struct Material final {
+#pragma warning(push)
+#pragma warning(disable:4324)
         // Coefficients used by the shader. Each texture is sampled and multiplied by these coefficients.
         struct ConstantBufferData {
             // packoffset(c0)
@@ -32,6 +34,7 @@ namespace Pbr {
             float OcclusionStrength{1};
             float AlphaCutoff{0};
         };
+#pragma warning(pop)
 
         static_assert((sizeof(ConstantBufferData) % 16) == 0, "Constant Buffer must be divisible by 16 bytes");
 

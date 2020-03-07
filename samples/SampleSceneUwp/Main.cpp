@@ -16,6 +16,7 @@
 #include "pch.h"
 #include "App.h"
 
+std::unique_ptr<Scene> CreateTitleScene(SceneContext* sceneContext);
 std::unique_ptr<Scene> CreateOrbitScene(SceneContext* sceneContext);
 std::unique_ptr<Scene> CreateHandTrackingScene(SceneContext* sceneContext);
 
@@ -33,8 +34,9 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         };
 
         auto app = CreateXrApp({"SampleSceneUwp", 1}, requiredExtensions);
-        app->AddScene(CreateHandTrackingScene(app->SceneContext()));
+        app->AddScene(CreateTitleScene(app->SceneContext()));
         app->AddScene(CreateOrbitScene(app->SceneContext()));
+        app->AddScene(CreateHandTrackingScene(app->SceneContext()));
         app->Run();
     } catch (const std::exception& ex) {
         sample::Trace("Unhandled Exception: {}\n", ex.what());

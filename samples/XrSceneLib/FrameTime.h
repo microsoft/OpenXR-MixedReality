@@ -24,6 +24,8 @@ struct FrameTime {
     clock::time_point Now = StartTime;
     clock::duration Elapsed = {};
     clock::duration TotalElapsed = {};
+    float ElapsedSeconds = {};
+    float TotalElapsedSeconds = {};
 
     XrTime PredictedDisplayTime = {};
     XrDuration PredictedDisplayPeriod = {};
@@ -38,6 +40,9 @@ struct FrameTime {
         const auto now = FrameTime::clock::now();
         Elapsed = now - Now;
         TotalElapsed = now - StartTime;
+
+        ElapsedSeconds = std::chrono::duration_cast<std::chrono::duration<float>>(Elapsed).count();
+        TotalElapsedSeconds = std::chrono::duration_cast<std::chrono::duration<float>>(TotalElapsed).count();
         Now = now;
     }
 };

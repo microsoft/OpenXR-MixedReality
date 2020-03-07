@@ -21,8 +21,8 @@ namespace {
     constexpr DXGI_FORMAT TextFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
 }
 
-TextTexture::TextTexture(
-    SceneContext* sceneContext, uint32_t width, uint32_t height, const wchar_t* fontName, float fontSize, Pbr::RGBAColor color) {
+TextTexture::TextTexture(SceneContext* sceneContext, TextTextureInfo textInfo)
+    : m_textInfo(std::move(textInfo)) {
     const winrt::com_ptr<ID3D11Device> device = sceneContext->Device;
     const winrt::com_ptr<ID3D11DeviceContext> context = sceneContext->DeviceContext;
 
@@ -38,16 +38,16 @@ TextTexture::TextTexture(
     //
     // Create text format.
     //
-    CHECK_HRCMD(m_dwriteFactory->CreateTextFormat(fontName,
+    CHECK_HRCMD(m_dwriteFactory->CreateTextFormat(m_textInfo.FontName,
                                                   nullptr,
                                                   DWRITE_FONT_WEIGHT_NORMAL,
                                                   DWRITE_FONT_STYLE_NORMAL,
                                                   DWRITE_FONT_STRETCH_NORMAL,
-                                                  fontSize,
+                                                  m_textInfo.FontSize,
                                                   L"en-US",
                                                   m_textFormat.put()));
-    CHECK_HRCMD(m_textFormat->SetTextAlignment(DWRITE_TEXT_ALIGNMENT_CENTER));
-    CHECK_HRCMD(m_textFormat->SetParagraphAlignment(DWRITE_PARAGRAPH_ALIGNMENT_CENTER));
+    CHECK_HRCMD(m_textFormat->SetTextAlignment(m_textInfo.TextAlignment));
+    CHECK_HRCMD(m_textFormat->SetParagraphAlignment(m_textInfo.ParagraphAlignment));
 
     CHECK_HRCMD(m_d2dFactory->CreateDrawingStateBlock(m_stateBlock.put()));
 
@@ -57,8 +57,17 @@ TextTexture::TextTexture(
     const D2D1_BITMAP_PROPERTIES1 bitmapProperties = D2D1::BitmapProperties1(D2D1_BITMAP_OPTIONS_TARGET | D2D1_BITMAP_OPTIONS_CANNOT_DRAW,
                                                                              D2D1::PixelFormat(TextFormat, D2D1_ALPHA_MODE_PREMULTIPLIED));
 
-    const auto texDesc = CD3D11_TEXTURE2D_DESC(
-        TextFormat, width, height, 1, 1, D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE, D3D11_USAGE_DEFAULT, 0, 1, 0, 0);
+    const auto texDesc = CD3D11_TEXTURE2D_DESC(TextFormat,
+                                               m_textInfo.Width,
+                                               m_textInfo.Height,
+                                               1,
+                                               1,
+                                               D3D11_BIND_RENDER_TARGET | D3D11_BIND_SHADER_RESOURCE,
+                                               D3D11_USAGE_DEFAULT,
+                                               0,
+                                               1,
+                                               0,
+                                               0);
     CHECK_HRCMD(device->CreateTexture2D(&texDesc, nullptr, m_textDWriteTexture.put()));
 
     winrt::com_ptr<IDXGISurface> dxgiPerfBuffer = m_textDWriteTexture.as<IDXGISurface>();
@@ -68,7 +77,9 @@ TextTexture::TextTexture(
     m_d2dContext->SetTextAntialiasMode(D2D1_TEXT_ANTIALIAS_MODE_GRAYSCALE);
     m_d2dContext->SetTransform(D2D1::Matrix3x2F::Identity());
 
-    CHECK_HRCMD(m_d2dContext->CreateSolidColorBrush(D2D1::ColorF(color.x, color.y, color.z, color.w), m_brush.put()));
+    const auto& foreground = m_textInfo.Foreground;
+    const D2D1::ColorF brushColor(foreground.x, foreground.y, foreground.z, foreground.w);
+    CHECK_HRCMD(m_d2dContext->CreateSolidColorBrush(brushColor, m_brush.put()));
 }
 
 void TextTexture::Draw(const wchar_t* text) {
@@ -76,11 +87,18 @@ void TextTexture::Draw(const wchar_t* text) {
 
     const D2D1_SIZE_F renderTargetSize = m_d2dContext->GetSize();
     m_d2dContext->BeginDraw();
-    m_d2dContext->Clear(0);
+
+    const auto& background = m_textInfo.Background;
+    m_d2dContext->Clear(D2D1::ColorF(background.x, background.y, background.z, background.w));
+
+    const auto& margin = m_textInfo.Margin;
     m_d2dContext->DrawText(text,
                            static_cast<UINT32>(wcslen(text)),
                            m_textFormat.get(),
-                           D2D1::RectF(0.0f, 0.0f, renderTargetSize.width, renderTargetSize.height),
+                           D2D1::RectF(m_textInfo.Margin,
+                                       m_textInfo.Margin,
+                                       renderTargetSize.width - m_textInfo.Margin * 2,
+                                       renderTargetSize.height - m_textInfo.Margin * 2),
                            m_brush.get());
 
     m_d2dContext->EndDraw();
