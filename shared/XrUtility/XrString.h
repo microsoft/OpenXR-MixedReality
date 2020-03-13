@@ -42,7 +42,7 @@ namespace xr {
         return paths;
     }
 
-    inline std::wstring utf8_to_wide(const std::string& utf8Text) {
+    inline std::wstring utf8_to_wide(std::string_view utf8Text) {
         if (utf8Text.empty()) {
             return {};
         }
@@ -65,7 +65,7 @@ namespace xr {
         return wideText;
     }
 
-    inline std::string wide_to_utf8(const std::wstring& wideText) {
+    inline std::string wide_to_utf8(std::wstring_view wideText) {
         if (wideText.empty()) {
             return {};
         }

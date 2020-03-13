@@ -30,23 +30,28 @@ namespace {
     //
     struct OrbitScene : public Scene {
         OrbitScene(SceneContext* sceneContext)
-            : Scene(sceneContext, L"Orbit Scene", true) {
+            : Scene(sceneContext) {
             xr::ActionSet& actionSet = m_sceneContext->ActionContext.CreateActionSet("orbit_scene_actions", "Orbit Scene Actions");
 
-            const std::vector<std::string> subactionPathBothHands = {"/user/hand/right", "/user/hand/left"};
-            m_selectAction = actionSet.CreateAction("select_action", "Select Action", XR_ACTION_TYPE_BOOLEAN_INPUT, subactionPathBothHands);
+            m_selectAction = actionSet.CreateAction("select_action", "Select Action", XR_ACTION_TYPE_BOOLEAN_INPUT, {});
 
             m_sceneContext->ActionContext.SuggestInteractionProfileBindings("/interaction_profiles/khr/simple_controller",
                                                                             {
-                                                                                {m_selectAction, "/user/hand/right/input/select/click"},
-                                                                                {m_selectAction, "/user/hand/left/input/select/click"},
+                                                                                {m_selectAction, "/user/hand/right/input/select"},
+                                                                                {m_selectAction, "/user/hand/left/input/select"},
+                                                                            });
+
+            m_sceneContext->ActionContext.SuggestInteractionProfileBindings("/interaction_profiles/microsoft/motion_controller",
+                                                                            {
+                                                                                {m_selectAction, "/user/hand/right/input/trigger"},
+                                                                                {m_selectAction, "/user/hand/left/input/trigger"},
                                                                             });
 
             if (sceneContext->Extensions.SupportsHandInteraction) {
                 m_sceneContext->ActionContext.SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction_preview",
                                                                                 {
-                                                                                    {m_selectAction, "/user/hand/right/input/select/value"},
-                                                                                    {m_selectAction, "/user/hand/left/input/select/value"},
+                                                                                    {m_selectAction, "/user/hand/right/input/select"},
+                                                                                    {m_selectAction, "/user/hand/left/input/select"},
                                                                                 });
             }
 

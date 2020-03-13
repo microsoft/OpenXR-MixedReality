@@ -18,7 +18,6 @@
 #include "ProjectionLayer.h"
 #include "CompositionLayers.h"
 #include "SceneContext.h"
-#include "VisibilityMask.h"
 
 #include <SampleShared/DxUtility.h>
 #include <SampleShared/Trace.h>
@@ -109,19 +108,11 @@ void ProjectionLayer::PrepareRendering(const SceneContext* sceneContext,
             static_cast<float>(swapchainImageHeight * layerCurrentConfig.ViewportSizeScale.height));
 
         const int32_t doubleWideOffsetX = static_cast<int32_t>(swapchainImageWidth * viewIndex);
-        const XrOffset2Di colorImageRectForDoubleWide = {doubleWideOffsetX + layerCurrentConfig.ColorLayerOffset.x,
-                                                         layerCurrentConfig.ColorLayerOffset.y};
-        viewConfigComponent.LayerColorImageRect[viewIndex] = {
-            layerCurrentConfig.DoubleWideMode ? colorImageRectForDoubleWide : layerCurrentConfig.ColorLayerOffset,
-            {static_cast<int32_t>(std::ceil(swapchainImageWidth * layerCurrentConfig.ColorLayerSizeScale.width)),
-             static_cast<int32_t>(std::ceil(swapchainImageHeight * layerCurrentConfig.ColorLayerSizeScale.height))}};
-
-        const XrOffset2Di depthImageRectForDoubleWide = {doubleWideOffsetX + layerCurrentConfig.DepthLayerOffset.x,
-                                                         layerCurrentConfig.DepthLayerOffset.y};
-        viewConfigComponent.LayerDepthImageRect[viewIndex] = {
-            layerCurrentConfig.DoubleWideMode ? depthImageRectForDoubleWide : layerCurrentConfig.DepthLayerOffset,
-            {static_cast<int32_t>(std::ceil(swapchainImageWidth * layerCurrentConfig.DepthLayerSizeScale.width)),
-             static_cast<int32_t>(std::ceil(swapchainImageHeight * layerCurrentConfig.DepthLayerSizeScale.height))}};
+        viewConfigComponent.LayerDepthImageRect[viewIndex] =
+            viewConfigComponent.LayerColorImageRect[viewIndex] = {layerCurrentConfig.DoubleWideMode ? doubleWideOffsetX : 0,
+                                                                  0,
+                                                                  static_cast<int32_t>(std::ceil(swapchainImageWidth)),
+                                                                  static_cast<int32_t>(std::ceil(swapchainImageHeight))};
     }
 
     if (!shouldResetSwapchain || !canCreateSwapchain) {
@@ -157,36 +148,16 @@ void ProjectionLayer::PrepareRendering(const SceneContext* sceneContext,
 
     {
         CD3D11_DEPTH_STENCIL_DESC depthStencilDesc(CD3D11_DEFAULT{});
-        depthStencilDesc.DepthEnable = false;
-        depthStencilDesc.StencilEnable = true;
-        depthStencilDesc.FrontFace.StencilFunc = D3D11_COMPARISON_ALWAYS;
-        depthStencilDesc.FrontFace.StencilPassOp = D3D11_STENCIL_OP_REPLACE; // Set stencil buffer to ref val on succeeded pixels
-        m_noDepthWithStencilWrite = nullptr;
-        CHECK_HRCMD(sceneContext->Device->CreateDepthStencilState(&depthStencilDesc, m_noDepthWithStencilWrite.put()));
-
-        // Pass stencil test if stencil buffer's value == ref value; do not modify stencil buffer
-        const D3D11_DEPTH_STENCILOP_DESC stencilTestOp = {
-            D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_STENCIL_OP_KEEP, D3D11_COMPARISON_EQUAL};
-        depthStencilDesc.StencilEnable = true;
-        depthStencilDesc.DepthEnable = true;
-        depthStencilDesc.FrontFace = stencilTestOp;
-        m_forwardZWithStencilTest = nullptr;
-        CHECK_HRCMD(sceneContext->Device->CreateDepthStencilState(&depthStencilDesc, m_forwardZWithStencilTest.put()));
-
         depthStencilDesc.StencilEnable = false;
         depthStencilDesc.DepthEnable = true;
         depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
         depthStencilDesc.DepthFunc = D3D11_COMPARISON_GREATER;
         m_reversedZDepthNoStencilTest = nullptr;
         CHECK_HRCMD(sceneContext->Device->CreateDepthStencilState(&depthStencilDesc, m_reversedZDepthNoStencilTest.put()));
-
-        depthStencilDesc.StencilEnable = true;
-        m_reversedZDepthWithStencilTest = nullptr;
-        CHECK_HRCMD(sceneContext->Device->CreateDepthStencilState(&depthStencilDesc, m_reversedZDepthWithStencilTest.put()));
     }
 
     viewConfigComponent.ProjectionViews.resize(viewConfigViews.size());
-    viewConfigComponent.DepthElements.resize(viewConfigViews.size());
+    viewConfigComponent.DepthInfo.resize(viewConfigViews.size());
 }
 
 bool ProjectionLayer::Render(SceneContext* sceneContext,
@@ -194,17 +165,13 @@ bool ProjectionLayer::Render(SceneContext* sceneContext,
                              XrSpace layerSpace,
                              const std::vector<XrView>& views,
                              const std::vector<std::unique_ptr<Scene>>& activeScenes,
-                             const IVisibilityMask* visibilityMask,
                              XrViewConfigurationType viewConfig) {
-    if (m_pause) {
-        return true; // submit previous frame.
-    }
 
     ViewConfigComponent& viewConfigComponent = m_viewConfigComponents.at(viewConfig);
     const sample::dx::SwapchainD3D11& colorSwapchain = viewConfigComponent.ColorSwapchain;
     const sample::dx::SwapchainD3D11& depthSwapchain = viewConfigComponent.DepthSwapchain;
     std::vector<XrCompositionLayerProjectionView>& projectionViews = viewConfigComponent.ProjectionViews;
-    std::vector<XrCompositionLayerDepthInfoKHR>& depthElements = viewConfigComponent.DepthElements;
+    std::vector<XrCompositionLayerDepthInfoKHR>& depthInfo = viewConfigComponent.DepthInfo;
     std::vector<D3D11_VIEWPORT>& viewports = viewConfigComponent.Viewports;
     const ProjectionLayerConfig& currentConfig = viewConfigComponent.CurrentConfig;
 
@@ -227,40 +194,38 @@ bool ProjectionLayer::Render(SceneContext* sceneContext,
         for (uint32_t viewIndex = 0; viewIndex < viewCount; viewIndex++) {
             const XrView& projection = views[viewIndex];
 
-            XrFovf fov;
-            fov.angleLeft = projection.fov.angleLeft * currentConfig.FovScale.angleLeft;
-            fov.angleRight = projection.fov.angleRight * currentConfig.FovScale.angleRight;
-            fov.angleUp = projection.fov.angleUp * currentConfig.FovScale.angleUp;
-            fov.angleDown = projection.fov.angleDown * currentConfig.FovScale.angleDown;
+            const XrFovf fov = projection.fov;
+            const XrPosef viewPose = projection.pose;
+            const float normalizedViewportMinDepth = 0;
+            const float normalizedViewportMaxDepth = 1;
+            const uint32_t colorImageArrayIndex = currentConfig.DoubleWideMode ? 0 : viewIndex;
+            const uint32_t depthImageArrayIndex = currentConfig.DoubleWideMode ? 0 : viewIndex;
 
             viewConfigComponent.LayerSpace = layerSpace;
             projectionViews[viewIndex] = {XR_TYPE_COMPOSITION_LAYER_PROJECTION_VIEW};
-            projectionViews[viewIndex].pose = xr::math::Pose::Multiply(projection.pose, currentConfig.ViewPoseOffsets[viewIndex]);
+            projectionViews[viewIndex].pose = viewPose;
             projectionViews[viewIndex].fov.angleLeft = fov.angleLeft * currentConfig.SwapchainFovScale.width;
             projectionViews[viewIndex].fov.angleRight = fov.angleRight * currentConfig.SwapchainFovScale.width;
             projectionViews[viewIndex].fov.angleUp = fov.angleUp * currentConfig.SwapchainFovScale.height;
             projectionViews[viewIndex].fov.angleDown = fov.angleDown * currentConfig.SwapchainFovScale.height;
             projectionViews[viewIndex].subImage.swapchain = colorSwapchain.Handle.Get();
-            projectionViews[viewIndex].subImage.imageArrayIndex =
-                currentConfig.DoubleWideMode ? 0 : currentConfig.ColorImageArrayIndices[viewIndex];
+            projectionViews[viewIndex].subImage.imageArrayIndex = colorImageArrayIndex;
             projectionViews[viewIndex].subImage.imageRect = viewConfigComponent.LayerColorImageRect[viewIndex];
 
-            uint32_t depthImageArrayIndex = currentConfig.DoubleWideMode ? 0 : currentConfig.DepthImageArrayIndices[viewIndex];
-
             D3D11_VIEWPORT viewport = viewports[viewIndex];
-            if (currentConfig.IgnoreDepthLayer) {
+            if (!currentConfig.SubmitDepthInfo) {
                 projectionViews[viewIndex].next = nullptr;
             } else {
-                depthElements[viewIndex] = {XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR};
-                depthElements[viewIndex].minDepth = viewport.MinDepth = currentConfig.minDepth;
-                depthElements[viewIndex].maxDepth = viewport.MaxDepth = currentConfig.maxDepth;
-                depthElements[viewIndex].nearZ = currentConfig.NearFar.Near;
-                depthElements[viewIndex].farZ = currentConfig.NearFar.Far;
-                depthElements[viewIndex].subImage.swapchain = depthSwapchain.Handle.Get();
-                depthElements[viewIndex].subImage.imageArrayIndex = depthImageArrayIndex;
-                depthElements[viewIndex].subImage.imageRect = viewConfigComponent.LayerDepthImageRect[viewIndex];
+                depthInfo[viewIndex] = {XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR};
+                depthInfo[viewIndex].minDepth = viewport.MinDepth = normalizedViewportMinDepth;
+                depthInfo[viewIndex].maxDepth = viewport.MaxDepth = normalizedViewportMaxDepth;
+                depthInfo[viewIndex].nearZ = currentConfig.NearFar.Near;
+                depthInfo[viewIndex].farZ = currentConfig.NearFar.Far;
+                depthInfo[viewIndex].subImage.swapchain = depthSwapchain.Handle.Get();
+                depthInfo[viewIndex].subImage.imageArrayIndex = depthImageArrayIndex;
+                depthInfo[viewIndex].subImage.imageRect = viewConfigComponent.LayerDepthImageRect[viewIndex];
 
-                projectionViews[viewIndex].next = &depthElements[viewIndex];
+                projectionViews[viewIndex].next = &depthInfo[viewIndex];
             }
 
             // Render for this view pose.
@@ -316,49 +281,24 @@ bool ProjectionLayer::Render(SceneContext* sceneContext,
                 }
 
                 const DirectX::XMMATRIX projectionMatrix = xr::math::ComposeProjectionMatrix(fov, currentConfig.NearFar);
-                const bool visibilityMaskEnabled = currentConfig.VisibilityMaskEnabled;
-                const UINT stencilTestRef = 1;
-
-                bool shouldUseStencil = false;
-                if (visibilityMask && visibilityMaskEnabled) {
-                    sceneContext->DeviceContext->OMSetDepthStencilState(m_noDepthWithStencilWrite.get(), stencilTestRef);
-                    shouldUseStencil = visibilityMask->RenderMask(viewIndex, projectionMatrix);
-                }
 
                 if (reversedZ) {
-                    if (shouldUseStencil) {
-                        sceneContext->DeviceContext->OMSetDepthStencilState(m_reversedZDepthWithStencilTest.get(), stencilTestRef);
-                    } else {
-                        sceneContext->DeviceContext->OMSetDepthStencilState(m_reversedZDepthNoStencilTest.get(), 0);
-                    }
+                    sceneContext->DeviceContext->OMSetDepthStencilState(m_reversedZDepthNoStencilTest.get(), 0);
                 } else {
-                    if (shouldUseStencil) {
-                        sceneContext->DeviceContext->OMSetDepthStencilState(m_forwardZWithStencilTest.get(), stencilTestRef);
-                    } else {
-                        sceneContext->DeviceContext->OMSetDepthStencilState(nullptr, 0);
-                    }
+                    sceneContext->DeviceContext->OMSetDepthStencilState(nullptr, 0);
                 }
 
                 // Set state for any objects which use PBR rendering.
                 // PBR library expects traditional view transform (world to view).
                 DirectX::XMMATRIX worldToViewMatrix = xr::math::LoadInvertedXrPose(projectionViews[viewIndex].pose);
 
-                if (currentConfig.YFlipViewAxis) {
-                    DirectX::XMMATRIX yFlip = DirectX::XMMatrixIdentity();
-                    yFlip.r[1] = XMVectorSet(0, -1, 0, 0);
-                    worldToViewMatrix *= yFlip;
-                }
-
                 sceneContext->PbrResources.SetViewProjection(worldToViewMatrix, projectionMatrix);
                 sceneContext->PbrResources.Bind(sceneContext->DeviceContext.get());
                 sceneContext->PbrResources.SetDepthFuncReversed(reversedZ);
-                sceneContext->PbrResources.SetFrontFaceWindingOrder(currentConfig.FrontFaceCounterClockwise
-                                                                        ? Pbr::FrontFaceWindingOrder::CounterClockWise
-                                                                        : Pbr::FrontFaceWindingOrder::ClockWise);
 
                 // Render all active scenes.
                 for (const std::unique_ptr<Scene>& scene : activeScenes) {
-                    if (scene->HasSceneObjects() && scene->IsActive()) {
+                    if (scene->IsActive() && !std::empty(scene->GetSceneObjects())) {
                         submitProjectionLayer = true;
                         scene->Render(frameTime);
                     }

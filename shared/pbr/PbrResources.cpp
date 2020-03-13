@@ -135,6 +135,7 @@ namespace Pbr {
         FillMode Fill = FillMode::Solid;
         FrontFaceWindingOrder WindingOrder = FrontFaceWindingOrder::ClockWise;
         bool ReverseZ = false;
+        mutable std::mutex m_cacheMutex;
     };
 
     Resources::Resources(_In_ ID3D11Device* device)
@@ -213,15 +214,19 @@ namespace Pbr {
 
         // Check cache to see if this flat texture already exists.
         const uint32_t colorKey = *reinterpret_cast<const uint32_t*>(rgba.data());
-        auto textureIt = m_impl->Resources.SolidColorTextureCache.find(colorKey);
-        if (textureIt != m_impl->Resources.SolidColorTextureCache.end()) {
-            return textureIt->second;
+        {
+            std::lock_guard guard(m_impl->m_cacheMutex);
+            auto textureIt = m_impl->Resources.SolidColorTextureCache.find(colorKey);
+            if (textureIt != m_impl->Resources.SolidColorTextureCache.end()) {
+                return textureIt->second;
+            }
         }
 
         winrt::com_ptr<ID3D11ShaderResourceView> texture =
             Pbr::Texture::CreateTexture(GetDevice().get(), rgba.data(), 1, 1, 1, DXGI_FORMAT_R8G8B8A8_UNORM);
-        m_impl->Resources.SolidColorTextureCache.insert(std::make_pair(colorKey, texture));
-        return texture;
+        std::lock_guard guard(m_impl->m_cacheMutex);
+        // If the key already exists then the existing texture will be returned.
+        return m_impl->Resources.SolidColorTextureCache.emplace(colorKey, texture).first->second;
     }
 
     void Resources::Bind(_In_ ID3D11DeviceContext* context) const {

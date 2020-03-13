@@ -2,74 +2,70 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="Scene.cpp" />
     <ClCompile Include="App.cpp" />
     <ClCompile Include="PbrModelObject.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
-    <ClCompile Include="QuadLayerObject.cpp">
-      <Filter>Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="ProjectionLayer.cpp">
-      <Filter>Contexts</Filter>
-    </ClCompile>
     <ClCompile Include="SceneObject.cpp">
       <Filter>Objects</Filter>
-    </ClCompile>
-    <ClCompile Include="StereoVisibleMask.cpp">
-      <Filter>Contexts</Filter>
     </ClCompile>
     <ClCompile Include="TextTexture.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
+    <ClCompile Include="ProjectionLayer.cpp">
+      <Filter>Layers</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene_Title.cpp">
+      <Filter>Scenes</Filter>
+    </ClCompile>
+    <ClCompile Include="QuadLayerObject.cpp">
+      <Filter>Layers</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="Scene.h" />
     <ClInclude Include="App.h" />
-    <ClInclude Include="CompositionLayers.h">
-      <Filter>Contexts</Filter>
-    </ClInclude>
     <ClInclude Include="PbrModelObject.h">
       <Filter>Objects</Filter>
     </ClInclude>
-    <ClInclude Include="QuadLayerObject.h">
-      <Filter>Objects</Filter>
-    </ClInclude>
-    <ClInclude Include="ProjectionLayer.h">
-      <Filter>Contexts</Filter>
-    </ClInclude>
     <ClInclude Include="FrameTime.h">
-      <Filter>Contexts</Filter>
+      <Filter>Scenes</Filter>
     </ClInclude>
     <ClInclude Include="SceneContext.h">
-      <Filter>Contexts</Filter>
+      <Filter>Scenes</Filter>
     </ClInclude>
     <ClInclude Include="SceneObject.h">
       <Filter>Objects</Filter>
     </ClInclude>
-    <ClInclude Include="VisibilityMask.h">
-      <Filter>Contexts</Filter>
-    </ClInclude>
     <ClInclude Include="TextTexture.h">
       <Filter>Objects</Filter>
     </ClInclude>
+    <ClInclude Include="CompositionLayers.h">
+      <Filter>Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="ProjectionLayer.h">
+      <Filter>Layers</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Scenes</Filter>
+    </ClInclude>
+    <ClInclude Include="QuadLayerObject.h">
+      <Filter>Layers</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <Filter Include="Shaders">
-      <UniqueIdentifier>{97338979-f582-471d-8f5e-10933ad9d0aa}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="Contexts">
-      <UniqueIdentifier>{2e2f732d-d965-47b1-88cf-6f5085d0ff77}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Objects">
       <UniqueIdentifier>{c8fee26b-99f6-4972-b4c7-59860905328d}</UniqueIdentifier>
     </Filter>
-  </ItemGroup>
-  <ItemGroup>
-    <FxCompile Include="StereoVisibleMaskVertexShader.hlsl">
-      <Filter>Shaders</Filter>
-    </FxCompile>
+    <Filter Include="Layers">
+      <UniqueIdentifier>{823681fb-5d10-4e98-84fe-d248dc171376}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Scenes">
+      <UniqueIdentifier>{2e2f732d-d965-47b1-88cf-6f5085d0ff77}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(OpenXRLoaderBinaryRoot)\bin\openxr_loader.dll" />

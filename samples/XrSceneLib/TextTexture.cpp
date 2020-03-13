@@ -91,15 +91,18 @@ void TextTexture::Draw(const wchar_t* text) {
     const auto& background = m_textInfo.Background;
     m_d2dContext->Clear(D2D1::ColorF(background.x, background.y, background.z, background.w));
 
-    const auto& margin = m_textInfo.Margin;
-    m_d2dContext->DrawText(text,
-                           static_cast<UINT32>(wcslen(text)),
-                           m_textFormat.get(),
-                           D2D1::RectF(m_textInfo.Margin,
-                                       m_textInfo.Margin,
-                                       renderTargetSize.width - m_textInfo.Margin * 2,
-                                       renderTargetSize.height - m_textInfo.Margin * 2),
-                           m_brush.get());
+    const UINT32 textLength = text ? static_cast<UINT32>(wcslen(text)) : 0;
+    if (textLength > 0) {
+        const auto& margin = m_textInfo.Margin;
+        m_d2dContext->DrawText(text,
+                               textLength,
+                               m_textFormat.get(),
+                               D2D1::RectF(m_textInfo.Margin,
+                                           m_textInfo.Margin,
+                                           renderTargetSize.width - m_textInfo.Margin * 2,
+                                           renderTargetSize.height - m_textInfo.Margin * 2),
+                               m_brush.get());
+    }
 
     m_d2dContext->EndDraw();
 

@@ -18,49 +18,51 @@
 
 using namespace DirectX;
 
-Scene::Scene(::SceneContext* sceneContext, std::wstring sceneName, bool defaultActive)
-    : m_sceneContext(sceneContext)
-    , m_sceneName(std::move(sceneName))
-    , m_defaultActive(defaultActive) {
-}
-
-template <typename T>
-void AddPendingObjects(std::vector<std::shared_ptr<T>>* objects, std::vector<std::shared_ptr<T>>&& uninitializedObjects) {
-    for (auto& object : uninitializedObjects) {
-        if (object->State == SceneObjectState::InitializePending) {
-            object->State = SceneObjectState::Initialized;
-            objects->push_back(std::move(object));
+namespace {
+    template <typename T>
+    void AddPendingObjects(std::vector<std::shared_ptr<T>>* objects, std::vector<std::shared_ptr<T>>&& uninitializedObjects) {
+        for (auto& object : uninitializedObjects) {
+            if (object->State == SceneObjectState::InitializePending) {
+                object->State = SceneObjectState::Initialized;
+                objects->push_back(std::move(object));
+            }
         }
     }
 
-    uninitializedObjects.clear();
-}
+    template <typename T>
+    void RemoveDestroyedObjects(std::vector<std::shared_ptr<T>>* objects) {
+        auto newEnd = std::remove_if(
+            objects->begin(), objects->end(), [](auto&& object) { return object->State == SceneObjectState::RemovePending; });
 
-template <typename T>
-void RemoveDestroyedObjects(std::vector<std::shared_ptr<T>>* objects) {
-    auto newEnd =
-        std::remove_if(objects->begin(), objects->end(), [](auto&& object) { return object->State == SceneObjectState::RemovePending; });
-
-    objects->erase(newEnd, objects->end());
-}
-
-template <typename T>
-void UpdateObjects(std::vector<std::shared_ptr<T>> const& objects, FrameTime const& frameTime) {
-    for (const auto& object : objects) {
-        object->Update(frameTime);
+        objects->erase(newEnd, objects->end());
     }
-}
 
-template <typename T>
-void RenderObjects(std::vector<std::shared_ptr<T>> const& objects, SceneContext& sceneContext) {
-    for (const auto& object : objects) {
-        object->Render(sceneContext);
+    template <typename T>
+    void UpdateObjects(std::vector<std::shared_ptr<T>> const& objects, FrameTime const& frameTime) {
+        for (const auto& object : objects) {
+            object->Update(frameTime);
+        }
     }
+
+    template <typename T>
+    void RenderObjects(std::vector<std::shared_ptr<T>> const& objects, SceneContext& sceneContext) {
+        for (const auto& object : objects) {
+            object->Render(sceneContext);
+        }
+    }
+} // namespace
+
+Scene::Scene(SceneContext* sceneContext)
+    : m_sceneContext(sceneContext) {
 }
 
 void Scene::Update(const FrameTime& frameTime) {
-    AddPendingObjects(&m_sceneObjects, std::move(m_uninitializedSceneObjects));
-    AddPendingObjects(&m_quadLayerObjects, std::move(m_uninitializedQuadLayerObjects));
+    std::unique_lock lk(m_uninitializedMutex);
+    std::vector uninitializedSceneObjects = std::move(m_uninitializedSceneObjects);
+    std::vector uninitializedQuadLayerObjects = std::move(m_uninitializedQuadLayerObjects);
+    lk.unlock();
+    AddPendingObjects(&m_sceneObjects, std::move(uninitializedSceneObjects));
+    AddPendingObjects(&m_quadLayerObjects, std::move(uninitializedQuadLayerObjects));
 
     RemoveDestroyedObjects(&m_sceneObjects);
     RemoveDestroyedObjects(&m_quadLayerObjects);
