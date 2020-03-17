@@ -39,10 +39,10 @@ struct FrameTime {
 
         const auto now = FrameTime::clock::now();
         Elapsed = now - Now;
+        Now = now;
         TotalElapsed = now - StartTime;
 
         ElapsedSeconds = std::chrono::duration_cast<std::chrono::duration<float>>(Elapsed).count();
         TotalElapsedSeconds = std::chrono::duration_cast<std::chrono::duration<float>>(TotalElapsed).count();
-        Now = now;
     }
 };

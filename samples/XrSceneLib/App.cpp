@@ -24,7 +24,6 @@
 
 #include "App.h"
 #include "CompositionLayers.h"
-#include "VisibilityMask.h"
 #include "SceneContext.h"
 
 using namespace DirectX;
@@ -163,8 +162,6 @@ namespace {
         DXGI_FORMAT m_colorSwapchainFormatDefault;
         DXGI_FORMAT m_depthSwapchainFormatDefault;
 
-        std::unique_ptr<IVisibilityMask> m_visibilityMask;
-
         std::vector<XrViewConfigurationType> m_supportedSecondaryViewConfigurations;
 
     private:
@@ -267,11 +264,6 @@ namespace {
                                                           m_viewConfigStates.at(PrimaryViewConfiguration).BlendMode);
 
         m_projectionLayerCollection.Resize(1, true /*forceReset*/);
-
-        // Only create visibility mask if app has enabled the extension
-        if (m_sceneContext->Extensions.SupportsVisibilityMask) {
-            m_visibilityMask = CreateStereoVisibilityMask(m_sceneContext.get());
-        }
     }
 
     ImplementXrApp::~ImplementXrApp() {
@@ -374,8 +366,10 @@ namespace {
             CHECK_XRCMD(res);
             if (res == XR_EVENT_UNAVAILABLE) {
                 return true;
-            } else if (eventData.type == XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED) {
-                auto sessionStateChanged = reinterpret_cast<XrEventDataSessionStateChanged*>(&eventData);
+            }
+
+            if (eventData.type == XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED) {
+                auto* sessionStateChanged = xr::event_cast<XrEventDataSessionStateChanged>(&eventData);
                 if (sessionStateChanged->session == m_sceneContext->Session) {
                     m_sceneContext->SessionState = sessionStateChanged->state;
                     switch (m_sceneContext->SessionState) {
@@ -391,33 +385,11 @@ namespace {
                         break;
                     }
                 }
-            } else if (eventData.type == XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED) {
-                if (m_sessionRunning) {
-                    std::lock_guard lock(m_sceneMutex);
-                    for (const std::unique_ptr<Scene>& scene : m_scenes) {
-                        scene->NotifyInteractionProfileChangedEvent();
-                    }
-                }
-            } else if (eventData.type == XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING) {
-                auto spaceChangingEvent = reinterpret_cast<XrEventDataReferenceSpaceChangePending*>(&eventData);
-                std::optional<XrPosef> pose{};
-                if (spaceChangingEvent->poseValid) {
-                    pose = spaceChangingEvent->poseInPreviousSpace;
-                }
+            }
 
-                if (m_sessionRunning) {
-                    std::lock_guard lock(m_sceneMutex);
-                    for (const std::unique_ptr<Scene>& scene : m_scenes) {
-                        scene->NotifySpaceChangingEvent(spaceChangingEvent->referenceSpaceType, spaceChangingEvent->changeTime, pose);
-                    }
-                }
-            } else if (eventData.type == XR_TYPE_EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR) {
-                if (m_visibilityMask) {
-                    auto visibilityMaskChangeEvent = reinterpret_cast<XrEventDataVisibilityMaskChangedKHR*>(&eventData);
-                    assert(visibilityMaskChangeEvent->viewConfigurationType == XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO);
-
-                    m_visibilityMask->NotifyMaskChanged(visibilityMaskChangeEvent->viewIndex);
-                }
+            std::lock_guard lock(m_sceneMutex);
+            for (const std::unique_ptr<Scene>& scene : m_scenes) {
+                scene->NotifyEvent(eventData);
             }
         }
     }
@@ -599,7 +571,6 @@ namespace {
                                                                                                 m_sceneContext->SceneSpace,
                                                                                                 views,
                                                                                                 m_scenes,
-                                                                                                m_visibilityMask.get(),
                                                                                                 viewConfigurationType);
 
                                 // Create the multi projection layer

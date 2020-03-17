@@ -34,7 +34,7 @@ namespace {
     //
     struct ThreeCubesScene : public Scene {
         ThreeCubesScene(SceneContext* sceneContext)
-            : Scene(sceneContext, L"Three Cubes", true) {
+            : Scene(sceneContext) {
             xr::ActionSet& actionSet =
                 m_sceneContext->ActionContext.CreateActionSet("three_cubes_scene_actions", "Three Cubes Scene Actions");
 

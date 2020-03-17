@@ -15,7 +15,6 @@
 //*********************************************************
 #pragma once
 
-#include <winrt/base.h> // winrt::com_ptr
 #include <d3dcommon.h>  //ID3DBlob
 
 namespace sample::dx {

@@ -30,7 +30,7 @@ namespace {
     //
     struct TitleScene : public Scene {
         TitleScene(SceneContext* sceneContext)
-            : Scene(sceneContext, L"Title", true) {
+            : Scene(sceneContext) {
             XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
             createInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
             createInfo.poseInReferenceSpace = Pose::Identity();

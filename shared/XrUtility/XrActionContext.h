@@ -75,10 +75,10 @@ namespace xr {
     };
 
     struct IActionContext {
-        ~IActionContext() = default;
+        virtual ~IActionContext() = default;
         virtual ActionSet& CreateActionSet(const std::string& name, const std::string& localizedName, uint32_t priority = 0) = 0;
         virtual void SuggestInteractionProfileBindings(const std::string& interactionProfile,
-                                               const std::vector<std::pair<XrAction, std::string>>& suggestedBindings) = 0;
+                                                       const std::vector<std::pair<XrAction, std::string>>& suggestedBindings) = 0;
     };
 
     struct ActionContext : IActionContext {
@@ -134,16 +134,18 @@ namespace xr {
 
     inline void ActionContext::SyncActions(XrSession session) {
         std::vector<XrActiveActionSet> activeActionSets;
+        activeActionSets.reserve(m_actionSets.size() * 2);
 
         for (const auto& actionSet : m_actionSets) {
             if (!actionSet.Active()) {
                 continue;
             }
-            for (const auto& subactionPath : actionSet.m_declaredSubactionPaths) {
-                XrActiveActionSet activeActionSet;
-                activeActionSet.actionSet = actionSet.m_actionSet.Get();
-                activeActionSet.subactionPath = subactionPath;
-                activeActionSets.push_back(activeActionSet);
+            if (std::empty(actionSet.m_declaredSubactionPaths)) {
+                activeActionSets.emplace_back(XrActiveActionSet{actionSet.m_actionSet.Get(), XR_NULL_PATH});
+            } else {
+                for (const auto& subactionPath : actionSet.m_declaredSubactionPaths) {
+                    activeActionSets.emplace_back(XrActiveActionSet{actionSet.m_actionSet.Get(), subactionPath});
+                }
             }
         }
 

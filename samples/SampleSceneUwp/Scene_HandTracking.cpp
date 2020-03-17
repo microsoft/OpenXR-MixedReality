@@ -29,7 +29,7 @@ namespace {
     //
     struct HandTrackingScene : public Scene {
         HandTrackingScene(SceneContext* sceneContext)
-            : Scene(sceneContext, L"Hand Tracking", true) {
+            : Scene(sceneContext) {
             m_jointMaterial = Pbr::Material::CreateFlat(m_sceneContext->PbrResources, Pbr::RGBA::White, 0.85f, 0.01f);
             m_meshMaterial = Pbr::Material::CreateFlat(m_sceneContext->PbrResources, Pbr::RGBA::White, 1, 0);
 

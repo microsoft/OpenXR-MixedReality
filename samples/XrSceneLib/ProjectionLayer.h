@@ -21,43 +21,23 @@
 #include <SampleShared/DxUtility.h>
 
 struct ProjectionLayerConfig {
-    // FovScale = (TargetFov / HmdFov)
-    XrFovf FovScale = {1.0f, 1.0f, 1.0f, 1.0f};
-    xr::math::NearFar NearFar = {1000, 0.02f};
-    XrPosef ViewPoseOffsets[xr::StereoView::Count] = {{{0, 0, 0, 1}, {0, 0, 0}}, {{0, 0, 0, 1}, {0, 0, 0}}};
-    // SwapchainSizeScale applied on recommended image rect
-    XrExtent2Df SwapchainSizeScale = {1, 1};
-    XrExtent2Df SwapchainFovScale = {1, 1};
-    // ViewportSizeScale applied on swapchain image size with SwapchainSizeScale applied
-    XrExtent2Df ViewportSizeScale = {1, 1};
-    // ViewportOffset relative to (0, 0) of the swapchain
-    XrOffset2Di ViewportOffset = {0, 0};
-    uint32_t SwapchainSampleCount = 1;
-    bool DoubleWideMode = false;
-    bool IgnoreDepthLayer = false;
-    bool ContentProtected = false;
-    bool ForceReset = false;
-    bool VisibilityMaskEnabled = false;
-    bool YFlipViewAxis = false;
-    bool FrontFaceCounterClockwise = false;
+    XrCompositionLayerFlags LayerFlags = 0;
     DXGI_FORMAT ColorSwapchainFormat{};
     DXGI_FORMAT DepthSwapchainFormat{};
-    // Layer's Color/Depth Offset/Scale swapchain image size with SwapchainSizeScale applied
-    XrOffset2Di ColorLayerOffset = {0, 0};
-    XrOffset2Di DepthLayerOffset = {0, 0};
-    XrExtent2Df ColorLayerSizeScale = {1, 1};
-    XrExtent2Df DepthLayerSizeScale = {1, 1};
-    XrCompositionLayerFlags LayerFlags = 0;
-    std::array<uint32_t, xr::StereoView::Count> ColorImageArrayIndices = {xr::StereoView::Left, xr::StereoView::Right};
-    std::array<uint32_t, xr::StereoView::Count> DepthImageArrayIndices = {xr::StereoView::Left, xr::StereoView::Right};
-    float minDepth = 0.0f;
-    float maxDepth = 1.0f;
+    xr::math::NearFar NearFar = {1000, 0.02f};
+    XrExtent2Df SwapchainSizeScale = {1, 1}; // SwapchainSizeScale is applied to recommended image rect
+    XrExtent2Df SwapchainFovScale = {1, 1};  // SwapchainFovScale is applied to recommended view fov
+    XrExtent2Df ViewportSizeScale = {1, 1};  // ViewportSizeScale is applied after SwapchainSizeScale applied
+    XrOffset2Di ViewportOffset = {0, 0};     // ViewportOffset is relative to (0, 0) of the swapchain
+    uint32_t SwapchainSampleCount = 1;
+    bool DoubleWideMode = false;
+    bool SubmitDepthInfo = true;
+    bool ContentProtected = false;
+    bool ForceReset = false;
 };
 
 struct IVisibilityMask;
 class ProjectionLayer {
-public:
-
 public:
     ProjectionLayer()
         : m_ensureSupportSwapchainFormat(nullptr){};
@@ -67,10 +47,6 @@ public:
                     XrViewConfigurationType primaryViewConfiguraionType,
                     const std::vector<XrViewConfigurationType>& secondaryViewConfiguraionTypes);
     ProjectionLayer(ProjectionLayer&&) = default;
-
-    void SetPause(bool pause) {
-        m_pause = pause;
-    }
 
     ProjectionLayerConfig& Config(std::optional<XrViewConfigurationType> viewConfig = std::nullopt) {
         return m_viewConfigComponents.at(viewConfig.value_or(m_defaultViewConfigurationType)).PendingConfig;
@@ -99,7 +75,6 @@ public:
                 XrSpace layerSpace,
                 const std::vector<XrView>& Views,
                 const std::vector<std::unique_ptr<Scene>>& activeScenes,
-                const IVisibilityMask* visibilityMask,
                 XrViewConfigurationType viewConfig);
 
 private:
@@ -113,7 +88,7 @@ private:
 
         XrSpace LayerSpace{XR_NULL_HANDLE};
         std::vector<XrCompositionLayerProjectionView> ProjectionViews; // Pre-allocated and reused for each frame.
-        std::vector<XrCompositionLayerDepthInfoKHR> DepthElements;     // Pre-allocated and reused for each frame.
+        std::vector<XrCompositionLayerDepthInfoKHR> DepthInfo;         // Pre-allocated and reused for each frame.
         std::vector<D3D11_VIEWPORT> Viewports;
 
         XrRect2Di LayerColorImageRect[xr::StereoView::Count];
@@ -125,12 +100,7 @@ private:
     std::unordered_map<XrViewConfigurationType, ViewConfigComponent> m_viewConfigComponents;
     XrViewConfigurationType m_defaultViewConfigurationType;
 
-    bool m_pause = false;
-
-    winrt::com_ptr<ID3D11DepthStencilState> m_noDepthWithStencilWrite;
-    winrt::com_ptr<ID3D11DepthStencilState> m_forwardZWithStencilTest;
     winrt::com_ptr<ID3D11DepthStencilState> m_reversedZDepthNoStencilTest;
-    winrt::com_ptr<ID3D11DepthStencilState> m_reversedZDepthWithStencilTest;
 
     std::function<void(DXGI_FORMAT format, bool isDepth)> m_ensureSupportSwapchainFormat;
 };

@@ -51,4 +51,25 @@ namespace xr {
     template <typename T>
     void SetEnabledExtensions(XrInstanceCreateInfo& info, T&& extensions) = delete;
 
+    // Cast event data buffer to strongly typed event data if eventData->type matches.
+    template <typename XrEventData>
+    const XrEventData* event_cast(const XrEventDataBuffer* eventData) = delete;
+
+#define DEFINE_EVENT_TYPE(XrEventData, XR_TYPE_EVENT_DATA)                                  \
+    template <>                                                                             \
+    inline const XrEventData* event_cast<XrEventData>(const XrEventDataBuffer* eventData) { \
+        if (eventData->type == XR_TYPE_EVENT_DATA) {                                        \
+            return reinterpret_cast<const XrEventData*>(eventData);                         \
+        }                                                                                   \
+        return nullptr;                                                                     \
+    }
+
+    DEFINE_EVENT_TYPE(XrEventDataEventsLost, XR_TYPE_EVENT_DATA_EVENTS_LOST);
+    DEFINE_EVENT_TYPE(XrEventDataInteractionProfileChanged, XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED);
+    DEFINE_EVENT_TYPE(XrEventDataInstanceLossPending, XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING);
+    DEFINE_EVENT_TYPE(XrEventDataReferenceSpaceChangePending, XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING);
+    DEFINE_EVENT_TYPE(XrEventDataPerfSettingsEXT, XR_TYPE_EVENT_DATA_PERF_SETTINGS_EXT);
+    DEFINE_EVENT_TYPE(XrEventDataSessionStateChanged, XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED);
+    DEFINE_EVENT_TYPE(XrEventDataVisibilityMaskChangedKHR, XR_TYPE_EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR);
+#undef DEFINE_EVENT_TYPE
 } // namespace xr
