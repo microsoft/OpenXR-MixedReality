@@ -100,10 +100,11 @@
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Scene_ControllerModel.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\XrSceneLib\XrSceneLib_win32.vcxproj">

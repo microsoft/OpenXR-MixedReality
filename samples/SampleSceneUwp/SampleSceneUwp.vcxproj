@@ -79,6 +79,10 @@
     <IncludePath>$(SharedPath);$(SharedPath)\ext;$(OpenXrSdkPath)\include;$(IntDir)\CompiledShaders;$(ProjectDir)..\XrSceneLib;$(IncludePath);</IncludePath>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
+  <PropertyGroup>
+    <!-- Enable generating msix package in local build -->
+    <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>

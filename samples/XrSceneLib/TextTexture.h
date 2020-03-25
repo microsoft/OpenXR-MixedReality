@@ -44,7 +44,7 @@ struct TextTextureInfo {
 // Manages a texture which can be drawn to.
 class TextTexture {
 public:
-    TextTexture(SceneContext* sceneContext, TextTextureInfo textInfo);
+    TextTexture(SceneContext& sceneContext, TextTextureInfo textInfo);
 
     void Draw(const wchar_t* text);
     ID3D11Texture2D* Texture() const;

@@ -119,6 +119,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ControllerObject.h" />
     <ClInclude Include="PbrModelObject.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="QuadLayerObject.h" />
@@ -132,6 +133,7 @@
     <ClInclude Include="TextTexture.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ControllerObject.cpp" />
     <ClCompile Include="PbrModelObject.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>

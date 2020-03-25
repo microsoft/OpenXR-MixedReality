@@ -45,9 +45,10 @@ namespace {
     };
 
     const XrViewConfigurationType PrimaryViewConfiguration = XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
-    const XrViewConfigurationType MRCViewConfiguration = XR_VIEW_CONFIGURATION_TYPE_SECONDARY_MONO_FIRST_PERSON_OBSERVER_MSFT;
 
-    const std::vector<XrViewConfigurationType> SupportedViewConfigurations = {PrimaryViewConfiguration, MRCViewConfiguration};
+    const std::vector<XrViewConfigurationType> SupportedViewConfigurations = {
+        XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO, XR_VIEW_CONFIGURATION_TYPE_SECONDARY_MONO_FIRST_PERSON_OBSERVER_MSFT};
+
     std::vector<XrEnvironmentBlendMode> SupportedBlendModes = {
         XR_ENVIRONMENT_BLEND_MODE_ADDITIVE,
         XR_ENVIRONMENT_BLEND_MODE_OPAQUE,
@@ -85,18 +86,18 @@ namespace {
 
     class ImplementXrApp : public XrApp {
     public:
-        ImplementXrApp(const xr::NameVersion& appInfo, const std::vector<const char*>& extensions, bool singleThreadedGraphics);
+        ImplementXrApp(const xr::NameVersion& appInfo, const std::vector<const char*>& desiredExtensions, bool singleThreadedGraphics);
         ~ImplementXrApp();
-
-        ::SceneContext* SceneContext() const override {
-            return m_sceneContext.get();
-        }
 
         void AddScene(std::unique_ptr<Scene> scene) override;
         const std::vector<std::unique_ptr<Scene>>& Scenes() const override;
 
         void Run() override;
         void Stop() override;
+
+        ::SceneContext& SceneContext() const override {
+            return *m_sceneContext;
+        }
 
         ::ProjectionLayers& ProjectionLayers() override {
             return m_projectionLayerCollection;
@@ -105,6 +106,7 @@ namespace {
 
     private:
         xr::SessionHandle m_session;
+        std::unique_ptr<::SceneContext> m_sceneContext;
         xr::SpaceHandle m_sceneSpace;
 
         // Make sure we declare projection layers after instance to ensure projection layers are destroyed before instance
@@ -132,8 +134,6 @@ namespace {
                                                      m_supportedSecondaryViewConfigurations);
         });
 
-        std::unique_ptr<::SceneContext> m_sceneContext;
-        std::unique_ptr<xr::ActionContext> m_actionContext;
         winrt::com_ptr<ID3D11Device> m_d3d11Device;
 
         struct ViewConfigStates {
@@ -155,6 +155,7 @@ namespace {
         std::thread m_renderThread;
         std::atomic<bool> m_renderThreadRunning{false};
 
+        std::mutex m_frameReadyToRenderMutex;
         std::condition_variable m_frameReadyToRenderNotify;
         bool m_frameReadyToRender{false};
         FrameTime m_currentFrameTime;
@@ -170,32 +171,47 @@ namespace {
         void StopRenderThreadIfRunning();
         void UpdateFrame();
         void RenderFrame();
+        void FinalizeActionBindings();
 
         void BeginSession();
         void EndSession();
     };
 
     ImplementXrApp::ImplementXrApp(const xr::NameVersion& appInfo,
-                                   const std::vector<const char*>& extensions,
+                                   const std::vector<const char*>& desiredExtensions,
                                    bool singleThreadedGraphics) {
 
-        std::vector<const char*> mergedExtensions = AppendSceneLibRequiredExtensions(extensions);
+        // Create an instance using combined extensions of XrSceneLib and the application.
+        // The extension context record those supported by the runtime and enabled by the instance.
+        std::vector<const char*> combinedExtensions = AppendSceneLibRequiredExtensions(desiredExtensions);
+        xr::ExtensionContext extensions = xr::CreateExtensionContext(combinedExtensions);
+        xr::InstanceContext instance = xr::CreateInstanceContext(appInfo, {"XrSceneLib", 1}, extensions);
+        extensions.PopulateDispatchTable(instance.Handle);
 
-        xr::InstanceContext instance(appInfo, {"XrSceneLib", 1}, mergedExtensions);
-
-        std::optional<xr::SystemContext> systemOpt;
-        while (!(systemOpt = instance.TryGetSystem(XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY,
-                                                   XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
-                                                   {XR_VIEW_CONFIGURATION_TYPE_SECONDARY_MONO_FIRST_PERSON_OBSERVER_MSFT}))) {
-            DEBUG_PRINT("Waiting for system plugin ...");
-            std::this_thread::sleep_for(500ms);
+        // For example, this sample currently requires D3D11 extension to be supported.
+        if (!extensions.SupportsD3D11) {
+            throw std::logic_error("This sample currently supports D3D11 only ...");
         }
-        const xr::SystemContext& system = systemOpt.value();
+
+        // Then get the active system with required and optional view configurations.
+        // If no system is plugged in, wait until the device is plugged in.
+        xr::SystemContext system = [&instance, &extensions] {
+            std::optional<xr::SystemContext> systemOpt;
+            while (!(systemOpt = xr::CreateSystemContext(instance,
+                                                         extensions,
+                                                         XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY,
+                                                         XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO,
+                                                         {XR_VIEW_CONFIGURATION_TYPE_SECONDARY_MONO_FIRST_PERSON_OBSERVER_MSFT}))) {
+                DEBUG_PRINT("Waiting for system plugin ...");
+                std::this_thread::sleep_for(500ms);
+            }
+            return systemOpt.value();
+        }();
 
         // Create the D3D11 device for the adapter associated with the system.
-        _Analysis_assume_(instance.Extensions.xrGetD3D11GraphicsRequirementsKHR != nullptr);
+        _Analysis_assume_(extensions.xrGetD3D11GraphicsRequirementsKHR != nullptr);
         XrGraphicsRequirementsD3D11KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
-        CHECK_XRCMD(instance.Extensions.xrGetD3D11GraphicsRequirementsKHR(instance.Handle(), system.Id, &graphicsRequirements));
+        CHECK_XRCMD(extensions.xrGetD3D11GraphicsRequirementsKHR(instance.Handle, system.Id, &graphicsRequirements));
         const winrt::com_ptr<IDXGIAdapter1> adapter = sample::dx::GetAdapter(graphicsRequirements.adapterLuid);
 
         // Create a list of feature levels which are both supported by the OpenXR runtime and this application.
@@ -221,7 +237,7 @@ namespace {
         createInfo.next = &d3d11Binding;
         createInfo.systemId = system.Id;
 
-        CHECK_XRCMD(xrCreateSession(instance.Handle(), &createInfo, m_session.Put()));
+        CHECK_XRCMD(xrCreateSession(instance.Handle, &createInfo, m_session.Put()));
 
         // Cache view related properties for each view config
         for (const auto& [type, viewConfiguration] : system.ViewConfigurations) {
@@ -229,7 +245,7 @@ namespace {
                 SupportedViewConfigurations.end()) {
                 continue; // Not supported by this app
             }
-            m_viewConfigStates[type].ViewConfigViews = xr::EnumerateViewConfigurationViews(instance.Handle(), system.Id, type);
+            m_viewConfigStates[type].ViewConfigViews = xr::EnumerateViewConfigurationViews(instance.Handle, system.Id, type);
             m_viewConfigStates[type].Views.resize(m_viewConfigStates[type].ViewConfigViews.size(), {XR_TYPE_VIEW});
             m_viewConfigStates[type].BlendMode = xr::PickEnvironmentBlendMode(viewConfiguration.BlendModes, SupportedBlendModes);
 
@@ -240,27 +256,26 @@ namespace {
             }
         }
 
-        const auto systemSupportedFormats = xr::EnumerateSwapchainFormats(m_session.Get());
-        m_colorSwapchainFormatDefault = xr::PickSwapchainFormat(systemSupportedFormats, SupportedColorSwapchainFormats);
-        m_depthSwapchainFormatDefault = xr::PickSwapchainFormat(systemSupportedFormats, SupportedDepthSwapchainFormats);
-
         // Create main app space
         XrReferenceSpaceCreateInfo spaceCreateInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
         spaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
         spaceCreateInfo.poseInReferenceSpace = xr::math::Pose::Identity();
         CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &spaceCreateInfo, m_sceneSpace.Put()));
 
+        const auto systemSupportedFormats = xr::EnumerateSwapchainFormats(m_session.Get());
+        m_colorSwapchainFormatDefault = xr::PickSwapchainFormat(systemSupportedFormats, SupportedColorSwapchainFormats);
+        m_depthSwapchainFormatDefault = xr::PickSwapchainFormat(systemSupportedFormats, SupportedDepthSwapchainFormats);
+
         Pbr::Resources pbrResources = sample::InitializePbrResources(device.get());
-        m_actionContext = std::make_unique<xr::ActionContext>(instance.Handle());
 
         m_sceneContext = std::make_unique<::SceneContext>(std::move(instance),
+                                                          std::move(extensions),
                                                           std::move(system),
                                                           m_session.Get(),
                                                           m_sceneSpace.Get(),
                                                           std::move(pbrResources),
                                                           device,
                                                           deviceContext,
-                                                          *m_actionContext,
                                                           m_viewConfigStates.at(PrimaryViewConfiguration).BlendMode);
 
         m_projectionLayerCollection.Resize(1, true /*forceReset*/);
@@ -294,7 +309,7 @@ namespace {
         ::SetThreadDescription(::GetCurrentThread(), L"App Thread");
 
         m_appLoopRunning = true;
-        m_actionContext->AttachActionsToSession(m_session.Get());
+        FinalizeActionBindings();
 
         while (m_appLoopRunning) {
             if (!ProcessEvents()) {
@@ -306,12 +321,24 @@ namespace {
 
                 UpdateFrame();
 
-                m_frameReadyToRender = true;
+                {
+                    std::unique_lock lock(m_frameReadyToRenderMutex);
+                    m_frameReadyToRender = true;
+                }
                 m_frameReadyToRenderNotify.notify_all();
             } else {
                 std::this_thread::sleep_for(0.1s);
             }
         }
+    }
+
+    void ImplementXrApp::FinalizeActionBindings() {
+        std::vector<const xr::ActionContext*> actionContexts;
+        for (const auto& scene : m_scenes) {
+            actionContexts.push_back(&scene->ActionContext());
+        }
+
+        xr::AttachActionsToSession(SceneContext().Instance.Handle, m_session.Get(), actionContexts);
     }
 
     void ImplementXrApp::StartRenderThreadIfNotRunning() {
@@ -320,12 +347,12 @@ namespace {
             m_renderThread = std::thread([this]() {
                 ::SetThreadDescription(::GetCurrentThread(), L"Render Thread");
 
-                std::mutex frameReadyToRenderMutex;
-                std::unique_lock<std::mutex> lock(frameReadyToRenderMutex);
-
                 while (m_renderThreadRunning && m_sessionRunning) {
-                    m_frameReadyToRenderNotify.wait(lock, [this] { return m_frameReadyToRender; });
-                    m_frameReadyToRender = false;
+                    {
+                        std::unique_lock lock(m_frameReadyToRenderMutex);
+                        m_frameReadyToRenderNotify.wait(lock, [this] { return m_frameReadyToRender; });
+                        m_frameReadyToRender = false;
+                    }
 
                     if (!m_renderThreadRunning || !m_sessionRunning) {
                         break; // check again after waiting
@@ -340,8 +367,11 @@ namespace {
     void ImplementXrApp::StopRenderThreadIfRunning() {
         bool alreadyRunning = true;
         if (m_renderThreadRunning.compare_exchange_strong(alreadyRunning, false)) {
-            // Notify "frameReadyToRender" with "renderThreadRunning = false" to exit render thread.
-            m_frameReadyToRender = true;
+            {
+                // Notify "frameReadyToRender" with "renderThreadRunning = false" to exit render thread.
+                std::unique_lock lock(m_frameReadyToRenderMutex);
+                m_frameReadyToRender = true;
+            }
             m_frameReadyToRenderNotify.notify_all();
             if (m_renderThread.joinable()) {
                 m_renderThread.join();
@@ -351,7 +381,7 @@ namespace {
 
     void ImplementXrApp::Stop() {
         if (m_sessionRunning) {
-            CHECK_XRCMD(xrRequestExitSession(m_sceneContext->Session));
+            CHECK_XRCMD(xrRequestExitSession(SceneContext().Session));
         } else {
             m_appLoopRunning = false; // quit app message loop
         }
@@ -362,7 +392,7 @@ namespace {
         while (true) {
             eventData.type = XR_TYPE_EVENT_DATA_BUFFER;
             eventData.next = nullptr;
-            XrResult res = xrPollEvent(m_sceneContext->Instance.Handle(), &eventData);
+            XrResult res = xrPollEvent(SceneContext().Instance.Handle, &eventData);
             CHECK_XRCMD(res);
             if (res == XR_EVENT_UNAVAILABLE) {
                 return true;
@@ -370,9 +400,9 @@ namespace {
 
             if (eventData.type == XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED) {
                 auto* sessionStateChanged = xr::event_cast<XrEventDataSessionStateChanged>(&eventData);
-                if (sessionStateChanged->session == m_sceneContext->Session) {
-                    m_sceneContext->SessionState = sessionStateChanged->state;
-                    switch (m_sceneContext->SessionState) {
+                if (sessionStateChanged->session == SceneContext().Session) {
+                    SceneContext().SessionState = sessionStateChanged->state;
+                    switch (SceneContext().SessionState) {
                     case XR_SESSION_STATE_EXITING:
                         return false; // User's intended to quit
                     case XR_SESSION_STATE_LOSS_PENDING:
@@ -410,14 +440,14 @@ namespace {
             sessionBeginInfo.next = &sessionBeginSecondaryViewConfigInfo;
         }
 
-        CHECK_XRCMD(xrBeginSession(m_sceneContext->Session, &sessionBeginInfo));
+        CHECK_XRCMD(xrBeginSession(SceneContext().Session, &sessionBeginInfo));
         m_sessionRunning = true;
     }
 
     void ImplementXrApp::EndSession() {
         StopRenderThreadIfRunning();
         m_sessionRunning = false;
-        CHECK_XRCMD(xrEndSession(m_sceneContext->Session));
+        CHECK_XRCMD(xrEndSession(SceneContext().Session));
     }
 
     void ImplementXrApp::UpdateFrame() {
@@ -438,9 +468,15 @@ namespace {
         if (!secondaryViewConfigStateData.empty()) {
             frameState.next = &secondaryViewConfigStates;
         }
-        CHECK_XRCMD(xrWaitFrame(m_sceneContext->Session, &waitFrameInfo, &frameState));
+        CHECK_XRCMD(xrWaitFrame(SceneContext().Session, &waitFrameInfo, &frameState));
 
-        m_actionContext->SyncActions(m_sceneContext->Session);
+        std::vector<const xr::ActionContext*> actionContexts;
+        for (const auto& scene : m_scenes) {
+            if (scene->IsActive()) {
+                actionContexts.push_back(&scene->ActionContext());
+            }
+        }
+        xr::SyncActions(m_session.Get(), actionContexts);
 
         {
             std::lock_guard lock(m_sceneMutex);
@@ -455,7 +491,7 @@ namespace {
                         // When a secondary view configuration is turned active, detect if recommended swapchain size is changed.
                         // If so, reset resources in layers related to this secondary view configuration.
                         std::vector<XrViewConfigurationView> newViewConfigViews = xr::EnumerateViewConfigurationViews(
-                            m_sceneContext->Instance.Handle(), m_sceneContext->System.Id, secondaryViewConfigType);
+                            SceneContext().Instance.Handle, SceneContext().System.Id, secondaryViewConfigType);
                         if (IsRecommendedSwapchainSizeChanged(m_viewConfigStates.at(secondaryViewConfigType).ViewConfigViews,
                                                               newViewConfigViews)) {
                             m_projectionLayerCollection.ForEachLayerWithLock(
@@ -478,7 +514,7 @@ namespace {
 
             m_projectionLayerCollection.ForEachLayerWithLock([this](auto&& layer) {
                 for (auto& [viewConfigType, states] : m_viewConfigStates) {
-                    layer.PrepareRendering(m_sceneContext.get(), viewConfigType, states.ViewConfigViews, states.Active);
+                    layer.PrepareRendering(SceneContext(), viewConfigType, states.ViewConfigViews, states.Active);
                 }
             });
         }
@@ -486,13 +522,13 @@ namespace {
 
     void ImplementXrApp::RenderFrame() {
         XrFrameBeginInfo beginFrameDescription{XR_TYPE_FRAME_BEGIN_INFO};
-        CHECK_XRCMD(xrBeginFrame(m_sceneContext->Session, &beginFrameDescription));
+        CHECK_XRCMD(xrBeginFrame(SceneContext().Session, &beginFrameDescription));
 
         size_t viewConfigCount = 1 + m_supportedSecondaryViewConfigurations.size();
         std::vector<CompositionLayers> layersForAllViewConfigs(viewConfigCount); // Need same lifetime as XrFrameEndInfo;
 
         XrFrameEndInfo endFrameInfo{XR_TYPE_FRAME_END_INFO};
-        endFrameInfo.environmentBlendMode = m_sceneContext->PrimaryViewConfigEnvironmentBlendMode;
+        endFrameInfo.environmentBlendMode = SceneContext().PrimaryViewConfigEnvironmentBlendMode;
         endFrameInfo.displayTime = m_currentFrameTime.PredictedDisplayTime;
 
         std::vector<XrViewConfigurationType> allViewConfigurationTypes{PrimaryViewConfiguration};
@@ -531,14 +567,14 @@ namespace {
                     XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
                     viewLocateInfo.viewConfigurationType = viewConfigurationType;
                     viewLocateInfo.displayTime = m_currentFrameTime.PredictedDisplayTime;
-                    viewLocateInfo.space = m_sceneContext->SceneSpace;
+                    viewLocateInfo.space = SceneContext().SceneSpace;
 
                     uint32_t viewCount = 0;
                     XrViewState viewState{XR_TYPE_VIEW_STATE};
 
                     std::vector<XrView>& views = states.Views;
                     CHECK_XRCMD(xrLocateViews(
-                        m_sceneContext->Session, &viewLocateInfo, &viewState, (uint32_t)views.size(), &viewCount, views.data()));
+                        SceneContext().Session, &viewLocateInfo, &viewState, (uint32_t)views.size(), &viewCount, views.data()));
                     if (xr::math::Pose::IsPoseValid(viewState)) {
                         std::vector<std::shared_ptr<QuadLayerObject>> underlays, overlays;
                         {
@@ -564,20 +600,21 @@ namespace {
                             AppendQuadLayer(layers, quad.get());
                         }
 
-                        m_projectionLayerCollection.ForEachLayerWithLock(
-                            [this, &layers, &views, viewConfigurationType](ProjectionLayer& projectionLayer) {
-                                const bool shouldSubmitProjectionLayer = projectionLayer.Render(m_sceneContext.get(),
-                                                                                                m_currentFrameTime,
-                                                                                                m_sceneContext->SceneSpace,
-                                                                                                views,
-                                                                                                m_scenes,
-                                                                                                viewConfigurationType);
+                        m_projectionLayerCollection.ForEachLayerWithLock([this, &layers, &views, viewConfigurationType](
+                                                                             ProjectionLayer& projectionLayer) {
+                            bool opaqueClearColor = (layers.LayerCount() == 0); // Only the first projection layer need opaque background
+                            opaqueClearColor &= (SceneContext().PrimaryViewConfigEnvironmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE);
+                            projectionLayer.Config().ClearColor.v = opaqueClearColor
+                                                                        ? DirectX::XMColorSRGBToRGB(DirectX::Colors::CornflowerBlue)
+                                                                        : DirectX::Colors::Transparent;
+                            const bool shouldSubmitProjectionLayer = projectionLayer.Render(
+                                SceneContext(), m_currentFrameTime, SceneContext().SceneSpace, views, m_scenes, viewConfigurationType);
 
-                                // Create the multi projection layer
-                                if (shouldSubmitProjectionLayer) {
-                                    AppendProjectionLayer(layers, &projectionLayer, viewConfigurationType);
-                                }
-                            });
+                            // Create the multi projection layer
+                            if (shouldSubmitProjectionLayer) {
+                                AppendProjectionLayer(layers, &projectionLayer, viewConfigurationType);
+                            }
+                        });
 
                         for (const std::shared_ptr<QuadLayerObject>& quad : overlays) {
                             AppendQuadLayer(layers, quad.get());
@@ -600,13 +637,13 @@ namespace {
             m_endFrameCallback(&endFrameInfo);
         }
 
-        CHECK_XRCMD(xrEndFrame(m_sceneContext->Session, &endFrameInfo));
+        CHECK_XRCMD(xrEndFrame(SceneContext().Session, &endFrameInfo));
     }
 } // namespace
 
 std::unique_ptr<XrApp> CreateXrApp(const xr::NameVersion& appInfo,
-                                   const std::vector<const char*>& extensions,
+                                   const std::vector<const char*>& desiredExtensions,
                                    bool singleThreadedGraphics) {
-    return std::make_unique<ImplementXrApp>(appInfo, extensions, singleThreadedGraphics);
+    return std::make_unique<ImplementXrApp>(appInfo, desiredExtensions, singleThreadedGraphics);
 }
 

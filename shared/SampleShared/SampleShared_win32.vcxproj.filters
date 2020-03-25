@@ -28,6 +28,9 @@
     <ClInclude Include="FileUtility.h" />
     <ClInclude Include="DxUtility.h" />
     <ClInclude Include="Trace.h" />
+    <ClInclude Include="Guid.h" />
+    <ClInclude Include="ThreadPool.h" />
+    <ClInclude Include="ScopeGuard.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DirectXTK">

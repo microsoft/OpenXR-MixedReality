@@ -23,7 +23,7 @@ class XrApp {
 public:
     virtual ~XrApp() = default;
 
-    virtual SceneContext* SceneContext() const = 0;
+    virtual SceneContext& SceneContext() const = 0;
 
     virtual void AddScene(std::unique_ptr<Scene> scene) = 0;
     virtual const std::vector<std::unique_ptr<Scene>>& Scenes() const = 0;

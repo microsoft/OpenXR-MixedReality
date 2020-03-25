@@ -330,6 +330,9 @@
     <ClInclude Include="DirectXTK\PlatformHelpers.h" />
     <ClInclude Include="DxUtility.h" />
     <ClInclude Include="FileUtility.h" />
+    <ClInclude Include="Guid.h" />
+    <ClInclude Include="ScopeGuard.h" />
+    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="Trace.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>

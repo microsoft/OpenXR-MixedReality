@@ -45,7 +45,7 @@ ProjectionLayer::ProjectionLayer(std::function<void(DXGI_FORMAT, bool /*isDepth*
     }
 }
 
-void ProjectionLayer::PrepareRendering(const SceneContext* sceneContext,
+void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
                                        XrViewConfigurationType viewConfigType,
                                        const std::vector<XrViewConfigurationView>& viewConfigViews,
                                        bool canCreateSwapchain) {
@@ -124,7 +124,7 @@ void ProjectionLayer::PrepareRendering(const SceneContext* sceneContext,
 
     // Create color swapchain with recommended properties.
     viewConfigComponent.ColorSwapchain =
-        sample::dx::CreateSwapchainD3D11(sceneContext->Session,
+        sample::dx::CreateSwapchainD3D11(sceneContext.Session,
                                          layerCurrentConfig.ColorSwapchainFormat,
                                          swapchainImageWidth * wideScale,
                                          swapchainImageHeight,
@@ -136,7 +136,7 @@ void ProjectionLayer::PrepareRendering(const SceneContext* sceneContext,
 
     // Create depth swapchain with recommended properties.
     viewConfigComponent.DepthSwapchain =
-        sample::dx::CreateSwapchainD3D11(sceneContext->Session,
+        sample::dx::CreateSwapchainD3D11(sceneContext.Session,
                                          layerCurrentConfig.DepthSwapchainFormat,
                                          swapchainImageWidth * wideScale,
                                          swapchainImageHeight,
@@ -153,14 +153,14 @@ void ProjectionLayer::PrepareRendering(const SceneContext* sceneContext,
         depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
         depthStencilDesc.DepthFunc = D3D11_COMPARISON_GREATER;
         m_reversedZDepthNoStencilTest = nullptr;
-        CHECK_HRCMD(sceneContext->Device->CreateDepthStencilState(&depthStencilDesc, m_reversedZDepthNoStencilTest.put()));
+        CHECK_HRCMD(sceneContext.Device->CreateDepthStencilState(&depthStencilDesc, m_reversedZDepthNoStencilTest.put()));
     }
 
     viewConfigComponent.ProjectionViews.resize(viewConfigViews.size());
     viewConfigComponent.DepthInfo.resize(viewConfigViews.size());
 }
 
-bool ProjectionLayer::Render(SceneContext* sceneContext,
+bool ProjectionLayer::Render(SceneContext& sceneContext,
                              const FrameTime& frameTime,
                              XrSpace layerSpace,
                              const std::vector<XrView>& views,
@@ -231,7 +231,7 @@ bool ProjectionLayer::Render(SceneContext* sceneContext,
             // Render for this view pose.
             {
                 // Set the Viewport.
-                sceneContext->DeviceContext->RSSetViewports(1, &viewport);
+                sceneContext.DeviceContext->RSSetViewports(1, &viewport);
 
                 const uint32_t firstArraySliceForColor = projectionViews[viewIndex].subImage.imageArrayIndex;
 
@@ -244,7 +244,7 @@ bool ProjectionLayer::Render(SceneContext* sceneContext,
                     0 /* mipSlice */,
                     firstArraySliceForColor,
                     1 /* arraySize */);
-                CHECK_HRCMD(sceneContext->Device->CreateRenderTargetView(
+                CHECK_HRCMD(sceneContext.Device->CreateRenderTargetView(
                     colorSwapchain.Images[colorSwapchainImageIndex].texture, &renderTargetViewDesc, renderTargetView.put()));
 
                 const uint32_t firstArraySliceForDepth = depthImageArrayIndex;
@@ -258,43 +258,39 @@ bool ProjectionLayer::Render(SceneContext* sceneContext,
                     0 /* mipSlice */,
                     firstArraySliceForDepth,
                     1 /* arraySize */);
-                CHECK_HRCMD(sceneContext->Device->CreateDepthStencilView(
+                CHECK_HRCMD(sceneContext.Device->CreateDepthStencilView(
                     depthSwapchain.Images[depthSwapchainImageIndex].texture, &depthStencilViewDesc, depthStencilView.put()));
 
                 const bool reversedZ = (currentConfig.NearFar.Near > currentConfig.NearFar.Far);
 
                 // Clear and render to the render target.
                 ID3D11RenderTargetView* const renderTargets[] = {renderTargetView.get()};
-                sceneContext->DeviceContext->OMSetRenderTargets(1, renderTargets, depthStencilView.get());
+                sceneContext.DeviceContext->OMSetRenderTargets(1, renderTargets, depthStencilView.get());
 
                 // In double wide mode, the first projection clears the whole RTV and DSV.
                 if ((viewIndex == 0) || !currentConfig.DoubleWideMode) {
-                    XMVECTORF32 clearColor = sceneContext->PrimaryViewConfigEnvironmentBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE
-                                                 ? DirectX::Colors::CornflowerBlue
-                                                 : DirectX::Colors::Transparent;
-                    clearColor.v = DirectX::XMColorSRGBToRGB(clearColor.v);
-                    sceneContext->DeviceContext->ClearRenderTargetView(renderTargets[0], clearColor);
+                    sceneContext.DeviceContext->ClearRenderTargetView(renderTargets[0], Config().ClearColor);
 
                     const float clearDepthValue = reversedZ ? 0.f : 1.f;
-                    sceneContext->DeviceContext->ClearDepthStencilView(
+                    sceneContext.DeviceContext->ClearDepthStencilView(
                         depthStencilView.get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, clearDepthValue, 0);
                 }
 
                 const DirectX::XMMATRIX projectionMatrix = xr::math::ComposeProjectionMatrix(fov, currentConfig.NearFar);
 
                 if (reversedZ) {
-                    sceneContext->DeviceContext->OMSetDepthStencilState(m_reversedZDepthNoStencilTest.get(), 0);
+                    sceneContext.DeviceContext->OMSetDepthStencilState(m_reversedZDepthNoStencilTest.get(), 0);
                 } else {
-                    sceneContext->DeviceContext->OMSetDepthStencilState(nullptr, 0);
+                    sceneContext.DeviceContext->OMSetDepthStencilState(nullptr, 0);
                 }
 
                 // Set state for any objects which use PBR rendering.
                 // PBR library expects traditional view transform (world to view).
                 DirectX::XMMATRIX worldToViewMatrix = xr::math::LoadInvertedXrPose(projectionViews[viewIndex].pose);
 
-                sceneContext->PbrResources.SetViewProjection(worldToViewMatrix, projectionMatrix);
-                sceneContext->PbrResources.Bind(sceneContext->DeviceContext.get());
-                sceneContext->PbrResources.SetDepthFuncReversed(reversedZ);
+                sceneContext.PbrResources.SetViewProjection(worldToViewMatrix, projectionMatrix);
+                sceneContext.PbrResources.Bind(sceneContext.DeviceContext.get());
+                sceneContext.PbrResources.SetDepthFuncReversed(reversedZ);
 
                 // Render all active scenes.
                 for (const std::unique_ptr<Scene>& scene : activeScenes) {
@@ -313,7 +309,7 @@ bool ProjectionLayer::Render(SceneContext* sceneContext,
     CHECK_XRCMD(xrReleaseSwapchainImage(colorSwapchain.Handle.Get(), &releaseInfo));
     CHECK_XRCMD(xrReleaseSwapchainImage(depthSwapchain.Handle.Get(), &releaseInfo));
 
-    sceneContext->PbrResources.UpdateAnimationTime(frameTime.TotalElapsed);
+    sceneContext.PbrResources.UpdateAnimationTime(frameTime.TotalElapsed);
 
     return submitProjectionLayer;
 }

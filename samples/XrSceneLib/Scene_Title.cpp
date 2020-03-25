@@ -29,21 +29,21 @@ namespace {
     // When the user moves or looks around, the text slowly ease into it's position in front of the user.
     //
     struct TitleScene : public Scene {
-        TitleScene(SceneContext* sceneContext)
+        TitleScene(SceneContext& sceneContext)
             : Scene(sceneContext) {
             XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
             createInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
             createInfo.poseInReferenceSpace = Pose::Identity();
-            CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext->Session, &createInfo, m_viewSpace.Put()));
+            CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext.Session, &createInfo, m_viewSpace.Put()));
 
             constexpr float margin = 0.01f;
             constexpr float titleWidth = 0.5f;
             constexpr float titleHeight = titleWidth / 3;
-            const auto& material = Pbr::Material::CreateFlat(m_sceneContext->PbrResources, Pbr::FromSRGB(Colors::DarkGray));
-            m_background = AddSceneObject(MakeQuad(m_sceneContext->PbrResources, {titleWidth, titleHeight}, material));
+            const auto& material = Pbr::Material::CreateFlat(m_sceneContext.PbrResources, Pbr::FromSRGB(Colors::DarkGray));
+            m_background = AddSceneObject(MakeQuad(m_sceneContext.PbrResources, {titleWidth, titleHeight}, material));
             m_background->SetVisible(false);
 
-            TextTextureInfo textInfo{256, 256}; // pixels
+            TextTextureInfo textInfo{256, 128}; // pixels
             textInfo.Foreground = Pbr::RGBA::White;
             textInfo.Background = Pbr::FromSRGB(Colors::DarkSlateBlue);
             textInfo.Margin = 5; // pixels
@@ -54,14 +54,14 @@ namespace {
                 textInfo.Height = (uint32_t)std::floor(blockHeight * textInfo.Width / titleWidth); // Keep texture aspect ratio
                 std::unique_ptr<TextTexture> textTexture = std::make_unique<TextTexture>(m_sceneContext, textInfo);
                 textTexture->Draw(block.Text.c_str());
-                const auto& material = textTexture->CreatePbrMaterial(m_sceneContext->PbrResources);
-                block.Object = AddSceneObject(MakeQuad(m_sceneContext->PbrResources, {titleWidth, blockHeight}, material));
+                const auto& material = textTexture->CreatePbrMaterial(m_sceneContext.PbrResources);
+                block.Object = AddSceneObject(MakeQuad(m_sceneContext.PbrResources, {titleWidth, blockHeight}, material));
                 block.Object->Pose() = Pose::Translation({0, (titleHeight / 2) - top - (blockHeight / 2), margin});
                 block.Object->SetParent(m_background);
             };
 
             m_title.Text =
-                fmt::format(L"{}, v{}", xr::utf8_to_wide(m_sceneContext->Instance.AppInfo.Name), m_sceneContext->Instance.AppInfo.Version)
+                fmt::format(L"{}, v{}", xr::utf8_to_wide(m_sceneContext.Instance.AppInfo.Name), m_sceneContext.Instance.AppInfo.Version)
                     .c_str();
             textInfo.FontSize = 16.0f;
             placeTextBlock(m_title, margin, titleHeight / 2 - margin * 2);
@@ -70,18 +70,18 @@ namespace {
                                           XR_VERSION_MAJOR(XR_CURRENT_API_VERSION),
                                           XR_VERSION_MINOR(XR_CURRENT_API_VERSION),
                                           XR_VERSION_PATCH(XR_CURRENT_API_VERSION),
-                                          xr::utf8_to_wide(m_sceneContext->Instance.InstanceProperties.runtimeName),
-                                          XR_VERSION_MAJOR(m_sceneContext->Instance.InstanceProperties.runtimeVersion),
-                                          XR_VERSION_MINOR(m_sceneContext->Instance.InstanceProperties.runtimeVersion),
-                                          XR_VERSION_PATCH(m_sceneContext->Instance.InstanceProperties.runtimeVersion))
+                                          xr::utf8_to_wide(m_sceneContext.Instance.Properties.runtimeName),
+                                          XR_VERSION_MAJOR(m_sceneContext.Instance.Properties.runtimeVersion),
+                                          XR_VERSION_MINOR(m_sceneContext.Instance.Properties.runtimeVersion),
+                                          XR_VERSION_PATCH(m_sceneContext.Instance.Properties.runtimeVersion))
                                   .c_str();
-            textInfo.FontSize = 11.0f;
+            textInfo.FontSize = 10.0f;
             placeTextBlock(m_subtitle, titleHeight / 2, titleHeight / 2 - margin);
         }
 
         void OnUpdate(const FrameTime& frameTime) override {
             XrSpaceLocation viewInScene = {XR_TYPE_SPACE_LOCATION};
-            CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_sceneContext->SceneSpace, frameTime.PredictedDisplayTime, &viewInScene));
+            CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_sceneContext.SceneSpace, frameTime.PredictedDisplayTime, &viewInScene));
             if (Pose::IsPoseValid(viewInScene)) {
                 XrPosef titleInView = {{0, 0, 0, 1}, {0, 0, -2.f}}; // 2 meter in front
                 XrPosef titleInScene = titleInView * viewInScene.pose;
@@ -113,6 +113,6 @@ namespace {
     };
 } // namespace
 
-std::unique_ptr<Scene> CreateTitleScene(SceneContext* sceneContext) {
+std::unique_ptr<Scene> TryCreateTitleScene(SceneContext& sceneContext) {
     return std::make_unique<TitleScene>(sceneContext);
 }

@@ -17,39 +17,37 @@
 
 #include <pbr/PbrResources.h>
 #include <XrUtility/XrString.h>
-#include <XrUtility/XrExtensions.h>
 #include <XrUtility/XrInstanceContext.h>
-#include <XrUtility/XrActionContext.h>
+#include <XrUtility/XrExtensionContext.h>
+#include <XrUtility/XrSystemContext.h>
 
 // Session-related resources shared across multiple Scenes.
 struct SceneContext final {
     SceneContext(xr::InstanceContext instance,
+                 xr::ExtensionContext extensions,
                  xr::SystemContext system,
                  XrSession session,
                  XrSpace sceneSpace,
                  Pbr::Resources pbrResources,
                  winrt::com_ptr<ID3D11Device> device,
                  winrt::com_ptr<ID3D11DeviceContext> deviceContext,
-                 xr::IActionContext& actionContext,
                  XrEnvironmentBlendMode primaryViewConfigEnvironmentBlendMode)
         : Instance(std::move(instance))
+        , Extensions(std::move(extensions))
         , System(std::move(system))
-        , Extensions(std::cref(Instance.Extensions))
         , Session(session)
         , SceneSpace(sceneSpace)
         , PbrResources(std::move(pbrResources))
         , Device(std::move(device))
         , DeviceContext(std::move(deviceContext))
         , PrimaryViewConfigEnvironmentBlendMode(primaryViewConfigEnvironmentBlendMode)
-        , ActionContext(actionContext)
-        , LeftHand(xr::StringToPath(Instance.Handle(), "/user/hand/left"))
-        , RightHand(xr::StringToPath(Instance.Handle(), "/user/hand/right"))
-        , GamePad(xr::StringToPath(Instance.Handle(), "/user/gamepad")) {
+        , LeftHand(xr::StringToPath(Instance.Handle, "/user/hand/left"))
+        , RightHand(xr::StringToPath(Instance.Handle, "/user/hand/right")) {
     }
 
     const xr::InstanceContext Instance;
+    const xr::ExtensionContext Extensions;
     const xr::SystemContext System;
-    const xr::ExtensionContext& Extensions;
 
     const XrSession Session;
     const XrEnvironmentBlendMode PrimaryViewConfigEnvironmentBlendMode;
@@ -59,10 +57,8 @@ struct SceneContext final {
     const winrt::com_ptr<ID3D11Device> Device;
     Pbr::Resources PbrResources;
 
-    xr::IActionContext& ActionContext;
     std::atomic<XrSessionState> SessionState;
 
     const XrPath RightHand;
     const XrPath LeftHand;
-    const XrPath GamePad;
 };

@@ -23,17 +23,17 @@
 namespace xr {
     class ActionSet {
     public:
-        ActionSet(XrInstance instance, const std::string& name, const std::string& localizedName, uint32_t priority = 0)
+        ActionSet(XrInstance instance, const char* name, const char* localizedName, uint32_t priority = 0)
             : m_instance(instance) {
             XrActionSetCreateInfo actionSetCreateInfo{XR_TYPE_ACTION_SET_CREATE_INFO};
-            strcpy_s(actionSetCreateInfo.actionSetName, name.c_str());
-            strcpy_s(actionSetCreateInfo.localizedActionSetName, localizedName.c_str());
+            strcpy_s(actionSetCreateInfo.actionSetName, name);
+            strcpy_s(actionSetCreateInfo.localizedActionSetName, localizedName);
             actionSetCreateInfo.priority = priority;
             CHECK_XRCMD(xrCreateActionSet(m_instance, &actionSetCreateInfo, m_actionSet.Put()));
         }
 
-        XrAction CreateAction(const std::string& actionName,
-                              const std::string& localizedName,
+        XrAction CreateAction(const char* actionName,
+                              const char* localizedName,
                               XrActionType actionType,
                               const std::vector<std::string>& subactionPaths) {
             std::vector<XrPath> subActionXrPaths = xr::StringsToPaths(m_instance, subactionPaths);
@@ -42,8 +42,8 @@ namespace xr {
             actionCreateInfo.actionType = actionType;
             actionCreateInfo.countSubactionPaths = static_cast<uint32_t>(subActionXrPaths.size());
             actionCreateInfo.subactionPaths = subActionXrPaths.data();
-            actionName.copy(actionCreateInfo.actionName, sizeof(actionCreateInfo.actionName));
-            localizedName.copy(actionCreateInfo.localizedActionName, sizeof(actionCreateInfo.localizedActionName));
+            strcpy_s(actionCreateInfo.actionName, actionName);
+            strcpy_s(actionCreateInfo.localizedActionName, localizedName);
 
             for (XrPath subactionPath : subActionXrPaths) {
                 m_declaredSubactionPaths.insert(subactionPath); // std::set will remove duplication.
@@ -64,9 +64,15 @@ namespace xr {
             m_active = active;
         }
 
-    private:
-        friend struct ActionContext;
+        XrActionSet Handle() const {
+            return m_actionSet.Get();
+        }
 
+        const std::set<XrPath>& DeclaredSubactionPaths() const {
+            return m_declaredSubactionPaths;
+        }
+
+    private:
         const XrInstance m_instance;
         xr::ActionSetHandle m_actionSet;
         std::vector<xr::ActionHandle> m_actions;
@@ -74,57 +80,71 @@ namespace xr {
         std::set<XrPath> m_declaredSubactionPaths;
     };
 
-    struct IActionContext {
-        virtual ~IActionContext() = default;
-        virtual ActionSet& CreateActionSet(const std::string& name, const std::string& localizedName, uint32_t priority = 0) = 0;
-        virtual void SuggestInteractionProfileBindings(const std::string& interactionProfile,
-                                                       const std::vector<std::pair<XrAction, std::string>>& suggestedBindings) = 0;
-    };
-
-    struct ActionContext : IActionContext {
+    //
+    // OpenXR requires one xrSuggestInteractionProfileBindings call for each interaction profile
+    // and one xrAttachSessionActionSets for each session.
+    // The xrSyncActions call must be done for all active actionset together.
+    // ActionContext class collects action and actionset metadata from multiple places in an app
+    // and finalize the binding and attach to session together.
+    //
+    struct ActionContext {
         explicit ActionContext(XrInstance instance)
             : m_instance(instance) {
         }
 
-        ActionSet& CreateActionSet(const std::string& name, const std::string& localizedName, uint32_t priority = 0);
-        void SuggestInteractionProfileBindings(const std::string& interactionProfile,
-                                               const std::vector<std::pair<XrAction, std::string>>& suggestedBindings);
+        ActionSet& CreateActionSet(const char* name, const char* localizedName, uint32_t priority = 0) {
+            return m_actionSets.emplace_back(ActionSet{m_instance, name, localizedName, priority});
+        }
 
-        void AttachActionsToSession(XrSession session);
-        void SyncActions(XrSession session);
+        void SuggestInteractionProfileBindings(const char* interactionProfile,
+                                               const std::vector<std::pair<XrAction, std::string>>& suggestedBindings) {
+            const XrPath profilePath = xr::StringToPath(m_instance, interactionProfile);
+            for (const auto& [actionPath, suggestedBinding] : suggestedBindings) {
+                m_actionBindings[profilePath].emplace_back(actionPath, suggestedBinding);
+            }
+        }
 
     private:
         XrInstance m_instance;
         std::list<ActionSet> m_actionSets;
-        std::unordered_map<XrPath, std::vector<XrActionSuggestedBinding>> m_actionBindings;
+        std::unordered_map<XrPath, std::vector<std::pair<XrAction, std::string>>> m_actionBindings;
+
+        friend void AttachActionsToSession(XrInstance instance,
+                                           XrSession session,
+                                           const std::vector<const xr::ActionContext*>& actionContexts);
+        friend void SyncActions(XrSession session, const std::vector<const xr::ActionContext*>& actionContexts);
     };
 
-    inline ActionSet& ActionContext::CreateActionSet(const std::string& name, const std::string& localizedName, uint32_t priority) {
-        return m_actionSets.emplace_back(m_instance, name, localizedName, priority);
-    }
-
-    inline void ActionContext::SuggestInteractionProfileBindings(const std::string& interactionProfile,
-                                                                 const std::vector<std::pair<XrAction, std::string>>& suggestedBindings) {
-        const XrPath profilePath = xr::StringToPath(m_instance, interactionProfile.c_str());
-        for (const auto& [action, suggestedBinding] : suggestedBindings) {
-            m_actionBindings[profilePath].push_back({action, xr::StringToPath(m_instance, suggestedBinding.c_str())});
+    inline void AttachActionsToSession(XrInstance instance,
+                                       XrSession session,
+                                       const std::vector<const xr::ActionContext*>& actionContexts) {
+        // Collect action bindings for each context and summarize using interaction profile path as key.
+        std::unordered_map<XrPath, std::vector<XrActionSuggestedBinding>> allBindings;
+        for (const xr::ActionContext* actionContext : actionContexts) {
+            for (const auto& [profilePath, stringBindings] : actionContext->m_actionBindings) {
+                for (const auto& [actionPath, binding] : stringBindings) {
+                    allBindings[profilePath].emplace_back(
+                        XrActionSuggestedBinding{actionPath, xr::StringToPath(instance, binding.c_str())});
+                }
+            }
         }
-    }
 
-    inline void ActionContext::AttachActionsToSession(XrSession session) {
-        for (const auto& [interactionProfile, bindingsList] : m_actionBindings) {
+        for (const auto& [interactionProfile, suggestedBindings] : allBindings) {
             XrInteractionProfileSuggestedBinding bindings{XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
             bindings.interactionProfile = interactionProfile;
-            bindings.suggestedBindings = bindingsList.data();
-            bindings.countSuggestedBindings = static_cast<uint32_t>(bindingsList.size());
-            CHECK_XRCMD(xrSuggestInteractionProfileBindings(m_instance, &bindings));
+            bindings.suggestedBindings = suggestedBindings.data();
+            bindings.countSuggestedBindings = static_cast<uint32_t>(suggestedBindings.size());
+            CHECK_XRCMD(xrSuggestInteractionProfileBindings(instance, &bindings));
         }
 
-        if (!m_actionSets.empty()) {
-            std::vector<XrActionSet> actionSetHandles;
-            for (const auto& actionSet : m_actionSets) {
-                actionSetHandles.push_back(actionSet.m_actionSet.Get());
+        std::vector<XrActionSet> actionSetHandles;
+        for (const xr::ActionContext* actionContext : actionContexts) {
+            for (const xr::ActionSet& actionSet : actionContext->m_actionSets) {
+                actionSetHandles.push_back(actionSet.Handle());
             }
+        }
+
+        if (!std::empty(actionSetHandles)) {
             XrSessionActionSetsAttachInfo attachInfo{XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
             attachInfo.countActionSets = static_cast<uint32_t>(std::size(actionSetHandles));
             attachInfo.actionSets = actionSetHandles.data();
@@ -132,19 +152,20 @@ namespace xr {
         }
     }
 
-    inline void ActionContext::SyncActions(XrSession session) {
+    inline void SyncActions(XrSession session, const std::vector<const xr::ActionContext*>& actionContexts) {
         std::vector<XrActiveActionSet> activeActionSets;
-        activeActionSets.reserve(m_actionSets.size() * 2);
 
-        for (const auto& actionSet : m_actionSets) {
-            if (!actionSet.Active()) {
-                continue;
-            }
-            if (std::empty(actionSet.m_declaredSubactionPaths)) {
-                activeActionSets.emplace_back(XrActiveActionSet{actionSet.m_actionSet.Get(), XR_NULL_PATH});
-            } else {
-                for (const auto& subactionPath : actionSet.m_declaredSubactionPaths) {
-                    activeActionSets.emplace_back(XrActiveActionSet{actionSet.m_actionSet.Get(), subactionPath});
+        for (const xr::ActionContext* actionContext : actionContexts) {
+            for (const xr::ActionSet& actionSet : actionContext->m_actionSets) {
+                if (!actionSet.Active()) {
+                    continue;
+                }
+                if (std::empty(actionSet.DeclaredSubactionPaths())) {
+                    activeActionSets.emplace_back(XrActiveActionSet{actionSet.Handle(), XR_NULL_PATH});
+                } else {
+                    for (const XrPath& subactionPath : actionSet.DeclaredSubactionPaths()) {
+                        activeActionSets.emplace_back(XrActiveActionSet{actionSet.Handle(), subactionPath});
+                    }
                 }
             }
         }

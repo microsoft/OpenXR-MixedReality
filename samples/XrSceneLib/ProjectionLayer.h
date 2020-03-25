@@ -21,7 +21,7 @@
 #include <SampleShared/DxUtility.h>
 
 struct ProjectionLayerConfig {
-    XrCompositionLayerFlags LayerFlags = 0;
+    XrCompositionLayerFlags LayerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
     DXGI_FORMAT ColorSwapchainFormat{};
     DXGI_FORMAT DepthSwapchainFormat{};
     xr::math::NearFar NearFar = {1000, 0.02f};
@@ -34,19 +34,19 @@ struct ProjectionLayerConfig {
     bool SubmitDepthInfo = true;
     bool ContentProtected = false;
     bool ForceReset = false;
+    DirectX::XMVECTORF32 ClearColor = DirectX::Colors::Transparent;
 };
 
-struct IVisibilityMask;
 class ProjectionLayer {
 public:
-    ProjectionLayer()
-        : m_ensureSupportSwapchainFormat(nullptr){};
     ProjectionLayer(std::function<void(DXGI_FORMAT, bool /*isDepth*/)> ensureSupportSwapchainFormat,
                     DXGI_FORMAT colorSwapchainFormat,
                     DXGI_FORMAT depthSwapchainFormat,
                     XrViewConfigurationType primaryViewConfiguraionType,
                     const std::vector<XrViewConfigurationType>& secondaryViewConfiguraionTypes);
+
     ProjectionLayer(ProjectionLayer&&) = default;
+    ProjectionLayer(const ProjectionLayer&) = delete;
 
     ProjectionLayerConfig& Config(std::optional<XrViewConfigurationType> viewConfig = std::nullopt) {
         return m_viewConfigComponents.at(viewConfig.value_or(m_defaultViewConfigurationType)).PendingConfig;
@@ -65,12 +65,12 @@ public:
         return m_viewConfigComponents.at(viewConfig.value_or(m_defaultViewConfigurationType)).LayerSpace;
     }
 
-    void PrepareRendering(const SceneContext* sceneContext,
+    void PrepareRendering(const SceneContext& sceneContext,
                           XrViewConfigurationType viewConfigType,
                           const std::vector<XrViewConfigurationView>& viewConfigViews,
                           bool canCreateSwapchain);
 
-    bool Render(SceneContext* sceneContext,
+    bool Render(SceneContext& sceneContext,
                 const FrameTime& frameTime,
                 XrSpace layerSpace,
                 const std::vector<XrView>& Views,
@@ -78,10 +78,6 @@ public:
                 XrViewConfigurationType viewConfig);
 
 private:
-    ProjectionLayer(const ProjectionLayer&) = delete;
-    ProjectionLayer& operator=(const ProjectionLayer&) = delete;
-    ProjectionLayer& operator=(ProjectionLayer&&) = default;
-
     struct ViewConfigComponent {
         ProjectionLayerConfig CurrentConfig;
         ProjectionLayerConfig PendingConfig;
@@ -140,7 +136,6 @@ public:
 
     void ForEachLayerWithLock(std::function<void(ProjectionLayer&)> function) {
         std::lock_guard lock(m_mutex);
-
         for (std::unique_ptr<ProjectionLayer>& layer : m_projectionLayers) {
             function(*layer);
         }

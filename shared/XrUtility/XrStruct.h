@@ -16,7 +16,6 @@
 #pragma once
 
 #include <string_view>
-#include <openxr/openxr.h>
 
 namespace xr {
     struct NameVersion {
@@ -50,6 +49,13 @@ namespace xr {
     // needs to live longer than this function.
     template <typename T>
     void SetEnabledExtensions(XrInstanceCreateInfo& info, T&& extensions) = delete;
+
+    // Insert an extension struct into the next chain of an xrStruct
+    template <typename XrStruct, typename XrExtension>
+    void InsertExtensionStruct(XrStruct& xrStruct, XrExtension& xrExtension) {
+        xrExtension.next = xrStruct.next;
+        xrStruct.next = &xrExtension;
+    }
 
     // Cast event data buffer to strongly typed event data if eventData->type matches.
     template <typename XrEventData>

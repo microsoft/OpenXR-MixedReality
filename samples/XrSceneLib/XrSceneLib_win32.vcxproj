@@ -112,6 +112,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="ControllerObject.h" />
     <ClInclude Include="TextTexture.h" />
     <ClInclude Include="PbrModelObject.h" />
     <ClInclude Include="pch.h" />
@@ -125,6 +126,7 @@
     <ClInclude Include="SceneContext.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="ControllerObject.cpp" />
     <ClCompile Include="TextTexture.cpp" />
     <ClCompile Include="ProjectionLayer.cpp" />
     <ClCompile Include="PbrModelObject.cpp" />

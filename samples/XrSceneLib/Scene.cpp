@@ -52,8 +52,9 @@ namespace {
     }
 } // namespace
 
-Scene::Scene(SceneContext* sceneContext)
-    : m_sceneContext(sceneContext) {
+Scene::Scene(SceneContext& sceneContext)
+    : m_sceneContext(sceneContext)
+    , m_actionContext(sceneContext.Instance.Handle) {
 }
 
 void Scene::Update(const FrameTime& frameTime) {
@@ -73,9 +74,9 @@ void Scene::Update(const FrameTime& frameTime) {
     OnUpdate(frameTime);
 }
 
-void Scene::Render(const FrameTime& frameTime) const {
-    RenderObjects(m_sceneObjects, *m_sceneContext);
-    RenderObjects(m_quadLayerObjects, *m_sceneContext);
+void Scene::Render(const FrameTime& frameTime) {
+    RenderObjects(m_sceneObjects, m_sceneContext);
+    RenderObjects(m_quadLayerObjects, m_sceneContext);
 
     OnRender(frameTime);
 }

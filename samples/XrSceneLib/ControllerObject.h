@@ -14,17 +14,7 @@
 //
 //*********************************************************
 #pragma once
-#include <filesystem>
 
-namespace Pbr {
-    struct Model;
-    struct Resources;
-} // namespace Pbr
+#include "SceneObject.h"
 
-namespace sample {
-    std::vector<uint8_t> ReadFileBytes(const std::filesystem::path& path);
-    std::filesystem::path GetPathInAppFolder(const std::filesystem::path& filename);
-
-    Pbr::Resources InitializePbrResources(ID3D11Device* device, bool environmentIBL = true);
-    std::shared_ptr<Pbr::Model> LoadPbrModelBinary(const std::filesystem::path& filePath, const Pbr::Resources& resources);
-} // namespace sample
+std::shared_ptr<SceneObject> CreateControllerObject(SceneContext& sceneContext, XrAction gripPoseAction, XrPath controllerUserPath);

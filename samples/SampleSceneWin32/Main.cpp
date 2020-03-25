@@ -16,17 +16,19 @@
 #include "pch.h"
 #include "App.h"
 
-std::unique_ptr<Scene> CreateTitleScene(SceneContext* sceneContext);
+std::unique_ptr<Scene> TryCreateTitleScene(SceneContext& sceneContext);
+std::unique_ptr<Scene> TryCreateControllerModelScene(SceneContext& sceneContext);
 
 int APIENTRY wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int) {
     try {
         CHECK_HRCMD(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
         auto on_exit = MakeScopeGuard([] { ::CoUninitialize(); });
 
-        const std::vector<const char*> requiredExtensions = {};
+        const std::vector<const char*> requiredExtensions = {XR_MSFT_CONTROLLER_MODEL_PREVIEW_EXTENSION_NAME};
 
         auto app = CreateXrApp({"SampleSceneWin32", 1}, requiredExtensions);
-        app->AddScene(CreateTitleScene(app->SceneContext()));
+        app->AddScene(TryCreateTitleScene(app->SceneContext()));
+        app->AddScene(TryCreateControllerModelScene(app->SceneContext()));
         app->Run();
     } catch (const std::exception& ex) {
         sample::Trace("Unhandled Exception: {}\n", ex.what());

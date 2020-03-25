@@ -95,8 +95,8 @@ namespace xr::math {
     namespace detail {
         template <typename X, typename Y>
         constexpr const X& implement_math_cast(const Y& value) {
-            static_assert(std::is_pod<X>::value, "Unsafe to cast between non-POD types.");
-            static_assert(std::is_pod<Y>::value, "Unsafe to cast between non-POD types.");
+            static_assert(std::is_trivially_copyable<X>::value, "Unsafe to cast between non-POD types.");
+            static_assert(std::is_trivially_copyable<Y>::value, "Unsafe to cast between non-POD types.");
             static_assert(!std::is_pointer<X>::value, "Incorrect cast between pointer types.");
             static_assert(!std::is_pointer<Y>::value, "Incorrect cast between pointer types.");
             static_assert(sizeof(X) == sizeof(Y), "Incorrect cast between types with different sizes.");
@@ -105,8 +105,8 @@ namespace xr::math {
 
         template <typename X, typename Y>
         constexpr X& implement_math_cast(Y& value) {
-            static_assert(std::is_pod<X>::value, "Unsafe to cast between non-POD types.");
-            static_assert(std::is_pod<Y>::value, "Unsafe to cast between non-POD types.");
+            static_assert(std::is_trivially_copyable<X>::value, "Unsafe to cast between non-POD types.");
+            static_assert(std::is_trivially_copyable<Y>::value, "Unsafe to cast between non-POD types.");
             static_assert(!std::is_pointer<X>::value, "Incorrect cast between pointer types.");
             static_assert(!std::is_pointer<Y>::value, "Incorrect cast between pointer types.");
             static_assert(sizeof(X) == sizeof(Y), "Incorrect cast between types with different sizes.");

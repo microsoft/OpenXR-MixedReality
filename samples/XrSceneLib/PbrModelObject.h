@@ -41,11 +41,8 @@ private:
     Pbr::FillMode m_fillMode;
 };
 
-std::shared_ptr<PbrModelObject> MakeCube(const Pbr::Resources& pbrResources,
-                                         DirectX::XMFLOAT3 sideLengths,
-                                         Pbr::RGBAColor color,
-                                         float roughness = 1.0f,
-                                         float metallic = 0.0f);
+std::shared_ptr<PbrModelObject> MakeCube(
+    const Pbr::Resources& pbrResources, DirectX::XMFLOAT3 sideLengths, Pbr::RGBAColor color, float roughness = 1.0f, float metallic = 0.0f);
 
 std::shared_ptr<PbrModelObject> MakeQuad(const Pbr::Resources& pbrResources,
                                          DirectX::XMFLOAT2 sideLengths,

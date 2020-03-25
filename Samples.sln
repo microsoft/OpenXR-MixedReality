@@ -34,13 +34,17 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XrUtility", "XrUtility", "{
 		shared\XrUtility\XrActionContext.h = shared\XrUtility\XrActionContext.h
 		shared\XrUtility\XrEnumerate.h = shared\XrUtility\XrEnumerate.h
 		shared\XrUtility\XrError.h = shared\XrUtility\XrError.h
-		shared\XrUtility\XrInstanceContext.h = shared\XrUtility\XrInstanceContext.h
+		shared\XrUtility\XrExtensionContext.h = shared\XrUtility\XrExtensionContext.h
 		shared\XrUtility\XrExtensions.h = shared\XrUtility\XrExtensions.h
 		shared\XrUtility\XrHand.h = shared\XrUtility\XrHand.h
 		shared\XrUtility\XrHandle.h = shared\XrUtility\XrHandle.h
+		shared\XrUtility\XrInstanceContext.h = shared\XrUtility\XrInstanceContext.h
 		shared\XrUtility\XrMath.h = shared\XrUtility\XrMath.h
 		shared\XrUtility\XrStereoView.h = shared\XrUtility\XrStereoView.h
 		shared\XrUtility\XrString.h = shared\XrUtility\XrString.h
+		shared\XrUtility\XrStruct.h = shared\XrUtility\XrStruct.h
+		shared\XrUtility\XrSystemContext.h = shared\XrUtility\XrSystemContext.h
+		shared\XrUtility\XrToString.h = shared\XrUtility\XrToString.h
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "SampleShared_win32", "shared\SampleShared\SampleShared_win32.vcxproj", "{269C12FA-E68D-470B-A734-4701034306BD}"

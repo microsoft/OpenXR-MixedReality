@@ -28,10 +28,10 @@ namespace {
     // It also demos a simple procedural coloring of the hand mesh using the "open palm" reference hand input.
     //
     struct HandTrackingScene : public Scene {
-        HandTrackingScene(SceneContext* sceneContext)
+        HandTrackingScene(SceneContext& sceneContext)
             : Scene(sceneContext) {
-            m_jointMaterial = Pbr::Material::CreateFlat(m_sceneContext->PbrResources, Pbr::RGBA::White, 0.85f, 0.01f);
-            m_meshMaterial = Pbr::Material::CreateFlat(m_sceneContext->PbrResources, Pbr::RGBA::White, 1, 0);
+            m_jointMaterial = Pbr::Material::CreateFlat(m_sceneContext.PbrResources, Pbr::RGBA::White, 0.85f, 0.01f);
+            m_meshMaterial = Pbr::Material::CreateFlat(m_sceneContext.PbrResources, Pbr::RGBA::White, 1, 0);
 
             auto createJointObjects = [&](HandData& handData) {
                 auto jointModel = std::make_shared<Pbr::Model>();
@@ -46,8 +46,8 @@ namespace {
                     jointCreateInfo.poseInJointSpace = xr::math::Pose::Identity();
 
                     JointData& jointData = handData.JointData[xr::JointToIndex(joint)];
-                    CHECK_XRCMD(m_sceneContext->Extensions.xrCreateHandJointSpaceMSFT(
-                        m_sceneContext->Session, &jointCreateInfo, jointData.JointSpace.Put()));
+                    CHECK_XRCMD(m_sceneContext.Extensions.xrCreateHandJointSpaceMSFT(
+                        m_sceneContext.Session, &jointCreateInfo, jointData.JointSpace.Put()));
 
                     // Create a axis object attached to each joint space
                     jointData.NodeIndex = jointModel->AddNode(DirectX::XMMatrixIdentity(), Pbr::RootNodeIndex, "joint");
@@ -56,7 +56,7 @@ namespace {
 
                 // Now that the axis have been added for each joint into the primitive builder,
                 // it can be baked into the model as a single primitive.
-                jointModel->AddPrimitive(Pbr::Primitive(m_sceneContext->PbrResources, primitiveBuilder, m_jointMaterial));
+                jointModel->AddPrimitive(Pbr::Primitive(m_sceneContext.PbrResources, primitiveBuilder, m_jointMaterial));
                 handData.JointModel = AddSceneObject(std::make_shared<PbrModelObject>(std::move(jointModel)));
                 handData.JointModel->SetVisible(false);
             };
@@ -67,13 +67,13 @@ namespace {
             for (const auto& [hand, handData] : hands) {
                 XrHandTrackerCreateInfoMSFT createInfo{XR_TYPE_HAND_TRACKER_CREATE_INFO_MSFT};
                 createInfo.hand = hand;
-                CHECK_XRCMD(m_sceneContext->Extensions.xrCreateHandTrackerMSFT(
-                    m_sceneContext->Session, &createInfo, handData.TrackerHandle.Put(m_sceneContext->Extensions.xrDestroyHandTrackerMSFT)));
+                CHECK_XRCMD(m_sceneContext.Extensions.xrCreateHandTrackerMSFT(
+                    m_sceneContext.Session, &createInfo, handData.TrackerHandle.Put(m_sceneContext.Extensions.xrDestroyHandTrackerMSFT)));
 
                 createJointObjects(handData);
 
                 // Pre-allocate buffers for hand mesh indices and vertices
-                const XrSystemHandTrackingMeshPropertiesMSFT& handMeshSystemProperties = sceneContext->System.HandMeshSystemProperties;
+                const XrSystemHandTrackingMeshPropertiesMSFT& handMeshSystemProperties = sceneContext.System.HandMeshProperties;
                 handData.IndexBuffer = std::make_unique<uint32_t[]>(handMeshSystemProperties.maxHandMeshIndexCount);
                 handData.VertexBuffer = std::make_unique<XrHandMeshVertexMSFT[]>(handMeshSystemProperties.maxHandMeshVertexCount);
 
@@ -86,12 +86,12 @@ namespace {
                 meshSpaceCreateInfo.handTracker = handData.TrackerHandle.Get();
                 meshSpaceCreateInfo.poseInHandMeshSpace = xr::math::Pose::Identity();
                 meshSpaceCreateInfo.handPoseType = XR_HAND_POSE_TYPE_TRACKED_MSFT;
-                CHECK_XRCMD(m_sceneContext->Extensions.xrCreateHandMeshSpaceMSFT(
-                    m_sceneContext->Session, &meshSpaceCreateInfo, handData.MeshSpace.Put()));
+                CHECK_XRCMD(m_sceneContext.Extensions.xrCreateHandMeshSpaceMSFT(
+                    m_sceneContext.Session, &meshSpaceCreateInfo, handData.MeshSpace.Put()));
 
                 meshSpaceCreateInfo.handPoseType = XR_HAND_POSE_TYPE_REFERENCE_OPEN_PALM_MSFT;
-                CHECK_XRCMD(m_sceneContext->Extensions.xrCreateHandMeshSpaceMSFT(
-                    m_sceneContext->Session, &meshSpaceCreateInfo, handData.ReferenceMeshSpace.Put()));
+                CHECK_XRCMD(m_sceneContext.Extensions.xrCreateHandMeshSpaceMSFT(
+                    m_sceneContext.Session, &meshSpaceCreateInfo, handData.ReferenceMeshSpace.Put()));
             }
 
             // Set a clap detector that will toggle the display mode.
@@ -111,7 +111,7 @@ namespace {
                 bool meshVisible = m_mode == HandDisplayMode::Mesh;
 
                 XrHandTrackerStateMSFT handTrackerState{XR_TYPE_HAND_TRACKER_STATE_MSFT};
-                CHECK_XRCMD(m_sceneContext->Extensions.xrGetHandTrackerStateMSFT(
+                CHECK_XRCMD(m_sceneContext.Extensions.xrGetHandTrackerStateMSFT(
                     handData.TrackerHandle.Get(), frameTime.PredictedDisplayTime, &handTrackerState));
 
                 if (!handTrackerState.isActive) {
@@ -120,11 +120,11 @@ namespace {
                 }
 
                 if (jointsVisible) {
-                    jointsVisible = UpdateJoints(handData, m_sceneContext->SceneSpace, frameTime.PredictedDisplayTime);
+                    jointsVisible = UpdateJoints(handData, m_sceneContext.SceneSpace, frameTime.PredictedDisplayTime);
                 }
 
                 if (meshVisible) {
-                    meshVisible = UpdateMesh(handData, m_sceneContext->SceneSpace, frameTime.PredictedDisplayTime);
+                    meshVisible = UpdateMesh(handData, m_sceneContext.SceneSpace, frameTime.PredictedDisplayTime);
                 }
 
                 handData.JointModel->SetVisible(jointsVisible);
@@ -181,8 +181,7 @@ namespace {
             XrHandMeshUpdateInfoMSFT meshUpdateInfo{XR_TYPE_HAND_MESH_UPDATE_INFO_MSFT};
             meshUpdateInfo.time = time;
             meshUpdateInfo.handPoseType = XR_HAND_POSE_TYPE_TRACKED_MSFT;
-            CHECK_XRCMD(
-                m_sceneContext->Extensions.xrUpdateHandMeshMSFT(handData.TrackerHandle.Get(), &meshUpdateInfo, &handData.meshState));
+            CHECK_XRCMD(m_sceneContext.Extensions.xrUpdateHandMeshMSFT(handData.TrackerHandle.Get(), &meshUpdateInfo, &handData.meshState));
 
             if (!handData.meshState.isActive) {
                 return false;
@@ -205,8 +204,7 @@ namespace {
 
                 if (!handData.MeshSceneObject) {
                     // The hand mesh scene object doesn't exist yet and must be created.
-                    Pbr::Primitive surfacePrimitive(
-                        m_sceneContext->PbrResources, meshBuilder, m_meshMaterial, false /* updatableBuffers */);
+                    Pbr::Primitive surfacePrimitive(m_sceneContext.PbrResources, meshBuilder, m_meshMaterial, false /* updatableBuffers */);
 
                     auto surfaceModel = std::make_shared<Pbr::Model>();
                     surfaceModel->AddPrimitive(std::move(surfacePrimitive));
@@ -215,7 +213,7 @@ namespace {
                 } else {
                     // Update vertices and indices of the existing hand mesh scene object's primitive.
                     handData.MeshSceneObject->GetModel()->GetPrimitive(0).UpdateBuffers(
-                        m_sceneContext->Device.get(), m_sceneContext->DeviceContext.get(), meshBuilder);
+                        m_sceneContext.Device.get(), m_sceneContext.DeviceContext.get(), meshBuilder);
                 }
             }
 
@@ -249,7 +247,7 @@ namespace {
                 createInfo.joint = joint;
 
                 xr::SpaceHandle jointSpace;
-                CHECK_XRCMD(m_sceneContext->Extensions.xrCreateHandJointSpaceMSFT(m_sceneContext->Session, &createInfo, jointSpace.Put()));
+                CHECK_XRCMD(m_sceneContext.Extensions.xrCreateHandJointSpaceMSFT(m_sceneContext.Session, &createInfo, jointSpace.Put()));
 
                 XrSpaceLocation jointLocation{XR_TYPE_SPACE_LOCATION};
                 CHECK_XRCMD(xrLocateSpace(jointSpace.Get(), handData.ReferenceMeshSpace.Get(), time, &jointLocation));
@@ -360,12 +358,12 @@ namespace {
     };
 } // namespace
 
-std::unique_ptr<Scene> CreateHandTrackingScene(SceneContext* sceneContext) {
-    if (!sceneContext->Extensions.SupportsHandJointTracking || !sceneContext->System.HandTrackingSystemProperties.supportsHandTracking) {
+std::unique_ptr<Scene> TryCreateHandTrackingScene(SceneContext& sceneContext) {
+    if (!sceneContext.Extensions.SupportsHandJointTracking || !sceneContext.System.HandTrackingProperties.supportsHandTracking) {
         return nullptr;
     }
 
-    if (!sceneContext->Extensions.SupportsHandMeshTracking || !sceneContext->System.HandMeshSystemProperties.supportsHandTrackingMesh) {
+    if (!sceneContext.Extensions.SupportsHandMeshTracking || !sceneContext.System.HandMeshProperties.supportsHandTrackingMesh) {
         return nullptr;
     }
 
