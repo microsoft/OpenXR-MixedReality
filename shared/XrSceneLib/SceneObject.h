@@ -18,22 +18,15 @@
 #include <XrUtility/XrMath.h>
 #include "SceneContext.h"
 #include "FrameTime.h"
+#include "ObjectMotion.h"
 
 enum class SceneObjectState { InitializePending, Initialized, RemovePending };
-
-struct PhysicsData {
-    bool Enabled{false};
-    DirectX::XMFLOAT3 LinearVelocity{0, 0, 0};
-    DirectX::XMFLOAT3 LinearAcceleration{0, -9.8f, 0};
-    DirectX::XMFLOAT3 AngularVelocity{0, 0, 0};
-    DirectX::XMFLOAT3 AngularAcceleration{0, 0, 0};
-};
 
 class SceneObject {
 public:
     virtual ~SceneObject() = default;
     SceneObjectState State;
-    PhysicsData Physics;
+    Motion Motion;
 
 public:
     void SetParent(std::shared_ptr<SceneObject> parent) {
@@ -44,11 +37,7 @@ public:
         m_isVisible = visible;
     }
     bool IsVisible() const {
-        return (m_parent ? m_parent->IsVisible() : true) && m_isVisible;
-    }
-
-    bool IsRenderable() const {
-        return State == SceneObjectState::Initialized && IsVisible();
+        return State == SceneObjectState::Initialized && m_isVisible && (m_parent ? m_parent->IsVisible() : true);
     }
 
     const XrPosef& Pose() const {
@@ -74,9 +63,6 @@ public:
     virtual void Render(SceneContext& sceneContext) const;
 
 private:
-    void ApplyRigidbodyPhysics(std::chrono::duration<float> duration);
-
-private:
     bool m_isVisible{true};
 
     XrPosef m_pose = xr::math::Pose::Identity();
@@ -89,3 +75,7 @@ private:
     mutable DirectX::XMFLOAT4X4 m_localTransform;
     mutable bool m_localTransformDirty{true};
 };
+
+inline std::shared_ptr<SceneObject> CreateSceneObject() {
+    return std::make_shared<SceneObject>();
+}

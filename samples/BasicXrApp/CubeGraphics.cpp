@@ -227,7 +227,7 @@ namespace {
             m_deviceContext->VSSetShader(m_vertexShader.get(), nullptr, 0);
             m_deviceContext->PSSetShader(m_pixelShader.get(), nullptr, 0);
 
-            CubeShader::ViewProjectionConstantBuffer viewProjectionCBufferData;
+            CubeShader::ViewProjectionConstantBuffer viewProjectionCBufferData{};
 
             for (uint32_t k = 0; k < viewInstanceCount; k++) {
                 const DirectX::XMMATRIX spaceToView = xr::math::LoadInvertedXrPose(viewProjections[k].Pose);

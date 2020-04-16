@@ -18,20 +18,21 @@
 #include <winrt/base.h> // winrt::com_ptr
 #include <d3dcommon.h>  //ID3DBlob
 #include <XrUtility/XrHandle.h>
+#include <XrUtility/XrExtensionContext.h>
 
 namespace sample::dx {
 
     winrt::com_ptr<IDXGIAdapter1> GetAdapter(LUID adapterId);
 
-    void CreateD3D11DeviceAndContext(IDXGIAdapter1* adapter,
-                                     const std::vector<D3D_FEATURE_LEVEL>& featureLevels,
-                                     bool singleThreaded,
-                                     ID3D11Device** device,
-                                     ID3D11DeviceContext** deviceContext);
+    std::tuple<winrt::com_ptr<ID3D11Device>, winrt::com_ptr<ID3D11DeviceContext>> CreateD3D11DeviceAndContext(
+        IDXGIAdapter1* adapter, const std::vector<D3D_FEATURE_LEVEL>& featureLevels, bool singleThreadedD3D11Device);
 
-    bool IsSRGBFormat(DXGI_FORMAT format);
-
-    winrt::com_ptr<ID3DBlob> CompileShader(const char* hlsl, const char* entrypoint, const char* shaderTarget);
+    std::tuple<XrGraphicsBindingD3D11KHR, winrt::com_ptr<ID3D11Device>, winrt::com_ptr<ID3D11DeviceContext>>
+    CreateD3D11Binding(XrInstance instance,
+                       XrSystemId systemId,
+                       const xr::ExtensionContext& extensions,
+                       bool singleThreadedD3D11Device,
+                       const std::vector<D3D_FEATURE_LEVEL>& appSupportedFeatureLevels);
 
     struct SwapchainD3D11 {
         xr::SwapchainHandle Handle;

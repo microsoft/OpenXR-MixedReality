@@ -346,11 +346,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="brdf_lut.png">
-      <DeploymentContent>true</DeploymentContent>
-    </Image>
-  </ItemGroup>
-  <ItemGroup>
     <None Include="Shaders\Shared.hlsl">
       <FileType>Document</FileType>
       <ShaderModel>5.0</ShaderModel>
@@ -410,6 +405,9 @@
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="brdf_lut.png" DestinationFolder="$(OutDir)" SkipUnchangedFiles="True" />
+  </Target>
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
 </Project>

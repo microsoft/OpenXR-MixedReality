@@ -37,30 +37,36 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{56F1C3F4-8AB3-4518-9671-AA4219F56167}</ProjectGuid>
-    <Keyword>StaticLibrary</Keyword>
-    <RootNamespace>XrSceneLib_uwp</RootNamespace>
+    <ProjectGuid>{A4D2019B-622D-49B9-9510-16877979807A}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <RootNamespace>EyeGazeInteractionUwp</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
+    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-    <ProjectName>XrSceneLib_uwp</ProjectName>
+    <EnableDotNetNativeCompatibleProfile>true</EnableDotNetNativeCompatibleProfile>
+    <PackageCertificateThumbprint>0071016DCE22933BB0F19305D78E0794B55121C8</PackageCertificateThumbprint>
+    <PackageCertificateKeyFile>TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
-    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <!-- PREfast builds only compile code, not link them. Set the uwp projects to static lib to skip package generation problems. -->
+    <ConfigurationType Condition="'$(LinkCompiled)'!='false'">Application</ConfigurationType>
+    <ConfigurationType Condition="'$(LinkCompiled)'=='false'">StaticLibrary</ConfigurationType>
     <PlatformToolset>v142</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
     <UseDebugLibraries>true</UseDebugLibraries>
+    <LinkIncremental>true</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
     <SpectreMitigation>false</SpectreMitigation>
+    <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -70,19 +76,20 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
-  <PropertyGroup Label="UserMacros" />
-  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
-    <LinkIncremental>true</LinkIncremental>
+  <PropertyGroup>
+    <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)'=='Release'">
-    <LinkIncremental>false</LinkIncremental>
+  <PropertyGroup>
+    <!-- Enable generating msix package in local build -->
+    <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_LIB;UWP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;%(PreprocessorDefinitions);UWP</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -94,6 +101,7 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <AdditionalDependencies>OneCore.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
@@ -119,44 +127,30 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="PbrModelObject.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="QuadLayerObject.h" />
-    <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneObject.h" />
-    <ClInclude Include="App.h" />
-    <ClInclude Include="CompositionLayers.h" />
-    <ClInclude Include="ProjectionLayer.h" />
-    <ClInclude Include="FrameTime.h" />
-    <ClInclude Include="SceneContext.h" />
-    <ClInclude Include="TextTexture.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="PbrModelObject.cpp" />
+    <ClCompile Include="Main.cpp" />
+    <ClCompile Include="Scene_EyeGazeInteraction.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
-    <ClCompile Include="QuadLayerObject.cpp" />
-    <ClCompile Include="SceneObject.cpp" />
-    <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="App.cpp" />
-    <ClCompile Include="ProjectionLayer.cpp" />
-    <ClCompile Include="TextTexture.cpp" />
-    <ClCompile Include="Scene_Title.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SharedPath)\gltf\Gltf_uwp.vcxproj">
-      <Project>{63475578-0c83-4b2f-9ac5-a4513de2907f}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SharedPath)\pbr\pbr_uwp.vcxproj">
-      <Project>{334e53b6-28dc-4f46-a7d9-ccec681f4feb}</Project>
-    </ProjectReference>
-    <ProjectReference Include="$(SharedPath)\SampleShared\SampleShared_uwp.vcxproj">
-      <Project>{7a3653fd-90a8-4627-9185-f3eefa539f49}</Project>
-    </ProjectReference>
+    <None Include="TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <AppxManifest Include="Package.appxmanifest" Condition="'$(LinkCompiled)'!='false'">
+      <SubType>Designer</SubType>
+    </AppxManifest>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="$(SharedPath)\XrSceneLib\XrSceneLib_uwp.vcxproj">
+      <Project>{56f1c3f4-8ab3-4518-9671-aa4219f56167}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
@@ -170,4 +164,3 @@
     <Error Condition="!Exists('..\..\packages\OpenXR.Loader.1.0.6.2\build\native\OpenXR.Loader.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenXR.Loader.1.0.6.2\build\native\OpenXR.Loader.targets'))" />
   </Target>
 </Project>
-

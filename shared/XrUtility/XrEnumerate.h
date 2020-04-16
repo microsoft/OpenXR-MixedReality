@@ -20,6 +20,11 @@
 #include "XrError.h"
 
 namespace xr {
+    template <typename TArray, typename TValue>
+    inline bool Contains(const TArray& array, const TValue& value) {
+        return std::end(array) != std::find(std::begin(array), std::end(array), value);
+    }
+
     inline std::vector<XrExtensionProperties> EnumerateInstanceExtensionProperties(const char* layerName = nullptr) {
         uint32_t extensionCount;
         CHECK_XRCMD(xrEnumerateInstanceExtensionProperties(layerName, 0, &extensionCount, nullptr));
@@ -88,8 +93,9 @@ namespace xr {
     }
 
     // Pick the first supported swapchain format from runtime's supported format list.
-    inline DXGI_FORMAT PickSwapchainFormat(const std::vector<int64_t>& systemSupportedFormats,
-                                           const std::vector<DXGI_FORMAT>& appSupportedFormats) {
+    template <typename TSystemPixelFormat, typename TAppPixelFormat>
+    inline TAppPixelFormat PickSwapchainFormat(const std::vector<TSystemPixelFormat>& systemSupportedFormats,
+                                               const std::vector<TAppPixelFormat>& appSupportedFormats) {
         // Here we prioritize Runtime format preference over App format preference
         auto swapchainFormatIt = std::find_first_of(
             systemSupportedFormats.begin(), systemSupportedFormats.end(), appSupportedFormats.begin(), appSupportedFormats.end());

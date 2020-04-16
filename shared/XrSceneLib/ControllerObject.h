@@ -16,21 +16,5 @@
 #pragma once
 
 #include "SceneObject.h"
-#include "SceneContext.h"
 
-enum class LayerGrouping {
-    Underlay, // Behind all projection layers
-    Overlay   // In front of all projection layers
-};
-
-struct QuadLayerObject : public SceneObject {
-    XrSwapchainSubImage Image;
-
-    XrSpace Space{XR_NULL_HANDLE};
-    XrCompositionLayerFlags CompositionLayerFlags{};
-    XrEyeVisibility EyeVisibility{XR_EYE_VISIBILITY_BOTH};
-    LayerGrouping LayerGroup = LayerGrouping::Overlay;
-};
-
-std::shared_ptr<QuadLayerObject> MakeQuadLayerObject(XrSpace space, XrSwapchainSubImage image);
-
+std::shared_ptr<SceneObject> CreateControllerObject(SceneContext& sceneContext, XrAction gripPoseAction, XrPath controllerUserPath);

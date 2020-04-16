@@ -76,8 +76,11 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup>
-    <IncludePath>$(SharedPath);$(SharedPath)\ext;$(OpenXrSdkPath)\include;$(IntDir)\CompiledShaders;$(ProjectDir)..\XrSceneLib;$(IncludePath);</IncludePath>
     <AppxPackageSigningEnabled>True</AppxPackageSigningEnabled>
+  </PropertyGroup>
+  <PropertyGroup>
+    <!-- Enable generating msix package in local build -->
+    <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -139,23 +142,12 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(SharedPath)\pbr\brdf_lut.png">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="$(SharedPath)\SampleShared\Sample_DiffuseHDR.dds">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-    <None Include="$(SharedPath)\SampleShared\Sample_SpecularHDR.dds">
-      <DeploymentContent>true</DeploymentContent>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <AppxManifest Include="Package.appxmanifest" Condition="'$(LinkCompiled)'!='false'">
       <SubType>Designer</SubType>
     </AppxManifest>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\XrSceneLib\XrSceneLib_uwp.vcxproj">
+    <ProjectReference Include="$(SharedPath)\XrSceneLib\XrSceneLib_uwp.vcxproj">
       <Project>{56f1c3f4-8ab3-4518-9671-aa4219f56167}</Project>
     </ProjectReference>
   </ItemGroup>

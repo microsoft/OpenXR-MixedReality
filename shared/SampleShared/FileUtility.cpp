@@ -18,8 +18,9 @@
 #include "DirectXTK/DDSTextureLoader.h"
 #include <pbr/GltfLoader.h>
 #include <pbr/PbrModel.h>
-#include <DirectXMath.h>
 #include <fstream>
+#include <XrUtility/XrString.h>
+#include "Trace.h"
 
 #define FMT_HEADER_ONLY
 #include <fmt/format.h>
@@ -45,12 +46,12 @@ namespace sample {
         }
     }
 
-    std::filesystem::path GetPathInAppFolder(const std::filesystem::path& filename) {
+    std::filesystem::path GetAppFolder() {
         HMODULE thisModule;
 #ifdef UWP
         thisModule = nullptr;
 #else
-        if (!::GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCWSTR>(GetPathInAppFolder), &thisModule)) {
+        if (!::GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS, reinterpret_cast<LPCWSTR>(GetAppFolder), &thisModule)) {
             throw std::runtime_error("Unable to get the module handle.");
         }
 #endif
@@ -58,7 +59,37 @@ namespace sample {
         wchar_t moduleFilename[MAX_PATH];
         ::GetModuleFileName(thisModule, moduleFilename, (DWORD)std::size(moduleFilename));
         std::filesystem::path fullPath(moduleFilename);
-        return fullPath.replace_filename(filename);
+        return fullPath.remove_filename();
+    }
+
+    std::filesystem::path GetPathInAppFolder(const std::filesystem::path& filename) {
+        return GetAppFolder() / filename;
+    }
+
+    std::filesystem::path FindFileInAppFolder(const std::filesystem::path& filename,
+                                              const std::vector<std::filesystem::path>& searchFolders) {
+        auto appFolder = GetAppFolder();
+        for (auto folder : searchFolders) {
+            auto path = appFolder / folder / filename;
+            if (std::filesystem::exists(path)) {
+                return path;
+            }
+        }
+
+        sample::Trace(fmt::format("File \"{}\" is not found in app folder \"{}\" and search folders{}",
+                                    xr::wide_to_utf8(filename.c_str()),
+                                    xr::wide_to_utf8(appFolder.c_str()),
+                                    [&searchFolders]() -> std::string {
+                                        fmt::memory_buffer buffer;
+                                        for (auto& folder : searchFolders) {
+                                            fmt::format_to(buffer, " \"{}\"", xr::wide_to_utf8(folder.c_str()));
+                                        }
+                                        return buffer.data();
+                                    }())
+                            .c_str());
+
+        assert(false && "The file should be embeded in app folder in debug build.");
+        return "";
     }
 
     Pbr::Resources InitializePbrResources(ID3D11Device* device, bool environmentIBL) {
@@ -68,7 +99,7 @@ namespace sample {
         pbrResources.SetLight({0.0f, 0.7071067811865475f, 0.7071067811865475f}, Pbr::RGB::White);
 
         // Read the BRDF Lookup Table used by the PBR system into a DirectX texture.
-        std::vector<byte> brdfLutFileData = ReadFileBytes(GetPathInAppFolder(L"brdf_lut.png"));
+        std::vector<byte> brdfLutFileData = ReadFileBytes(FindFileInAppFolder(L"brdf_lut.png", {"", L"Pbr_uwp"}));
         winrt::com_ptr<ID3D11ShaderResourceView> brdLutResourceView =
             Pbr::Texture::LoadTextureImage(device, brdfLutFileData.data(), (uint32_t)brdfLutFileData.size());
         pbrResources.SetBrdfLut(brdLutResourceView.get());
@@ -77,10 +108,14 @@ namespace sample {
         winrt::com_ptr<ID3D11ShaderResourceView> specularTextureView;
 
         if (environmentIBL) {
-            CHECK_HRCMD(DirectX::CreateDDSTextureFromFile(
-                device, GetPathInAppFolder(L"Sample_DiffuseHDR.DDS").c_str(), nullptr, diffuseTextureView.put()));
-            CHECK_HRCMD(DirectX::CreateDDSTextureFromFile(
-                device, GetPathInAppFolder(L"Sample_SpecularHDR.DDS").c_str(), nullptr, specularTextureView.put()));
+            CHECK_HRCMD(DirectX::CreateDDSTextureFromFile(device,
+                                                          FindFileInAppFolder(L"Sample_DiffuseHDR.DDS", {"", "SampleShared_uwp"}).c_str(),
+                                                          nullptr,
+                                                          diffuseTextureView.put()));
+            CHECK_HRCMD(DirectX::CreateDDSTextureFromFile(device,
+                                                          FindFileInAppFolder(L"Sample_SpecularHDR.DDS", {"", "SampleShared_uwp"}).c_str(),
+                                                          nullptr,
+                                                          specularTextureView.put()));
         } else {
             diffuseTextureView = Pbr::Texture::CreateFlatCubeTexture(device, Pbr::RGBA::White);
             specularTextureView = Pbr::Texture::CreateFlatCubeTexture(device, Pbr::RGBA::White);
@@ -89,14 +124,6 @@ namespace sample {
         pbrResources.SetEnvironmentMap(specularTextureView.get(), diffuseTextureView.get());
 
         return pbrResources;
-    }
-
-    std::shared_ptr<Pbr::Model> LoadPbrModelBinary(const std::filesystem::path& filePath, const Pbr::Resources& resources) {
-        std::vector<byte> fileData = ReadFileBytes(GetPathInAppFolder(filePath));
-
-        std::shared_ptr<Pbr::Model> pbrModel = Gltf::FromGltfBinary(resources, fileData.data(), (uint32_t)fileData.size());
-
-        return pbrModel;
     }
 
 } // namespace sample

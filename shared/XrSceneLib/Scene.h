@@ -15,18 +15,19 @@
 //*********************************************************
 #pragma once
 
+#include <XrUtility/XrActionContext.h>
+
+#include "FrameTime.h"
 #include "SceneContext.h"
 #include "SceneObject.h"
 #include "QuadLayerObject.h"
 
-#include <optional>
-
 struct Scene {
     virtual ~Scene() = default;
-    explicit Scene(SceneContext* sceneContext);
+    explicit Scene(SceneContext& sceneContext);
 
     void Update(const FrameTime& frameTime);
-    void Render(const FrameTime& frameTime) const;
+    void Render(const FrameTime& frameTime);
 
     // Active is true when the scene participates update and render loop.
     bool IsActive() const {
@@ -76,8 +77,12 @@ struct Scene {
     }
 #pragma endregion
 
+    xr::ActionContext& ActionContext() {
+        return m_actionContext;
+    }
+
 protected:
-    SceneContext* const m_sceneContext;
+    SceneContext& m_sceneContext;
 
     virtual void OnUpdate(const FrameTime& frameTime [[maybe_unused]]) {
     }
@@ -87,6 +92,8 @@ protected:
     }
 
 private:
+    xr::ActionContext m_actionContext;
+
     std::atomic<bool> m_isActive{true};
 
     std::vector<std::shared_ptr<SceneObject>> m_sceneObjects;

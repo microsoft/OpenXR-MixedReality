@@ -37,11 +37,16 @@
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>15.0</VCProjectVersion>
-    <ProjectGuid>{A758AF22-F54F-4C74-BF85-05A377B5892E}</ProjectGuid>
-    <Keyword>Win32Proj</Keyword>
-    <RootNamespace>XrSceneLib_win32</RootNamespace>
+    <ProjectGuid>{56F1C3F4-8AB3-4518-9671-AA4219F56167}</ProjectGuid>
+    <Keyword>StaticLibrary</Keyword>
+    <RootNamespace>XrSceneLib_uwp</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
-    <ProjectName>XrSceneLib_win32</ProjectName>
+    <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
+    <ProjectName>XrSceneLib_uwp</ProjectName>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Label="Configuration">
@@ -55,6 +60,7 @@
   <PropertyGroup Condition="'$(Configuration)'=='Release'" Label="Configuration">
     <UseDebugLibraries>false</UseDebugLibraries>
     <WholeProgramOptimization>true</WholeProgramOptimization>
+    <SpectreMitigation>false</SpectreMitigation>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
   <ImportGroup Label="ExtensionSettings">
@@ -76,7 +82,7 @@
       <PrecompiledHeader>Use</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_LIB;UWP;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <LanguageStandard>stdcpp17</LanguageStandard>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -88,13 +94,13 @@
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
-      <AdditionalDependencies>dxgi.lib;d3d11.lib;d2d1.lib;dwrite.lib;RuntimeObject.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)'=='Debug'">
     <ClCompile>
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
     </Link>
@@ -105,6 +111,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
     </ClCompile>
     <Link>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
@@ -112,21 +119,24 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="TextTexture.h" />
+    <ClInclude Include="ControllerObject.h" />
     <ClInclude Include="PbrModelObject.h" />
     <ClInclude Include="pch.h" />
-    <ClInclude Include="CompositionLayers.h" />
-    <ClInclude Include="ProjectionLayer.h" />
     <ClInclude Include="QuadLayerObject.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneObject.h" />
-    <ClInclude Include="App.h" />
+    <ClInclude Include="XrApp.h" />
+    <ClInclude Include="CompositionLayers.h" />
+    <ClInclude Include="ProjectionLayer.h" />
     <ClInclude Include="FrameTime.h" />
     <ClInclude Include="SceneContext.h" />
+    <ClInclude Include="SpaceObject.h" />
+    <ClInclude Include="TextTexture.h" />
+    <ClInclude Include="ObjectMotion.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TextTexture.cpp" />
-    <ClCompile Include="ProjectionLayer.cpp" />
+    <ClCompile Include="ControllerObject.cpp" />
+    <ClCompile Include="ObjectMotion.cpp" />
     <ClCompile Include="PbrModelObject.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -134,18 +144,21 @@
     <ClCompile Include="QuadLayerObject.cpp" />
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="App.cpp" />
+    <ClCompile Include="XrApp.cpp" />
+    <ClCompile Include="ProjectionLayer.cpp" />
+    <ClCompile Include="SpaceObject.cpp" />
+    <ClCompile Include="TextTexture.cpp" />
     <ClCompile Include="Scene_Title.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SharedPath)\gltf\Gltf_win32.vcxproj">
-      <Project>{6a3225a3-0750-47b7-8004-80ca543f8b8b}</Project>
+    <ProjectReference Include="$(SharedPath)\gltf\Gltf_uwp.vcxproj">
+      <Project>{63475578-0c83-4b2f-9ac5-a4513de2907f}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SharedPath)\pbr\pbr_win32.vcxproj">
-      <Project>{2b7688f8-9ae6-4a67-809b-1bac82094f21}</Project>
+    <ProjectReference Include="$(SharedPath)\pbr\pbr_uwp.vcxproj">
+      <Project>{334e53b6-28dc-4f46-a7d9-ccec681f4feb}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SharedPath)\SampleShared\SampleShared_win32.vcxproj">
-      <Project>{269c12fa-e68d-470b-a734-4701034306bd}</Project>
+    <ProjectReference Include="$(SharedPath)\SampleShared\SampleShared_uwp.vcxproj">
+      <Project>{7a3653fd-90a8-4627-9185-f3eefa539f49}</Project>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

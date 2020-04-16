@@ -14,17 +14,17 @@
 //
 //*********************************************************
 #include "pch.h"
-#include "pbr/PbrMaterial.h"
+#include <pbr/PbrMaterial.h>
 #include "TextTexture.h"
 
 namespace {
     constexpr DXGI_FORMAT TextFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
 }
 
-TextTexture::TextTexture(SceneContext* sceneContext, TextTextureInfo textInfo)
+TextTexture::TextTexture(SceneContext& sceneContext, TextTextureInfo textInfo)
     : m_textInfo(std::move(textInfo)) {
-    const winrt::com_ptr<ID3D11Device> device = sceneContext->Device;
-    const winrt::com_ptr<ID3D11DeviceContext> context = sceneContext->DeviceContext;
+    const winrt::com_ptr<ID3D11Device> device = sceneContext.Device;
+    const winrt::com_ptr<ID3D11DeviceContext> context = sceneContext.DeviceContext;
 
     D2D1_FACTORY_OPTIONS options{};
     CHECK_HRCMD(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, winrt::guid_of<ID2D1Factory2>(), &options, m_d2dFactory.put_void()));

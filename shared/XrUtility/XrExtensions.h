@@ -28,6 +28,9 @@
     _(xrConvertWin32PerformanceCounterToTimeKHR) \
     _(xrCreateSpaceFromSpatialGraphNodeMSFT)     \
     _(xrGetD3D11GraphicsRequirementsKHR)         \
+    _(xrLoadControllerModelMSFT)                 \
+    _(xrGetControllerModelPropertiesMSFT)        \
+    _(xrGetControllerModelStateMSFT)             \
     _(xrGetVisibilityMaskKHR)
 
 #define GET_INSTANCE_PROC_ADDRESS(name) \

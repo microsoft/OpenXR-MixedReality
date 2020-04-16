@@ -26,4 +26,9 @@ namespace Gltf
         const Pbr::Resources& pbrResources,
         _In_reads_bytes_(bufferBytes) const uint8_t* buffer,
         uint32_t bufferBytes);
+
+    template<typename Container>
+    std::shared_ptr<Pbr::Model> FromGltfBinary(const Pbr::Resources& pbrResources, const Container& buffer) {
+        return FromGltfBinary(pbrResources, buffer.data(), static_cast<uint32_t>(buffer.size()));
+    }
 }

@@ -15,6 +15,8 @@
 //*********************************************************
 #pragma once
 
+#include <memory>
+#include <stdexcept>
 #include "XrToString.h"
 
 #define CHECK_XRCMD(cmd) xr::detail::_CheckXrResult(cmd, #cmd, FILE_AND_LINE)

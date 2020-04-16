@@ -330,6 +330,9 @@
     <ClInclude Include="DirectXTK\PlatformHelpers.h" />
     <ClInclude Include="DxUtility.h" />
     <ClInclude Include="FileUtility.h" />
+    <ClInclude Include="Guid.h" />
+    <ClInclude Include="ScopeGuard.h" />
+    <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="Trace.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
@@ -348,6 +351,10 @@
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\packages\OpenXR.Loader.1.0.6.2\build\native\OpenXR.Loader.targets" Condition="Exists('..\..\packages\OpenXR.Loader.1.0.6.2\build\native\OpenXR.Loader.targets')" />
   </ImportGroup>
+  <Target Name="AfterBuild">
+    <Copy SourceFiles="Sample_SpecularHDR.dds" DestinationFolder="$(OutDir)" SkipUnchangedFiles="True" />
+    <Copy SourceFiles="Sample_DiffuseHDR.dds" DestinationFolder="$(OutDir)" SkipUnchangedFiles="True" />
+  </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>

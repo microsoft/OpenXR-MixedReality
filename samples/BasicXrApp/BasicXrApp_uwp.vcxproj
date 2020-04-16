@@ -79,6 +79,10 @@
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <!-- Enable generating msix package in local build -->
+    <GenerateAppxPackageOnBuild>true</GenerateAppxPackageOnBuild>
+  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -145,7 +149,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <AppxManifest Include="Package.appxmanifest">
+    <AppxManifest Include="Package.appxmanifest" Condition="'$(LinkCompiled)'!='false'">
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="TemporaryKey.pfx" />

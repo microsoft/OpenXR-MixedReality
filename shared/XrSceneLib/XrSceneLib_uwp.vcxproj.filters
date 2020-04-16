@@ -1,8 +1,8 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="App.cpp" />
+    <ClCompile Include="XrApp.cpp" />
     <ClCompile Include="PbrModelObject.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
@@ -24,11 +24,23 @@
     <ClCompile Include="QuadLayerObject.cpp">
       <Filter>Layers</Filter>
     </ClCompile>
+    <ClCompile Include="ControllerObject.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="SpaceObject.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectMotion.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="App.h" />
+    <ClInclude Include="XrApp.h" />
     <ClInclude Include="PbrModelObject.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="SceneObject.h">
       <Filter>Objects</Filter>
     </ClInclude>
     <ClInclude Include="FrameTime.h">
@@ -37,16 +49,13 @@
     <ClInclude Include="SceneContext.h">
       <Filter>Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="SceneObject.h">
-      <Filter>Objects</Filter>
-    </ClInclude>
     <ClInclude Include="TextTexture.h">
       <Filter>Objects</Filter>
     </ClInclude>
-    <ClInclude Include="CompositionLayers.h">
+    <ClInclude Include="ProjectionLayer.h">
       <Filter>Layers</Filter>
     </ClInclude>
-    <ClInclude Include="ProjectionLayer.h">
+    <ClInclude Include="CompositionLayers.h">
       <Filter>Layers</Filter>
     </ClInclude>
     <ClInclude Include="Scene.h">
@@ -55,20 +64,30 @@
     <ClInclude Include="QuadLayerObject.h">
       <Filter>Layers</Filter>
     </ClInclude>
+    <ClInclude Include="ControllerObject.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="SpaceObject.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectMotion.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Objects">
-      <UniqueIdentifier>{c8fee26b-99f6-4972-b4c7-59860905328d}</UniqueIdentifier>
+      <UniqueIdentifier>{15a8b794-5b3c-4b3b-b082-ad2956aa9cee}</UniqueIdentifier>
     </Filter>
     <Filter Include="Layers">
-      <UniqueIdentifier>{823681fb-5d10-4e98-84fe-d248dc171376}</UniqueIdentifier>
+      <UniqueIdentifier>{ff777324-cf8c-4816-b6f0-30473a5ec800}</UniqueIdentifier>
     </Filter>
     <Filter Include="Scenes">
-      <UniqueIdentifier>{2e2f732d-d965-47b1-88cf-6f5085d0ff77}</UniqueIdentifier>
+      <UniqueIdentifier>{757d01b5-59f7-4d8a-8faa-53ea62f2ec25}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(OpenXRLoaderBinaryRoot)\bin\openxr_loader.dll" />
     <None Include="packages.config" />
+    <None Include="$(OpenXRLoaderBinaryRoot)\bin\openxr_loader.dll" />
   </ItemGroup>
 </Project>
+

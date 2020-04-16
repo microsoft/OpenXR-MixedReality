@@ -33,6 +33,7 @@ namespace xr::math {
         XrPosef LookAt(const XrVector3f& origin, const XrVector3f& forward, const XrVector3f& up);
         XrPosef Multiply(const XrPosef& a, const XrPosef& b);
         XrPosef Slerp(const XrPosef& a, const XrPosef& b, float alpha);
+        XrPosef Invert(const XrPosef& pose);
 
         constexpr bool IsPoseValid(const XrSpaceLocation& location);
         constexpr bool IsPoseTracked(const XrSpaceLocation& location);
@@ -95,8 +96,8 @@ namespace xr::math {
     namespace detail {
         template <typename X, typename Y>
         constexpr const X& implement_math_cast(const Y& value) {
-            static_assert(std::is_pod<X>::value, "Unsafe to cast between non-POD types.");
-            static_assert(std::is_pod<Y>::value, "Unsafe to cast between non-POD types.");
+            static_assert(std::is_trivially_copyable<X>::value, "Unsafe to cast between non-POD types.");
+            static_assert(std::is_trivially_copyable<Y>::value, "Unsafe to cast between non-POD types.");
             static_assert(!std::is_pointer<X>::value, "Incorrect cast between pointer types.");
             static_assert(!std::is_pointer<Y>::value, "Incorrect cast between pointer types.");
             static_assert(sizeof(X) == sizeof(Y), "Incorrect cast between types with different sizes.");
@@ -105,8 +106,8 @@ namespace xr::math {
 
         template <typename X, typename Y>
         constexpr X& implement_math_cast(Y& value) {
-            static_assert(std::is_pod<X>::value, "Unsafe to cast between non-POD types.");
-            static_assert(std::is_pod<Y>::value, "Unsafe to cast between non-POD types.");
+            static_assert(std::is_trivially_copyable<X>::value, "Unsafe to cast between non-POD types.");
+            static_assert(std::is_trivially_copyable<Y>::value, "Unsafe to cast between non-POD types.");
             static_assert(!std::is_pointer<X>::value, "Incorrect cast between pointer types.");
             static_assert(!std::is_pointer<Y>::value, "Incorrect cast between pointer types.");
             static_assert(sizeof(X) == sizeof(Y), "Incorrect cast between types with different sizes.");
@@ -244,15 +245,7 @@ namespace xr::math {
     }
 
     inline DirectX::XMMATRIX XM_CALLCONV LoadInvertedXrPose(const XrPosef& pose) {
-        const DirectX::XMVECTOR orientation = LoadXrQuaternion(pose.orientation);
-        const DirectX::XMVECTOR invertOrientation = DirectX::XMQuaternionConjugate(orientation);
-
-        const DirectX::XMVECTOR position = LoadXrVector3(pose.position);
-        const DirectX::XMVECTOR invertPosition = DirectX::XMVector3Rotate(DirectX::XMVectorNegate(position), invertOrientation);
-
-        DirectX::XMMATRIX matrix = DirectX::XMMatrixRotationQuaternion(invertOrientation);
-        matrix.r[3] = DirectX::XMVectorAdd(matrix.r[3], invertPosition);
-        return matrix;
+        return LoadXrPose(Pose::Invert(pose));
     }
 
     inline void XM_CALLCONV StoreXrVector2(XrVector2f* outVec, DirectX::FXMVECTOR inVec) {
@@ -311,6 +304,19 @@ namespace xr::math {
 
         inline XrPosef Slerp(const XrPosef& a, const XrPosef& b, float alpha) {
             return MakePose(Quaternion::Slerp(a.orientation, b.orientation, alpha), a.position + (b.position - a.position) * alpha);
+        }
+
+        inline XrPosef Invert(const XrPosef& pose) {
+            const DirectX::XMVECTOR orientation = LoadXrQuaternion(pose.orientation);
+            const DirectX::XMVECTOR invertOrientation = DirectX::XMQuaternionConjugate(orientation);
+
+            const DirectX::XMVECTOR position = LoadXrVector3(pose.position);
+            const DirectX::XMVECTOR invertPosition = DirectX::XMVector3Rotate(DirectX::XMVectorNegate(position), invertOrientation);
+
+            XrPosef result;
+            StoreXrQuaternion(&result.orientation, invertOrientation);
+            StoreXrVector3(&result.position, invertPosition);
+            return result;
         }
 
         inline XrPosef Multiply(const XrPosef& a, const XrPosef& b) {
@@ -405,6 +411,10 @@ namespace xr::math {
 
     inline float Dot(const XrVector3f& a, const XrVector3f& b) {
         return a.x * b.x + a.y * b.y + a.z * b.z;
+    }
+
+    inline float Length(const XrVector3f& v) {
+        return std::sqrt(Dot(v, v));
     }
 
     inline XrVector3f Normalize(const XrVector3f& a) {
