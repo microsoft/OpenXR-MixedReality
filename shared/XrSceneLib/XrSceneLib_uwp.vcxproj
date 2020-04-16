@@ -125,15 +125,18 @@
     <ClInclude Include="QuadLayerObject.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="SceneObject.h" />
-    <ClInclude Include="App.h" />
+    <ClInclude Include="XrApp.h" />
     <ClInclude Include="CompositionLayers.h" />
     <ClInclude Include="ProjectionLayer.h" />
     <ClInclude Include="FrameTime.h" />
     <ClInclude Include="SceneContext.h" />
+    <ClInclude Include="SpaceObject.h" />
     <ClInclude Include="TextTexture.h" />
+    <ClInclude Include="ObjectMotion.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ControllerObject.cpp" />
+    <ClCompile Include="ObjectMotion.cpp" />
     <ClCompile Include="PbrModelObject.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
@@ -141,8 +144,9 @@
     <ClCompile Include="QuadLayerObject.cpp" />
     <ClCompile Include="SceneObject.cpp" />
     <ClCompile Include="Scene.cpp" />
-    <ClCompile Include="App.cpp" />
+    <ClCompile Include="XrApp.cpp" />
     <ClCompile Include="ProjectionLayer.cpp" />
+    <ClCompile Include="SpaceObject.cpp" />
     <ClCompile Include="TextTexture.cpp" />
     <ClCompile Include="Scene_Title.cpp" />
   </ItemGroup>

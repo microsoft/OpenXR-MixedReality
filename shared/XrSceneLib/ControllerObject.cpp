@@ -15,7 +15,7 @@
 //*********************************************************
 
 #include "pch.h"
-#include <Pbr\GltfLoader.h>
+#include <Pbr/GltfLoader.h>
 #include "PbrModelObject.h"
 #include "ControllerObject.h"
 #include "SceneContext.h"
@@ -160,7 +160,10 @@ namespace {
         XrSpaceLocation location{XR_TYPE_SPACE_LOCATION};
         CHECK_XRCMD(xrLocateSpace(m_gripSpace.Get(), m_sceneContext.SceneSpace, frameTime.PredictedDisplayTime, &location));
         if (xr::math::Pose::IsPoseValid(location)) {
+            SetVisible(true);
             Pose() = location.pose;
+        } else {
+            SetVisible(false);
         }
 
         // If controller model is already loaded, update all node transforms

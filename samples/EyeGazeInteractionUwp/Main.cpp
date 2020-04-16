@@ -17,18 +17,20 @@
 #include <XrSceneLib/XrApp.h>
 
 std::unique_ptr<Scene> TryCreateTitleScene(SceneContext& sceneContext);
-std::unique_ptr<Scene> TryCreateControllerModelScene(SceneContext& sceneContext);
+std::unique_ptr<Scene> TryCreateEyeGazeInteractionScene(SceneContext& sceneContext);
 
-int APIENTRY wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int) {
+int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
     try {
         CHECK_HRCMD(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
         auto on_exit = MakeScopeGuard([] { ::CoUninitialize(); });
 
-        const std::vector<const char*> requiredExtensions = {XR_MSFT_CONTROLLER_MODEL_PREVIEW_EXTENSION_NAME};
+        const std::vector<const char*> requiredExtensions = {
+            XR_EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME,
+        };
 
-        auto app = CreateXrApp({"SampleSceneWin32", 1}, requiredExtensions);
+        auto app = CreateXrApp({"EyeGazeInteractionUwp", 1}, requiredExtensions);
         app->AddScene(TryCreateTitleScene(app->SceneContext()));
-        app->AddScene(TryCreateControllerModelScene(app->SceneContext()));
+        app->AddScene(TryCreateEyeGazeInteractionScene(app->SceneContext()));
         app->Run();
     } catch (const std::exception& ex) {
         sample::Trace("Unhandled Exception: {}\n", ex.what());

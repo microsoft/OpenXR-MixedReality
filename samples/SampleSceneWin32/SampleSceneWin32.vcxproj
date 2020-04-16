@@ -52,9 +52,6 @@
     <SpectreMitigation>false</SpectreMitigation>
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
-  <PropertyGroup>
-    <IncludePath>$(SharedPath);$(SharedPath)\ext;$(OpenXrSdkPath)\include;$(IntDir)\CompiledShaders;$(ProjectDir)..\XrSceneLib;$(IncludePath);</IncludePath>
-  </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
       <PrecompiledHeader>Use</PrecompiledHeader>
@@ -107,7 +104,7 @@
     <ClCompile Include="Scene_ControllerModel.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\XrSceneLib\XrSceneLib_win32.vcxproj">
+    <ProjectReference Include="$(SharedPath)\XrSceneLib\XrSceneLib_win32.vcxproj">
       <Project>{a758af22-f54f-4c74-bf85-05a377b5892e}</Project>
     </ProjectReference>
   </ItemGroup>
@@ -116,11 +113,6 @@
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <Target Name="CopyContent" AfterTargets="Build">
-    <ItemGroup>
-      <ContentFiles Include="$(SharedPath)\pbr\brdf_lut.png" />
-      <ContentFiles Include="$(SharedPath)\SampleShared\Sample_SpecularHDR.dds" />
-      <ContentFiles Include="$(SharedPath)\SampleShared\Sample_DiffuseHDR.dds" />
-    </ItemGroup>
     <Copy DestinationFolder="$(OutDir)" SkipUnchangedFiles="True" SourceFiles="@(ContentFiles)" UseHardlinksIfPossible="True" />
   </Target>
   <ImportGroup Label="ExtensionTargets">

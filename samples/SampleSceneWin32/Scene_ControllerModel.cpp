@@ -15,8 +15,8 @@
 //*********************************************************
 
 #include "pch.h"
-#include <Scene.h>
-#include <ControllerObject.h>
+#include <XrSceneLib/Scene.h>
+#include <XrSceneLib/ControllerObject.h>
 
 using namespace DirectX;
 using namespace std::literals::chrono_literals;

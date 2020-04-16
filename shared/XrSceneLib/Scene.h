@@ -17,6 +17,7 @@
 
 #include <XrUtility/XrActionContext.h>
 
+#include "FrameTime.h"
 #include "SceneContext.h"
 #include "SceneObject.h"
 #include "QuadLayerObject.h"

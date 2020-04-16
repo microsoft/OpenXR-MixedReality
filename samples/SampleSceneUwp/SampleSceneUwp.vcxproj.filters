@@ -16,15 +16,6 @@
     <None Include="TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="$(OpenXRLoaderBinaryRoot)\bin\openxr_loader.dll" />
-    <None Include="$(SharedPath)\pbr\brdf_lut.png">
-      <Filter>DeploymentContent</Filter>
-    </None>
-    <None Include="$(SharedPath)\SampleShared\Sample_DiffuseHDR.dds">
-      <Filter>DeploymentContent</Filter>
-    </None>
-    <None Include="$(SharedPath)\SampleShared\Sample_SpecularHDR.dds">
-      <Filter>DeploymentContent</Filter>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DeploymentContent">

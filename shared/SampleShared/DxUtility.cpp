@@ -15,8 +15,7 @@
 //*********************************************************
 #include "pch.h"
 #include "DxUtility.h"
-#include <D3Dcompiler.h>
-#pragma comment(lib, "D3DCompiler.lib")
+#include "Trace.h"
 
 namespace sample::dx {
     winrt::com_ptr<IDXGIAdapter1> GetAdapter(LUID adapterId) {
@@ -32,20 +31,17 @@ namespace sample::dx {
             DXGI_ADAPTER_DESC1 adapterDesc;
             CHECK_HRCMD(dxgiAdapter->GetDesc1(&adapterDesc));
             if (memcmp(&adapterDesc.AdapterLuid, &adapterId, sizeof(adapterId)) == 0) {
-                DEBUG_PRINT("Using graphics adapter %ws", adapterDesc.Description);
+                sample::Trace(L"Using graphics adapter {}", adapterDesc.Description);
                 return dxgiAdapter;
             }
         }
     }
 
-    void CreateD3D11DeviceAndContext(IDXGIAdapter1* adapter,
-                                     const std::vector<D3D_FEATURE_LEVEL>& featureLevels,
-                                     bool singleThreaded,
-                                     ID3D11Device** device,
-                                     ID3D11DeviceContext** deviceContext) {
+    std::tuple<winrt::com_ptr<ID3D11Device>, winrt::com_ptr<ID3D11DeviceContext>>
+    CreateD3D11DeviceAndContext(IDXGIAdapter1* adapter, const std::vector<D3D_FEATURE_LEVEL>& featureLevels, bool singleThreadedD3D11Device) {
         UINT creationFlags = D3D11_CREATE_DEVICE_BGRA_SUPPORT;
 
-        if (singleThreaded) {
+        if (singleThreadedD3D11Device) {
             creationFlags |= D3D11_CREATE_DEVICE_SINGLETHREADED;
         }
 #ifdef _DEBUG
@@ -56,6 +52,8 @@ namespace sample::dx {
         D3D_DRIVER_TYPE driverType = adapter == nullptr ? D3D_DRIVER_TYPE_HARDWARE : D3D_DRIVER_TYPE_UNKNOWN;
 
     TryAgain:
+        winrt::com_ptr<ID3D11Device> device;
+        winrt::com_ptr<ID3D11DeviceContext> deviceContext;
         const HRESULT hr = D3D11CreateDevice(adapter,
                                              driverType,
                                              0,
@@ -63,9 +61,9 @@ namespace sample::dx {
                                              featureLevels.data(),
                                              (UINT)featureLevels.size(),
                                              D3D11_SDK_VERSION,
-                                             device,
+                                             device.put(),
                                              nullptr,
-                                             deviceContext);
+                                             deviceContext.put());
 
         if (FAILED(hr)) {
             // If initialization failed, it may be because device debugging isn't supported, so retry without that.
@@ -81,51 +79,14 @@ namespace sample::dx {
                 goto TryAgain;
             }
         }
-        if (!singleThreaded) {
-            winrt::com_ptr<ID3D11Device> comPtr;
-            comPtr.copy_from(*device);
-            winrt::com_ptr<ID3D11Multithread> d3dMultiThread = comPtr.try_as<ID3D11Multithread>();
+        if (!singleThreadedD3D11Device) {
+            winrt::com_ptr<ID3D11Multithread> d3dMultiThread = device.try_as<ID3D11Multithread>();
             if (d3dMultiThread) {
                 d3dMultiThread->SetMultithreadProtected(true);
             }
         }
-    }
 
-    winrt::com_ptr<ID3DBlob> CompileShader(const char* hlsl, const char* entrypoint, const char* shaderTarget) {
-        winrt::com_ptr<ID3DBlob> compiled;
-        winrt::com_ptr<ID3DBlob> errMsgs;
-        DWORD flags = D3DCOMPILE_PACK_MATRIX_COLUMN_MAJOR | D3DCOMPILE_ENABLE_STRICTNESS | D3DCOMPILE_WARNINGS_ARE_ERRORS;
-
-#ifdef _DEBUG
-        flags |= D3DCOMPILE_SKIP_OPTIMIZATION | D3DCOMPILE_DEBUG;
-#else
-        flags |= D3DCOMPILE_OPTIMIZATION_LEVEL3;
-#endif
-
-        HRESULT hr =
-            D3DCompile(hlsl, strlen(hlsl), nullptr, nullptr, nullptr, entrypoint, shaderTarget, flags, 0, compiled.put(), errMsgs.put());
-        if (FAILED(hr)) {
-            std::string errMsg((const char*)errMsgs->GetBufferPointer(), errMsgs->GetBufferSize());
-            DEBUG_PRINT("D3DCompile failed %X: %s", hr, errMsg.c_str());
-            CHECK_HRESULT(hr, "D3DCompile failed");
-        }
-
-        return compiled;
-    }
-
-    bool IsSRGBFormat(DXGI_FORMAT format) {
-        switch (format) {
-        case DXGI_FORMAT_R8G8B8A8_UNORM_SRGB:
-        case DXGI_FORMAT_BC1_UNORM_SRGB:
-        case DXGI_FORMAT_BC2_UNORM_SRGB:
-        case DXGI_FORMAT_BC3_UNORM_SRGB:
-        case DXGI_FORMAT_B8G8R8A8_UNORM_SRGB:
-        case DXGI_FORMAT_B8G8R8X8_UNORM_SRGB:
-        case DXGI_FORMAT_BC7_UNORM_SRGB:
-            return true;
-        default:
-            return false;
-        }
+        return {device, deviceContext};
     }
 
     SwapchainD3D11 CreateSwapchainD3D11(XrSession session,
@@ -173,4 +134,41 @@ namespace sample::dx {
 
         return swapchain;
     }
+
+    std::tuple<XrGraphicsBindingD3D11KHR, winrt::com_ptr<ID3D11Device>, winrt::com_ptr<ID3D11DeviceContext>>
+    CreateD3D11Binding(XrInstance instance,
+                       XrSystemId systemId,
+                       const xr::ExtensionContext& extensions,
+                       bool singleThreadedD3D11Device,
+                       const std::vector<D3D_FEATURE_LEVEL>& appSupportedFeatureLevels) {
+        if (!extensions.SupportsD3D11) {
+            throw std::exception("The runtime doesn't support D3D11 extensions.");
+        }
+        _Analysis_assume_(extensions.xrGetD3D11GraphicsRequirementsKHR != nullptr);
+
+        // Create the D3D11 device for the adapter associated with the system.
+        XrGraphicsRequirementsD3D11KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
+        CHECK_XRCMD(extensions.xrGetD3D11GraphicsRequirementsKHR(instance, systemId, &graphicsRequirements));
+        const winrt::com_ptr<IDXGIAdapter1> adapter = sample::dx::GetAdapter(graphicsRequirements.adapterLuid);
+
+        // Create a list of feature levels which are both supported by the OpenXR runtime and this application.
+        std::vector<D3D_FEATURE_LEVEL> featureLevels;
+        for (auto level : appSupportedFeatureLevels) {
+            if (level >= graphicsRequirements.minFeatureLevel) {
+                featureLevels.push_back(level);
+            }
+        }
+
+        if (featureLevels.size() == 0) {
+            throw std::exception("Unsupported minimum feature level!");
+        }
+
+        auto [device, deviceContext] = sample::dx::CreateD3D11DeviceAndContext(adapter.get(), featureLevels, singleThreadedD3D11Device);
+
+        XrGraphicsBindingD3D11KHR d3d11Binding{XR_TYPE_GRAPHICS_BINDING_D3D11_KHR};
+        d3d11Binding.device = device.get();
+
+        return {d3d11Binding, device, deviceContext};
+    }
+
 } // namespace sample::dx

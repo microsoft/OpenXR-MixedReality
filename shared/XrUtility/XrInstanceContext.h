@@ -17,7 +17,6 @@
 
 #include <XrUtility/XrHandle.h>
 #include <XrUtility/XrStruct.h>
-#include <XrUtility/XrExtensionContext.h>
 
 namespace xr {
     struct InstanceContext {
@@ -39,10 +38,9 @@ namespace xr {
         xr::InstanceHandle m_instance;
     };
 
-#pragma region Implementation details
-    inline InstanceContext CreateInstanceContext(NameVersion appInfo, NameVersion engineInfo, const xr::ExtensionContext& extensions) {
+    inline InstanceContext CreateInstanceContext(NameVersion appInfo, NameVersion engineInfo, const std::vector<const char*>& extensions) {
         XrInstanceCreateInfo instanceCreateInfo{XR_TYPE_INSTANCE_CREATE_INFO};
-        xr::SetEnabledExtensions(instanceCreateInfo, extensions.EnabledExtensions);
+        xr::SetEnabledExtensions(instanceCreateInfo, extensions);
         xr::SetApplicationInfo(instanceCreateInfo.applicationInfo, appInfo, engineInfo);
 
         xr::InstanceHandle instance;
@@ -53,6 +51,5 @@ namespace xr {
 
         return xr::InstanceContext(std::move(instance), std::move(appInfo), std::move(engineInfo), std::move(instanceProperties));
     }
-#pragma endregion
 
 } // namespace xr

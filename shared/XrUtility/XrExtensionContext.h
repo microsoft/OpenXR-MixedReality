@@ -21,21 +21,19 @@
 
 namespace xr {
     struct ExtensionContext : xr::ExtensionDispatchTable {
-#ifdef XR_USE_GRAPHICS_API_D3D11
         bool SupportsD3D11;
-#endif
-#ifdef XR_USE_GRAPHICS_API_D3D12
         bool SupportsD3D12;
-#endif
         bool SupportsDepthInfo;
         bool SupportsVisibilityMask;
         bool SupportsUnboundedSpace;
         bool SupportsSpatialAnchor;
         bool SupportsHandInteraction;
+        bool SupportsEyeGazeInteraction;
         bool SupportsHandJointTracking;
         bool SupportsHandMeshTracking;
         bool SupportsSpatialGraphBridge;
         bool SupportsControllerModel;
+        bool SupportsSecondaryViewConfiguration;
 
         std::vector<const char*> EnabledExtensions;
     };
@@ -71,10 +69,12 @@ namespace xr {
         extensions.SupportsUnboundedSpace = isExtensionEnabled(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
         extensions.SupportsSpatialAnchor = isExtensionEnabled(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
         extensions.SupportsHandInteraction = isExtensionEnabled(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
+        extensions.SupportsEyeGazeInteraction = isExtensionEnabled(XR_EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME);
         extensions.SupportsHandJointTracking = isExtensionEnabled(XR_MSFT_HAND_TRACKING_PREVIEW_EXTENSION_NAME);
         extensions.SupportsHandMeshTracking = isExtensionEnabled(XR_MSFT_HAND_TRACKING_MESH_PREVIEW_EXTENSION_NAME);
         extensions.SupportsSpatialGraphBridge = isExtensionEnabled(XR_MSFT_SPATIAL_GRAPH_BRIDGE_PREVIEW_EXTENSION_NAME);
         extensions.SupportsControllerModel = isExtensionEnabled(XR_MSFT_CONTROLLER_MODEL_PREVIEW_EXTENSION_NAME);
+        extensions.SupportsSecondaryViewConfiguration = isExtensionEnabled(XR_MSFT_SECONDARY_VIEW_CONFIGURATION_PREVIEW_EXTENSION_NAME);
 
         return extensions;
     }

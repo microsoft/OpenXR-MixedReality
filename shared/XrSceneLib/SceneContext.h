@@ -27,11 +27,11 @@ struct SceneContext final {
                  xr::ExtensionContext extensions,
                  xr::SystemContext system,
                  XrSession session,
+                 XrViewConfigurationType primaryViewConfigurationType,
                  XrSpace sceneSpace,
                  Pbr::Resources pbrResources,
                  winrt::com_ptr<ID3D11Device> device,
-                 winrt::com_ptr<ID3D11DeviceContext> deviceContext,
-                 XrEnvironmentBlendMode primaryViewConfigEnvironmentBlendMode)
+                 winrt::com_ptr<ID3D11DeviceContext> deviceContext)
         : Instance(std::move(instance))
         , Extensions(std::move(extensions))
         , System(std::move(system))
@@ -40,7 +40,8 @@ struct SceneContext final {
         , PbrResources(std::move(pbrResources))
         , Device(std::move(device))
         , DeviceContext(std::move(deviceContext))
-        , PrimaryViewConfigEnvironmentBlendMode(primaryViewConfigEnvironmentBlendMode)
+        , PrimaryViewConfigurationType(primaryViewConfigurationType)
+        , PrimaryViewConfigurationBlendMode(System.ViewProperties.at(PrimaryViewConfigurationType).BlendMode)
         , LeftHand(xr::StringToPath(Instance.Handle, "/user/hand/left"))
         , RightHand(xr::StringToPath(Instance.Handle, "/user/hand/right")) {
     }
@@ -50,7 +51,9 @@ struct SceneContext final {
     const xr::SystemContext System;
 
     const XrSession Session;
-    const XrEnvironmentBlendMode PrimaryViewConfigEnvironmentBlendMode;
+    const XrViewConfigurationType PrimaryViewConfigurationType;
+    const XrEnvironmentBlendMode PrimaryViewConfigurationBlendMode;
+
     const XrSpace SceneSpace;
 
     const winrt::com_ptr<ID3D11DeviceContext> DeviceContext;

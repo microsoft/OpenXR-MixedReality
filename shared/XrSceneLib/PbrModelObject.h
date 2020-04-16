@@ -15,10 +15,10 @@
 //*********************************************************
 #pragma once
 
-#include "Scene.h"
-#include "SceneContext.h"
 #include <pbr/PbrModel.h>
 #include <pbr/PbrMaterial.h>
+#include "Scene.h"
+#include "SceneContext.h"
 
 class PbrModelObject : public SceneObject {
 public:
@@ -41,21 +41,21 @@ private:
     Pbr::FillMode m_fillMode;
 };
 
-std::shared_ptr<PbrModelObject> MakeCube(
+std::shared_ptr<PbrModelObject> CreateCube(
     const Pbr::Resources& pbrResources, DirectX::XMFLOAT3 sideLengths, Pbr::RGBAColor color, float roughness = 1.0f, float metallic = 0.0f);
 
-std::shared_ptr<PbrModelObject> MakeQuad(const Pbr::Resources& pbrResources,
+std::shared_ptr<PbrModelObject> CreateQuad(const Pbr::Resources& pbrResources,
                                          DirectX::XMFLOAT2 sideLengths,
                                          std::shared_ptr<Pbr::Material> material);
 
-std::shared_ptr<PbrModelObject> MakeSphere(const Pbr::Resources& pbrResources,
+std::shared_ptr<PbrModelObject> CreateSphere(const Pbr::Resources& pbrResources,
                                            float size,
                                            uint32_t tesselation,
                                            Pbr::RGBAColor color,
                                            float roughness = 1.0f,
                                            float metallic = 0.0f);
 
-std::shared_ptr<PbrModelObject> MakeAxis(const Pbr::Resources& pbrResources,
+std::shared_ptr<PbrModelObject> CreateAxis(const Pbr::Resources& pbrResources,
                                          float axisLength = 1.0f,
                                          float axisThickness = 0.01f,
                                          float roughness = 0.85f,

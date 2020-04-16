@@ -443,9 +443,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1>The OpenXR Specification</h1>
 <div class="details">
 <span id="author" class="author">Copyright (c) 2017-2020 The Khronos Group Inc.</span><br>
-<span id="revnumber">version 1.0.7,</span>
-<span id="revdate">Mon, 23 Mar 2020 23:03:12 +0000</span>
-<br><span id="revremark">from git branch: master commit: ea93e4e4cd0fe9f9d89987e4c4a1bbbca6cb1315</span>
+<span id="revnumber">version 1.0.8,</span>
+<span id="revdate">Sun, 29 Mar 2020 18:05:26 +0000</span>
+<br><span id="revremark">from git branch: master commit: 0207c8e7a2f788ad42896949a3eb9f1819b2948f</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -576,23 +576,24 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#XR_KHR_win32_convert_performance_counter_time">12.16. XR_KHR_win32_convert_performance_counter_time</a></li>
 <li><a href="#XR_EXT_conformance_automation">12.17. XR_EXT_conformance_automation</a></li>
 <li><a href="#XR_EXT_debug_utils">12.18. XR_EXT_debug_utils</a></li>
-<li><a href="#XR_EXT_performance_settings">12.19. XR_EXT_performance_settings</a></li>
-<li><a href="#XR_EXT_thermal_query">12.20. XR_EXT_thermal_query</a></li>
-<li><a href="#XR_EXT_view_configuration_depth_range">12.21. XR_EXT_view_configuration_depth_range</a></li>
-<li><a href="#XR_EXT_win32_appcontainer_compatible">12.22. XR_EXT_win32_appcontainer_compatible</a></li>
-<li><a href="#XR_EPIC_view_configuration_fov">12.23. XR_EPIC_view_configuration_fov</a></li>
-<li><a href="#XR_MND_headless">12.24. XR_MND_headless</a></li>
-<li><a href="#XR_MSFT_controller_model_preview">12.25. XR_MSFT_controller_model_preview</a></li>
-<li><a href="#XR_MSFT_first_person_observer_preview">12.26. XR_MSFT_first_person_observer_preview</a></li>
-<li><a href="#XR_MSFT_hand_interaction">12.27. XR_MSFT_hand_interaction</a></li>
-<li><a href="#XR_MSFT_hand_tracking_mesh_preview">12.28. XR_MSFT_hand_tracking_mesh_preview</a></li>
-<li><a href="#XR_MSFT_hand_tracking_preview">12.29. XR_MSFT_hand_tracking_preview</a></li>
-<li><a href="#XR_MSFT_secondary_view_configuration_preview">12.30. XR_MSFT_secondary_view_configuration_preview</a></li>
-<li><a href="#XR_MSFT_spatial_anchor">12.31. XR_MSFT_spatial_anchor</a></li>
-<li><a href="#XR_MSFT_spatial_graph_bridge_preview">12.32. XR_MSFT_spatial_graph_bridge_preview</a></li>
-<li><a href="#XR_MSFT_unbounded_reference_space">12.33. XR_MSFT_unbounded_reference_space</a></li>
-<li><a href="#XR_OCULUS_android_session_state_enable">12.34. XR_OCULUS_android_session_state_enable</a></li>
-<li><a href="#XR_VARJO_quad_views">12.35. XR_VARJO_quad_views</a></li>
+<li><a href="#XR_EXT_eye_gaze_interaction">12.19. XR_EXT_eye_gaze_interaction</a></li>
+<li><a href="#XR_EXT_performance_settings">12.20. XR_EXT_performance_settings</a></li>
+<li><a href="#XR_EXT_thermal_query">12.21. XR_EXT_thermal_query</a></li>
+<li><a href="#XR_EXT_view_configuration_depth_range">12.22. XR_EXT_view_configuration_depth_range</a></li>
+<li><a href="#XR_EXT_win32_appcontainer_compatible">12.23. XR_EXT_win32_appcontainer_compatible</a></li>
+<li><a href="#XR_EPIC_view_configuration_fov">12.24. XR_EPIC_view_configuration_fov</a></li>
+<li><a href="#XR_MND_headless">12.25. XR_MND_headless</a></li>
+<li><a href="#XR_MSFT_controller_model_preview">12.26. XR_MSFT_controller_model_preview</a></li>
+<li><a href="#XR_MSFT_first_person_observer_preview">12.27. XR_MSFT_first_person_observer_preview</a></li>
+<li><a href="#XR_MSFT_hand_interaction">12.28. XR_MSFT_hand_interaction</a></li>
+<li><a href="#XR_MSFT_hand_tracking_mesh_preview">12.29. XR_MSFT_hand_tracking_mesh_preview</a></li>
+<li><a href="#XR_MSFT_hand_tracking_preview">12.30. XR_MSFT_hand_tracking_preview</a></li>
+<li><a href="#XR_MSFT_secondary_view_configuration_preview">12.31. XR_MSFT_secondary_view_configuration_preview</a></li>
+<li><a href="#XR_MSFT_spatial_anchor">12.32. XR_MSFT_spatial_anchor</a></li>
+<li><a href="#XR_MSFT_spatial_graph_bridge_preview">12.33. XR_MSFT_spatial_graph_bridge_preview</a></li>
+<li><a href="#XR_MSFT_unbounded_reference_space">12.34. XR_MSFT_unbounded_reference_space</a></li>
+<li><a href="#XR_OCULUS_android_session_state_enable">12.35. XR_OCULUS_android_session_state_enable</a></li>
+<li><a href="#XR_VARJO_quad_views">12.36. XR_VARJO_quad_views</a></li>
 </ul>
 </li>
 <li><a href="#provisional-extension-appendices-list">13. List of Provisional Extensions</a>
@@ -6053,7 +6054,7 @@ specifying system tracking properties.</p>
 <p><a id="VUID-XrSystemProperties-type-type" href="#VUID-XrSystemProperties-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SYSTEM_PROPERTIES</code></p>
 </li>
 <li>
-<p><a id="VUID-XrSystemProperties-next-next" href="#VUID-XrSystemProperties-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrSystemHandTrackingMeshPropertiesMSFT">XrSystemHandTrackingMeshPropertiesMSFT</a>, <a href="#XrSystemHandTrackingPropertiesMSFT">XrSystemHandTrackingPropertiesMSFT</a></p>
+<p><a id="VUID-XrSystemProperties-next-next" href="#VUID-XrSystemProperties-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrSystemEyeGazeInteractionPropertiesEXT">XrSystemEyeGazeInteractionPropertiesEXT</a>, <a href="#XrSystemHandTrackingMeshPropertiesMSFT">XrSystemHandTrackingMeshPropertiesMSFT</a>, <a href="#XrSystemHandTrackingPropertiesMSFT">XrSystemHandTrackingPropertiesMSFT</a></p>
 </li>
 </ul>
 </div>
@@ -9194,7 +9195,7 @@ of <a href="#xrLocateSpace">xrLocateSpace</a>::<code>baseSpace</code>.</p>
 <p><a id="VUID-XrSpaceLocation-type-type" href="#VUID-XrSpaceLocation-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SPACE_LOCATION</code></p>
 </li>
 <li>
-<p><a id="VUID-XrSpaceLocation-next-next" href="#VUID-XrSpaceLocation-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrHandJointRadiusMSFT">XrHandJointRadiusMSFT</a>, <a href="#XrSpaceVelocity">XrSpaceVelocity</a></p>
+<p><a id="VUID-XrSpaceLocation-next-next" href="#VUID-XrSpaceLocation-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrEyeGazeSampleTimeEXT">XrEyeGazeSampleTimeEXT</a>, <a href="#XrHandJointRadiusMSFT">XrHandJointRadiusMSFT</a>, <a href="#XrSpaceVelocity">XrSpaceVelocity</a></p>
 </li>
 <li>
 <p><a id="VUID-XrSpaceLocation-locationFlags-parameter" href="#VUID-XrSpaceLocation-locationFlags-parameter"></a> <code>locationFlags</code> <strong class="purple">must</strong> be <code>0</code> or a valid combination of <a href="#XrSpaceLocationFlagBits">XrSpaceLocationFlagBits</a> values</p>
@@ -15002,7 +15003,13 @@ handle to the created action set.</p>
 <p><code>XR_ERROR_NAME_DUPLICATED</code></p>
 </li>
 <li>
+<p><code>XR_ERROR_LOCALIZED_NAME_DUPLICATED</code></p>
+</li>
+<li>
 <p><code>XR_ERROR_NAME_INVALID</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_LOCALIZED_NAME_INVALID</code></p>
 </li>
 <li>
 <p><code>XR_ERROR_PATH_FORMAT_INVALID</code></p>
@@ -15352,7 +15359,13 @@ returned.</p>
 <p><code>XR_ERROR_NAME_DUPLICATED</code></p>
 </li>
 <li>
+<p><code>XR_ERROR_LOCALIZED_NAME_DUPLICATED</code></p>
+</li>
+<li>
 <p><code>XR_ERROR_NAME_INVALID</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_LOCALIZED_NAME_INVALID</code></p>
 </li>
 <li>
 <p><code>XR_ERROR_PATH_FORMAT_INVALID</code></p>
@@ -18430,6 +18443,10 @@ detailed description of retrieving the required <code>buffer</code> size.</p>
 <p><a href="#xrGetInputSourceLocalizedName">xrGetInputSourceLocalizedName</a> returns a string for the input source in
 the current system locale.</p>
 </div>
+<div class="paragraph">
+<p>If <a href="#xrAttachSessionActionSets">xrAttachSessionActionSets</a> has not yet been called for the session,
+the runtime <strong class="purple">must</strong> return <code>XR_ERROR_ACTIONSET_NOT_ATTACHED</code>.</p>
+</div>
 <div class="sidebarblock">
 <div class="content">
 <div class="title">Valid Usage (Implicit)</div>
@@ -18496,6 +18513,9 @@ the current system locale.</p>
 </li>
 <li>
 <p><code>XR_ERROR_PATH_UNSUPPORTED</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_ACTIONSET_NOT_ATTACHED</code></p>
 </li>
 </ul>
 </div>
@@ -18678,6 +18698,9 @@ E.g. <code>Trigger</code>.</p>
 </li>
 <li>
 <p><code><a href="#XR_EXT_debug_utils">XR_EXT_debug_utils</a></code></p>
+</li>
+<li>
+<p><code><a href="#XR_EXT_eye_gaze_interaction">XR_EXT_eye_gaze_interaction</a></code></p>
 </li>
 <li>
 <p><code><a href="#XR_EXT_performance_settings">XR_EXT_performance_settings</a></code></p>
@@ -28322,7 +28345,438 @@ VK_EXT_debug_utils extension by Peter Kraus (aka @krOoze).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_performance_settings"><a class="anchor" href="#XR_EXT_performance_settings"></a>12.19. XR_EXT_performance_settings</h3>
+<h3 id="XR_EXT_eye_gaze_interaction"><a class="anchor" href="#XR_EXT_eye_gaze_interaction"></a>12.19. XR_EXT_eye_gaze_interaction</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Name String</strong></dt>
+<dd>
+<p><code>XR_EXT_eye_gaze_interaction</code></p>
+</dd>
+<dt class="hdlist1"><strong>Extension Type</strong></dt>
+<dd>
+<p>Instance extension</p>
+</dd>
+<dt class="hdlist1"><strong>Registered Extension Number</strong></dt>
+<dd>
+<p>31</p>
+</dd>
+<dt class="hdlist1"><strong>Revision</strong></dt>
+<dd>
+<p>1</p>
+</dd>
+<dt class="hdlist1"><strong>Extension and Version Dependencies</strong></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>Requires OpenXR 1.0</p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Last Modified Date</strong></dt>
+<dd>
+<p>2020-02-20</p>
+</dd>
+<dt class="hdlist1"><strong>IP Status</strong></dt>
+<dd>
+<p>No known IP claims.</p>
+</dd>
+<dt class="hdlist1"><strong>Contributors</strong></dt>
+<dd>
+<p>Denny Rönngren, Tobii<br>
+Yin Li, Microsoft<br>
+Alex Turner, Microsoft<br>
+Paul Pedriana, Oculus<br>
+Rémi Arnaud, Varjo<br>
+Blake Taylor, Magic Leap<br>
+Lachlan Ford, Microsoft<br>
+Cass Everitt, Oculus</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p><strong>Overview</strong></p>
+</div>
+<div class="paragraph">
+<p>This extension provides a <a href="#XrPath"><code>XrPath</code></a> for getting eye gaze input from an
+eye tracker to enable eye gaze interactions.</p>
+</div>
+<div class="paragraph">
+<p>The intended use for this extension is to provide:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>system properties to inform if eye gaze interaction is supported by the
+current device.</p>
+</li>
+<li>
+<p>a <a href="#XrPath"><code>XrPath</code></a> for real time eye tracking that exposes an accurate and
+precise eye gaze pose to be used to enable eye gaze interactions.</p>
+</li>
+<li>
+<p>a structure <a href="#XrEyeGazeSampleTimeEXT">XrEyeGazeSampleTimeEXT</a> that allows for an application to
+retrieve more information regarding the eye tracking samples.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>With these building blocks, an application can discover if the XR runtime
+has access to an eye tracker, bind the eye gaze pose to the action system,
+determine if the eye tracker is actively tracking the users eye gaze, and
+use the eye gaze pose as an input signal to build eye gaze interactions.</p>
+</div>
+<div class="sect3">
+<h4 id="_eye_tracker"><a class="anchor" href="#_eye_tracker"></a>12.19.1. Eye tracker</h4>
+<div class="paragraph">
+<p>An eye tracker is a sensory device that tracks eyes and accurately maps what
+the user is looking at.
+The main purpose of this extension is to provide accurate and precise eye
+gaze for the application.</p>
+</div>
+<div class="paragraph">
+<p>Eye tracking data can be sensitive personal information and is closely
+linked to personal privacy and integrity.
+It is strongly recommended that applications that store or transfer eye
+tracking data always ask the user for active and specific acceptance to do
+so.</p>
+</div>
+<div class="paragraph">
+<p>If a runtime supports a permission system to control application access to
+the eye tracker, then the runtime <strong class="purple">must</strong> set the <code>isActive</code> field to
+<code>XR_FALSE</code> on the supplied <a href="#XrActionStatePose">XrActionStatePose</a> structure, and <strong class="purple">must</strong>
+clear <code>XR_SPACE_LOCATION_POSITION_TRACKED_BIT</code>,
+<code>XR_SPACE_LOCATION_POSITION_VALID_BIT</code>,
+<code>XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT</code> and
+<code>XR_SPACE_LOCATION_ORIENTATION_VALID_BIT</code> when locating using the
+tracked space until the application has been allowed access to the eye
+tracker.
+When the application access has been allowed, the runtime <strong class="purple">may</strong> set
+<code>isActive</code> on the supplied <a href="#XrActionStatePose">XrActionStatePose</a> structure to
+<code>XR_TRUE</code> and <strong class="purple">may</strong> set <code>XR_SPACE_LOCATION_POSITION_TRACKED_BIT</code>,
+<code>XR_SPACE_LOCATION_POSITION_VALID_BIT</code>
+<code>XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT</code> and
+<code>XR_SPACE_LOCATION_ORIENTATION_VALID_BIT</code> when locating using the
+tracked space.</p>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_device_enumeration"><a class="anchor" href="#_device_enumeration"></a>12.19.2. Device enumeration</h4>
+<div class="paragraph">
+<p>When the eye gaze input extension is enabled an application <strong class="purple">may</strong> pass in a
+<a href="#XrSystemEyeGazeInteractionPropertiesEXT">XrSystemEyeGazeInteractionPropertiesEXT</a> structure in next chain
+structure when calling <a href="#xrGetSystemProperties">xrGetSystemProperties</a> to acquire information
+about the connected eye tracker.</p>
+</div>
+<div class="paragraph">
+<p>The runtime <strong class="purple">must</strong> populate the <a href="#XrSystemEyeGazeInteractionPropertiesEXT">XrSystemEyeGazeInteractionPropertiesEXT</a>
+structure with the relevant information to the <a href="#XrSystemProperties">XrSystemProperties</a>
+returned by the <a href="#xrGetSystemProperties">xrGetSystemProperties</a> call.</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div id="XrSystemEyeGazeInteractionPropertiesEXT" class="paragraph">
+<p></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrSystemEyeGazeInteractionPropertiesEXT {
+    XrStructureType    type;
+    void*              next;
+    XrBool32           supportsEyeGazeInteraction;
+} XrSystemEyeGazeInteractionPropertiesEXT;</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Member Descriptions</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>type</code> is the <a href="#XrStructureType">XrStructureType</a> of this structure.</p>
+</li>
+<li>
+<p><code>next</code> is <code>NULL</code> or a pointer to an extension-specific structure.</p>
+</li>
+<li>
+<p><code>supportsEyeGazeInteraction</code> the runtime <strong class="purple">must</strong> set this value to
+<code>XR_TRUE</code> when eye gaze sufficient for use cases such as aiming or
+targeting is supported by the current device, otherwise the runtime <strong class="purple">must</strong>
+set this to <code>XR_FALSE</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Valid Usage (Implicit)</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a id="VUID-XrSystemEyeGazeInteractionPropertiesEXT-extension-notenabled" href="#VUID-XrSystemEyeGazeInteractionPropertiesEXT-extension-notenabled"></a> The <code><a href="#XR_EXT_eye_gaze_interaction">XR_EXT_eye_gaze_interaction</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrSystemEyeGazeInteractionPropertiesEXT">XrSystemEyeGazeInteractionPropertiesEXT</a></p>
+</li>
+<li>
+<p><a id="VUID-XrSystemEyeGazeInteractionPropertiesEXT-type-type" href="#VUID-XrSystemEyeGazeInteractionPropertiesEXT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SYSTEM_EYE_GAZE_INTERACTION_PROPERTIES_EXT</code></p>
+</li>
+<li>
+<p><a id="VUID-XrSystemEyeGazeInteractionPropertiesEXT-next-next" href="#VUID-XrSystemEyeGazeInteractionPropertiesEXT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_eye_gaze_input"><a class="anchor" href="#_eye_gaze_input"></a>12.19.3. Eye gaze input</h4>
+<div class="paragraph">
+<p>This extension exposes a new interaction profile path
+<em>/interaction_profiles/ext/eye_gaze_interaction</em> that is valid for
+the user path</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>/user/eyes_ext</em></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>for supported input source</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>&#8230;/input/gaze_ext/pose</em></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The eye gaze pose is natively oriented with +Y up, +X to the right, and -Z
+forward and not gravity-aligned, similar to the
+<code>XR_REFERENCE_SPACE_TYPE_VIEW</code>.
+The eye gaze pose may originate from a point positioned between the user&#8217;s
+eyes.
+At any point of time both the position and direction of the eye pose is
+tracked or untracked.
+This means that the runtime <strong class="purple">must</strong> set both
+<code>XR_SPACE_LOCATION_POSITION_TRACKED_BIT</code> and
+<code>XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT</code> or clear both
+<code>XR_SPACE_LOCATION_POSITION_TRACKED_BIT</code> and
+<code>XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT</code>.</p>
+</div>
+<div class="paragraph">
+<p>One particularity for eye trackers compared to most other spatial input is
+that the runtime may not have the capability to predict or interpolate eye
+gaze poses.
+Runtimes that cannot predict or interpolate eye gaze poses <strong class="purple">must</strong> clamp the
+gaze pose requested in the <a href="#xrLocateSpace">xrLocateSpace</a> call to the value nearest to
+<code>time</code> requested in the call.
+To allow for an application to reason about high accuracy eye tracking, the
+application <strong class="purple">can</strong> chain in an <a href="#XrEyeGazeSampleTimeEXT">XrEyeGazeSampleTimeEXT</a> to the next
+pointer of the <a href="#XrSpaceLocation">XrSpaceLocation</a> structure passed into the
+<a href="#xrLocateSpace">xrLocateSpace</a> call.
+The runtime <strong class="purple">must</strong> set <code>time</code> in the <a href="#XrEyeGazeSampleTimeEXT">XrEyeGazeSampleTimeEXT</a>
+structure to the clamped, predicted or interpolated time.
+The application <strong class="purple">should</strong> inspect the <code>time</code> field to understand when in
+time the pose is expressed.
+The <code>time</code> field <strong class="purple">may</strong> be in the future if a runtime can predict gaze
+poses.
+If an <a href="#XrEyeGazeSampleTimeEXT">XrEyeGazeSampleTimeEXT</a> structure is passed into the
+<a href="#xrLocateSpace">xrLocateSpace</a> call, and while neither <code>space</code> or <code>baseSpace</code>
+are bound to an action with toplevel path <em>/user/eyes_ext/</em> the
+runtime <strong class="purple">must</strong> return <code>XR_ERROR_VALIDATION_FAILURE</code>.</p>
+</div>
+<div class="paragraph">
+<p>When the runtime provides a nominal eye gaze pose, the
+<code>XR_SPACE_LOCATION_POSITION_TRACKED_BIT</code> <strong class="purple">must</strong> be set if the eye
+otherwise has a fully-tracked pose relative to the other space.
+A runtime <strong class="purple">can</strong> provide a sub-nominal eye-gaze pose but <strong class="purple">must</strong> then clear the
+<code>XR_SPACE_LOCATION_POSITION_TRACKED_BIT</code>.
+An application can expect that a nominal eye gaze pose can be used for use
+cases such as aiming or targeting, while a sub-nominal eye gaze pose has
+degraded performance and should not be relied on for all input scenarios.
+Applications should be very careful when using sub-nominal eye gaze pose,
+since the behaviour can vary considerably for different users and
+manufacturers, and some manufacturers <strong class="purple">may</strong> not provide sub-nominal eye gaze
+pose at all.</p>
+</div>
+<div class="paragraph">
+<p>With current technology, some eye trackers <strong class="purple">may</strong> need to undergo an explicit
+calibration routine to provide a nominal accurate and precise eye gaze pose.
+If the eye tracker is in an uncalibrated state when the first call to
+<a href="#xrSyncActions">xrSyncActions</a> is made with an eye gaze action enabled, then the
+runtime <strong class="purple">should</strong> request eye tracker calibration from the user if it has not
+yet been requested.</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div id="XrEyeGazeSampleTimeEXT" class="paragraph">
+<p></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrEyeGazeSampleTimeEXT {
+    XrStructureType    type;
+    void*              next;
+    XrTime             time;
+} XrEyeGazeSampleTimeEXT;</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Member Descriptions</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>type</code> is the <a href="#XrStructureType">XrStructureType</a> of this structure.</p>
+</li>
+<li>
+<p><code>next</code> is <code>NULL</code> or a pointer to an extension-specific structure.</p>
+</li>
+<li>
+<p><code>time</code> is when in time the eye gaze pose is expressed.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Valid Usage (Implicit)</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a id="VUID-XrEyeGazeSampleTimeEXT-extension-notenabled" href="#VUID-XrEyeGazeSampleTimeEXT-extension-notenabled"></a> The <code><a href="#XR_EXT_eye_gaze_interaction">XR_EXT_eye_gaze_interaction</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrEyeGazeSampleTimeEXT">XrEyeGazeSampleTimeEXT</a></p>
+</li>
+<li>
+<p><a id="VUID-XrEyeGazeSampleTimeEXT-type-type" href="#VUID-XrEyeGazeSampleTimeEXT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_EYE_GAZE_SAMPLE_TIME_EXT</code></p>
+</li>
+<li>
+<p><a id="VUID-XrEyeGazeSampleTimeEXT-next-next" href="#VUID-XrEyeGazeSampleTimeEXT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_sample_code"><a class="anchor" href="#_sample_code"></a>12.19.4. Sample code</h4>
+<div class="paragraph">
+<p>The following example code shows how to bind the eye pose to the action
+system.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="c++">extern XrInstance instance;
+extern XrSession session;
+extern XrPosef pose_identity;
+
+// Create action set
+XrActionSetCreateInfo actionSetInfo{XR_TYPE_ACTION_SET_CREATE_INFO};
+strcpy(actionSetInfo.actionSetName, "gameplay");
+strcpy(actionSetInfo.localizedActionSetName, "Gameplay");
+actionSetInfo.priority = 0;
+XrActionSet gameplayActionSet;
+CHK_XR(xrCreateActionSet(instance, &amp;actionSetInfo, &amp;gameplayActionSet));
+
+// Create user intent action
+XrActionCreateInfo actionInfo{XR_TYPE_ACTION_CREATE_INFO};
+strcpy(actionInfo.actionName, "user_intent");
+actionInfo.actionType = XR_ACTION_TYPE_POSE_INPUT;
+strcpy(actionInfo.localizedActionName, "User Intent");
+XrAction userIntentAction;
+CHK_XR(xrCreateAction(gameplayActionSet, &amp;actionInfo, &amp;userIntentAction));
+
+// Create suggested bindings
+XrPath eyeGazeInteractionProfilePath;
+CHK_XR(xrStringToPath(instance, "/interaction_profiles/ext/eye_gaze_interaction", &amp;eyeGazeInteractionProfilePath));
+
+XrPath gazePosePath;
+CHK_XR(xrStringToPath(instance, "/user/eyes_ext/input/gaze_ext/pose", &amp;gazePosePath));
+
+XrActionSuggestedBinding bindings;
+bindings.action = userIntentAction;
+bindings.binding = gazePosePath;
+
+XrInteractionProfileSuggestedBinding suggestedBindings{XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+suggestedBindings.interactionProfile = eyeGazeInteractionProfilePath;
+suggestedBindings.suggestedBindings = &amp;bindings;
+suggestedBindings.countSuggestedBindings = 1;
+CHK_XR(xrSuggestInteractionProfileBindings(instance, &amp;suggestedBindings));
+
+XrSessionActionSetsAttachInfo attachInfo{XR_TYPE_SESSION_ACTION_SETS_ATTACH_INFO};
+attachInfo.countActionSets = 1;
+attachInfo.actionSets = &amp;gameplayActionSet;
+CHK_XR(xrAttachSessionActionSets(session, &amp;attachInfo));
+
+XrActionSpaceCreateInfo createActionSpaceInfo{XR_TYPE_ACTION_SPACE_CREATE_INFO};
+createActionSpaceInfo.action = userIntentAction;
+createActionSpaceInfo.poseInActionSpace = pose_identity;
+XrSpace gazeActionSpace;
+CHK_XR(xrCreateActionSpace(session, &amp;createActionSpaceInfo, &amp;gazeActionSpace));
+
+XrReferenceSpaceCreateInfo createReferenceSpaceInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
+createReferenceSpaceInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
+createReferenceSpaceInfo.poseInReferenceSpace = pose_identity;
+XrSpace localReferenceSpace;
+CHK_XR(xrCreateReferenceSpace(session, &amp;createReferenceSpaceInfo, &amp;localReferenceSpace));
+
+while(true)
+{
+  XrActiveActionSet activeActionSet{gameplayActionSet, XR_NULL_PATH};
+  XrTime time;
+
+  XrActionsSyncInfo syncInfo{XR_TYPE_ACTIONS_SYNC_INFO};
+  syncInfo.countActiveActionSets = 1;
+  syncInfo.activeActionSets = &amp;activeActionSet;
+  CHK_XR(xrSyncActions(session, &amp;syncInfo));
+
+  XrActionStatePose actionStatePose{XR_TYPE_ACTION_STATE_POSE};
+  XrActionStateGetInfo getActionStateInfo{XR_TYPE_ACTION_STATE_GET_INFO};
+  getActionStateInfo.action = userIntentAction;
+  CHK_XR(xrGetActionStatePose(session, &amp;getActionStateInfo, &amp;actionStatePose));
+
+  if(actionStatePose.isActive){
+    XrEyeGazeSampleTimeEXT eyeGazeSampleTime{XR_TYPE_EYE_GAZE_SAMPLE_TIME_EXT};
+    XrSpaceLocation gazeLocation{XR_TYPE_SPACE_LOCATION, &amp;eyeGazeSampleTime};
+    CHK_XR(xrLocateSpace(gazeActionSpace, localReferenceSpace, time, &amp;gazeLocation));
+
+    // Do things
+  }
+}</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Version History</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Revision 1, 2020-02-20 (Denny Rönngren)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Initial version</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="XR_EXT_performance_settings"><a class="anchor" href="#XR_EXT_performance_settings"></a>12.20. XR_EXT_performance_settings</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -28367,7 +28821,7 @@ Innovation Center, Inc</p>
 </dl>
 </div>
 <div class="sect3">
-<h4 id="_overview"><a class="anchor" href="#_overview"></a>12.19.1. Overview</h4>
+<h4 id="_overview"><a class="anchor" href="#_overview"></a>12.20.1. Overview</h4>
 <div class="paragraph">
 <p>This extension defines an API for the application to give performance hints
 to the runtime and for the runtime to send performance related notifications
@@ -28395,7 +28849,7 @@ load without consuming more energy than necessary.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_setting_performance_levels_hints"><a class="anchor" href="#_setting_performance_levels_hints"></a>12.19.2. Setting Performance Levels Hints</h4>
+<h4 id="_setting_performance_levels_hints"><a class="anchor" href="#_setting_performance_levels_hints"></a>12.20.2. Setting Performance Levels Hints</h4>
 <div class="sect4">
 <h5 id="EXT_performance_settings-level-definition"><a class="anchor" href="#EXT_performance_settings-level-definition"></a>Performance level hint definition</h5>
 <div class="paragraph">
@@ -28576,7 +29030,7 @@ sustainable <code>XR_PERF_SETTINGS_LEVEL_SUSTAINED_HIGH_EXT</code> for CPU</td>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_receiving_performance_related_notifications"><a class="anchor" href="#_receiving_performance_related_notifications"></a>12.19.3. Receiving Performance Related Notifications</h4>
+<h4 id="_receiving_performance_related_notifications"><a class="anchor" href="#_receiving_performance_related_notifications"></a>12.20.3. Receiving Performance Related Notifications</h4>
 <div class="paragraph">
 <p>The XR runtime shall provide performance related notifications to the
 application in the following situations:</p>
@@ -29073,7 +29527,7 @@ the level enumerations.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_thermal_query"><a class="anchor" href="#XR_EXT_thermal_query"></a>12.20. XR_EXT_thermal_query</h3>
+<h3 id="XR_EXT_thermal_query"><a class="anchor" href="#XR_EXT_thermal_query"></a>12.21. XR_EXT_thermal_query</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -29118,14 +29572,14 @@ Innovation Center, Inc</p>
 </dl>
 </div>
 <div class="sect3">
-<h4 id="_overview_2"><a class="anchor" href="#_overview_2"></a>12.20.1. Overview</h4>
+<h4 id="_overview_2"><a class="anchor" href="#_overview_2"></a>12.21.1. Overview</h4>
 <div class="paragraph">
 <p>This extension provides an API to query a domain&#8217;s current thermal warning
 level and current thermal trend.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_querying_the_current_thermal_level_and_trend"><a class="anchor" href="#_querying_the_current_thermal_level_and_trend"></a>12.20.2. Querying the current thermal level and trend</h4>
+<h4 id="_querying_the_current_thermal_level_and_trend"><a class="anchor" href="#_querying_the_current_thermal_level_and_trend"></a>12.21.2. Querying the current thermal level and trend</h4>
 <div class="paragraph">
 <p>This query allows to determine the extent and urgency of the needed workload
 reduction and to verify that the mitigation measures efficiently reduce the
@@ -29332,7 +29786,7 @@ most critical temperature of the domain.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_view_configuration_depth_range"><a class="anchor" href="#XR_EXT_view_configuration_depth_range"></a>12.21. XR_EXT_view_configuration_depth_range</h3>
+<h3 id="XR_EXT_view_configuration_depth_range"><a class="anchor" href="#XR_EXT_view_configuration_depth_range"></a>12.22. XR_EXT_view_configuration_depth_range</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -29538,7 +29992,7 @@ of <a href="#XrViewConfigurationView">XrViewConfigurationView</a>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_win32_appcontainer_compatible"><a class="anchor" href="#XR_EXT_win32_appcontainer_compatible"></a>12.22. XR_EXT_win32_appcontainer_compatible</h3>
+<h3 id="XR_EXT_win32_appcontainer_compatible"><a class="anchor" href="#XR_EXT_win32_appcontainer_compatible"></a>12.23. XR_EXT_win32_appcontainer_compatible</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -29657,7 +30111,7 @@ properly in the AppContainer execution environment.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EPIC_view_configuration_fov"><a class="anchor" href="#XR_EPIC_view_configuration_fov"></a>12.23. XR_EPIC_view_configuration_fov</h3>
+<h3 id="XR_EPIC_view_configuration_fov"><a class="anchor" href="#XR_EPIC_view_configuration_fov"></a>12.24. XR_EPIC_view_configuration_fov</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -29822,7 +30276,7 @@ display.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MND_headless"><a class="anchor" href="#XR_MND_headless"></a>12.24. XR_MND_headless</h3>
+<h3 id="XR_MND_headless"><a class="anchor" href="#XR_MND_headless"></a>12.25. XR_MND_headless</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -29981,7 +30435,7 @@ false.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_controller_model_preview"><a class="anchor" href="#XR_MSFT_controller_model_preview"></a>12.25. XR_MSFT_controller_model_preview</h3>
+<h3 id="XR_MSFT_controller_model_preview"><a class="anchor" href="#XR_MSFT_controller_model_preview"></a>12.26. XR_MSFT_controller_model_preview</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -30933,7 +31387,7 @@ represented as the <a href="#XrPosef">XrPosef</a> of the node in it&#8217;s pare
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_first_person_observer_preview"><a class="anchor" href="#XR_MSFT_first_person_observer_preview"></a>12.26. XR_MSFT_first_person_observer_preview</h3>
+<h3 id="XR_MSFT_first_person_observer_preview"><a class="anchor" href="#XR_MSFT_first_person_observer_preview"></a>12.27. XR_MSFT_first_person_observer_preview</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -30974,7 +31428,7 @@ Alex Turner, Microsoft<br></p>
 </dl>
 </div>
 <div class="sect3">
-<h4 id="_overview_3"><a class="anchor" href="#_overview_3"></a>12.26.1. Overview</h4>
+<h4 id="_overview_3"><a class="anchor" href="#_overview_3"></a>12.27.1. Overview</h4>
 <div class="paragraph">
 <p>This first-person observer view configuration enables the runtime to request the application
 to render an additional first-person view of the scene to be composed onto video frames being captured
@@ -31060,7 +31514,7 @@ sharing render passes across both view configurations.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_hand_interaction"><a class="anchor" href="#XR_MSFT_hand_interaction"></a>12.27. XR_MSFT_hand_interaction</h3>
+<h3 id="XR_MSFT_hand_interaction"><a class="anchor" href="#XR_MSFT_hand_interaction"></a>12.28. XR_MSFT_hand_interaction</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -31216,7 +31670,7 @@ a controller.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_hand_tracking_mesh_preview"><a class="anchor" href="#XR_MSFT_hand_tracking_mesh_preview"></a>12.28. XR_MSFT_hand_tracking_mesh_preview</h3>
+<h3 id="XR_MSFT_hand_tracking_mesh_preview"><a class="anchor" href="#XR_MSFT_hand_tracking_mesh_preview"></a>12.29. XR_MSFT_hand_tracking_mesh_preview</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -32476,7 +32930,7 @@ while(1){
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_hand_tracking_preview"><a class="anchor" href="#XR_MSFT_hand_tracking_preview"></a>12.29. XR_MSFT_hand_tracking_preview</h3>
+<h3 id="XR_MSFT_hand_tracking_preview"><a class="anchor" href="#XR_MSFT_hand_tracking_preview"></a>12.30. XR_MSFT_hand_tracking_preview</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -33695,7 +34149,7 @@ The runtime <strong class="purple">must</strong> not return joint space location
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_secondary_view_configuration_preview"><a class="anchor" href="#XR_MSFT_secondary_view_configuration_preview"></a>12.30. XR_MSFT_secondary_view_configuration_preview</h3>
+<h3 id="XR_MSFT_secondary_view_configuration_preview"><a class="anchor" href="#XR_MSFT_secondary_view_configuration_preview"></a>12.31. XR_MSFT_secondary_view_configuration_preview</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -33733,7 +34187,7 @@ Alex Turner, Microsoft<br></p>
 </dl>
 </div>
 <div class="sect3">
-<h4 id="_overview_4"><a class="anchor" href="#_overview_4"></a>12.30.1. Overview</h4>
+<h4 id="_overview_4"><a class="anchor" href="#_overview_4"></a>12.31.1. Overview</h4>
 <div class="paragraph">
 <p>This extension allows an application to enable support for one or more <strong>secondary view configurations</strong>.
 A secondary view configuration is a well-known set of views that the runtime can make active while a session is running.
@@ -33743,7 +34197,7 @@ sharing the frame waiting logic and update loop with the primary view configurat
 </div>
 </div>
 <div class="sect3">
-<h4 id="_enumerate_supported_secondary_view_configurations"><a class="anchor" href="#_enumerate_supported_secondary_view_configurations"></a>12.30.2. Enumerate supported secondary view configurations</h4>
+<h4 id="_enumerate_supported_secondary_view_configurations"><a class="anchor" href="#_enumerate_supported_secondary_view_configurations"></a>12.31.2. Enumerate supported secondary view configurations</h4>
 <div class="paragraph">
 <p>The first step is for the application to inspect if a system supports certain secondary view configurations.
 The app uses the existing API <a href="#xrEnumerateViewConfigurations">xrEnumerateViewConfigurations</a> for this.</p>
@@ -33755,7 +34209,7 @@ and can use this secondary view configuration type in later functions.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_secondary_view_configuration_properties"><a class="anchor" href="#_secondary_view_configuration_properties"></a>12.30.3. Secondary view configuration properties</h4>
+<h4 id="_secondary_view_configuration_properties"><a class="anchor" href="#_secondary_view_configuration_properties"></a>12.31.3. Secondary view configuration properties</h4>
 <div class="paragraph">
 <p>The application can inspect the properties of a secondary view configuration through the existing <a href="#xrGetViewConfigurationProperties">xrGetViewConfigurationProperties</a>,
 <a href="#xrEnumerateViewConfigurationViews">xrEnumerateViewConfigurationViews</a> and <a href="#xrEnumerateEnvironmentBlendModes">xrEnumerateEnvironmentBlendModes</a> functions using a supported secondary view configurations type.</p>
@@ -33838,7 +34292,7 @@ regardless which view configuration type was hinted when swapchain image was cre
 </div>
 </div>
 <div class="sect3">
-<h4 id="_enable_secondary_view_configuration"><a class="anchor" href="#_enable_secondary_view_configuration"></a>12.30.4. Enable secondary view configuration</h4>
+<h4 id="_enable_secondary_view_configuration"><a class="anchor" href="#_enable_secondary_view_configuration"></a>12.31.4. Enable secondary view configuration</h4>
 <div class="paragraph">
 <p>The application indicates to the runtime which secondary view configurations it can support by enabling them during its call to <a href="#xrBeginSession">xrBeginSession</a>,
 attaching the extension struct <a href="#XrSessionBeginSecondaryViewConfigurationInfoMSFT">XrSessionBeginSecondaryViewConfigurationInfoMSFT</a> to the <a href="#XrSessionBeginInfo">XrSessionBeginInfo</a>::next pointer.</p>
@@ -33926,7 +34380,7 @@ or else the runtime <strong class="purple">must</strong> return error <code>XR_E
 </div>
 </div>
 <div class="sect3">
-<h4 id="_per_frame_active_view_configurations"><a class="anchor" href="#_per_frame_active_view_configurations"></a>12.30.5. Per-frame active view configurations</h4>
+<h4 id="_per_frame_active_view_configurations"><a class="anchor" href="#_per_frame_active_view_configurations"></a>12.31.5. Per-frame active view configurations</h4>
 <div class="paragraph">
 <p>Each frame, the runtime then tells the application at the <a href="#xrWaitFrame">xrWaitFrame</a> function call
 which of the enabled secondary view configurations are active for that frame.
@@ -34097,7 +34551,7 @@ by setting the corresponding <code>active</code> in the <a href="#XrSecondaryVie
 </div>
 </div>
 <div class="sect3">
-<h4 id="_locate_and_inspect_view_states_of_secondary_view_configurations"><a class="anchor" href="#_locate_and_inspect_view_states_of_secondary_view_configurations"></a>12.30.6. Locate and inspect view states of secondary view configurations</h4>
+<h4 id="_locate_and_inspect_view_states_of_secondary_view_configurations"><a class="anchor" href="#_locate_and_inspect_view_states_of_secondary_view_configurations"></a>12.31.6. Locate and inspect view states of secondary view configurations</h4>
 <div class="paragraph">
 <p>When the application calls <a href="#xrLocateViews">xrLocateViews</a>,
 it <strong class="purple">can</strong> use <a href="#XrViewLocateInfo">XrViewLocateInfo</a>::viewConfigurationType field to query the view location and projection information
@@ -34115,7 +34569,7 @@ but the resulting <code>XrViewState</code> <strong class="purple">may</strong> h
 </div>
 </div>
 <div class="sect3">
-<h4 id="_submit_composition_layers_to_secondary_view_configurations"><a class="anchor" href="#_submit_composition_layers_to_secondary_view_configurations"></a>12.30.7. Submit composition layers to secondary view configurations</h4>
+<h4 id="_submit_composition_layers_to_secondary_view_configurations"><a class="anchor" href="#_submit_composition_layers_to_secondary_view_configurations"></a>12.31.7. Submit composition layers to secondary view configurations</h4>
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
@@ -34383,7 +34837,7 @@ The runtime <strong class="purple">must</strong> ignore composition layers submi
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_spatial_anchor"><a class="anchor" href="#XR_MSFT_spatial_anchor"></a>12.31. XR_MSFT_spatial_anchor</h3>
+<h3 id="XR_MSFT_spatial_anchor"><a class="anchor" href="#XR_MSFT_spatial_anchor"></a>12.32. XR_MSFT_spatial_anchor</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -35010,7 +35464,7 @@ maintain tracking for that anchor&#8217;s origin.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_spatial_graph_bridge_preview"><a class="anchor" href="#XR_MSFT_spatial_graph_bridge_preview"></a>12.32. XR_MSFT_spatial_graph_bridge_preview</h3>
+<h3 id="XR_MSFT_spatial_graph_bridge_preview"><a class="anchor" href="#XR_MSFT_spatial_graph_bridge_preview"></a>12.33. XR_MSFT_spatial_graph_bridge_preview</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -35322,7 +35776,7 @@ Dynamic spatial nodes are represented by <code>XR_SPATIAL_GRAPH_NODE_TYPE_DYNAMI
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_unbounded_reference_space"><a class="anchor" href="#XR_MSFT_unbounded_reference_space"></a>12.33. XR_MSFT_unbounded_reference_space</h3>
+<h3 id="XR_MSFT_unbounded_reference_space"><a class="anchor" href="#XR_MSFT_unbounded_reference_space"></a>12.34. XR_MSFT_unbounded_reference_space</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -35486,7 +35940,7 @@ extension is enabled.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_OCULUS_android_session_state_enable"><a class="anchor" href="#XR_OCULUS_android_session_state_enable"></a>12.34. XR_OCULUS_android_session_state_enable</h3>
+<h3 id="XR_OCULUS_android_session_state_enable"><a class="anchor" href="#XR_OCULUS_android_session_state_enable"></a>12.35. XR_OCULUS_android_session_state_enable</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -35665,7 +36119,7 @@ from surfaceDestroyed() or onPause(), whichever comes first.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_VARJO_quad_views"><a class="anchor" href="#XR_VARJO_quad_views"></a>12.35. XR_VARJO_quad_views</h3>
+<h3 id="XR_VARJO_quad_views"><a class="anchor" href="#XR_VARJO_quad_views"></a>12.36. XR_VARJO_quad_views</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -35711,7 +36165,7 @@ Robert Menzel, NVIDIA</p>
 </dl>
 </div>
 <div class="sect3">
-<h4 id="_overview_5"><a class="anchor" href="#_overview_5"></a>12.35.1. Overview</h4>
+<h4 id="_overview_5"><a class="anchor" href="#_overview_5"></a>12.36.1. Overview</h4>
 <div class="paragraph">
 <p>This extension adds a new view configuration type -
 <code>XR_VIEW_CONFIGURATION_TYPE_PRIMARY_QUAD_VARJO</code> to
@@ -35830,7 +36284,7 @@ view.</p>
 </dd>
 <dt class="hdlist1"><strong>Revision</strong></dt>
 <dd>
-<p>3</p>
+<p>4</p>
 </dd>
 <dt class="hdlist1"><strong>Extension and Version Dependencies</strong></dt>
 <dd>
@@ -35848,7 +36302,7 @@ view.</p>
 <dl>
 <dt class="hdlist1"><strong>Last Modified Date</strong></dt>
 <dd>
-<p>2020-03-05</p>
+<p>2020-03-23</p>
 </dd>
 <dt class="hdlist1"><strong>IP Status</strong></dt>
 <dd>
@@ -35915,7 +36369,7 @@ indicated in the <a href="#extension">[extension]</a> section.</p>
 </div>
 <div class="paragraph">
 <p>When you are ready to create an overlay session, you will need to create a
-<a href="#XrSessionCreateInfoOverlayEXTX">XrSessionCreateInfoOverlayEXTX</a> structure and passing it into the
+<a href="#XrSessionCreateInfoOverlayEXTX">XrSessionCreateInfoOverlayEXTX</a> structure and pass it into the
 <a href="#xrCreateSession">xrCreateSession</a> via the <a href="#XrSessionCreateInfo">XrSessionCreateInfo</a> structure&#8217;s
 <code>next</code> parameter.</p>
 </div>
@@ -35926,7 +36380,7 @@ If the overlay application&#8217;s display content is not visually correlated to
 features in the main frame (e.g. a HUD or a notification UI) or the overlay
 application otherwise does not need its frames' display time to be
 synchronized to the main application, the application can set
-<code>XR_OVERLAY_SESSION_CREATE_RELAXED_DISPLAY_TIME_EXTX</code> in
+<code>XR_OVERLAY_SESSION_CREATE_RELAXED_DISPLAY_TIME_BIT_EXTX</code> in
 <code>createFlags</code> in <a href="#XrSessionCreateInfoOverlayEXTX">XrSessionCreateInfoOverlayEXTX</a>.</p>
 </div>
 <div class="sect3">
@@ -35988,7 +36442,7 @@ additional flags which can be used to adjust overlay behavior.</p>
 <p>If <a href="#XR_KHR_composition_layer_depth">XR_KHR_composition_layer_depth</a> is enabled in the main session, then
 <a href="#XrEventDataMainSessionVisibilityChangedEXTX">XrEventDataMainSessionVisibilityChangedEXTX</a> <code>flags</code> <strong class="purple">should</strong>
 contain the value:
-<code>XR_MAIN_SESSION_BIT_ENABLED_COMPOSITION_LAYER_INFO_DEPTH_EXTX</code>.
+<code>XR_OVERLAY_MAIN_SESSION_ENABLED_COMPOSITION_LAYER_INFO_DEPTH_BIT_EXTX</code>.
 If the overlay session also enables <a href="#XR_KHR_composition_layer_depth">XR_KHR_composition_layer_depth</a>, then
 when both sessions are visible, the runtime can integrate their projection
 layer content together using depth information as described in the
@@ -36012,9 +36466,9 @@ process will be changed if this extension is enabled.
 If this extension is enabled, and there is only one active session, then
 there is no change.
 However, if this extension is enabled, and there are multiple active
-sessions, then the composition will occur in order based on the
-overlay session&#8217;s <a href="#XrSessionCreateInfoOverlayEXTX">XrSessionCreateInfoOverlayEXTX</a>::
-<code>sessionLayersPlacement</code> value as described in the table below:</p>
+sessions, then the composition will occur in order based on the overlay
+session&#8217;s <a href="#XrSessionCreateInfoOverlayEXTX">XrSessionCreateInfoOverlayEXTX</a>::<code>sessionLayersPlacement</code>
+value as described in the table below:</p>
 </div>
 <table class="tableblock frame-topbot grid-all" style="width: 85%;">
 <caption class="title">Table 6. Overlay Session Composition Order</caption>
@@ -36026,7 +36480,7 @@ overlay session&#8217;s <a href="#XrSessionCreateInfoOverlayEXTX">XrSessionCreat
 <thead>
 <tr>
 <th class="tableblock halign-center valign-middle" style="background-color: white;">Session Type</th>
-<th class="tableblock halign-center valign-middle" style="background-color: white;"><a href="#XrSessionCreateInfoOverlayEXTX">XrSessionCreateInfoOverlayEXTX</a>:: <code>sessionLayersPlacement</code></th>
+<th class="tableblock halign-center valign-middle" style="background-color: white;"><a href="#XrSessionCreateInfoOverlayEXTX">XrSessionCreateInfoOverlayEXTX</a>::<code>sessionLayersPlacement</code></th>
 <th class="tableblock halign-center valign-middle" style="background-color: white;">Composited</th>
 </tr>
 </thead>
@@ -36134,7 +36588,7 @@ This may require duplicating events to more than one session.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="prettyprint highlight"><code data-lang="c++">// Flag bits for XrOverlayMainSessionFlagsEXTX
-static const XrOverlayMainSessionFlagsEXTX XR_MAIN_SESSION_BIT_ENABLED_COMPOSITION_LAYER_INFO_DEPTH_EXTX = 0x00000001;</code></pre>
+static const XrOverlayMainSessionFlagsEXTX XR_OVERLAY_MAIN_SESSION_ENABLED_COMPOSITION_LAYER_INFO_DEPTH_BIT_EXTX = 0x00000001;</code></pre>
 </div>
 </div>
 </div>
@@ -36159,7 +36613,7 @@ static const XrOverlayMainSessionFlagsEXTX XR_MAIN_SESSION_BIT_ENABLED_COMPOSITI
 <div class="listingblock">
 <div class="content">
 <pre class="prettyprint highlight"><code data-lang="c++">// Flag bits for XrOverlaySessionCreateFlagsEXTX
-static const XrOverlaySessionCreateFlagsEXTX XR_OVERLAY_SESSION_CREATE_RELAXED_DISPLAY_TIME_EXTX = 0x00000001;</code></pre>
+static const XrOverlaySessionCreateFlagsEXTX XR_OVERLAY_SESSION_CREATE_RELAXED_DISPLAY_TIME_BIT_EXTX = 0x00000001;</code></pre>
 </div>
 </div>
 </div>
@@ -36170,16 +36624,28 @@ static const XrOverlaySessionCreateFlagsEXTX XR_OVERLAY_SESSION_CREATE_RELAXED_D
 <div class="paragraph">
 <p><a href="#XrStructureType">XrStructureType</a> enumeration is extended with:</p>
 </div>
-<div class="paragraph">
-<p><code>XR_TYPE_SESSION_CREATE_INFO_OVERLAY_EXTX</code>
-<code>XR_TYPE_EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX</code></p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_TYPE_SESSION_CREATE_INFO_OVERLAY_EXTX</code></p>
+</li>
+<li>
+<p><code>XR_TYPE_EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX</code></p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p><strong>New Enums</strong></p>
 </div>
-<div class="paragraph">
-<p><code>XR_MAIN_SESSION_BIT_ENABLED_COMPOSITION_LAYER_INFO_DEPTH_EXTX</code>
-<code>XR_OVERLAY_SESSION_CREATE_RELAXED_DISPLAY_TIME_EXTX</code></p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_OVERLAY_MAIN_SESSION_ENABLED_COMPOSITION_LAYER_INFO_DEPTH_BIT_EXTX</code></p>
+</li>
+<li>
+<p><code>XR_OVERLAY_SESSION_CREATE_RELAXED_DISPLAY_TIME_BIT_EXTX</code></p>
+</li>
+</ul>
 </div>
 <div class="paragraph">
 <p><strong>New Structures</strong></p>
@@ -36205,15 +36671,15 @@ static const XrOverlaySessionCreateFlagsEXTX XR_OVERLAY_SESSION_CREATE_RELAXED_D
 <div class="ulist">
 <ul>
 <li>
-<p><code>type</code> is the type of this structure.</p>
+<p><code>type</code> is the <a href="#XrStructureType">XrStructureType</a> of this structure.</p>
 </li>
 <li>
 <p><code>next</code> is <code>NULL</code> or a pointer to an extension-specific structure.</p>
 </li>
 <li>
-<p><code>createFlags</code> is 0 or one or more
+<p><code>createFlags</code> is <code>0</code> or one or more
 <a href="#XrOverlaySessionCreateFlagBitsEXTX">XrOverlaySessionCreateFlagBitsEXTX</a> which indicate various
-characteristics desired for the overlay session</p>
+characteristics desired for the overlay session.</p>
 </li>
 <li>
 <p><code>sessionLayersPlacement</code> is a value indicating the desired placement
@@ -36274,8 +36740,8 @@ on the standard behavior.
 This structure contains additional information on the main session including
 <code>flags</code> which indicate additional state information of the main session.
 Currently, the only flag value supplied is
-<code>XR_MAIN_SESSION_BIT_ENABLED_COMPOSITION_LAYER_INFO_DEPTH_EXTX</code> which
-indicates if the main session has enabled the
+<code>XR_OVERLAY_MAIN_SESSION_ENABLED_COMPOSITION_LAYER_INFO_DEPTH_BIT_EXTX</code>
+which indicates if the main session has enabled the
 <a href="#XR_KHR_composition_layer_depth">XR_KHR_composition_layer_depth</a> extension.</p>
 </div>
 <div class="sidebarblock">
@@ -36284,8 +36750,7 @@ indicates if the main session has enabled the
 <div class="ulist">
 <ul>
 <li>
-<p><code>type</code> is
-<code>XR_TYPE_EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX</code>.</p>
+<p><code>type</code> is the <a href="#XrStructureType">XrStructureType</a> of this structure.</p>
 </li>
 <li>
 <p><code>next</code> is <code>NULL</code> or a pointer to an extension-specific structure.</p>
@@ -36377,6 +36842,16 @@ which indicates various state information for the main session.</p>
 <ul>
 <li>
 <p>Name change</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Revision 4, 2020-03-23 (Brad Grantham)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Fix enums</p>
 </li>
 </ul>
 </div>
@@ -37129,6 +37604,9 @@ which indicates various state information for the main session.</p>
 <p><a href="#XrExtent2Di">XrExtent2Di</a></p>
 </li>
 <li>
+<p><a href="#XrEyeGazeSampleTimeEXT">XrEyeGazeSampleTimeEXT</a></p>
+</li>
+<li>
 <p><a href="#XrFovf">XrFovf</a></p>
 </li>
 <li>
@@ -37340,6 +37818,9 @@ which indicates various state information for the main session.</p>
 </li>
 <li>
 <p><a href="#XrSwapchainSubImage">XrSwapchainSubImage</a></p>
+</li>
+<li>
+<p><a href="#XrSystemEyeGazeInteractionPropertiesEXT">XrSystemEyeGazeInteractionPropertiesEXT</a></p>
 </li>
 <li>
 <p><a href="#XrSystemGetInfo">XrSystemGetInfo</a></p>
@@ -37575,6 +38056,8 @@ the application binary interface.</p>
     XR_TYPE_GRAPHICS_BINDING_D3D12_KHR = 1000028000,
     XR_TYPE_SWAPCHAIN_IMAGE_D3D12_KHR = 1000028001,
     XR_TYPE_GRAPHICS_REQUIREMENTS_D3D12_KHR = 1000028002,
+    XR_TYPE_SYSTEM_EYE_GAZE_INTERACTION_PROPERTIES_EXT = 1000030000,
+    XR_TYPE_EYE_GAZE_SAMPLE_TIME_EXT = 1000030001,
     XR_TYPE_VISIBILITY_MASK_KHR = 1000031000,
     XR_TYPE_EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR = 1000031001,
     XR_TYPE_SESSION_CREATE_INFO_OVERLAY_EXTX = 1000033000,
@@ -37755,7 +38238,7 @@ Macros</a>.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="prettyprint highlight"><code data-lang="c++">// OpenXR current version number.
-#define XR_CURRENT_API_VERSION XR_MAKE_VERSION(1, 0, 7)</code></pre>
+#define XR_CURRENT_API_VERSION XR_MAKE_VERSION(1, 0, 8)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -38684,7 +39167,7 @@ the time of their most recent contribution, are listed below.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.0.7<br>
+Version 1.0.8<br>
 Last updated 2020-03-21 13:43:37 -0700
 </div>
 </div>

@@ -14,7 +14,7 @@
 //
 //*********************************************************
 #include "pch.h"
-#include "pbr/PbrMaterial.h"
+#include <pbr/PbrMaterial.h>
 #include "TextTexture.h"
 
 namespace {

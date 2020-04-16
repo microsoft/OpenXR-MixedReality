@@ -60,7 +60,7 @@ void PbrModelObject::SetBaseColorFactor(const Pbr::RGBAColor color) {
     }
 }
 
-std::shared_ptr<PbrModelObject> MakeCube(const Pbr::Resources& pbrResources,
+std::shared_ptr<PbrModelObject> CreateCube(const Pbr::Resources& pbrResources,
                                          XMFLOAT3 sideLengths,
                                          const Pbr::RGBAColor color,
                                          float roughness /*= 1.0f*/,
@@ -71,7 +71,7 @@ std::shared_ptr<PbrModelObject> MakeCube(const Pbr::Resources& pbrResources,
     return std::make_shared<PbrModelObject>(std::move(cubeModel));
 }
 
-std::shared_ptr<PbrModelObject> MakeQuad(const Pbr::Resources& pbrResources,
+std::shared_ptr<PbrModelObject> CreateQuad(const Pbr::Resources& pbrResources,
                                          XMFLOAT2 sideLengths,
                                          std::shared_ptr<Pbr::Material> material) {
     auto quadModel = std::make_shared<Pbr::Model>();
@@ -79,7 +79,7 @@ std::shared_ptr<PbrModelObject> MakeQuad(const Pbr::Resources& pbrResources,
     return std::make_shared<PbrModelObject>(std::move(quadModel));
 }
 
-std::shared_ptr<PbrModelObject> MakeSphere(const Pbr::Resources& pbrResources,
+std::shared_ptr<PbrModelObject> CreateSphere(const Pbr::Resources& pbrResources,
                                            float size,
                                            uint32_t tesselation,
                                            Pbr::RGBAColor color,
@@ -91,7 +91,7 @@ std::shared_ptr<PbrModelObject> MakeSphere(const Pbr::Resources& pbrResources,
     return std::make_shared<PbrModelObject>(std::move(sphereModel));
 }
 
-std::shared_ptr<PbrModelObject> MakeAxis(const Pbr::Resources& pbrResources,
+std::shared_ptr<PbrModelObject> CreateAxis(const Pbr::Resources& pbrResources,
                                          float axisLength /*= 1.0f*/,
                                          float axisThickness /*= 0.01f*/,
                                          float roughness /*= 0.85f*/,

@@ -14,8 +14,8 @@
 //
 //*********************************************************
 #include "pch.h"
-#include "PbrModelObject.h"
-#include "Scene.h"
+#include <XrSceneLib/PbrModelObject.h>
+#include <XrSceneLib/Scene.h>
 
 using namespace DirectX;
 using namespace xr::math;
@@ -55,10 +55,10 @@ namespace {
                                                                   });
             }
 
-            m_sun = AddSceneObject(MakeSphere(m_sceneContext.PbrResources, 0.5f, 20, Pbr::FromSRGB(Colors::OrangeRed)));
+            m_sun = AddSceneObject(CreateSphere(m_sceneContext.PbrResources, 0.5f, 20, Pbr::FromSRGB(Colors::OrangeRed)));
             m_sun->SetVisible(false); // invisible until tracking is valid and placement succeeded.
 
-            m_earth = AddSceneObject(MakeSphere(m_sceneContext.PbrResources, 0.1f, 20, Pbr::FromSRGB(Colors::SeaGreen)));
+            m_earth = AddSceneObject(CreateSphere(m_sceneContext.PbrResources, 0.1f, 20, Pbr::FromSRGB(Colors::SeaGreen)));
             m_earth->SetParent(m_sun);
 
             XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};

@@ -23,7 +23,7 @@ constexpr const char* ProgramName = "BasicXrApp_win32";
 constexpr const char* ProgramName = "BasicXrApp_uwp";
 #endif
 
-int __stdcall wWinMain(HINSTANCE, HINSTANCE, LPWSTR, int) {
+int __stdcall wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int) {
     try {
         auto graphics = sample::CreateCubeGraphics();
         auto program = sample::CreateOpenXrProgram(ProgramName, std::move(graphics));

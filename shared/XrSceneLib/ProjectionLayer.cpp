@@ -14,14 +14,15 @@
 //
 //*********************************************************
 #include "pch.h"
-#include "Scene.h"
-#include "ProjectionLayer.h"
-#include "CompositionLayers.h"
-#include "SceneContext.h"
 
+#include <XrUtility/XrMath.h>
 #include <SampleShared/DxUtility.h>
 #include <SampleShared/Trace.h>
-#include <XrUtility/XrMath.h>
+
+#include "ProjectionLayer.h"
+#include "CompositionLayers.h"
+#include "Scene.h"
+#include "SceneContext.h"
 
 using namespace DirectX;
 
@@ -47,8 +48,7 @@ ProjectionLayer::ProjectionLayer(std::function<void(DXGI_FORMAT, bool /*isDepth*
 
 void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
                                        XrViewConfigurationType viewConfigType,
-                                       const std::vector<XrViewConfigurationView>& viewConfigViews,
-                                       bool canCreateSwapchain) {
+                                       const std::vector<XrViewConfigurationView>& viewConfigViews) {
     ViewConfigComponent& viewConfigComponent = m_viewConfigComponents.at(viewConfigType);
     ProjectionLayerConfig& layerPendingConfig = viewConfigComponent.PendingConfig;
     ProjectionLayerConfig& layerCurrentConfig = viewConfigComponent.CurrentConfig;
@@ -115,12 +115,15 @@ void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
                                                                   static_cast<int32_t>(std::ceil(swapchainImageHeight))};
     }
 
-    if (!shouldResetSwapchain || !canCreateSwapchain) {
+    if (!shouldResetSwapchain) {
         return;
     }
 
     const uint32_t wideScale = layerCurrentConfig.DoubleWideMode ? 2 : 1;
     const uint32_t arrayLength = layerCurrentConfig.DoubleWideMode ? 1 : (uint32_t)viewConfigViews.size();
+
+    std::optional<XrViewConfigurationType> viewConfigurationForSwapchain =
+        sceneContext.Extensions.SupportsSecondaryViewConfiguration ? std::optional{viewConfigType} : std::nullopt;
 
     // Create color swapchain with recommended properties.
     viewConfigComponent.ColorSwapchain =
@@ -132,7 +135,7 @@ void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
                                          swapchainSampleCount,
                                          layerCurrentConfig.ContentProtected ? XR_SWAPCHAIN_CREATE_PROTECTED_CONTENT_BIT : 0,
                                          XR_SWAPCHAIN_USAGE_SAMPLED_BIT | XR_SWAPCHAIN_USAGE_COLOR_ATTACHMENT_BIT,
-                                         viewConfigType);
+                                         viewConfigurationForSwapchain);
 
     // Create depth swapchain with recommended properties.
     viewConfigComponent.DepthSwapchain =
@@ -144,7 +147,7 @@ void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
                                          swapchainSampleCount,
                                          layerCurrentConfig.ContentProtected ? XR_SWAPCHAIN_CREATE_PROTECTED_CONTENT_BIT : 0,
                                          XR_SWAPCHAIN_USAGE_DEPTH_STENCIL_ATTACHMENT_BIT,
-                                         viewConfigType);
+                                         viewConfigurationForSwapchain);
 
     {
         CD3D11_DEPTH_STENCIL_DESC depthStencilDesc(CD3D11_DEFAULT{});

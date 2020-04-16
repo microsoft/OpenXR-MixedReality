@@ -19,7 +19,7 @@
 
 using namespace DirectX;
 
-std::shared_ptr<QuadLayerObject> MakeQuadLayerObject(XrSpace space, XrSwapchainSubImage image) {
+std::shared_ptr<QuadLayerObject> CreateQuadLayerObject(XrSpace space, XrSwapchainSubImage image) {
     auto result = std::make_shared<QuadLayerObject>();
     result->Image = std::move(image);
     result->Space = space;

@@ -14,8 +14,8 @@
 //
 //*********************************************************
 #include "pch.h"
-#include "PbrModelObject.h"
-#include "Scene.h"
+#include <XrSceneLib/PbrModelObject.h>
+#include <XrSceneLib/Scene.h>
 
 using namespace DirectX;
 using namespace xr::math;
@@ -81,10 +81,10 @@ namespace {
             CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session, &spaceCreateInfo, m_leftAimSpace.Put()));
 
             m_holograms.emplace_back(m_rightAimSpace.Get(),
-                                     AddSceneObject(MakeSphere(m_sceneContext.PbrResources, 0.05f, 20, Pbr::FromSRGB(Colors::Magenta))));
+                                     AddSceneObject(CreateSphere(m_sceneContext.PbrResources, 0.05f, 20, Pbr::FromSRGB(Colors::Magenta))));
 
             m_holograms.emplace_back(m_leftAimSpace.Get(),
-                                     AddSceneObject(MakeSphere(m_sceneContext.PbrResources, 0.05f, 20, Pbr::FromSRGB(Colors::Cyan))));
+                                     AddSceneObject(CreateSphere(m_sceneContext.PbrResources, 0.05f, 20, Pbr::FromSRGB(Colors::Cyan))));
         }
 
         void OnUpdate(const FrameTime& frameTime) override {
@@ -145,7 +145,7 @@ namespace {
                 CHECK_XRCMD(xrLocateSpace(space, baseSpace, time, &spaceLocation));
 
                 Hologram hologram;
-                hologram.Object = AddSceneObject(MakeCube(m_sceneContext.PbrResources, sideLength, color));
+                hologram.Object = AddSceneObject(CreateCube(m_sceneContext.PbrResources, sideLength, color));
                 hologram.Space = baseSpace;
                 hologram.Pose = Pose::Multiply(Pose::Translation(offset), spaceLocation.pose);
                 m_holograms.emplace_back(std::move(hologram));

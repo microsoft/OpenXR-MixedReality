@@ -14,7 +14,7 @@
 //
 //*********************************************************
 #include "pch.h"
-#include "App.h"
+#include <XrSceneLib/XrApp.h>
 
 std::unique_ptr<Scene> TryCreateTitleScene(SceneContext& sceneContext);
 std::unique_ptr<Scene> TryCreateThreeCubesScene(SceneContext& sceneContext);

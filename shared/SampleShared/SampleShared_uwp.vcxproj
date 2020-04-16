@@ -372,6 +372,14 @@
     <Image Include="UWPAssets\storeLogo-sdk.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Sample_DiffuseHDR.dds">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Sample_SpecularHDR.dds">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -2,7 +2,7 @@
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="App.cpp" />
+    <ClCompile Include="XrApp.cpp" />
     <ClCompile Include="PbrModelObject.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
@@ -27,10 +27,16 @@
     <ClCompile Include="ControllerObject.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
+    <ClCompile Include="SpaceObject.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="ObjectMotion.cpp">
+      <Filter>Objects</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
-    <ClInclude Include="App.h" />
+    <ClInclude Include="XrApp.h" />
     <ClInclude Include="PbrModelObject.h">
       <Filter>Objects</Filter>
     </ClInclude>
@@ -59,6 +65,12 @@
       <Filter>Layers</Filter>
     </ClInclude>
     <ClInclude Include="ControllerObject.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="SpaceObject.h">
+      <Filter>Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="ObjectMotion.h">
       <Filter>Objects</Filter>
     </ClInclude>
   </ItemGroup>

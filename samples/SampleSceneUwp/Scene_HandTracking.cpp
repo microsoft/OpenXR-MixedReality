@@ -15,8 +15,8 @@
 //*********************************************************
 #include "pch.h"
 #include <XrUtility/XrHand.h>
-#include "PbrModelObject.h"
-#include "Scene.h"
+#include <XrSceneLib/PbrModelObject.h>
+#include <XrSceneLib/Scene.h>
 
 using namespace DirectX;
 

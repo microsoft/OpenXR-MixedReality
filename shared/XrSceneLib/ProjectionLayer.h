@@ -19,6 +19,8 @@
 #include <XrUtility/XrHandle.h>
 #include <XrUtility/XrMath.h>
 #include <SampleShared/DxUtility.h>
+#include "SceneContext.h"
+#include "FrameTime.h"
 
 struct ProjectionLayerConfig {
     XrCompositionLayerFlags LayerFlags = XR_COMPOSITION_LAYER_BLEND_TEXTURE_SOURCE_ALPHA_BIT;
@@ -36,6 +38,8 @@ struct ProjectionLayerConfig {
     bool ForceReset = false;
     DirectX::XMVECTORF32 ClearColor = DirectX::Colors::Transparent;
 };
+
+struct Scene;
 
 class ProjectionLayer {
 public:
@@ -67,8 +71,7 @@ public:
 
     void PrepareRendering(const SceneContext& sceneContext,
                           XrViewConfigurationType viewConfigType,
-                          const std::vector<XrViewConfigurationView>& viewConfigViews,
-                          bool canCreateSwapchain);
+                          const std::vector<XrViewConfigurationView>& viewConfigViews);
 
     bool Render(SceneContext& sceneContext,
                 const FrameTime& frameTime,

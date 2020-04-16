@@ -13,24 +13,18 @@
 //    permissions and limitations under the License.
 //
 //*********************************************************
+
 #pragma once
 
-#include "SceneObject.h"
-#include "SceneContext.h"
+struct Motion {
+    bool Enabled{false};
+    DirectX::XMFLOAT3 LinearVelocity{};
+    DirectX::XMFLOAT3 LinearAcceleration{};
+    DirectX::XMFLOAT3 AngularVelocity{};
+    DirectX::XMFLOAT3 AngularAcceleration{};
 
-enum class LayerGrouping {
-    Underlay, // Behind all projection layers
-    Overlay   // In front of all projection layers
+    void SetGravity(float gravitationalAcceleration = 9.8f);
+    void SetVelocity(const XrSpaceVelocity& velocity);
+    void SetRotation(const XrVector3f& axis, float radiansPerSecond);
+    void UpdateMotionAndPose(XrPosef& pose, std::chrono::duration<float> durationInSeconds);
 };
-
-struct QuadLayerObject : public SceneObject {
-    XrSwapchainSubImage Image;
-
-    XrSpace Space{XR_NULL_HANDLE};
-    XrCompositionLayerFlags CompositionLayerFlags{};
-    XrEyeVisibility EyeVisibility{XR_EYE_VISIBILITY_BOTH};
-    LayerGrouping LayerGroup = LayerGrouping::Overlay;
-};
-
-std::shared_ptr<QuadLayerObject> MakeQuadLayerObject(XrSpace space, XrSwapchainSubImage image);
-

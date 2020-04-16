@@ -40,7 +40,7 @@ namespace {
             constexpr float titleWidth = 0.5f;
             constexpr float titleHeight = titleWidth / 3;
             const auto& material = Pbr::Material::CreateFlat(m_sceneContext.PbrResources, Pbr::FromSRGB(Colors::DarkGray));
-            m_background = AddSceneObject(MakeQuad(m_sceneContext.PbrResources, {titleWidth, titleHeight}, material));
+            m_background = AddSceneObject(CreateQuad(m_sceneContext.PbrResources, {titleWidth, titleHeight}, material));
             m_background->SetVisible(false);
 
             TextTextureInfo textInfo{256, 128}; // pixels
@@ -55,7 +55,7 @@ namespace {
                 std::unique_ptr<TextTexture> textTexture = std::make_unique<TextTexture>(m_sceneContext, textInfo);
                 textTexture->Draw(block.Text.c_str());
                 const auto& material = textTexture->CreatePbrMaterial(m_sceneContext.PbrResources);
-                block.Object = AddSceneObject(MakeQuad(m_sceneContext.PbrResources, {titleWidth, blockHeight}, material));
+                block.Object = AddSceneObject(CreateQuad(m_sceneContext.PbrResources, {titleWidth, blockHeight}, material));
                 block.Object->Pose() = Pose::Translation({0, (titleHeight / 2) - top - (blockHeight / 2), margin});
                 block.Object->SetParent(m_background);
             };

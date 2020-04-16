@@ -15,8 +15,6 @@
 //*********************************************************
 #pragma once
 
-#include <openxr/openxr.h>
-
 #include <dxgi.h>
 #include <d2d1_2.h>
 #include <dwrite_2.h>

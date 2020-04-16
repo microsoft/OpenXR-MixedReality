@@ -149,7 +149,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <AppxManifest Include="Package.appxmanifest">
+    <AppxManifest Include="Package.appxmanifest" Condition="'$(LinkCompiled)'!='false'">
       <SubType>Designer</SubType>
     </AppxManifest>
     <None Include="TemporaryKey.pfx" />

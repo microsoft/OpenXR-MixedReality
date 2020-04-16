@@ -37,5 +37,5 @@ public:
 
 std::unique_ptr<XrApp> CreateXrApp(const xr::NameVersion& appInfo,
                                    const std::vector<const char*>& extensions,
-                                   bool singleThreadedGraphics = false);
+                                   bool singleThreadedD3D11Device = false);
 
