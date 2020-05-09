@@ -47,7 +47,7 @@ namespace {
 
                     JointData& jointData = handData.JointData[xr::JointToIndex(joint)];
                     CHECK_XRCMD(m_sceneContext.Extensions.xrCreateHandJointSpaceMSFT(
-                        m_sceneContext.Session, &jointCreateInfo, jointData.JointSpace.Put()));
+                        m_sceneContext.Session.Handle, &jointCreateInfo, jointData.JointSpace.Put()));
 
                     // Create a axis object attached to each joint space
                     jointData.NodeIndex = jointModel->AddNode(DirectX::XMMatrixIdentity(), Pbr::RootNodeIndex, "joint");
@@ -68,7 +68,9 @@ namespace {
                 XrHandTrackerCreateInfoMSFT createInfo{XR_TYPE_HAND_TRACKER_CREATE_INFO_MSFT};
                 createInfo.hand = hand;
                 CHECK_XRCMD(m_sceneContext.Extensions.xrCreateHandTrackerMSFT(
-                    m_sceneContext.Session, &createInfo, handData.TrackerHandle.Put(m_sceneContext.Extensions.xrDestroyHandTrackerMSFT)));
+                    m_sceneContext.Session.Handle,
+                    &createInfo,
+                    handData.TrackerHandle.Put(m_sceneContext.Extensions.xrDestroyHandTrackerMSFT)));
 
                 createJointObjects(handData);
 
@@ -87,11 +89,11 @@ namespace {
                 meshSpaceCreateInfo.poseInHandMeshSpace = xr::math::Pose::Identity();
                 meshSpaceCreateInfo.handPoseType = XR_HAND_POSE_TYPE_TRACKED_MSFT;
                 CHECK_XRCMD(m_sceneContext.Extensions.xrCreateHandMeshSpaceMSFT(
-                    m_sceneContext.Session, &meshSpaceCreateInfo, handData.MeshSpace.Put()));
+                    m_sceneContext.Session.Handle, &meshSpaceCreateInfo, handData.MeshSpace.Put()));
 
                 meshSpaceCreateInfo.handPoseType = XR_HAND_POSE_TYPE_REFERENCE_OPEN_PALM_MSFT;
                 CHECK_XRCMD(m_sceneContext.Extensions.xrCreateHandMeshSpaceMSFT(
-                    m_sceneContext.Session, &meshSpaceCreateInfo, handData.ReferenceMeshSpace.Put()));
+                    m_sceneContext.Session.Handle, &meshSpaceCreateInfo, handData.ReferenceMeshSpace.Put()));
             }
 
             // Set a clap detector that will toggle the display mode.
@@ -247,7 +249,8 @@ namespace {
                 createInfo.joint = joint;
 
                 xr::SpaceHandle jointSpace;
-                CHECK_XRCMD(m_sceneContext.Extensions.xrCreateHandJointSpaceMSFT(m_sceneContext.Session, &createInfo, jointSpace.Put()));
+                CHECK_XRCMD(
+                    m_sceneContext.Extensions.xrCreateHandJointSpaceMSFT(m_sceneContext.Session.Handle, &createInfo, jointSpace.Put()));
 
                 XrSpaceLocation jointLocation{XR_TYPE_SPACE_LOCATION};
                 CHECK_XRCMD(xrLocateSpace(jointSpace.Get(), handData.ReferenceMeshSpace.Get(), time, &jointLocation));

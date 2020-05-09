@@ -39,20 +39,20 @@ namespace {
 
         // Load the controller model as GLTF binary stream using two call idiom
         uint32_t bufferSize = 0;
-        CHECK_XRCMD(sceneContext.Extensions.xrLoadControllerModelMSFT(sceneContext.Session, modelKey, 0, &bufferSize, nullptr));
+        CHECK_XRCMD(sceneContext.Extensions.xrLoadControllerModelMSFT(sceneContext.Session.Handle, modelKey, 0, &bufferSize, nullptr));
         auto modelBuffer = std::make_unique<byte[]>(bufferSize);
-        CHECK_XRCMD(
-            sceneContext.Extensions.xrLoadControllerModelMSFT(sceneContext.Session, modelKey, bufferSize, &bufferSize, modelBuffer.get()));
+        CHECK_XRCMD(sceneContext.Extensions.xrLoadControllerModelMSFT(
+            sceneContext.Session.Handle, modelKey, bufferSize, &bufferSize, modelBuffer.get()));
         model->PbrModel = Gltf::FromGltfBinary(sceneContext.PbrResources, modelBuffer.get(), bufferSize);
 
         // Read the controller model properties with two call idiom
         XrControllerModelPropertiesMSFT properties{XR_TYPE_CONTROLLER_MODEL_PROPERTIES_MSFT};
         properties.nodeCapacityInput = 0;
-        CHECK_XRCMD(sceneContext.Extensions.xrGetControllerModelPropertiesMSFT(sceneContext.Session, modelKey, &properties));
+        CHECK_XRCMD(sceneContext.Extensions.xrGetControllerModelPropertiesMSFT(sceneContext.Session.Handle, modelKey, &properties));
         model->NodeProperties.resize(properties.nodeCountOutput, {XR_TYPE_CONTROLLER_MODEL_NODE_PROPERTIES_MSFT});
         properties.nodeProperties = model->NodeProperties.data();
         properties.nodeCapacityInput = static_cast<uint32_t>(model->NodeProperties.size());
-        CHECK_XRCMD(sceneContext.Extensions.xrGetControllerModelPropertiesMSFT(sceneContext.Session, modelKey, &properties));
+        CHECK_XRCMD(sceneContext.Extensions.xrGetControllerModelPropertiesMSFT(sceneContext.Session.Handle, modelKey, &properties));
 
         // Compute the index of each node reported by runtime to be animated.
         // The order of m_nodeIndices exactly matches the order of the nodes properties and states.
@@ -74,12 +74,12 @@ namespace {
     void UpdateControllerParts(SceneContext& sceneContext, ControllerModel& model) {
         XrControllerModelStateMSFT modelState{XR_TYPE_CONTROLLER_MODEL_STATE_MSFT};
         modelState.nodeCapacityInput = 0;
-        CHECK_XRCMD(sceneContext.Extensions.xrGetControllerModelStateMSFT(sceneContext.Session, model.Key, &modelState));
+        CHECK_XRCMD(sceneContext.Extensions.xrGetControllerModelStateMSFT(sceneContext.Session.Handle, model.Key, &modelState));
 
         model.NodeStates.resize(modelState.nodeCountOutput, {XR_TYPE_CONTROLLER_MODEL_STATE_MSFT});
         modelState.nodeCapacityInput = static_cast<uint32_t>(model.NodeStates.size());
         modelState.nodeStates = model.NodeStates.data();
-        CHECK_XRCMD(sceneContext.Extensions.xrGetControllerModelStateMSFT(sceneContext.Session, model.Key, &modelState));
+        CHECK_XRCMD(sceneContext.Extensions.xrGetControllerModelStateMSFT(sceneContext.Session.Handle, model.Key, &modelState));
 
         assert(model.NodeStates.size() == model.NodeIndices.size());
         const size_t end = std::min(model.NodeStates.size(), model.NodeIndices.size());
@@ -116,7 +116,7 @@ namespace {
         actionSpaceCreateInfo.poseInActionSpace = xr::math::Pose::Identity();
         actionSpaceCreateInfo.subactionPath = m_subactionPath;
         actionSpaceCreateInfo.action = m_gripPoseAction;
-        CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session, &actionSpaceCreateInfo, m_gripSpace.Put()));
+        CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session.Handle, &actionSpaceCreateInfo, m_gripSpace.Put()));
     }
 
     ControllerObject::~ControllerObject() {
@@ -134,7 +134,7 @@ namespace {
             XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
             getInfo.action = m_gripPoseAction;
             getInfo.subactionPath = m_subactionPath;
-            CHECK_XRCMD(xrGetActionStatePose(m_sceneContext.Session, &getInfo, &poseAction));
+            CHECK_XRCMD(xrGetActionStatePose(m_sceneContext.Session.Handle, &getInfo, &poseAction));
         }
 
         // If a new valid model key is returned, reload the model into cache asynchronizely

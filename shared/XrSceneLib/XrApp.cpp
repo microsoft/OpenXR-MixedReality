@@ -99,41 +99,20 @@ namespace {
         }
 
         ::ProjectionLayers& ProjectionLayers() override {
-            return m_projectionLayerCollection;
+            return m_projectionLayers;
         }
 
     private:
 
-        xr::SessionHandle m_session;
-        std::vector<DXGI_FORMAT> m_sessionSupportedColorSwapchainFormats;
-        std::vector<DXGI_FORMAT> m_sessionSupportedDepthSwapchainFormats;
-        std::vector<XrViewConfigurationType> m_enabledSecondaryViewConfigurationTypes;
-
         std::unique_ptr<::SceneContext> m_sceneContext;
+        xr::SpaceHandle m_viewSpace;
         xr::SpaceHandle m_sceneSpace;
 
-        // Make sure we declare projection layers after instance to ensure projection layers are destroyed before instance
-        ::ProjectionLayers m_projectionLayerCollection = ::ProjectionLayers([this]() {
-            auto ensureSwapchainFormatSupportedFunction = [&](DXGI_FORMAT format, bool isDepth) {
-                if (isDepth) {
-                    if (!xr::Contains(m_sessionSupportedDepthSwapchainFormats, format)) {
-                        throw std::runtime_error(fmt::format("Unsupported depth swapchain format: {}", format).c_str());
-                    }
-                } else {
-                    if (!xr::Contains(m_sessionSupportedColorSwapchainFormats, format)) {
-                        throw std::runtime_error(fmt::format("Unsupported color swapchain format: {}", format).c_str());
-                    }
-                }
-            };
+        ::ProjectionLayers m_projectionLayers;
+        std::unordered_map<XrViewConfigurationType, xr::ViewConfigurationState> m_viewConfigStates;
 
-            return std::make_unique<ProjectionLayer>(ensureSwapchainFormatSupportedFunction,
-                                                     m_sessionSupportedColorSwapchainFormats[0],
-                                                     m_sessionSupportedDepthSwapchainFormats[0],
-                                                     PrimaryViewConfigurationType,
-                                                     m_enabledSecondaryViewConfigurationTypes);
-        });
-
-        std::unordered_map<XrViewConfigurationType, xr::ViewConfigurationState> m_viewConfigState;
+        std::mutex m_secondaryViewConfigActiveMutex;
+        std::vector<XrSecondaryViewConfigurationStateMSFT> m_secondaryViewConfigurationsState;
 
         std::mutex m_sceneMutex;
         std::vector<std::unique_ptr<Scene>> m_scenes;
@@ -198,51 +177,53 @@ namespace {
             return systemOpt.value();
         }();
 
+        if (!xr::Contains(system.SupportedPrimaryViewConfigurationTypes, PrimaryViewConfigurationType)) {
+            throw std::logic_error("The system doesn't support required primary view configuration.");
+        }
+
         auto [d3d11Binding, device, deviceContext] =
             sample::dx::CreateD3D11Binding(instance.Handle, system.Id, extensions, singleThreadedD3D11Device, SupportedFeatureLevels);
 
-        XrSessionCreateInfo createInfo{XR_TYPE_SESSION_CREATE_INFO, &d3d11Binding, 0, system.Id};
-        CHECK_XRCMD(xrCreateSession(instance.Handle, &createInfo, m_session.Put()));
+        xr::SessionHandle sessionHandle;
+        XrSessionCreateInfo sessionCreateInfo{XR_TYPE_SESSION_CREATE_INFO, &d3d11Binding, 0, system.Id};
+        CHECK_XRCMD(xrCreateSession(instance.Handle, &sessionCreateInfo, sessionHandle.Put()));
 
-        // In this sample, enable all system supported secondary view configurations
-        m_enabledSecondaryViewConfigurationTypes = system.SupportedSecondaryViewConfigurationTypes;
+        xr::SessionContext session(std::move(sessionHandle),
+                                   system,
+                                   extensions,
+                                   PrimaryViewConfigurationType,
+                                   SupportedViewConfigurationTypes, // enable all supported secondary view config
+                                   SupportedColorSwapchainFormats,
+                                   SupportedDepthSwapchainFormats);
 
         // Initialize XrViewConfigurationView and XrView buffers
-        m_viewConfigState.emplace(PrimaryViewConfigurationType,
-                                  xr::CreateViewConfigurationState(PrimaryViewConfigurationType, instance.Handle, system.Id));
-        for (const auto& viewConfigurationType : m_enabledSecondaryViewConfigurationTypes) {
-            m_viewConfigState.emplace(viewConfigurationType,
-                                      xr::CreateViewConfigurationState(viewConfigurationType, instance.Handle, system.Id));
+        for (const auto& viewConfigurationType : xr::GetAllViewConfigurationTypes(session)) {
+            m_viewConfigStates.emplace(viewConfigurationType,
+                                       xr::CreateViewConfigurationState(viewConfigurationType, instance.Handle, system.Id));
         }
+
+        // Create view app space
+        XrReferenceSpaceCreateInfo spaceCreateInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
+        spaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
+        spaceCreateInfo.poseInReferenceSpace = xr::math::Pose::Identity();
+        CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_viewSpace.Put()));
 
         // Create main app space
-        XrReferenceSpaceCreateInfo spaceCreateInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
         spaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
-        spaceCreateInfo.poseInReferenceSpace = xr::math::Pose::Identity();
-        CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &spaceCreateInfo, m_sceneSpace.Put()));
-
-        auto sessionSupportedSwapchainFormats = xr::EnumerateSwapchainFormats(m_session.Get());
-        for (auto format : sessionSupportedSwapchainFormats) {
-            if (xr::Contains(SupportedColorSwapchainFormats, format)) {
-                m_sessionSupportedColorSwapchainFormats.push_back(static_cast<DXGI_FORMAT>(format));
-            } else if (xr::Contains(SupportedDepthSwapchainFormats, format)) {
-                m_sessionSupportedDepthSwapchainFormats.push_back(static_cast<DXGI_FORMAT>(format));
-            }
-        }
+        CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_sceneSpace.Put()));
 
         Pbr::Resources pbrResources = sample::InitializePbrResources(device.get());
 
         m_sceneContext = std::make_unique<::SceneContext>(std::move(instance),
                                                           std::move(extensions),
                                                           std::move(system),
-                                                          m_session.Get(),
-                                                          PrimaryViewConfigurationType,
+                                                          std::move(session),
                                                           m_sceneSpace.Get(),
                                                           std::move(pbrResources),
                                                           device,
                                                           deviceContext);
 
-        m_projectionLayerCollection.Resize(1, true /*forceReset*/);
+        m_projectionLayers.Resize(1, SceneContext(), true /*forceReset*/);
     }
 
     ImplementXrApp::~ImplementXrApp() {
@@ -305,7 +286,7 @@ namespace {
             actionContexts.push_back(&scene->ActionContext());
         }
 
-        xr::AttachActionsToSession(SceneContext().Instance.Handle, SceneContext().Session, actionContexts);
+        xr::AttachActionsToSession(SceneContext().Instance.Handle, SceneContext().Session.Handle, actionContexts);
     }
 
     void ImplementXrApp::SyncActions(const std::scoped_lock<std::mutex>& proofOfSceneLock) {
@@ -315,7 +296,7 @@ namespace {
                 actionContexts.push_back(&scene->ActionContext());
             }
         }
-        xr::SyncActions(SceneContext().Session, actionContexts);
+        xr::SyncActions(SceneContext().Session.Handle, actionContexts);
     }
 
     void ImplementXrApp::StartRenderThreadIfNotRunning() {
@@ -359,7 +340,7 @@ namespace {
 
     void ImplementXrApp::Stop() {
         if (m_sessionRunning) {
-            CHECK_XRCMD(xrRequestExitSession(SceneContext().Session));
+            CHECK_XRCMD(xrRequestExitSession(SceneContext().Session.Handle));
         } else {
             m_appLoopRunning = false; // quit app message loop
         }
@@ -378,7 +359,7 @@ namespace {
 
             if (eventData.type == XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED) {
                 auto* sessionStateChanged = xr::event_cast<XrEventDataSessionStateChanged>(&eventData);
-                if (sessionStateChanged->session == SceneContext().Session) {
+                if (sessionStateChanged->session == SceneContext().Session.Handle) {
                     SceneContext().SessionState = sessionStateChanged->state;
                     switch (SceneContext().SessionState) {
                     case XR_SESSION_STATE_EXITING:
@@ -408,48 +389,47 @@ namespace {
         XrSessionBeginInfo sessionBeginInfo{XR_TYPE_SESSION_BEGIN_INFO};
         sessionBeginInfo.primaryViewConfigurationType = PrimaryViewConfigurationType;
 
-        XrSessionBeginSecondaryViewConfigurationInfoMSFT secondaryViewConfigInfo{
-            XR_TYPE_SESSION_BEGIN_SECONDARY_VIEW_CONFIGURATION_INFO_MSFT};
-        if (SceneContext().Extensions.SupportsSecondaryViewConfiguration && m_enabledSecondaryViewConfigurationTypes.size() > 0) {
-            secondaryViewConfigInfo.viewConfigurationCount = (uint32_t)m_enabledSecondaryViewConfigurationTypes.size();
-            secondaryViewConfigInfo.enabledViewConfigurationTypes = m_enabledSecondaryViewConfigurationTypes.data();
+        XrSecondaryViewConfigurationSessionBeginInfoMSFT secondaryViewConfigInfo{
+            XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT};
+        if (SceneContext().Extensions.SupportsSecondaryViewConfiguration &&
+            SceneContext().Session.EnabledSecondaryViewConfigurationTypes.size() > 0) {
+            secondaryViewConfigInfo.viewConfigurationCount = (uint32_t)SceneContext().Session.EnabledSecondaryViewConfigurationTypes.size();
+            secondaryViewConfigInfo.enabledViewConfigurationTypes = SceneContext().Session.EnabledSecondaryViewConfigurationTypes.data();
             xr::InsertExtensionStruct(sessionBeginInfo, secondaryViewConfigInfo);
         }
 
-        CHECK_XRCMD(xrBeginSession(SceneContext().Session, &sessionBeginInfo));
+        CHECK_XRCMD(xrBeginSession(SceneContext().Session.Handle, &sessionBeginInfo));
         m_sessionRunning = true;
     }
 
     void ImplementXrApp::EndSession() {
         StopRenderThreadIfRunning();
         m_sessionRunning = false;
-        CHECK_XRCMD(xrEndSession(SceneContext().Session));
+        CHECK_XRCMD(xrEndSession(SceneContext().Session.Handle));
     }
 
     void ImplementXrApp::UpdateFrame() {
-        XrFrameWaitInfo waitFrameInfo{XR_TYPE_FRAME_WAIT_INFO};
         XrFrameState frameState{XR_TYPE_FRAME_STATE};
-        std::vector<XrSecondaryViewConfigurationStateMSFT> secondaryViewConfigStateData;
 
-        if (SceneContext().Extensions.SupportsSecondaryViewConfiguration && m_enabledSecondaryViewConfigurationTypes.size() > 0) {
-            for (auto& secondaryViewConfigurtionType : m_enabledSecondaryViewConfigurationTypes) {
-                secondaryViewConfigStateData.emplace_back(XrSecondaryViewConfigurationStateMSFT{
-                    XR_TYPE_SECONDARY_VIEW_CONFIGURATION_STATE_MSFT, nullptr, secondaryViewConfigurtionType, XR_FALSE});
-            }
+        // secondaryViewConfigFrameState needs to have the same lifetime as frameState
+        XrSecondaryViewConfigurationFrameStateMSFT secondaryViewConfigFrameState{XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_STATE_MSFT};
 
-            XrFrameSecondaryViewConfigurationsStateMSFT secondaryViewConfigStates{XR_TYPE_FRAME_SECONDARY_VIEW_CONFIGURATIONS_STATE_MSFT};
-            secondaryViewConfigStates.viewConfigurationCount = (uint32_t)secondaryViewConfigStateData.size();
-            secondaryViewConfigStates.states = secondaryViewConfigStateData.data();
+        const size_t enabledSecondaryViewConfigCount = SceneContext().Session.EnabledSecondaryViewConfigurationTypes.size();
+        std::vector<XrSecondaryViewConfigurationStateMSFT> secondaryViewConfigStates(enabledSecondaryViewConfigCount,
+                                                                                     {XR_TYPE_SECONDARY_VIEW_CONFIGURATION_STATE_MSFT});
 
-            xr::InsertExtensionStruct(frameState, secondaryViewConfigStates);
+        if (SceneContext().Extensions.SupportsSecondaryViewConfiguration && enabledSecondaryViewConfigCount > 0) {
+            secondaryViewConfigFrameState.viewConfigurationCount = (uint32_t)secondaryViewConfigStates.size();
+            secondaryViewConfigFrameState.viewConfigurationStates = secondaryViewConfigStates.data();
+            xr::InsertExtensionStruct(frameState, secondaryViewConfigFrameState);
         }
 
-        CHECK_XRCMD(xrWaitFrame(SceneContext().Session, &waitFrameInfo, &frameState));
+        XrFrameWaitInfo waitFrameInfo{XR_TYPE_FRAME_WAIT_INFO};
+        CHECK_XRCMD(xrWaitFrame(SceneContext().Session.Handle, &waitFrameInfo, &frameState));
 
-        if (SceneContext().Extensions.SupportsSecondaryViewConfiguration && secondaryViewConfigStateData.size() > 0) {
-            for (const XrSecondaryViewConfigurationStateMSFT& state : secondaryViewConfigStateData) {
-                SetSecondaryViewConfigurationActive(m_viewConfigState.at(state.viewConfigurationType), state.active);
-            }
+        if (SceneContext().Extensions.SupportsSecondaryViewConfiguration) {
+            std::scoped_lock lock(m_secondaryViewConfigActiveMutex);
+            m_secondaryViewConfigurationsState = std::move(secondaryViewConfigStates);
         }
 
         {
@@ -465,14 +445,6 @@ namespace {
                 }
             }
         }
-
-        m_projectionLayerCollection.ForEachLayerWithLock([this](auto&& layer) {
-            for (auto& [viewConfigType, states] : m_viewConfigState) {
-                if (xr::IsPrimaryViewConfigurationType(viewConfigType) || states.Active) {
-                    layer.PrepareRendering(SceneContext(), viewConfigType, states.ViewConfigViews);
-                }
-            }
-        });
     }
 
     void ImplementXrApp::SetSecondaryViewConfigurationActive(xr::ViewConfigurationState& secondaryViewConfigState, bool active) {
@@ -485,32 +457,52 @@ namespace {
                 std::vector<XrViewConfigurationView> newViewConfigViews = xr::EnumerateViewConfigurationViews(
                     SceneContext().Instance.Handle, SceneContext().System.Id, secondaryViewConfigState.Type);
                 if (xr::IsRecommendedSwapchainSizeChanged(secondaryViewConfigState.ViewConfigViews, newViewConfigViews)) {
-                    m_projectionLayerCollection.ForEachLayerWithLock(
-                        [secondaryViewConfigType = secondaryViewConfigState.Type](auto&& layer) {
-                            layer.Config(secondaryViewConfigType).ForceReset = true;
-                        });
+                    secondaryViewConfigState.ViewConfigViews = std::move(newViewConfigViews);
+                    m_projectionLayers.ForEachLayerWithLock([secondaryViewConfigType = secondaryViewConfigState.Type](auto&& layer) {
+                        layer.Config(secondaryViewConfigType).ForceReset = true;
+                    });
                 }
             }
         }
     }
 
     void ImplementXrApp::RenderFrame() {
+        // Must snapshot the frame time for the render thread before xrBeginFrame because it will unblock xrWaitFrame concurrently and
+        // m_currentFrameTime will be updated for the next frame.
+        const FrameTime renderFrameTime = m_currentFrameTime;
+
         XrFrameBeginInfo beginFrameDescription{XR_TYPE_FRAME_BEGIN_INFO};
-        CHECK_XRCMD(xrBeginFrame(SceneContext().Session, &beginFrameDescription));
+        CHECK_XRCMD(xrBeginFrame(SceneContext().Session.Handle, &beginFrameDescription));
+
+        if (SceneContext().Extensions.SupportsSecondaryViewConfiguration) {
+            std::scoped_lock lock(m_secondaryViewConfigActiveMutex);
+            for (auto& state : m_secondaryViewConfigurationsState) {
+                SetSecondaryViewConfigurationActive(m_viewConfigStates.at(state.viewConfigurationType), state.active);
+            }
+        }
+
+        m_projectionLayers.ForEachLayerWithLock([this](auto&& layer) {
+            for (auto& [viewConfigType, state] : m_viewConfigStates) {
+                if (xr::IsPrimaryViewConfigurationType(viewConfigType) || state.Active) {
+                    layer.PrepareRendering(SceneContext(), viewConfigType, state.ViewConfigViews);
+                }
+            }
+        });
 
         XrFrameEndInfo endFrameInfo{XR_TYPE_FRAME_END_INFO};
-        endFrameInfo.environmentBlendMode = SceneContext().PrimaryViewConfigurationBlendMode;
-        endFrameInfo.displayTime = m_currentFrameTime.PredictedDisplayTime;
+        endFrameInfo.environmentBlendMode = SceneContext().Session.PrimaryViewConfigurationBlendMode;
+        endFrameInfo.displayTime = renderFrameTime.PredictedDisplayTime;
 
         // Secondary view config frame info need to have same lifetime as XrFrameEndInfo;
-        XrFrameEndSecondaryViewConfigurationInfoMSFT frameEndSecondaryViewConfigInfo{
-            XR_TYPE_FRAME_END_SECONDARY_VIEW_CONFIGURATION_INFO_MSFT};
+        XrSecondaryViewConfigurationFrameEndInfoMSFT frameEndSecondaryViewConfigInfo{
+            XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT};
         std::vector<XrSecondaryViewConfigurationLayerInfoMSFT> activeSecondaryViewConfigLayerInfos;
 
         // Chain secondary view configuration layers data to endFrameInfo
-        if (SceneContext().Extensions.SupportsSecondaryViewConfiguration && m_enabledSecondaryViewConfigurationTypes.size() > 0) {
-            for (auto& secondaryViewConfigType : m_enabledSecondaryViewConfigurationTypes) {
-                auto& secondaryViewConfig = m_viewConfigState.at(secondaryViewConfigType);
+        if (SceneContext().Extensions.SupportsSecondaryViewConfiguration &&
+            SceneContext().Session.EnabledSecondaryViewConfigurationTypes.size() > 0) {
+            for (auto& secondaryViewConfigType : SceneContext().Session.EnabledSecondaryViewConfigurationTypes) {
+                auto& secondaryViewConfig = m_viewConfigStates.at(secondaryViewConfigType);
                 if (secondaryViewConfig.Active) {
                     activeSecondaryViewConfigLayerInfos.emplace_back(XrSecondaryViewConfigurationLayerInfoMSFT{
                         XR_TYPE_SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT,
@@ -530,13 +522,16 @@ namespace {
         // Prepare array of layer data for each active view configurations.
         std::vector<CompositionLayers> layersForAllViewConfigs(1 + activeSecondaryViewConfigLayerInfos.size());
 
-        if (m_currentFrameTime.ShouldRender) {
+        if (renderFrameTime.ShouldRender) {
             std::scoped_lock sceneLock(m_sceneMutex);
+
+            // Render for the primary view configuration.
             CompositionLayers& primaryViewConfigLayers = layersForAllViewConfigs[0];
             RenderViewConfiguration(sceneLock, PrimaryViewConfigurationType, primaryViewConfigLayers);
             endFrameInfo.layerCount = primaryViewConfigLayers.LayerCount();
             endFrameInfo.layers = primaryViewConfigLayers.LayerData();
 
+            // Render layers for any active secondary view configurations too.
             if (SceneContext().Extensions.SupportsSecondaryViewConfiguration && activeSecondaryViewConfigLayerInfos.size() > 0) {
                 for (size_t i = 0; i < activeSecondaryViewConfigLayerInfos.size(); i++) {
                     XrSecondaryViewConfigurationLayerInfoMSFT& secondaryViewConfigLayerInfo = activeSecondaryViewConfigLayerInfos.at(i);
@@ -548,69 +543,81 @@ namespace {
             }
         }
 
-        CHECK_XRCMD(xrEndFrame(SceneContext().Session, &endFrameInfo));
+        CHECK_XRCMD(xrEndFrame(SceneContext().Session.Handle, &endFrameInfo));
     }
 
     void ImplementXrApp::RenderViewConfiguration(const std::scoped_lock<std::mutex>& proofOfSceneLock,
                                                  XrViewConfigurationType viewConfigurationType,
                                                  CompositionLayers& layers) {
-        xr::ViewConfigurationState& viewConfigState = m_viewConfigState.at(viewConfigurationType);
-
-        XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
-        viewLocateInfo.viewConfigurationType = viewConfigurationType;
-        viewLocateInfo.displayTime = m_currentFrameTime.PredictedDisplayTime;
-        viewLocateInfo.space = SceneContext().SceneSpace;
-
-        uint32_t viewCount = 0;
+        // Locate the views in VIEW space to get the per-view offset from the VIEW "camera"
         XrViewState viewState{XR_TYPE_VIEW_STATE};
+        std::vector<XrView>& views = m_viewConfigStates.at(viewConfigurationType).Views;
+        {
+            XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
+            viewLocateInfo.viewConfigurationType = viewConfigurationType;
+            viewLocateInfo.displayTime = m_currentFrameTime.PredictedDisplayTime;
+            viewLocateInfo.space = m_viewSpace.Get();
 
-        std::vector<XrView>& views = viewConfigState.Views;
-        CHECK_XRCMD(xrLocateViews(SceneContext().Session, &viewLocateInfo, &viewState, (uint32_t)views.size(), &viewCount, views.data()));
-        assert(viewCount == views.size());
+            uint32_t viewCount = 0;
+            CHECK_XRCMD(xrLocateViews(
+                SceneContext().Session.Handle, &viewLocateInfo, &viewState, (uint32_t)views.size(), &viewCount, views.data()));
+            assert(viewCount == views.size());
+            if (!xr::math::Pose::IsPoseValid(viewState)) {
+                return;
+            }
+        }
 
-        if (xr::math::Pose::IsPoseValid(viewState)) {
-            std::vector<std::shared_ptr<QuadLayerObject>> underlays, overlays;
-            {
-                // Collect all quad layers in active scenes
-                for (const std::unique_ptr<Scene>& scene : m_scenes) {
-                    if (!scene->IsActive()) {
+        // Locate the VIEW space in the scene space to get the "camera" pose and combine the per-view offsets with the camera pose.
+        XrSpaceLocation viewLocation{XR_TYPE_SPACE_LOCATION};
+        CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_sceneSpace.Get(), m_currentFrameTime.PredictedDisplayTime, &viewLocation));
+        if (!xr::math::Pose::IsPoseValid(viewLocation)) {
+            return;
+        }
+
+        for (XrView& view : views) {
+            view.pose = xr::math::Pose::Multiply(view.pose, viewLocation.pose);
+        }
+
+        std::vector<std::shared_ptr<QuadLayerObject>> underlays, overlays;
+        {
+            // Collect all quad layers in active scenes
+            for (const std::unique_ptr<Scene>& scene : m_scenes) {
+                if (!scene->IsActive()) {
+                    continue;
+                }
+                for (const std::shared_ptr<QuadLayerObject>& quad : scene->GetQuadLayerObjects()) {
+                    if (!quad->IsVisible()) {
                         continue;
                     }
-                    for (const std::shared_ptr<QuadLayerObject>& quad : scene->GetQuadLayerObjects()) {
-                        if (!quad->IsVisible()) {
-                            continue;
-                        }
-                        if (quad->LayerGroup == LayerGrouping::Underlay) {
-                            underlays.push_back(quad);
-                        } else if (quad->LayerGroup == LayerGrouping::Overlay) {
-                            overlays.push_back(quad);
-                        }
+                    if (quad->LayerGroup == LayerGrouping::Underlay) {
+                        underlays.push_back(quad);
+                    } else if (quad->LayerGroup == LayerGrouping::Overlay) {
+                        overlays.push_back(quad);
                     }
                 }
             }
+        }
 
-            for (const std::shared_ptr<QuadLayerObject>& quad : underlays) {
-                AppendQuadLayer(layers, quad.get());
+        for (const std::shared_ptr<QuadLayerObject>& quad : underlays) {
+            AppendQuadLayer(layers, quad.get());
+        }
+
+        m_projectionLayers.ForEachLayerWithLock([this, &layers, &views, viewConfigurationType](ProjectionLayer& projectionLayer) {
+            bool opaqueClearColor = (layers.LayerCount() == 0); // Only the first projection layer need opaque background
+            opaqueClearColor &= (SceneContext().Session.PrimaryViewConfigurationBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE);
+            projectionLayer.Config().ClearColor.v =
+                opaqueClearColor ? DirectX::XMColorSRGBToRGB(DirectX::Colors::CornflowerBlue) : DirectX::Colors::Transparent;
+            const bool shouldSubmitProjectionLayer = projectionLayer.Render(
+                SceneContext(), m_currentFrameTime, SceneContext().SceneSpace, views, m_scenes, viewConfigurationType);
+
+            // Create the multi projection layer
+            if (shouldSubmitProjectionLayer) {
+                AppendProjectionLayer(layers, &projectionLayer, viewConfigurationType);
             }
+        });
 
-            m_projectionLayerCollection.ForEachLayerWithLock(
-                [this, &layers, &views, viewConfigurationType](ProjectionLayer& projectionLayer) {
-                    bool opaqueClearColor = (layers.LayerCount() == 0); // Only the first projection layer need opaque background
-                    opaqueClearColor &= (SceneContext().PrimaryViewConfigurationBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE);
-                    projectionLayer.Config().ClearColor.v =
-                        opaqueClearColor ? DirectX::XMColorSRGBToRGB(DirectX::Colors::CornflowerBlue) : DirectX::Colors::Transparent;
-                    const bool shouldSubmitProjectionLayer = projectionLayer.Render(
-                        SceneContext(), m_currentFrameTime, SceneContext().SceneSpace, views, m_scenes, viewConfigurationType);
-
-                    // Create the multi projection layer
-                    if (shouldSubmitProjectionLayer) {
-                        AppendProjectionLayer(layers, &projectionLayer, viewConfigurationType);
-                    }
-                });
-
-            for (const std::shared_ptr<QuadLayerObject>& quad : overlays) {
-                AppendQuadLayer(layers, quad.get());
-            }
+        for (const std::shared_ptr<QuadLayerObject>& quad : overlays) {
+            AppendQuadLayer(layers, quad.get());
         }
     }
 

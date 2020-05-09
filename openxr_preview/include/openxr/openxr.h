@@ -195,7 +195,6 @@ typedef enum XrResult {
     XR_ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR = -1000003000,
     XR_ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR = -1000003001,
     XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT = -1000039001,
-    XR_ERROR_SPATIAL_GRAPH_NODE_NOT_FOUND_MSFT = -1000049001,
     XR_ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT = -1000053000,
     XR_ERROR_CONTROLLER_MODEL_UNAVAILABLE_MSFT = -1000055000,
     XR_ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT = -1000055001,
@@ -292,7 +291,7 @@ typedef enum XrStructureType {
     XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT = 1000039001,
     XR_TYPE_VIEW_CONFIGURATION_DEPTH_RANGE_EXT = 1000046000,
     XR_TYPE_VIEW_CONFIGURATION_VIEW_FOV_EPIC = 1000059000,
-    XR_TYPE_SPACE_FROM_SPATIAL_GRAPH_NODE_CREATE_INFO_MSFT = 1000049000,
+    XR_TYPE_SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT = 1000049000,
     XR_TYPE_HAND_TRACKER_CREATE_INFO_MSFT = 1000051000,
     XR_TYPE_HAND_TRACKER_STATE_MSFT = 1000051001,
     XR_TYPE_HAND_JOINT_SPACE_CREATE_INFO_MSFT = 1000051002,
@@ -303,12 +302,12 @@ typedef enum XrStructureType {
     XR_TYPE_HAND_MESH_MSFT = 1000052002,
     XR_TYPE_SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT = 1000052003,
     XR_TYPE_HAND_POSE_TYPE_INFO_MSFT = 1000052004,
-    XR_TYPE_SESSION_BEGIN_SECONDARY_VIEW_CONFIGURATION_INFO_MSFT = 1000053000,
+    XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT = 1000053000,
     XR_TYPE_SECONDARY_VIEW_CONFIGURATION_STATE_MSFT = 1000053001,
-    XR_TYPE_FRAME_SECONDARY_VIEW_CONFIGURATIONS_STATE_MSFT = 1000053002,
-    XR_TYPE_FRAME_END_SECONDARY_VIEW_CONFIGURATION_INFO_MSFT = 1000053003,
+    XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_STATE_MSFT = 1000053002,
+    XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT = 1000053003,
     XR_TYPE_SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT = 1000053004,
-    XR_TYPE_SWAPCHAIN_SECONDARY_VIEW_CONFIGURATION_CREATE_INFO_MSFT = 1000053005,
+    XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT = 1000053005,
     XR_TYPE_ACTION_STATE_POSE_CONTROLLER_MODEL_MSFT = 1000055000,
     XR_TYPE_CONTROLLER_MODEL_NODE_PROPERTIES_MSFT = 1000055001,
     XR_TYPE_CONTROLLER_MODEL_PROPERTIES_MSFT = 1000055002,
@@ -1739,20 +1738,20 @@ typedef enum XrSpatialGraphNodeTypeMSFT {
     XR_SPATIAL_GRAPH_NODE_TYPE_DYNAMIC_MSFT = 2,
     XR_SPATIAL_GRAPH_NODE_TYPE_MAX_ENUM_MSFT = 0x7FFFFFFF
 } XrSpatialGraphNodeTypeMSFT;
-typedef struct XrSpaceFromSpatialGraphNodeCreateInfoMSFT {
+typedef struct XrSpatialGraphNodeSpaceCreateInfoMSFT {
     XrStructureType               type;
     const void* XR_MAY_ALIAS      next;
     XrSpatialGraphNodeTypeMSFT    spatialGraphNodeType;
     uint8_t                       nodeId[16];
     XrPosef                       pose;
-} XrSpaceFromSpatialGraphNodeCreateInfoMSFT;
+} XrSpatialGraphNodeSpaceCreateInfoMSFT;
 
-typedef XrResult (XRAPI_PTR *PFN_xrCreateSpaceFromSpatialGraphNodeMSFT)(XrSession session, const XrSpaceFromSpatialGraphNodeCreateInfoMSFT*spaceCreateInfo, XrSpace*space);
+typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialGraphNodeSpaceMSFT)(XrSession session, const XrSpatialGraphNodeSpaceCreateInfoMSFT*spaceCreateInfo, XrSpace*space);
 
 #ifndef XR_NO_PROTOTYPES
-XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpaceFromSpatialGraphNodeMSFT(
+XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpatialGraphNodeSpaceMSFT(
     XrSession                                   session,
-    const XrSpaceFromSpatialGraphNodeCreateInfoMSFT* spaceCreateInfo,
+    const XrSpatialGraphNodeSpaceCreateInfoMSFT* spaceCreateInfo,
     XrSpace*                                    space);
 #endif
 
@@ -1948,12 +1947,12 @@ XRAPI_ATTR XrResult XRAPI_CALL xrUpdateHandMeshMSFT(
 #define XR_MSFT_secondary_view_configuration_preview 1
 #define XR_MSFT_secondary_view_configuration_preview_SPEC_VERSION 1
 #define XR_MSFT_SECONDARY_VIEW_CONFIGURATION_PREVIEW_EXTENSION_NAME "XR_MSFT_secondary_view_configuration_preview"
-typedef struct XrSessionBeginSecondaryViewConfigurationInfoMSFT {
+typedef struct XrSecondaryViewConfigurationSessionBeginInfoMSFT {
     XrStructureType                   type;
     const void* XR_MAY_ALIAS          next;
     uint32_t                          viewConfigurationCount;
     const XrViewConfigurationType*    enabledViewConfigurationTypes;
-} XrSessionBeginSecondaryViewConfigurationInfoMSFT;
+} XrSecondaryViewConfigurationSessionBeginInfoMSFT;
 
 typedef struct XrSecondaryViewConfigurationStateMSFT {
     XrStructureType            type;
@@ -1962,12 +1961,12 @@ typedef struct XrSecondaryViewConfigurationStateMSFT {
     XrBool32                   active;
 } XrSecondaryViewConfigurationStateMSFT;
 
-typedef struct XrFrameSecondaryViewConfigurationsStateMSFT {
+typedef struct XrSecondaryViewConfigurationFrameStateMSFT {
     XrStructureType                           type;
     void* XR_MAY_ALIAS                        next;
     uint32_t                                  viewConfigurationCount;
-    XrSecondaryViewConfigurationStateMSFT*    states;
-} XrFrameSecondaryViewConfigurationsStateMSFT;
+    XrSecondaryViewConfigurationStateMSFT*    viewConfigurationStates;
+} XrSecondaryViewConfigurationFrameStateMSFT;
 
 typedef struct XrSecondaryViewConfigurationLayerInfoMSFT {
     XrStructureType                               type;
@@ -1978,18 +1977,18 @@ typedef struct XrSecondaryViewConfigurationLayerInfoMSFT {
     const XrCompositionLayerBaseHeader* const*    layers;
 } XrSecondaryViewConfigurationLayerInfoMSFT;
 
-typedef struct XrFrameEndSecondaryViewConfigurationInfoMSFT {
+typedef struct XrSecondaryViewConfigurationFrameEndInfoMSFT {
     XrStructureType                                     type;
     const void* XR_MAY_ALIAS                            next;
     uint32_t                                            viewConfigurationCount;
     const XrSecondaryViewConfigurationLayerInfoMSFT*    viewConfigurationLayersInfo;
-} XrFrameEndSecondaryViewConfigurationInfoMSFT;
+} XrSecondaryViewConfigurationFrameEndInfoMSFT;
 
-typedef struct XrSwapchainSecondaryViewConfigurationCreateInfoMSFT {
+typedef struct XrSecondaryViewConfigurationSwapchainCreateInfoMSFT {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
     XrViewConfigurationType     viewConfigurationType;
-} XrSwapchainSecondaryViewConfigurationCreateInfoMSFT;
+} XrSecondaryViewConfigurationSwapchainCreateInfoMSFT;
 
 
 

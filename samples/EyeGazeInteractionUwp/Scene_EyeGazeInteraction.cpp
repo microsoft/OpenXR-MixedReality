@@ -59,13 +59,13 @@ namespace {
                 XrActionSpaceCreateInfo createInfo{XR_TYPE_ACTION_SPACE_CREATE_INFO};
                 createInfo.action = gazeAction;
                 createInfo.poseInActionSpace = Pose::Identity();
-                CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session, &createInfo, m_gazeSpace.Put()));
+                CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session.Handle, &createInfo, m_gazeSpace.Put()));
             } else {
                 // Use VIEW reference space to simulate eye gaze when the system doesn't support
                 XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
                 createInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
                 createInfo.poseInReferenceSpace = Pose::Identity();
-                CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext.Session, &createInfo, m_gazeSpace.Put()));
+                CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext.Session.Handle, &createInfo, m_gazeSpace.Put()));
             }
 
             m_gazeObject = AddSceneObject(CreateSceneObject());

@@ -15,12 +15,16 @@
 //*********************************************************
 #pragma once
 
-#include <memory.h>
+#include <string.h>
 
-namespace sample {
+namespace xr {
     template <typename GUID1, typename GUID2>
     void CopyGuid(GUID1& dest, const GUID2& src) {
         static_assert(sizeof(GUID1) == sizeof(GUID2), "GUID sizes must be equal");
+#ifdef _MSC_VER
         memcpy_s(&dest, sizeof(GUID1), &src, sizeof(GUID2));
+#else
+        memcpy(&dest, &src, sizeof(GUID2));
+#endif
     }
-} // namespace sample
+} // namespace xr

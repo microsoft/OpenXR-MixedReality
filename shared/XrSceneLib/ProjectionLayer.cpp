@@ -16,6 +16,7 @@
 #include "pch.h"
 
 #include <XrUtility/XrMath.h>
+#include <XrUtility/XrEnumerate.h>
 #include <SampleShared/DxUtility.h>
 #include <SampleShared/Trace.h>
 
@@ -26,17 +27,16 @@
 
 using namespace DirectX;
 
-ProjectionLayer::ProjectionLayer(std::function<void(DXGI_FORMAT, bool /*isDepth*/)> ensureSupportSwapchainFormat,
-                                 DXGI_FORMAT colorSwapchainFormat,
-                                 DXGI_FORMAT depthSwapchainFormat,
-                                 XrViewConfigurationType primaryViewConfiguraionType,
-                                 const std::vector<XrViewConfigurationType>& secondaryViewConfiguraionTypes)
-    : m_ensureSupportSwapchainFormat(ensureSupportSwapchainFormat) {
+ProjectionLayer::ProjectionLayer(const xr::SessionContext& sessionContext) {
+    auto primaryViewConfiguraionType = sessionContext.PrimaryViewConfigurationType;
+    auto colorSwapchainFormat = sessionContext.SupportedColorSwapchainFormats[0];
+    auto depthSwapchainFormat = sessionContext.SupportedDepthSwapchainFormats[0];
+
     m_defaultViewConfigurationType = primaryViewConfiguraionType;
     m_viewConfigComponents[primaryViewConfiguraionType].PendingConfig.ColorSwapchainFormat = colorSwapchainFormat;
     m_viewConfigComponents[primaryViewConfiguraionType].PendingConfig.DepthSwapchainFormat = depthSwapchainFormat;
 
-    for (const XrViewConfigurationType type : secondaryViewConfiguraionTypes) {
+    for (const XrViewConfigurationType type : sessionContext.EnabledSecondaryViewConfigurationTypes) {
         m_viewConfigComponents[type].PendingConfig.ColorSwapchainFormat = colorSwapchainFormat;
         m_viewConfigComponents[type].PendingConfig.DepthSwapchainFormat = depthSwapchainFormat;
 
@@ -59,17 +59,23 @@ void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
                                 layerCurrentConfig.SwapchainSizeScale.height != layerPendingConfig.SwapchainSizeScale.height ||
                                 layerCurrentConfig.ContentProtected != layerPendingConfig.ContentProtected;
 
-    if (layerCurrentConfig.ColorSwapchainFormat != layerPendingConfig.ColorSwapchainFormat) {
-        m_ensureSupportSwapchainFormat(layerPendingConfig.ColorSwapchainFormat, false /*isDepth*/);
+    if (!shouldResetSwapchain && layerCurrentConfig.ColorSwapchainFormat != layerPendingConfig.ColorSwapchainFormat) {
+        if (!xr::Contains(sceneContext.Session.SupportedColorSwapchainFormats, layerPendingConfig.ColorSwapchainFormat)) {
+            throw std::runtime_error(
+                fmt::format("Unsupported color swapchain format: {}", layerPendingConfig.ColorSwapchainFormat).c_str());
+        }
         shouldResetSwapchain = true;
     }
 
-    if (layerCurrentConfig.DepthSwapchainFormat != layerPendingConfig.DepthSwapchainFormat) {
-        m_ensureSupportSwapchainFormat(layerPendingConfig.DepthSwapchainFormat, true /*isDepth*/);
+    if (!shouldResetSwapchain && layerCurrentConfig.DepthSwapchainFormat != layerPendingConfig.DepthSwapchainFormat) {
+        if (!xr::Contains(sceneContext.Session.SupportedDepthSwapchainFormats, layerPendingConfig.DepthSwapchainFormat)) {
+            throw std::runtime_error(
+                fmt::format("Unsupported depth swapchain format: {}", layerPendingConfig.DepthSwapchainFormat).c_str());
+        }
         shouldResetSwapchain = true;
     }
 
-    if (!viewConfigComponent.ColorSwapchain.Handle || !viewConfigComponent.DepthSwapchain.Handle) {
+    if (!shouldResetSwapchain && !viewConfigComponent.ColorSwapchain.Handle || !viewConfigComponent.DepthSwapchain.Handle) {
         shouldResetSwapchain = true;
     }
 
@@ -88,9 +94,9 @@ void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
     }
     assert(recommendedImageRectWidth != 0 && recommendedImageRectHeight != 0);
 
-    uint32_t swapchainImageWidth =
+    const uint32_t swapchainImageWidth =
         static_cast<uint32_t>(std::ceil(recommendedImageRectWidth * layerCurrentConfig.SwapchainSizeScale.width));
-    uint32_t swapchainImageHeight =
+    const uint32_t swapchainImageHeight =
         static_cast<uint32_t>(std::ceil(recommendedImageRectHeight * layerCurrentConfig.SwapchainSizeScale.height));
 
     const uint32_t swapchainSampleCount = layerCurrentConfig.SwapchainSampleCount < 1
@@ -122,12 +128,12 @@ void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
     const uint32_t wideScale = layerCurrentConfig.DoubleWideMode ? 2 : 1;
     const uint32_t arrayLength = layerCurrentConfig.DoubleWideMode ? 1 : (uint32_t)viewConfigViews.size();
 
-    std::optional<XrViewConfigurationType> viewConfigurationForSwapchain =
+    const std::optional<XrViewConfigurationType> viewConfigurationForSwapchain =
         sceneContext.Extensions.SupportsSecondaryViewConfiguration ? std::optional{viewConfigType} : std::nullopt;
 
     // Create color swapchain with recommended properties.
     viewConfigComponent.ColorSwapchain =
-        sample::dx::CreateSwapchainD3D11(sceneContext.Session,
+        sample::dx::CreateSwapchainD3D11(sceneContext.Session.Handle,
                                          layerCurrentConfig.ColorSwapchainFormat,
                                          swapchainImageWidth * wideScale,
                                          swapchainImageHeight,
@@ -139,7 +145,7 @@ void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
 
     // Create depth swapchain with recommended properties.
     viewConfigComponent.DepthSwapchain =
-        sample::dx::CreateSwapchainD3D11(sceneContext.Session,
+        sample::dx::CreateSwapchainD3D11(sceneContext.Session.Handle,
                                          layerCurrentConfig.DepthSwapchainFormat,
                                          swapchainImageWidth * wideScale,
                                          swapchainImageHeight,

@@ -20,14 +20,14 @@
 #include <XrUtility/XrInstanceContext.h>
 #include <XrUtility/XrExtensionContext.h>
 #include <XrUtility/XrSystemContext.h>
+#include <XrUtility/XrSessionContext.h>
 
 // Session-related resources shared across multiple Scenes.
 struct SceneContext final {
     SceneContext(xr::InstanceContext instance,
                  xr::ExtensionContext extensions,
                  xr::SystemContext system,
-                 XrSession session,
-                 XrViewConfigurationType primaryViewConfigurationType,
+                 xr::SessionContext session,
                  XrSpace sceneSpace,
                  Pbr::Resources pbrResources,
                  winrt::com_ptr<ID3D11Device> device,
@@ -35,13 +35,11 @@ struct SceneContext final {
         : Instance(std::move(instance))
         , Extensions(std::move(extensions))
         , System(std::move(system))
-        , Session(session)
+        , Session(std::move(session))
         , SceneSpace(sceneSpace)
         , PbrResources(std::move(pbrResources))
         , Device(std::move(device))
         , DeviceContext(std::move(deviceContext))
-        , PrimaryViewConfigurationType(primaryViewConfigurationType)
-        , PrimaryViewConfigurationBlendMode(System.ViewProperties.at(PrimaryViewConfigurationType).BlendMode)
         , LeftHand(xr::StringToPath(Instance.Handle, "/user/hand/left"))
         , RightHand(xr::StringToPath(Instance.Handle, "/user/hand/right")) {
     }
@@ -49,10 +47,7 @@ struct SceneContext final {
     const xr::InstanceContext Instance;
     const xr::ExtensionContext Extensions;
     const xr::SystemContext System;
-
-    const XrSession Session;
-    const XrViewConfigurationType PrimaryViewConfigurationType;
-    const XrEnvironmentBlendMode PrimaryViewConfigurationBlendMode;
+    const xr::SessionContext Session;
 
     const XrSpace SceneSpace;
 

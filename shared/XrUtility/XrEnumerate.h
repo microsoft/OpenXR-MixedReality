@@ -69,15 +69,6 @@ namespace xr {
         return blendModes;
     }
 
-    inline std::vector<int64_t> EnumerateSwapchainFormats(XrSession session) {
-        uint32_t swapchainFormatsCount;
-        CHECK_XRCMD(xrEnumerateSwapchainFormats(session, 0, &swapchainFormatsCount, nullptr));
-
-        std::vector<int64_t> runtimeFormats(swapchainFormatsCount);
-        CHECK_XRCMD(xrEnumerateSwapchainFormats(session, (uint32_t)runtimeFormats.size(), &swapchainFormatsCount, runtimeFormats.data()));
-        return runtimeFormats;
-    }
-
     // Pick the first supported EnvironmentBlendMode from runtime's supported list.
     inline XrEnvironmentBlendMode PickEnvironmentBlendMode(const std::vector<XrEnvironmentBlendMode>& systemSupportedBlendModes,
                                                            const std::vector<XrEnvironmentBlendMode>& appSupportedBlendModes) {
@@ -90,6 +81,15 @@ namespace xr {
         }
 
         return *blendModeIt;
+    }
+
+    inline std::vector<int64_t> EnumerateSwapchainFormats(XrSession session) {
+        uint32_t swapchainFormatsCount;
+        CHECK_XRCMD(xrEnumerateSwapchainFormats(session, 0, &swapchainFormatsCount, nullptr));
+
+        std::vector<int64_t> runtimeFormats(swapchainFormatsCount);
+        CHECK_XRCMD(xrEnumerateSwapchainFormats(session, (uint32_t)runtimeFormats.size(), &swapchainFormatsCount, runtimeFormats.data()));
+        return runtimeFormats;
     }
 
     // Pick the first supported swapchain format from runtime's supported format list.
@@ -105,6 +105,16 @@ namespace xr {
         }
 
         return (DXGI_FORMAT)*swapchainFormatIt;
+    }
+
+    inline std::vector<XrReferenceSpaceType> EnumerateReferenceSpaceTypes(XrSession session) {
+        uint32_t spaceCountOutput;
+        CHECK_XRCMD(xrEnumerateReferenceSpaces(session, 0, &spaceCountOutput, nullptr));
+
+        std::vector<XrReferenceSpaceType> runtimeSupportedReferenceSpaces(spaceCountOutput);
+        CHECK_XRCMD(xrEnumerateReferenceSpaces(
+            session, (uint32_t)runtimeSupportedReferenceSpaces.size(), &spaceCountOutput, runtimeSupportedReferenceSpaces.data()));
+        return runtimeSupportedReferenceSpaces;
     }
 
 } // namespace xr

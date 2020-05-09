@@ -51,12 +51,16 @@ namespace xr {
         return static_cast<uint32_t>(jointType);
     }
 
-    static_assert([] {
-        for (size_t i = 0; i < HandJointCount; ++i) {
-            if (i != JointToIndex(HandJoints[i])) {
-                return false;
-            }
-        }
-        return true;
-    }());
+    template <size_t Index>
+    struct CheckJointIndex {
+        constexpr static size_t JointIndex = JointToIndex(HandJoints[Index]);
+        static_assert(Index - 1 == CheckJointIndex<Index - 1>::JointIndex);
+    };
+
+    template <>
+    struct CheckJointIndex<0> {
+        constexpr static size_t JointIndex = JointToIndex(HandJoints[0]);
+    };
+
+    static_assert(XR_HAND_JOINT_LITTLE_TIP_MSFT == CheckJointIndex<XR_HAND_JOINT_LITTLE_TIP_MSFT>::JointIndex);
 } // namespace xr
