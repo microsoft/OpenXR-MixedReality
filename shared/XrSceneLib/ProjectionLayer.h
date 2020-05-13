@@ -43,12 +43,7 @@ struct Scene;
 
 class ProjectionLayer {
 public:
-    ProjectionLayer(std::function<void(DXGI_FORMAT, bool /*isDepth*/)> ensureSupportSwapchainFormat,
-                    DXGI_FORMAT colorSwapchainFormat,
-                    DXGI_FORMAT depthSwapchainFormat,
-                    XrViewConfigurationType primaryViewConfiguraionType,
-                    const std::vector<XrViewConfigurationType>& secondaryViewConfiguraionTypes);
-
+    explicit ProjectionLayer(const xr::SessionContext& sessionContext);
     ProjectionLayer(ProjectionLayer&&) = default;
     ProjectionLayer(const ProjectionLayer&) = delete;
 
@@ -100,15 +95,13 @@ private:
     XrViewConfigurationType m_defaultViewConfigurationType;
 
     winrt::com_ptr<ID3D11DepthStencilState> m_reversedZDepthNoStencilTest;
-
-    std::function<void(DXGI_FORMAT format, bool isDepth)> m_ensureSupportSwapchainFormat;
 };
 
 class ProjectionLayers {
 public:
-    ProjectionLayers(std::function<std::unique_ptr<ProjectionLayer>()> createLayerFunction)
-        : m_createLayerFunction(createLayerFunction) {
-    }
+    ProjectionLayers() = default;
+    ProjectionLayers(ProjectionLayers&&) = default;
+    ProjectionLayers(const ProjectionLayers&) = delete;
 
     ~ProjectionLayers() {
         std::lock_guard lock(m_mutex);
@@ -125,13 +118,13 @@ public:
         return *m_projectionLayers.at(index);
     }
 
-    void Resize(uint32_t size, bool forceReset = false) {
+    void Resize(uint32_t size, SceneContext& sceneContext, bool forceReset = false) {
         std::lock_guard lock(m_mutex);
         if (forceReset || m_projectionLayers.size() != size) {
             m_projectionLayers.clear();
             m_projectionLayers.reserve(size);
             for (uint32_t i = 0; i < size; i++) {
-                m_projectionLayers.emplace_back(m_createLayerFunction());
+                m_projectionLayers.emplace_back(std::make_unique<ProjectionLayer>(sceneContext.Session));
                 m_projectionLayers.back()->Config().ForceReset = true;
             }
         }
@@ -147,6 +140,5 @@ public:
 private:
     mutable std::mutex m_mutex;
     std::vector<std::unique_ptr<ProjectionLayer>> m_projectionLayers;
-    std::function<std::unique_ptr<ProjectionLayer>()> m_createLayerFunction;
 };
 

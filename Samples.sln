@@ -40,6 +40,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XrUtility", "XrUtility", "{
 		shared\XrUtility\XrHandle.h = shared\XrUtility\XrHandle.h
 		shared\XrUtility\XrInstanceContext.h = shared\XrUtility\XrInstanceContext.h
 		shared\XrUtility\XrMath.h = shared\XrUtility\XrMath.h
+		shared\XrUtility\XrSessionContext.h = shared\XrUtility\XrSessionContext.h
 		shared\XrUtility\XrStereoView.h = shared\XrUtility\XrStereoView.h
 		shared\XrUtility\XrString.h = shared\XrUtility\XrString.h
 		shared\XrUtility\XrStruct.h = shared\XrUtility\XrStruct.h

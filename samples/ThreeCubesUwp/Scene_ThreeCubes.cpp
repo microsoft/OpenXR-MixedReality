@@ -63,11 +63,11 @@ namespace {
             XrReferenceSpaceCreateInfo referenceSpaceCreateInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
             referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
             referenceSpaceCreateInfo.poseInReferenceSpace = Pose::Identity();
-            CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext.Session, &referenceSpaceCreateInfo, m_localSpace.Put()));
+            CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext.Session.Handle, &referenceSpaceCreateInfo, m_localSpace.Put()));
 
             if (m_sceneContext.Extensions.SupportsUnboundedSpace) {
                 referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT;
-                CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext.Session, &referenceSpaceCreateInfo, m_unboundedSpace.Put()));
+                CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext.Session.Handle, &referenceSpaceCreateInfo, m_unboundedSpace.Put()));
             }
 
             XrActionSpaceCreateInfo spaceCreateInfo{XR_TYPE_ACTION_SPACE_CREATE_INFO};
@@ -76,9 +76,9 @@ namespace {
             spaceCreateInfo.action = m_aimPoseAction;
             spaceCreateInfo.poseInActionSpace = Pose::Translation({0, 0, -0.2f});
             spaceCreateInfo.subactionPath = m_sceneContext.RightHand;
-            CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session, &spaceCreateInfo, m_rightAimSpace.Put()));
+            CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session.Handle, &spaceCreateInfo, m_rightAimSpace.Put()));
             spaceCreateInfo.subactionPath = m_sceneContext.LeftHand;
-            CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session, &spaceCreateInfo, m_leftAimSpace.Put()));
+            CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session.Handle, &spaceCreateInfo, m_leftAimSpace.Put()));
 
             m_holograms.emplace_back(m_rightAimSpace.Get(),
                                      AddSceneObject(CreateSphere(m_sceneContext.PbrResources, 0.05f, 20, Pbr::FromSRGB(Colors::Magenta))));
@@ -93,13 +93,13 @@ namespace {
             getInfo.action = m_selectAction;
 
             getInfo.subactionPath = m_sceneContext.RightHand;
-            CHECK_XRCMD(xrGetActionStateBoolean(m_sceneContext.Session, &getInfo, &selectState));
+            CHECK_XRCMD(xrGetActionStateBoolean(m_sceneContext.Session.Handle, &getInfo, &selectState));
             if (selectState.isActive && selectState.changedSinceLastSync && selectState.currentState) {
                 PlaceThreeCubes(m_rightAimSpace.Get(), selectState.lastChangeTime);
             }
 
             getInfo.subactionPath = m_sceneContext.LeftHand;
-            CHECK_XRCMD(xrGetActionStateBoolean(m_sceneContext.Session, &getInfo, &selectState));
+            CHECK_XRCMD(xrGetActionStateBoolean(m_sceneContext.Session.Handle, &getInfo, &selectState));
             if (selectState.isActive && selectState.changedSinceLastSync && selectState.currentState) {
                 PlaceThreeCubes(m_leftAimSpace.Get(), selectState.lastChangeTime);
             }
@@ -172,7 +172,9 @@ namespace {
                 createInfo.time = time;
 
                 XrResult result = m_sceneContext.Extensions.xrCreateSpatialAnchorMSFT(
-                    m_sceneContext.Session, &createInfo, anchorSpace.Anchor.Put(m_sceneContext.Extensions.xrDestroySpatialAnchorMSFT));
+                    m_sceneContext.Session.Handle,
+                    &createInfo,
+                    anchorSpace.Anchor.Put(m_sceneContext.Extensions.xrDestroySpatialAnchorMSFT));
                 if (result == XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT) {
                     // Cannot create spatial anchor at this place
                     return XR_NULL_HANDLE;
@@ -185,8 +187,8 @@ namespace {
                 XrSpatialAnchorSpaceCreateInfoMSFT createInfo{XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT};
                 createInfo.anchor = anchorSpace.Anchor.Get();
                 createInfo.poseInAnchorSpace = Pose::Identity();
-                CHECK_XRCMD(
-                    m_sceneContext.Extensions.xrCreateSpatialAnchorSpaceMSFT(m_sceneContext.Session, &createInfo, anchorSpace.Space.Put()));
+                CHECK_XRCMD(m_sceneContext.Extensions.xrCreateSpatialAnchorSpaceMSFT(
+                    m_sceneContext.Session.Handle, &createInfo, anchorSpace.Space.Put()));
             }
 
             // Keep a copy of the handles to keep the anchor and space alive.

@@ -444,8 +444,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="details">
 <span id="author" class="author">Copyright (c) 2017-2020 The Khronos Group Inc.</span><br>
 <span id="revnumber">version 1.0.8,</span>
-<span id="revdate">Sun, 29 Mar 2020 18:05:26 +0000</span>
-<br><span id="revremark">from git branch: master commit: 0207c8e7a2f788ad42896949a3eb9f1819b2948f</span>
+<span id="revdate">Sat, 02 May 2020 15:37:30 +0000</span>
+<br><span id="revremark">from git branch: master commit: c21446326908310c98b065c0c3f732af36dbf3ed</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -1929,7 +1929,6 @@ All run time error codes are negative values.</p>
     XR_ERROR_ANDROID_THREAD_SETTINGS_ID_INVALID_KHR = -1000003000,
     XR_ERROR_ANDROID_THREAD_SETTINGS_FAILURE_KHR = -1000003001,
     XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT = -1000039001,
-    XR_ERROR_SPATIAL_GRAPH_NODE_NOT_FOUND_MSFT = -1000049001,
     XR_ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT = -1000053000,
     XR_ERROR_CONTROLLER_MODEL_UNAVAILABLE_MSFT = -1000055000,
     XR_ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT = -1000055001,
@@ -2218,10 +2217,6 @@ supported by this function&#8217;s parent handle but not at this moment.</p>
 <tr>
 <td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock"><code>XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT</code></p></td>
 <td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock">Spatial anchor could not be created at that location. (Added by the <code><a href="#XR_MSFT_spatial_anchor">XR_MSFT_spatial_anchor</a></code> extension)</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock"><code>XR_ERROR_SPATIAL_GRAPH_NODE_NOT_FOUND_MSFT</code></p></td>
-<td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock">The spatial graph node of given type was not found (Added by the <code><a href="#XR_MSFT_spatial_graph_bridge_preview">XR_MSFT_spatial_graph_bridge_preview</a></code> extension)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock"><code>XR_ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT</code></p></td>
@@ -10741,7 +10736,7 @@ displays.</p>
 <p><a id="VUID-XrSessionBeginInfo-type-type" href="#VUID-XrSessionBeginInfo-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SESSION_BEGIN_INFO</code></p>
 </li>
 <li>
-<p><a id="VUID-XrSessionBeginInfo-next-next" href="#VUID-XrSessionBeginInfo-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrSessionBeginSecondaryViewConfigurationInfoMSFT">XrSessionBeginSecondaryViewConfigurationInfoMSFT</a></p>
+<p><a id="VUID-XrSessionBeginInfo-next-next" href="#VUID-XrSessionBeginInfo-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrSecondaryViewConfigurationSessionBeginInfoMSFT">XrSecondaryViewConfigurationSessionBeginInfoMSFT</a></p>
 </li>
 <li>
 <p><a id="VUID-XrSessionBeginInfo-primaryViewConfigurationType-parameter" href="#VUID-XrSessionBeginInfo-primaryViewConfigurationType-parameter"></a> <code>primaryViewConfigurationType</code> <strong class="purple">must</strong> be a valid <a href="#XrViewConfigurationType">XrViewConfigurationType</a> value</p>
@@ -11719,13 +11714,15 @@ Valid formats are indicated by <a href="#xrEnumerateSwapchainFormats">xrEnumerat
 </li>
 <li>
 <p><code>sampleCount</code> is the number of sub-data element samples in the image,
-<strong class="purple">must</strong> not be <code>0</code>.</p>
+<strong class="purple">must</strong> not be <code>0</code> or greater than the graphics API&#8217;s maximum limit.</p>
 </li>
 <li>
-<p><code>width</code> is the width of the image, <strong class="purple">must</strong> not be <code>0</code>.</p>
+<p><code>width</code> is the width of the image, <strong class="purple">must</strong> not be <code>0</code> or greater than
+the graphics API&#8217;s maximum limit.</p>
 </li>
 <li>
-<p><code>height</code> is the height of the image, <strong class="purple">must</strong> not be <code>0</code>.</p>
+<p><code>height</code> is the height of the image, <strong class="purple">must</strong> not be <code>0</code> or greater than
+the graphics API&#8217;s maximum limit.</p>
 </li>
 <li>
 <p><code>faceCount</code> is the number of faces, which can be either <code>6</code> (for
@@ -11733,11 +11730,12 @@ cubemaps) or <code>1</code>.</p>
 </li>
 <li>
 <p><code>arraySize</code> is the number of array layers in the image or <code>1</code> for a 2D
-image, <strong class="purple">must</strong> not be zero.</p>
+image, <strong class="purple">must</strong> not be <code>0</code> or greater than the graphics API&#8217;s maximum limit.</p>
 </li>
 <li>
 <p><code>mipCount</code> describes the number of levels of detail available for
-minified sampling of the image, <strong class="purple">must</strong> not be <code>0</code>.</p>
+minified sampling of the image, <strong class="purple">must</strong> not be <code>0</code> or greater than the
+graphics API&#8217;s maximum limit.</p>
 </li>
 </ul>
 </div>
@@ -11752,7 +11750,7 @@ minified sampling of the image, <strong class="purple">must</strong> not be <cod
 <p><a id="VUID-XrSwapchainCreateInfo-type-type" href="#VUID-XrSwapchainCreateInfo-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SWAPCHAIN_CREATE_INFO</code></p>
 </li>
 <li>
-<p><a id="VUID-XrSwapchainCreateInfo-next-next" href="#VUID-XrSwapchainCreateInfo-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrSwapchainSecondaryViewConfigurationCreateInfoMSFT">XrSwapchainSecondaryViewConfigurationCreateInfoMSFT</a></p>
+<p><a id="VUID-XrSwapchainCreateInfo-next-next" href="#VUID-XrSwapchainCreateInfo-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrSecondaryViewConfigurationSwapchainCreateInfoMSFT">XrSecondaryViewConfigurationSwapchainCreateInfoMSFT</a></p>
 </li>
 <li>
 <p><a id="VUID-XrSwapchainCreateInfo-createFlags-parameter" href="#VUID-XrSwapchainCreateInfo-createFlags-parameter"></a> <code>createFlags</code> <strong class="purple">must</strong> be <code>0</code> or a valid combination of <a href="#XrSwapchainCreateFlagBits">XrSwapchainCreateFlagBits</a> values</p>
@@ -11829,6 +11827,9 @@ format specified by the application in the <a href="#XrSwapchainCreateInfo">XrSw
 the type of underlying image and its usage.
 Extensions may exist to further assist the runtime in choosing how to create
 swapchains.</p>
+</div>
+<div class="paragraph">
+<p>Runtimes <strong class="purple">must</strong> honor underlying graphics API limits when creating resources.</p>
 </div>
 <div class="paragraph">
 <p><a href="#xrEnumerateSwapchainFormats">xrEnumerateSwapchainFormats</a> never returns typeless formats (e.g.
@@ -13389,7 +13390,7 @@ omitted.</p>
 <p><a id="VUID-XrFrameState-type-type" href="#VUID-XrFrameState-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_FRAME_STATE</code></p>
 </li>
 <li>
-<p><a id="VUID-XrFrameState-next-next" href="#VUID-XrFrameState-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrFrameSecondaryViewConfigurationsStateMSFT">XrFrameSecondaryViewConfigurationsStateMSFT</a></p>
+<p><a id="VUID-XrFrameState-next-next" href="#VUID-XrFrameState-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrSecondaryViewConfigurationFrameStateMSFT">XrSecondaryViewConfigurationFrameStateMSFT</a></p>
 </li>
 </ul>
 </div>
@@ -13707,6 +13708,24 @@ pixels outside of the associated swapchain image or if negatively sized.</p>
 <p><code>XR_ERROR_SESSION_NOT_RUNNING</code> <strong class="purple">must</strong> be returned if the <code>session</code>
 <a href="#session_not_running">is not running</a>.</p>
 </div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="title">Note</div>
+<div class="paragraph">
+<p>Applications should discard frames for which <a href="#xrEndFrame">xrEndFrame</a> returns
+a recoverable error over attempting to resubmit the frame with different frame
+parameters to provide a more consistent experience across different runtime
+implementations.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
 <div class="sidebarblock">
 <div class="content">
 <div class="title">Valid Usage (Implicit)</div>
@@ -13856,7 +13875,7 @@ If layerCount is greater than the maximum supported layer count then
 <p><a id="VUID-XrFrameEndInfo-type-type" href="#VUID-XrFrameEndInfo-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_FRAME_END_INFO</code></p>
 </li>
 <li>
-<p><a id="VUID-XrFrameEndInfo-next-next" href="#VUID-XrFrameEndInfo-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrFrameEndSecondaryViewConfigurationInfoMSFT">XrFrameEndSecondaryViewConfigurationInfoMSFT</a></p>
+<p><a id="VUID-XrFrameEndInfo-next-next" href="#VUID-XrFrameEndInfo-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrSecondaryViewConfigurationFrameEndInfoMSFT">XrSecondaryViewConfigurationFrameEndInfoMSFT</a></p>
 </li>
 <li>
 <p><a id="VUID-XrFrameEndInfo-environmentBlendMode-parameter" href="#VUID-XrFrameEndInfo-environmentBlendMode-parameter"></a> <code>environmentBlendMode</code> <strong class="purple">must</strong> be a valid <a href="#XrEnvironmentBlendMode">XrEnvironmentBlendMode</a> value</p>
@@ -14134,7 +14153,8 @@ generic layer data stored in an <a href="#XrSwapchainSubImage">XrSwapchainSubIma
 </li>
 <li>
 <p><code>imageRect</code> is an <a href="#XrRect2Di">XrRect2Di</a> representing the valid portion of
-the image to use, in pixels.
+the image to use, in pixels. It also implicitly defines the transform
+from normalized image coordinates into pixel coordinates.
 Note that the compositor <strong class="purple">may</strong> bleed in pixels from outside the bounds in
 some cases, for instance due to mipmapping.</p>
 </li>
@@ -20297,7 +20317,8 @@ reprojections taking depth into account.</p>
 <p><code>subImage</code> identifies the depth image <a href="#XrSwapchainSubImage">XrSwapchainSubImage</a> to be
 associated with the color swapchain.
 The contained <code>imageRect</code> specifies the valid portion of the depth
-image to use, in pixels.
+image to use, in pixels. It also implicitly defines the transform
+from normalized image coordinates into pixel coordinates.
 The contained <code>imageArrayIndex</code> is the depth image array index, with 0
 meaning the first or only array element.</p>
 </li>
@@ -32446,7 +32467,7 @@ the mesh returned from the same hand tracker using <code>XR_HAND_POSE_TYPE_TRACK
 <div class="ulist">
 <ul>
 <li>
-<p><code>updateTime</code> is an <a href="#XrTime"><code>XrTime</code></a> representing the time when the runtime receives the vertex buffer content
+<p><code>vertexUpdateTime</code> is an <a href="#XrTime"><code>XrTime</code></a> representing the time when the runtime receives the vertex buffer content
 or 0 to indicate a request to retrieve latest vertices regardless of existing content in <code>vertices</code>.</p>
 </li>
 <li>
@@ -32485,19 +32506,19 @@ the runtime <strong class="purple">must</strong> not return <code>XR_ERROR_SIZE_
 because of insufficient vertex buffer size.</p>
 </div>
 <div class="paragraph">
-<p>If the input <code>updateTime</code> is 0, and the capacity of the vertices array is sufficient, and hand mesh tracking is active,
-the runtime <strong class="purple">must</strong> return the latest non-zero <code>updateTime</code>, and fill in the <code>vertexCountOutput</code> and <code>vertices</code> fields.</p>
+<p>If the input <code>vertexUpdateTime</code> is 0, and the capacity of the vertices array is sufficient, and hand mesh tracking is active,
+the runtime <strong class="purple">must</strong> return the latest non-zero <code>vertexUpdateTime</code>, and fill in the <code>vertexCountOutput</code> and <code>vertices</code> fields.</p>
 </div>
 <div class="paragraph">
-<p>If the input <code>updateTime</code> is not 0,
+<p>If the input <code>vertexUpdateTime</code> is not 0,
 the runtime <strong class="purple">can</strong> either return without changing <code>vertexCountOutput</code> or the content in <code>vertices</code>,
 and return <code>XR_FALSE</code> for <code>vertexBufferChanged</code> indicating the vertices are not changed;
-or return a new non-zero <code>updateTime</code> and fill in latest data in <code>vertexCountOutput</code> and <code>vertices</code>
+or return a new non-zero <code>vertexUpdateTime</code> and fill in latest data in <code>vertexCountOutput</code> and <code>vertices</code>
 and return <code>XR_TRUE</code> for <code>vertexBufferChanged</code> indicating the vertices are updated to a newer version.</p>
 </div>
 <div class="paragraph">
 <p>An application <strong class="purple">can</strong> keep the <a href="#XrHandMeshVertexBufferMSFT">XrHandMeshVertexBufferMSFT</a> structure for each frame in frame loop
-and use the returned <code>updateTime</code> to detect the changes of the content in <code>vertices</code>.
+and use the returned <code>vertexUpdateTime</code> to detect the changes of the content in <code>vertices</code>.
 The application can therefore avoid unnecessary processing of vertices, such as coping them to GPU memory.</p>
 </div>
 <div class="sidebarblock">
@@ -34195,11 +34216,48 @@ In a frame where a secondary view configuration is active,
 the application&#8217;s single frame loop should additionally render into those active secondary views,
 sharing the frame waiting logic and update loop with the primary view configuration for that running session.</p>
 </div>
+<div class="paragraph">
+<p>A proper secondary view configuration support includes following steps:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Inspect supported secondary view configurations using the <a href="#xrEnumerateViewConfigurations">xrEnumerateViewConfigurations</a> function.</p>
+</li>
+<li>
+<p>Enable supported secondary view configurations using the <a href="#xrBeginSession">xrBeginSession</a> function
+with an <a href="#XrSecondaryViewConfigurationSessionBeginInfoMSFT">XrSecondaryViewConfigurationSessionBeginInfoMSFT</a> chained extension structure.</p>
+</li>
+<li>
+<p>Inspect if an enabled secondary view configuration is activated
+by the system or the user using the <a href="#xrWaitFrame">xrWaitFrame</a> function
+with an <a href="#XrSecondaryViewConfigurationFrameStateMSFT">XrSecondaryViewConfigurationFrameStateMSFT</a> chained extension structure.</p>
+</li>
+<li>
+<p>When a secondary view configuration is changed to active, get the latest view configuration properties
+using the <a href="#xrGetViewConfigurationProperties">xrGetViewConfigurationProperties</a> and <a href="#xrEnumerateViewConfigurationViews">xrEnumerateViewConfigurationViews</a> functions.</p>
+</li>
+<li>
+<p>Create the swapchain images for the active secondary view configuration
+using the <a href="#xrCreateSwapchain">xrCreateSwapchain</a> function with an <a href="#XrSecondaryViewConfigurationSwapchainCreateInfoMSFT">XrSecondaryViewConfigurationSwapchainCreateInfoMSFT</a> chained extension structure
+using <code>recommendedImageRectWidth</code> and <code>recommendedImageRectHeight</code>
+in the corresponding <a href="#XrViewConfigurationView">XrViewConfigurationView</a> structure returned from <a href="#xrEnumerateViewConfigurationViews">xrEnumerateViewConfigurationViews</a>.</p>
+</li>
+<li>
+<p>Locate the secondary view configuration views using the <a href="#xrLocateViews">xrLocateViews</a> function
+with the active secondary view configuration type.</p>
+</li>
+<li>
+<p>Submit the composition layers using the swapchain images for an active secondary view configuration
+using the <a href="#xrEndFrame">xrEndFrame</a> function with the <a href="#XrSecondaryViewConfigurationFrameEndInfoMSFT">XrSecondaryViewConfigurationFrameEndInfoMSFT</a> chained extension structure.</p>
+</li>
+</ol>
+</div>
 </div>
 <div class="sect3">
 <h4 id="_enumerate_supported_secondary_view_configurations"><a class="anchor" href="#_enumerate_supported_secondary_view_configurations"></a>12.31.2. Enumerate supported secondary view configurations</h4>
 <div class="paragraph">
-<p>The first step is for the application to inspect if a system supports certain secondary view configurations.
+<p>The first step is for the application to inspect if a runtime supports certain secondary view configurations.
 The app uses the existing API <a href="#xrEnumerateViewConfigurations">xrEnumerateViewConfigurations</a> for this.</p>
 </div>
 <div class="paragraph">
@@ -34212,31 +34270,31 @@ and can use this secondary view configuration type in later functions.</p>
 <h4 id="_secondary_view_configuration_properties"><a class="anchor" href="#_secondary_view_configuration_properties"></a>12.31.3. Secondary view configuration properties</h4>
 <div class="paragraph">
 <p>The application can inspect the properties of a secondary view configuration through the existing <a href="#xrGetViewConfigurationProperties">xrGetViewConfigurationProperties</a>,
-<a href="#xrEnumerateViewConfigurationViews">xrEnumerateViewConfigurationViews</a> and <a href="#xrEnumerateEnvironmentBlendModes">xrEnumerateEnvironmentBlendModes</a> functions using a supported secondary view configurations type.</p>
+<a href="#xrEnumerateViewConfigurationViews">xrEnumerateViewConfigurationViews</a> and <a href="#xrEnumerateEnvironmentBlendModes">xrEnumerateEnvironmentBlendModes</a> functions using a supported secondary view configuration type.</p>
 </div>
 <div class="paragraph">
 <p>The runtime <strong class="purple">may</strong> change the recommended properties, such as recommended image width or height, when the secondary view configuration becomes active.
-The application <strong class="purple">should</strong> use the latest recommended width and height, create swapchain images and related resources for the active secondary view configuration.</p>
+The application <strong class="purple">should</strong> use the latest recommended width and height when creating swapchain images and related resources for the active secondary view configuration.</p>
 </div>
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
-<p>When an application creates swapchain images for secondary view configuration,
-it <strong class="purple">can</strong> chain a <a href="#XrSwapchainSecondaryViewConfigurationCreateInfoMSFT">XrSwapchainSecondaryViewConfigurationCreateInfoMSFT</a> struct to <a href="#XrSwapchainCreateInfo">XrSwapchainCreateInfo</a>
+<p>When an application creates swapchain images for a secondary view configuration,
+it <strong class="purple">can</strong> chain a <a href="#XrSecondaryViewConfigurationSwapchainCreateInfoMSFT">XrSecondaryViewConfigurationSwapchainCreateInfoMSFT</a> structure to <a href="#XrSwapchainCreateInfo">XrSwapchainCreateInfo</a>
 when calling <a href="#xrCreateSwapchain">xrCreateSwapchain</a>.
 This hints to the runtime that the created swapchain image will be submitted to the given secondary view configuration,
-and therefore the runtime can make optimization for such usage when there&#8217;s opportunity.</p>
+allowing the runtime to make optimizations for such usage when there is opportunity.</p>
 </div>
-<div id="XrSwapchainSecondaryViewConfigurationCreateInfoMSFT" class="paragraph">
+<div id="XrSecondaryViewConfigurationSwapchainCreateInfoMSFT" class="paragraph">
 <p></p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrSwapchainSecondaryViewConfigurationCreateInfoMSFT {
+<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrSecondaryViewConfigurationSwapchainCreateInfoMSFT {
     XrStructureType            type;
     const void*                next;
     XrViewConfigurationType    viewConfigurationType;
-} XrSwapchainSecondaryViewConfigurationCreateInfoMSFT;</code></pre>
+} XrSecondaryViewConfigurationSwapchainCreateInfoMSFT;</code></pre>
 </div>
 </div>
 <div class="sidebarblock">
@@ -34251,21 +34309,20 @@ and therefore the runtime can make optimization for such usage when there&#8217;
 <p><code>next</code> is <code>NULL</code> or a pointer to an extension-specific structure.</p>
 </li>
 <li>
-<p><code>viewConfigurationType</code> is the secondary view configuration type the application is intended to use for this swapchain.</p>
+<p><code>viewConfigurationType</code> is the secondary view configuration type the application is intending to use this swapchain for.</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 <div class="paragraph">
-<p>If this struct doesn&#8217;t present in the <a href="#XrSwapchainCreateInfo">XrSwapchainCreateInfo</a> next chain when calling <a href="#xrCreateSwapchain">xrCreateSwapchain</a>,
+<p>If this structure is not present in the <a href="#XrSwapchainCreateInfo">XrSwapchainCreateInfo</a> next chain when calling <a href="#xrCreateSwapchain">xrCreateSwapchain</a>,
 the runtime <strong class="purple">should</strong> optimize the created swapchain for the primary view configuration of the session.</p>
 </div>
 <div class="paragraph">
-<p>If the application submit this swapchain image create with one view configuration type to a composition layer
-with another view configuration, the runtime <strong class="purple">may</strong> need to copy the resource across view configurations.
-However, the runtime <strong class="purple">must</strong> correctly compose the image and present to the user
-regardless which view configuration type was hinted when swapchain image was created.</p>
+<p>If the application submits a swapchain image created with one view configuration type to a composition layer
+for another view configuration, the runtime <strong class="purple">may</strong> need to copy the resource across view configurations.
+However, the runtime <strong class="purple">must</strong> correctly compose the image regardless which view configuration type was hinted when swapchain image was created.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -34273,16 +34330,16 @@ regardless which view configuration type was hinted when swapchain image was cre
 <div class="ulist">
 <ul>
 <li>
-<p><a id="VUID-XrSwapchainSecondaryViewConfigurationCreateInfoMSFT-extension-notenabled" href="#VUID-XrSwapchainSecondaryViewConfigurationCreateInfoMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_secondary_view_configuration_preview">XR_MSFT_secondary_view_configuration_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrSwapchainSecondaryViewConfigurationCreateInfoMSFT">XrSwapchainSecondaryViewConfigurationCreateInfoMSFT</a></p>
+<p><a id="VUID-XrSecondaryViewConfigurationSwapchainCreateInfoMSFT-extension-notenabled" href="#VUID-XrSecondaryViewConfigurationSwapchainCreateInfoMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_secondary_view_configuration_preview">XR_MSFT_secondary_view_configuration_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrSecondaryViewConfigurationSwapchainCreateInfoMSFT">XrSecondaryViewConfigurationSwapchainCreateInfoMSFT</a></p>
 </li>
 <li>
-<p><a id="VUID-XrSwapchainSecondaryViewConfigurationCreateInfoMSFT-type-type" href="#VUID-XrSwapchainSecondaryViewConfigurationCreateInfoMSFT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SWAPCHAIN_SECONDARY_VIEW_CONFIGURATION_CREATE_INFO_MSFT</code></p>
+<p><a id="VUID-XrSecondaryViewConfigurationSwapchainCreateInfoMSFT-type-type" href="#VUID-XrSecondaryViewConfigurationSwapchainCreateInfoMSFT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT</code></p>
 </li>
 <li>
-<p><a id="VUID-XrSwapchainSecondaryViewConfigurationCreateInfoMSFT-next-next" href="#VUID-XrSwapchainSecondaryViewConfigurationCreateInfoMSFT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
+<p><a id="VUID-XrSecondaryViewConfigurationSwapchainCreateInfoMSFT-next-next" href="#VUID-XrSecondaryViewConfigurationSwapchainCreateInfoMSFT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
 </li>
 <li>
-<p><a id="VUID-XrSwapchainSecondaryViewConfigurationCreateInfoMSFT-viewConfigurationType-parameter" href="#VUID-XrSwapchainSecondaryViewConfigurationCreateInfoMSFT-viewConfigurationType-parameter"></a> <code>viewConfigurationType</code> <strong class="purple">must</strong> be a valid <a href="#XrViewConfigurationType">XrViewConfigurationType</a> value</p>
+<p><a id="VUID-XrSecondaryViewConfigurationSwapchainCreateInfoMSFT-viewConfigurationType-parameter" href="#VUID-XrSecondaryViewConfigurationSwapchainCreateInfoMSFT-viewConfigurationType-parameter"></a> <code>viewConfigurationType</code> <strong class="purple">must</strong> be a valid <a href="#XrViewConfigurationType">XrViewConfigurationType</a> value</p>
 </li>
 </ul>
 </div>
@@ -34294,28 +34351,28 @@ regardless which view configuration type was hinted when swapchain image was cre
 <div class="sect3">
 <h4 id="_enable_secondary_view_configuration"><a class="anchor" href="#_enable_secondary_view_configuration"></a>12.31.4. Enable secondary view configuration</h4>
 <div class="paragraph">
-<p>The application indicates to the runtime which secondary view configurations it can support by enabling them during its call to <a href="#xrBeginSession">xrBeginSession</a>,
-attaching the extension struct <a href="#XrSessionBeginSecondaryViewConfigurationInfoMSFT">XrSessionBeginSecondaryViewConfigurationInfoMSFT</a> to the <a href="#XrSessionBeginInfo">XrSessionBeginInfo</a>::next pointer.</p>
+<p>The application indicates to the runtime which secondary view configurations it can support by enabling them during the call to <a href="#xrBeginSession">xrBeginSession</a>
+by attaching the extension structure <a href="#XrSecondaryViewConfigurationSessionBeginInfoMSFT">XrSecondaryViewConfigurationSessionBeginInfoMSFT</a> to the <a href="#XrSessionBeginInfo">XrSessionBeginInfo</a>::next pointer.</p>
 </div>
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
-<p>The <a href="#XrSessionBeginSecondaryViewConfigurationInfoMSFT">XrSessionBeginSecondaryViewConfigurationInfoMSFT</a> structure is used by the application to indicate the list of secondary <a href="#XrViewConfigurationType">XrViewConfigurationType</a> to enable for this session.</p>
+<p>The <a href="#XrSecondaryViewConfigurationSessionBeginInfoMSFT">XrSecondaryViewConfigurationSessionBeginInfoMSFT</a> structure is used by the application to indicate the list of secondary <a href="#XrViewConfigurationType">XrViewConfigurationType</a> to enable for this session.</p>
 </div>
 <div class="paragraph">
 <p>It is defined as:</p>
 </div>
-<div id="XrSessionBeginSecondaryViewConfigurationInfoMSFT" class="paragraph">
+<div id="XrSecondaryViewConfigurationSessionBeginInfoMSFT" class="paragraph">
 <p></p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrSessionBeginSecondaryViewConfigurationInfoMSFT {
+<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrSecondaryViewConfigurationSessionBeginInfoMSFT {
     XrStructureType                   type;
     const void*                       next;
     uint32_t                          viewConfigurationCount;
     const XrViewConfigurationType*    enabledViewConfigurationTypes;
-} XrSessionBeginSecondaryViewConfigurationInfoMSFT;</code></pre>
+} XrSecondaryViewConfigurationSessionBeginInfoMSFT;</code></pre>
 </div>
 </div>
 <div class="sidebarblock">
@@ -34340,17 +34397,16 @@ attaching the extension struct <a href="#XrSessionBeginSecondaryViewConfiguratio
 </div>
 </div>
 <div class="paragraph">
-<p>There must be no duplicated view configuration types in the array of <code>enabledViewConfigurationTypes</code>,
-or else the runtime <strong class="purple">must</strong> return error <code>XR_ERROR_VALIDATION_FAILURE</code>.</p>
+<p>If there are any duplicated view configuration types in the array of <code>enabledViewConfigurationTypes</code>,
+the runtime <strong class="purple">must</strong> return error <code>XR_ERROR_VALIDATION_FAILURE</code>.</p>
 </div>
 <div class="paragraph">
-<p>The view configuration type in the array of <code>enabledViewConfigurationTypes</code>
-<strong class="purple">must</strong> not be a primary view configuration type,
-or else the runtime <strong class="purple">must</strong> return error <code>XR_ERROR_VALIDATION_FAILURE</code>.</p>
+<p>If there are any primary view configuration types in the array of <code>enabledViewConfigurationTypes</code>,
+the runtime <strong class="purple">must</strong> return error <code>XR_ERROR_VALIDATION_FAILURE</code>.</p>
 </div>
 <div class="paragraph">
-<p>The view configuration type <strong class="purple">must</strong> be one of the supported types reported by <a href="#xrEnumerateViewConfigurations">xrEnumerateViewConfigurations</a> function
-or else the runtime <strong class="purple">must</strong> return error <code>XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED</code>.</p>
+<p>If there are any secondary view configuration types not returned by <a href="#xrEnumerateViewConfigurations">xrEnumerateViewConfigurations</a> in the array of <code>enabledViewConfigurationTypes</code>,
+the runtime <strong class="purple">must</strong> return error <code>XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED</code>.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -34358,19 +34414,19 @@ or else the runtime <strong class="purple">must</strong> return error <code>XR_E
 <div class="ulist">
 <ul>
 <li>
-<p><a id="VUID-XrSessionBeginSecondaryViewConfigurationInfoMSFT-extension-notenabled" href="#VUID-XrSessionBeginSecondaryViewConfigurationInfoMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_secondary_view_configuration_preview">XR_MSFT_secondary_view_configuration_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrSessionBeginSecondaryViewConfigurationInfoMSFT">XrSessionBeginSecondaryViewConfigurationInfoMSFT</a></p>
+<p><a id="VUID-XrSecondaryViewConfigurationSessionBeginInfoMSFT-extension-notenabled" href="#VUID-XrSecondaryViewConfigurationSessionBeginInfoMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_secondary_view_configuration_preview">XR_MSFT_secondary_view_configuration_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrSecondaryViewConfigurationSessionBeginInfoMSFT">XrSecondaryViewConfigurationSessionBeginInfoMSFT</a></p>
 </li>
 <li>
-<p><a id="VUID-XrSessionBeginSecondaryViewConfigurationInfoMSFT-type-type" href="#VUID-XrSessionBeginSecondaryViewConfigurationInfoMSFT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SESSION_BEGIN_SECONDARY_VIEW_CONFIGURATION_INFO_MSFT</code></p>
+<p><a id="VUID-XrSecondaryViewConfigurationSessionBeginInfoMSFT-type-type" href="#VUID-XrSecondaryViewConfigurationSessionBeginInfoMSFT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT</code></p>
 </li>
 <li>
-<p><a id="VUID-XrSessionBeginSecondaryViewConfigurationInfoMSFT-next-next" href="#VUID-XrSessionBeginSecondaryViewConfigurationInfoMSFT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
+<p><a id="VUID-XrSecondaryViewConfigurationSessionBeginInfoMSFT-next-next" href="#VUID-XrSecondaryViewConfigurationSessionBeginInfoMSFT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
 </li>
 <li>
-<p><a id="VUID-XrSessionBeginSecondaryViewConfigurationInfoMSFT-enabledViewConfigurationTypes-parameter" href="#VUID-XrSessionBeginSecondaryViewConfigurationInfoMSFT-enabledViewConfigurationTypes-parameter"></a> <code>enabledViewConfigurationTypes</code> <strong class="purple">must</strong> be a pointer to an array of <code>viewConfigurationCount</code> valid <a href="#XrViewConfigurationType">XrViewConfigurationType</a> values</p>
+<p><a id="VUID-XrSecondaryViewConfigurationSessionBeginInfoMSFT-enabledViewConfigurationTypes-parameter" href="#VUID-XrSecondaryViewConfigurationSessionBeginInfoMSFT-enabledViewConfigurationTypes-parameter"></a> <code>enabledViewConfigurationTypes</code> <strong class="purple">must</strong> be a pointer to an array of <code>viewConfigurationCount</code> valid <a href="#XrViewConfigurationType">XrViewConfigurationType</a> values</p>
 </li>
 <li>
-<p><a id="VUID-XrSessionBeginSecondaryViewConfigurationInfoMSFT-viewConfigurationCount-arraylength" href="#VUID-XrSessionBeginSecondaryViewConfigurationInfoMSFT-viewConfigurationCount-arraylength"></a> The <code>viewConfigurationCount</code> parameter <strong class="purple">must</strong> be greater than <code>0</code></p>
+<p><a id="VUID-XrSecondaryViewConfigurationSessionBeginInfoMSFT-viewConfigurationCount-arraylength" href="#VUID-XrSecondaryViewConfigurationSessionBeginInfoMSFT-viewConfigurationCount-arraylength"></a> The <code>viewConfigurationCount</code> parameter <strong class="purple">must</strong> be greater than <code>0</code></p>
 </li>
 </ul>
 </div>
@@ -34382,30 +34438,30 @@ or else the runtime <strong class="purple">must</strong> return error <code>XR_E
 <div class="sect3">
 <h4 id="_per_frame_active_view_configurations"><a class="anchor" href="#_per_frame_active_view_configurations"></a>12.31.5. Per-frame active view configurations</h4>
 <div class="paragraph">
-<p>Each frame, the runtime then tells the application at the <a href="#xrWaitFrame">xrWaitFrame</a> function call
+<p>The runtime then tells the application at each <a href="#xrWaitFrame">xrWaitFrame</a> function call
 which of the enabled secondary view configurations are active for that frame.
-An extension struct <a href="#XrFrameSecondaryViewConfigurationsStateMSFT">XrFrameSecondaryViewConfigurationsStateMSFT</a> is chained to the <a href="#XrFrameState">XrFrameState</a>::next pointer,
-and the runtime writes into this struct to return the state of each enabled secondary view configuration.</p>
+When extension structure <a href="#XrSecondaryViewConfigurationFrameStateMSFT">XrSecondaryViewConfigurationFrameStateMSFT</a> is chained to the <a href="#XrFrameState">XrFrameState</a>::next pointer,
+the runtime writes into this structure the state of each enabled secondary view configuration.</p>
 </div>
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
-<p>The <a href="#XrFrameSecondaryViewConfigurationsStateMSFT">XrFrameSecondaryViewConfigurationsStateMSFT</a> structure is intended for the runtime to tell the application whether a view configuration is active or inactive.</p>
+<p>The <a href="#XrSecondaryViewConfigurationFrameStateMSFT">XrSecondaryViewConfigurationFrameStateMSFT</a> structure returns whether the enabled view configurations are active or inactive.</p>
 </div>
 <div class="paragraph">
 <p>It is defined as as:</p>
 </div>
-<div id="XrFrameSecondaryViewConfigurationsStateMSFT" class="paragraph">
+<div id="XrSecondaryViewConfigurationFrameStateMSFT" class="paragraph">
 <p></p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrFrameSecondaryViewConfigurationsStateMSFT {
+<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrSecondaryViewConfigurationFrameStateMSFT {
     XrStructureType                           type;
     void*                                     next;
     uint32_t                                  viewConfigurationCount;
-    XrSecondaryViewConfigurationStateMSFT*    states;
-} XrFrameSecondaryViewConfigurationsStateMSFT;</code></pre>
+    XrSecondaryViewConfigurationStateMSFT*    viewConfigurationStates;
+} XrSecondaryViewConfigurationFrameStateMSFT;</code></pre>
 </div>
 </div>
 <div class="sidebarblock">
@@ -34420,20 +34476,20 @@ and the runtime writes into this struct to return the state of each enabled seco
 <p><code>next</code> is <code>NULL</code> or a pointer to an extension-specific structure.</p>
 </li>
 <li>
-<p><code>viewConfigurationCount</code> is the count of elements in <code>states</code>.</p>
+<p><code>viewConfigurationCount</code> is the count of elements in <code>viewConfigurationStates</code>.</p>
 </li>
 <li>
-<p><code>states</code> is an array of <a href="#XrSecondaryViewConfigurationStateMSFT">XrSecondaryViewConfigurationStateMSFT</a> structures.</p>
+<p><code>viewConfigurationStates</code> is an array of <a href="#XrSecondaryViewConfigurationStateMSFT">XrSecondaryViewConfigurationStateMSFT</a> structures.</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 <div class="paragraph">
-<p>The array size <code>viewConfigurationCount</code> in the <a href="#XrFrameSecondaryViewConfigurationsStateMSFT">XrFrameSecondaryViewConfigurationsStateMSFT</a> structure
-must be the same as the array size enabled
-through <a href="#XrSessionBeginSecondaryViewConfigurationInfoMSFT">XrSessionBeginSecondaryViewConfigurationInfoMSFT</a> when calling <a href="#xrBeginSession">xrBeginSession</a> earlier.
-Otherwise, runtime <strong class="purple">must</strong> return error <code>XR_ERROR_VALIDATION_FAILURE</code>.</p>
+<p>The array size <code>viewConfigurationCount</code> in the <a href="#XrSecondaryViewConfigurationFrameStateMSFT">XrSecondaryViewConfigurationFrameStateMSFT</a> structure
+<strong class="purple">must</strong> be the same as the array size enabled
+through <a href="#XrSecondaryViewConfigurationSessionBeginInfoMSFT">XrSecondaryViewConfigurationSessionBeginInfoMSFT</a> when calling <a href="#xrBeginSession">xrBeginSession</a> earlier,
+otherwise the runtime <strong class="purple">must</strong> return error <code>XR_ERROR_VALIDATION_FAILURE</code>.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -34441,19 +34497,19 @@ Otherwise, runtime <strong class="purple">must</strong> return error <code>XR_ER
 <div class="ulist">
 <ul>
 <li>
-<p><a id="VUID-XrFrameSecondaryViewConfigurationsStateMSFT-extension-notenabled" href="#VUID-XrFrameSecondaryViewConfigurationsStateMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_secondary_view_configuration_preview">XR_MSFT_secondary_view_configuration_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrFrameSecondaryViewConfigurationsStateMSFT">XrFrameSecondaryViewConfigurationsStateMSFT</a></p>
+<p><a id="VUID-XrSecondaryViewConfigurationFrameStateMSFT-extension-notenabled" href="#VUID-XrSecondaryViewConfigurationFrameStateMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_secondary_view_configuration_preview">XR_MSFT_secondary_view_configuration_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrSecondaryViewConfigurationFrameStateMSFT">XrSecondaryViewConfigurationFrameStateMSFT</a></p>
 </li>
 <li>
-<p><a id="VUID-XrFrameSecondaryViewConfigurationsStateMSFT-type-type" href="#VUID-XrFrameSecondaryViewConfigurationsStateMSFT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_FRAME_SECONDARY_VIEW_CONFIGURATIONS_STATE_MSFT</code></p>
+<p><a id="VUID-XrSecondaryViewConfigurationFrameStateMSFT-type-type" href="#VUID-XrSecondaryViewConfigurationFrameStateMSFT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_STATE_MSFT</code></p>
 </li>
 <li>
-<p><a id="VUID-XrFrameSecondaryViewConfigurationsStateMSFT-next-next" href="#VUID-XrFrameSecondaryViewConfigurationsStateMSFT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
+<p><a id="VUID-XrSecondaryViewConfigurationFrameStateMSFT-next-next" href="#VUID-XrSecondaryViewConfigurationFrameStateMSFT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
 </li>
 <li>
-<p><a id="VUID-XrFrameSecondaryViewConfigurationsStateMSFT-states-parameter" href="#VUID-XrFrameSecondaryViewConfigurationsStateMSFT-states-parameter"></a> <code>states</code> <strong class="purple">must</strong> be a pointer to an array of <code>viewConfigurationCount</code> <a href="#XrSecondaryViewConfigurationStateMSFT">XrSecondaryViewConfigurationStateMSFT</a> structures</p>
+<p><a id="VUID-XrSecondaryViewConfigurationFrameStateMSFT-viewConfigurationStates-parameter" href="#VUID-XrSecondaryViewConfigurationFrameStateMSFT-viewConfigurationStates-parameter"></a> <code>viewConfigurationStates</code> <strong class="purple">must</strong> be a pointer to an array of <code>viewConfigurationCount</code> <a href="#XrSecondaryViewConfigurationStateMSFT">XrSecondaryViewConfigurationStateMSFT</a> structures</p>
 </li>
 <li>
-<p><a id="VUID-XrFrameSecondaryViewConfigurationsStateMSFT-viewConfigurationCount-arraylength" href="#VUID-XrFrameSecondaryViewConfigurationsStateMSFT-viewConfigurationCount-arraylength"></a> The <code>viewConfigurationCount</code> parameter <strong class="purple">must</strong> be greater than <code>0</code></p>
+<p><a id="VUID-XrSecondaryViewConfigurationFrameStateMSFT-viewConfigurationCount-arraylength" href="#VUID-XrSecondaryViewConfigurationFrameStateMSFT-viewConfigurationCount-arraylength"></a> The <code>viewConfigurationCount</code> parameter <strong class="purple">must</strong> be greater than <code>0</code></p>
 </li>
 </ul>
 </div>
@@ -34464,7 +34520,7 @@ Otherwise, runtime <strong class="purple">must</strong> return error <code>XR_ER
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
-<p>The <a href="#XrSecondaryViewConfigurationStateMSFT">XrSecondaryViewConfigurationStateMSFT</a> structure describes the state of a secondary view configuration.</p>
+<p>The <a href="#XrSecondaryViewConfigurationStateMSFT">XrSecondaryViewConfigurationStateMSFT</a> structure returns the state of an enabled secondary view configurations.</p>
 </div>
 <div id="XrSecondaryViewConfigurationStateMSFT" class="paragraph">
 <p></p>
@@ -34491,10 +34547,10 @@ Otherwise, runtime <strong class="purple">must</strong> return error <code>XR_ER
 <p><code>next</code> is <code>NULL</code> or a pointer to an extension-specific structure.</p>
 </li>
 <li>
-<p><code>viewConfigurationType</code> is a <a href="#XrViewConfigurationType">XrViewConfigurationType</a> that this state represents.</p>
+<p><code>viewConfigurationType</code> is a <a href="#XrViewConfigurationType">XrViewConfigurationType</a> that represents the returned state.</p>
 </li>
 <li>
-<p><code>active</code> is an <a href="#XrBool32"><code>XrBool32</code></a> describes whether the secondary view configuration is active and displaying frames to users.</p>
+<p><code>active</code> is an <a href="#XrBool32"><code>XrBool32</code></a> returns whether the secondary view configuration is active and displaying frames to users.</p>
 </li>
 </ul>
 </div>
@@ -34503,23 +34559,22 @@ Otherwise, runtime <strong class="purple">must</strong> return error <code>XR_ER
 <div class="paragraph">
 <p>When a secondary view configuration becomes active, the application <strong class="purple">should</strong> render its secondary views as soon as possible,
 by getting their view transforms and FOV using <a href="#xrLocateViews">xrLocateViews</a> and then submitting composition layers to <a href="#xrEndFrame">xrEndFrame</a>
-through the <a href="#XrFrameEndSecondaryViewConfigurationInfoMSFT">XrFrameEndSecondaryViewConfigurationInfoMSFT</a> extension struct.
+through the <a href="#XrSecondaryViewConfigurationFrameEndInfoMSFT">XrSecondaryViewConfigurationFrameEndInfoMSFT</a> extension structure.
 When a secondary view configuration changes from inactive to active,
 the runtime <strong class="purple">may</strong> change <a href="#XrViewConfigurationView">XrViewConfigurationView</a> of the given view configuration
 such as the recommended image width or height.
 An application <strong class="purple">should</strong> query for latest <a href="#XrViewConfigurationView">XrViewConfigurationView</a> through <a href="#xrEnumerateViewConfigurationViews">xrEnumerateViewConfigurationViews</a> function
 for the secondary view configuration and consider recreating swapchain images if necessary.
 The runtime <strong class="purple">must</strong> not change the <a href="#XrViewConfigurationView">XrViewConfigurationView</a>, including recommended image width and height of a secondary view configuration
-when <code>active</code> remains true until the secondary view configuration deactivated or the session ended.</p>
+when <code>active</code> remains true until the secondary view configuration deactivated or the session has ended.</p>
 </div>
 <div class="paragraph">
 <p>If necessary, the application <strong class="purple">can</strong> take longer than a frame duration to prepare
 by calling <a href="#xrEndFrame">xrEndFrame</a> without submitting layers for that secondary view configuration until ready.
-The runtime <strong class="purple">should</strong> delay if possible the underlying scenario managed
+The runtime <strong class="purple">should</strong> delay the underlying scenario managed
 by the secondary view configuration until the application begins submitting frames with layers for that configuration.
-Once the application starts submitting frames with layers for a secondary view configuration,
-it <strong class="purple">must</strong> continue to do so when <code>active</code> is true.
-Otherwise the output to the active secondary view configuration is undefined behavior.</p>
+The active secondary view configuration composed output is undefined if the application stops submitting frames with layers
+for a secondary view configuration while <code>active</code> remains true.</p>
 </div>
 <div class="paragraph">
 <p>When the runtime intends to conclude a secondary view configuration, for example when user stops video capture,
@@ -34554,16 +34609,15 @@ by setting the corresponding <code>active</code> in the <a href="#XrSecondaryVie
 <h4 id="_locate_and_inspect_view_states_of_secondary_view_configurations"><a class="anchor" href="#_locate_and_inspect_view_states_of_secondary_view_configurations"></a>12.31.6. Locate and inspect view states of secondary view configurations</h4>
 <div class="paragraph">
 <p>When the application calls <a href="#xrLocateViews">xrLocateViews</a>,
-it <strong class="purple">can</strong> use <a href="#XrViewLocateInfo">XrViewLocateInfo</a>::viewConfigurationType field to query the view location and projection information
+it <strong class="purple">can</strong> use <a href="#XrViewLocateInfo">XrViewLocateInfo</a>::viewConfigurationType field to query the view locations and projections
 for any enabled <a href="#XrViewConfigurationType">XrViewConfigurationType</a> for the running session.</p>
 </div>
 <div class="paragraph">
 <p>The runtime <strong class="purple">must</strong> return <code>XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED</code> from <a href="#xrLocateViews">xrLocateViews</a>
-if the specified <a href="#XrViewConfigurationType">XrViewConfigurationType</a> is not one of the supported types enumerated by <a href="#xrEnumerateViewConfigurations">xrEnumerateViewConfigurations</a>
-or if the specified <a href="#XrViewConfigurationType">XrViewConfigurationType</a> is not enabled for the running session using <a href="#XrSessionBeginSecondaryViewConfigurationInfoMSFT">XrSessionBeginSecondaryViewConfigurationInfoMSFT</a> when calling <a href="#xrBeginSession">xrBeginSession</a>.</p>
+if the specified <a href="#XrViewConfigurationType">XrViewConfigurationType</a> is not enabled for the running session using <a href="#XrSecondaryViewConfigurationSessionBeginInfoMSFT">XrSecondaryViewConfigurationSessionBeginInfoMSFT</a> when calling <a href="#xrBeginSession">xrBeginSession</a>.</p>
 </div>
 <div class="paragraph">
-<p>If the view configuration is supported but not active, as indicated in <a href="#XrFrameSecondaryViewConfigurationsStateMSFT">XrFrameSecondaryViewConfigurationsStateMSFT</a>,
+<p>If the view configuration is supported but not active, as indicated in <a href="#XrSecondaryViewConfigurationFrameStateMSFT">XrSecondaryViewConfigurationFrameStateMSFT</a>,
 <a href="#xrLocateViews">xrLocateViews</a> will successfully return,
 but the resulting <code>XrViewState</code> <strong class="purple">may</strong> have <code>XR_VIEW_STATE_ORIENTATION_TRACKED_BIT</code> and <code>XR_VIEW_STATE_ORIENTATION_TRACKED_BIT</code> unset.</p>
 </div>
@@ -34574,22 +34628,22 @@ but the resulting <code>XrViewState</code> <strong class="purple">may</strong> h
 <div class="content">
 <div class="paragraph">
 <p>The application <strong class="purple">should</strong> submit layers each frame for all active secondary view configurations using the <a href="#xrEndFrame">xrEndFrame</a> function,
-by chaining the <a href="#XrFrameEndSecondaryViewConfigurationInfoMSFT">XrFrameEndSecondaryViewConfigurationInfoMSFT</a> structure to the next pointer of <a href="#XrFrameEndInfo">XrFrameEndInfo</a> structure.</p>
+by chaining the <a href="#XrSecondaryViewConfigurationFrameEndInfoMSFT">XrSecondaryViewConfigurationFrameEndInfoMSFT</a> structure to the next pointer of <a href="#XrFrameEndInfo">XrFrameEndInfo</a> structure.</p>
 </div>
 <div class="paragraph">
-<p>The <a href="#XrFrameEndSecondaryViewConfigurationInfoMSFT">XrFrameEndSecondaryViewConfigurationInfoMSFT</a> structure is defined as as:</p>
+<p>The <a href="#XrSecondaryViewConfigurationFrameEndInfoMSFT">XrSecondaryViewConfigurationFrameEndInfoMSFT</a> structure is defined as as:</p>
 </div>
-<div id="XrFrameEndSecondaryViewConfigurationInfoMSFT" class="paragraph">
+<div id="XrSecondaryViewConfigurationFrameEndInfoMSFT" class="paragraph">
 <p></p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrFrameEndSecondaryViewConfigurationInfoMSFT {
+<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrSecondaryViewConfigurationFrameEndInfoMSFT {
     XrStructureType                                     type;
     const void*                                         next;
     uint32_t                                            viewConfigurationCount;
     const XrSecondaryViewConfigurationLayerInfoMSFT*    viewConfigurationLayersInfo;
-} XrFrameEndSecondaryViewConfigurationInfoMSFT;</code></pre>
+} XrSecondaryViewConfigurationFrameEndInfoMSFT;</code></pre>
 </div>
 </div>
 <div class="sidebarblock">
@@ -34616,16 +34670,16 @@ containing composition layers to be submitted for the specified active view conf
 </div>
 <div class="paragraph">
 <p>The view configuration type in each <a href="#XrSecondaryViewConfigurationLayerInfoMSFT">XrSecondaryViewConfigurationLayerInfoMSFT</a> must be
-one of the view configurations enabled when calling <a href="#xrBeginSession">xrBeginSession</a> in <a href="#XrSessionBeginSecondaryViewConfigurationInfoMSFT">XrSessionBeginSecondaryViewConfigurationInfoMSFT</a>,
+one of the view configurations enabled when calling <a href="#xrBeginSession">xrBeginSession</a> in <a href="#XrSecondaryViewConfigurationSessionBeginInfoMSFT">XrSecondaryViewConfigurationSessionBeginInfoMSFT</a>,
 or else the runtime <strong class="purple">must</strong> return error <code>XR_ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT</code>.</p>
 </div>
 <div class="paragraph">
 <p>The view configuration type in each <a href="#XrSecondaryViewConfigurationLayerInfoMSFT">XrSecondaryViewConfigurationLayerInfoMSFT</a> must not be the primary view configuration in this session,
 or else the runtime <strong class="purple">must</strong> return error <code>XR_ERROR_LAYER_INVALID</code>.
-This is because primary view configuration layers <strong class="purple">must</strong> be submitted through <a href="#XrFrameEndInfo">XrFrameEndInfo</a> directly.</p>
+The primary view configuration layers continue to be submitted through <a href="#XrFrameEndInfo">XrFrameEndInfo</a> directly.</p>
 </div>
 <div class="paragraph">
-<p>If the view configuration is not active, as indicated in <a href="#XrFrameSecondaryViewConfigurationsStateMSFT">XrFrameSecondaryViewConfigurationsStateMSFT</a>,
+<p>If the view configuration is not active, as indicated in <a href="#XrSecondaryViewConfigurationFrameStateMSFT">XrSecondaryViewConfigurationFrameStateMSFT</a>,
 the composition layers submitted to this view configuration <strong class="purple">may</strong> be ignored by the runtime.
 Applications <strong class="purple">should</strong> avoid rendering into secondary views when the view configuration is inactive.</p>
 </div>
@@ -34635,19 +34689,19 @@ Applications <strong class="purple">should</strong> avoid rendering into seconda
 <div class="ulist">
 <ul>
 <li>
-<p><a id="VUID-XrFrameEndSecondaryViewConfigurationInfoMSFT-extension-notenabled" href="#VUID-XrFrameEndSecondaryViewConfigurationInfoMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_secondary_view_configuration_preview">XR_MSFT_secondary_view_configuration_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrFrameEndSecondaryViewConfigurationInfoMSFT">XrFrameEndSecondaryViewConfigurationInfoMSFT</a></p>
+<p><a id="VUID-XrSecondaryViewConfigurationFrameEndInfoMSFT-extension-notenabled" href="#VUID-XrSecondaryViewConfigurationFrameEndInfoMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_secondary_view_configuration_preview">XR_MSFT_secondary_view_configuration_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrSecondaryViewConfigurationFrameEndInfoMSFT">XrSecondaryViewConfigurationFrameEndInfoMSFT</a></p>
 </li>
 <li>
-<p><a id="VUID-XrFrameEndSecondaryViewConfigurationInfoMSFT-type-type" href="#VUID-XrFrameEndSecondaryViewConfigurationInfoMSFT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_FRAME_END_SECONDARY_VIEW_CONFIGURATION_INFO_MSFT</code></p>
+<p><a id="VUID-XrSecondaryViewConfigurationFrameEndInfoMSFT-type-type" href="#VUID-XrSecondaryViewConfigurationFrameEndInfoMSFT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT</code></p>
 </li>
 <li>
-<p><a id="VUID-XrFrameEndSecondaryViewConfigurationInfoMSFT-next-next" href="#VUID-XrFrameEndSecondaryViewConfigurationInfoMSFT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
+<p><a id="VUID-XrSecondaryViewConfigurationFrameEndInfoMSFT-next-next" href="#VUID-XrSecondaryViewConfigurationFrameEndInfoMSFT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
 </li>
 <li>
-<p><a id="VUID-XrFrameEndSecondaryViewConfigurationInfoMSFT-viewConfigurationLayersInfo-parameter" href="#VUID-XrFrameEndSecondaryViewConfigurationInfoMSFT-viewConfigurationLayersInfo-parameter"></a> <code>viewConfigurationLayersInfo</code> <strong class="purple">must</strong> be a pointer to an array of <code>viewConfigurationCount</code> valid <a href="#XrSecondaryViewConfigurationLayerInfoMSFT">XrSecondaryViewConfigurationLayerInfoMSFT</a> structures</p>
+<p><a id="VUID-XrSecondaryViewConfigurationFrameEndInfoMSFT-viewConfigurationLayersInfo-parameter" href="#VUID-XrSecondaryViewConfigurationFrameEndInfoMSFT-viewConfigurationLayersInfo-parameter"></a> <code>viewConfigurationLayersInfo</code> <strong class="purple">must</strong> be a pointer to an array of <code>viewConfigurationCount</code> valid <a href="#XrSecondaryViewConfigurationLayerInfoMSFT">XrSecondaryViewConfigurationLayerInfoMSFT</a> structures</p>
 </li>
 <li>
-<p><a id="VUID-XrFrameEndSecondaryViewConfigurationInfoMSFT-viewConfigurationCount-arraylength" href="#VUID-XrFrameEndSecondaryViewConfigurationInfoMSFT-viewConfigurationCount-arraylength"></a> The <code>viewConfigurationCount</code> parameter <strong class="purple">must</strong> be greater than <code>0</code></p>
+<p><a id="VUID-XrSecondaryViewConfigurationFrameEndInfoMSFT-viewConfigurationCount-arraylength" href="#VUID-XrSecondaryViewConfigurationFrameEndInfoMSFT-viewConfigurationCount-arraylength"></a> The <code>viewConfigurationCount</code> parameter <strong class="purple">must</strong> be greater than <code>0</code></p>
 </li>
 </ul>
 </div>
@@ -34658,7 +34712,7 @@ Applications <strong class="purple">should</strong> avoid rendering into seconda
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
-<p>The application should submit an <a href="#XrSecondaryViewConfigurationLayerInfoMSFT">XrSecondaryViewConfigurationLayerInfoMSFT</a> in <a href="#XrFrameEndSecondaryViewConfigurationInfoMSFT">XrFrameEndSecondaryViewConfigurationInfoMSFT</a>
+<p>The application should submit an <a href="#XrSecondaryViewConfigurationLayerInfoMSFT">XrSecondaryViewConfigurationLayerInfoMSFT</a> in <a href="#XrSecondaryViewConfigurationFrameEndInfoMSFT">XrSecondaryViewConfigurationFrameEndInfoMSFT</a>
 for each active secondary view configuration type when calling <a href="#xrEndFrame">xrEndFrame</a>.</p>
 </div>
 <div class="paragraph">
@@ -34727,8 +34781,8 @@ the application <strong class="purple">can</strong> submit the same <a href="#Xr
 to multiple view configurations in the same <a href="#xrEndFrame">xrEndFrame</a> function call.</p>
 </div>
 <div class="paragraph">
-<p>Each frame, the application <strong class="purple">should</strong> only render and submit layers for the secondary view configurations
-that were active that frame, as indicated in the <a href="#XrFrameSecondaryViewConfigurationsStateMSFT">XrFrameSecondaryViewConfigurationsStateMSFT</a> filled in by that frame&#8217;s <a href="#xrWaitFrame">xrWaitFrame</a> call.
+<p>For each frame, the application <strong class="purple">should</strong> only render and submit layers for the secondary view configurations
+that were active that frame, as indicated in the <a href="#XrSecondaryViewConfigurationFrameStateMSFT">XrSecondaryViewConfigurationFrameStateMSFT</a> filled in for that frame&#8217;s <a href="#xrWaitFrame">xrWaitFrame</a> call.
 The runtime <strong class="purple">must</strong> ignore composition layers submitted for an inactive view configuration.</p>
 </div>
 <div class="sidebarblock">
@@ -34773,16 +34827,16 @@ The runtime <strong class="purple">must</strong> ignore composition layers submi
 <p><strong>New Enum Constants</strong></p>
 </div>
 <div class="paragraph">
-<p><code>XR_TYPE_SESSION_BEGIN_SECONDARY_VIEW_CONFIGURATION_INFO_MSFT</code></p>
+<p><code>XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT</code></p>
 </div>
 <div class="paragraph">
 <p><code>XR_TYPE_SECONDARY_VIEW_CONFIGURATION_STATE_MSFT</code></p>
 </div>
 <div class="paragraph">
-<p><code>XR_TYPE_FRAME_SECONDARY_VIEW_CONFIGURATIONS_STATE_MSFT</code></p>
+<p><code>XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_STATE_MSFT</code></p>
 </div>
 <div class="paragraph">
-<p><code>XR_TYPE_FRAME_END_SECONDARY_VIEW_CONFIGURATION_INFO_MSFT</code></p>
+<p><code>XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT</code></p>
 </div>
 <div class="paragraph">
 <p><code>XR_TYPE_SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT</code></p>
@@ -34797,16 +34851,16 @@ The runtime <strong class="purple">must</strong> ignore composition layers submi
 <p><strong>New Structures</strong></p>
 </div>
 <div class="paragraph">
-<p><a href="#XrSessionBeginSecondaryViewConfigurationInfoMSFT">XrSessionBeginSecondaryViewConfigurationInfoMSFT</a></p>
+<p><a href="#XrSecondaryViewConfigurationSessionBeginInfoMSFT">XrSecondaryViewConfigurationSessionBeginInfoMSFT</a></p>
 </div>
 <div class="paragraph">
 <p><a href="#XrSecondaryViewConfigurationStateMSFT">XrSecondaryViewConfigurationStateMSFT</a></p>
 </div>
 <div class="paragraph">
-<p><a href="#XrFrameSecondaryViewConfigurationsStateMSFT">XrFrameSecondaryViewConfigurationsStateMSFT</a></p>
+<p><a href="#XrSecondaryViewConfigurationFrameStateMSFT">XrSecondaryViewConfigurationFrameStateMSFT</a></p>
 </div>
 <div class="paragraph">
-<p><a href="#XrFrameEndSecondaryViewConfigurationInfoMSFT">XrFrameEndSecondaryViewConfigurationInfoMSFT</a></p>
+<p><a href="#XrSecondaryViewConfigurationFrameEndInfoMSFT">XrSecondaryViewConfigurationFrameEndInfoMSFT</a></p>
 </div>
 <div class="paragraph">
 <p><a href="#XrSecondaryViewConfigurationLayerInfoMSFT">XrSecondaryViewConfigurationLayerInfoMSFT</a></p>
@@ -35508,25 +35562,22 @@ Darryl Gough, Microsoft<br></p>
 <div class="paragraph">
 <p>This extension enables applications to create <a href="#XrSpace">XrSpace</a> handles from
 other Windows Mixed Reality device platform libraries or APIs.
-These libraries represent a spatially tracked point as a GUID value, also known as "spatial graph node".</p>
+These libraries represent a spatially tracked point, also known as a "spatial graph node", with a GUID value.</p>
 </div>
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
-<p>An application <strong class="purple">can</strong> use <a href="#xrCreateSpaceFromSpatialGraphNodeMSFT">xrCreateSpaceFromSpatialGraphNodeMSFT</a> to create an <a href="#XrSpace">XrSpace</a> handle
-with given spatial node type and node Id.</p>
+<p>The <a href="#xrCreateSpatialGraphNodeSpaceMSFT">xrCreateSpatialGraphNodeSpaceMSFT</a> function creates an <a href="#XrSpace">XrSpace</a> handle
+for a given spatial graph node type and ID.</p>
 </div>
-<div class="paragraph">
-<p>It is defined as:</p>
-</div>
-<div id="xrCreateSpaceFromSpatialGraphNodeMSFT" class="paragraph">
+<div id="xrCreateSpatialGraphNodeSpaceMSFT" class="paragraph">
 <p></p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">XrResult xrCreateSpaceFromSpatialGraphNodeMSFT(
+<pre class="prettyprint highlight"><code data-lang="c++">XrResult xrCreateSpatialGraphNodeSpaceMSFT(
     XrSession                                   session,
-    const XrSpaceFromSpatialGraphNodeCreateInfoMSFT* spaceCreateInfo,
+    const XrSpatialGraphNodeSpaceCreateInfoMSFT* spaceCreateInfo,
     XrSpace*                                    space);</code></pre>
 </div>
 </div>
@@ -35536,21 +35587,17 @@ with given spatial node type and node Id.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><code>session</code> is an <a href="#XrSession">XrSession</a> previously created with <a href="#xrCreateSession">xrCreateSession</a>.</p>
+<p><code>session</code> is the <a href="#XrSession">XrSession</a> which will use the created space.</p>
 </li>
 <li>
-<p><code>createInfo</code> is an <a href="#XrSpaceFromSpatialGraphNodeCreateInfoMSFT">XrSpaceFromSpatialGraphNodeCreateInfoMSFT</a> specify the space to be created.</p>
+<p><code>createInfo</code> is an <a href="#XrSpatialGraphNodeSpaceCreateInfoMSFT">XrSpatialGraphNodeSpaceCreateInfoMSFT</a> specifying the space to be created.</p>
 </li>
 <li>
-<p><code>space</code> returns an <a href="#XrSpace">XrSpace</a> handle for the given spatial node ID.</p>
+<p><code>space</code> is the returned <a href="#XrSpace">XrSpace</a> handle for the given spatial node ID.</p>
 </li>
 </ul>
 </div>
 </div>
-</div>
-<div class="paragraph">
-<p>If the spatial graph node Id of the given node type was not found from the Mixed Reality device,
-the runtime <strong class="purple">must</strong> return <code>XR_ERROR_SPATIAL_GRAPH_NODE_NOT_FOUND_MSFT</code>.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -35558,16 +35605,16 @@ the runtime <strong class="purple">must</strong> return <code>XR_ERROR_SPATIAL_G
 <div class="ulist">
 <ul>
 <li>
-<p><a id="VUID-xrCreateSpaceFromSpatialGraphNodeMSFT-extension-notenabled" href="#VUID-xrCreateSpaceFromSpatialGraphNodeMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_spatial_graph_bridge_preview">XR_MSFT_spatial_graph_bridge_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrCreateSpaceFromSpatialGraphNodeMSFT">xrCreateSpaceFromSpatialGraphNodeMSFT</a></p>
+<p><a id="VUID-xrCreateSpatialGraphNodeSpaceMSFT-extension-notenabled" href="#VUID-xrCreateSpatialGraphNodeSpaceMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_spatial_graph_bridge_preview">XR_MSFT_spatial_graph_bridge_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrCreateSpatialGraphNodeSpaceMSFT">xrCreateSpatialGraphNodeSpaceMSFT</a></p>
 </li>
 <li>
-<p><a id="VUID-xrCreateSpaceFromSpatialGraphNodeMSFT-session-parameter" href="#VUID-xrCreateSpaceFromSpatialGraphNodeMSFT-session-parameter"></a> <code>session</code> <strong class="purple">must</strong> be a valid <a href="#XrSession">XrSession</a> handle</p>
+<p><a id="VUID-xrCreateSpatialGraphNodeSpaceMSFT-session-parameter" href="#VUID-xrCreateSpatialGraphNodeSpaceMSFT-session-parameter"></a> <code>session</code> <strong class="purple">must</strong> be a valid <a href="#XrSession">XrSession</a> handle</p>
 </li>
 <li>
-<p><a id="VUID-xrCreateSpaceFromSpatialGraphNodeMSFT-spaceCreateInfo-parameter" href="#VUID-xrCreateSpaceFromSpatialGraphNodeMSFT-spaceCreateInfo-parameter"></a> <code>spaceCreateInfo</code> <strong class="purple">must</strong> be a pointer to a valid <a href="#XrSpaceFromSpatialGraphNodeCreateInfoMSFT">XrSpaceFromSpatialGraphNodeCreateInfoMSFT</a> structure</p>
+<p><a id="VUID-xrCreateSpatialGraphNodeSpaceMSFT-spaceCreateInfo-parameter" href="#VUID-xrCreateSpatialGraphNodeSpaceMSFT-spaceCreateInfo-parameter"></a> <code>spaceCreateInfo</code> <strong class="purple">must</strong> be a pointer to a valid <a href="#XrSpatialGraphNodeSpaceCreateInfoMSFT">XrSpatialGraphNodeSpaceCreateInfoMSFT</a> structure</p>
 </li>
 <li>
-<p><a id="VUID-xrCreateSpaceFromSpatialGraphNodeMSFT-space-parameter" href="#VUID-xrCreateSpaceFromSpatialGraphNodeMSFT-space-parameter"></a> <code>space</code> <strong class="purple">must</strong> be a pointer to an <a href="#XrSpace">XrSpace</a> handle</p>
+<p><a id="VUID-xrCreateSpatialGraphNodeSpaceMSFT-space-parameter" href="#VUID-xrCreateSpatialGraphNodeSpaceMSFT-space-parameter"></a> <code>space</code> <strong class="purple">must</strong> be a pointer to an <a href="#XrSpace">XrSpace</a> handle</p>
 </li>
 </ul>
 </div>
@@ -35616,9 +35663,6 @@ the runtime <strong class="purple">must</strong> return <code>XR_ERROR_SPATIAL_G
 <li>
 <p><code>XR_ERROR_POSE_INVALID</code></p>
 </li>
-<li>
-<p><code>XR_ERROR_SPATIAL_GRAPH_NODE_NOT_FOUND_MSFT</code></p>
-</li>
 </ul>
 </div>
 </dd>
@@ -35631,24 +35675,21 @@ the runtime <strong class="purple">must</strong> return <code>XR_ERROR_SPATIAL_G
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
-<p>An application <strong class="purple">can</strong> use <a href="#XrSpaceFromSpatialGraphNodeCreateInfoMSFT">XrSpaceFromSpatialGraphNodeCreateInfoMSFT</a> to create an <a href="#XrSpace">XrSpace</a> handle
-with given spatial node type and node Id.</p>
+<p>The <a href="#XrSpatialGraphNodeSpaceCreateInfoMSFT">XrSpatialGraphNodeSpaceCreateInfoMSFT</a> structure is used with <a href="#xrCreateSpatialGraphNodeSpaceMSFT">xrCreateSpatialGraphNodeSpaceMSFT</a> to create an <a href="#XrSpace">XrSpace</a> handle
+for a given spatial node type and node ID.</p>
 </div>
-<div class="paragraph">
-<p>It is defined as:</p>
-</div>
-<div id="XrSpaceFromSpatialGraphNodeCreateInfoMSFT" class="paragraph">
+<div id="XrSpatialGraphNodeSpaceCreateInfoMSFT" class="paragraph">
 <p></p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrSpaceFromSpatialGraphNodeCreateInfoMSFT {
+<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrSpatialGraphNodeSpaceCreateInfoMSFT {
     XrStructureType               type;
     const void*                   next;
     XrSpatialGraphNodeTypeMSFT    spatialGraphNodeType;
     uint8_t                       nodeId[16];
     XrPosef                       pose;
-} XrSpaceFromSpatialGraphNodeCreateInfoMSFT;</code></pre>
+} XrSpatialGraphNodeSpaceCreateInfoMSFT;</code></pre>
 </div>
 </div>
 <div class="sidebarblock">
@@ -35663,13 +35704,13 @@ with given spatial node type and node Id.</p>
 <p><code>next</code> is <code>NULL</code> or a pointer to an extension-specific structure.</p>
 </li>
 <li>
-<p><code>spatialGraphNodeType</code> is a <a href="#XrSpatialGraphNodeTypeMSFT">XrSpatialGraphNodeTypeMSFT</a> describe the type of the spatial node type.</p>
+<p><code>spatialGraphNodeType</code> is an <a href="#XrSpatialGraphNodeTypeMSFT">XrSpatialGraphNodeTypeMSFT</a> specifying the spatial node type.</p>
 </li>
 <li>
-<p><code>nodeId</code> is a global unique identifier (a.k.a. GUID, 16 byte array), representing the spatial node that&#8217;s being tracked.</p>
+<p><code>nodeId</code> is a global unique identifier (a.k.a. GUID or 16 byte array), representing the spatial node that is being tracked.</p>
 </li>
 <li>
-<p><code>pose</code> is a <a href="#XrPosef">XrPosef</a> describes the offset pose of the created space in the natural space of the spatial node.</p>
+<p><code>pose</code> is an <a href="#XrPosef">XrPosef</a> defining the position and orientation of the new space&#8217;s origin within the natural reference frame of the spatial graph node.</p>
 </li>
 </ul>
 </div>
@@ -35681,16 +35722,16 @@ with given spatial node type and node Id.</p>
 <div class="ulist">
 <ul>
 <li>
-<p><a id="VUID-XrSpaceFromSpatialGraphNodeCreateInfoMSFT-extension-notenabled" href="#VUID-XrSpaceFromSpatialGraphNodeCreateInfoMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_spatial_graph_bridge_preview">XR_MSFT_spatial_graph_bridge_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrSpaceFromSpatialGraphNodeCreateInfoMSFT">XrSpaceFromSpatialGraphNodeCreateInfoMSFT</a></p>
+<p><a id="VUID-XrSpatialGraphNodeSpaceCreateInfoMSFT-extension-notenabled" href="#VUID-XrSpatialGraphNodeSpaceCreateInfoMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_spatial_graph_bridge_preview">XR_MSFT_spatial_graph_bridge_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrSpatialGraphNodeSpaceCreateInfoMSFT">XrSpatialGraphNodeSpaceCreateInfoMSFT</a></p>
 </li>
 <li>
-<p><a id="VUID-XrSpaceFromSpatialGraphNodeCreateInfoMSFT-type-type" href="#VUID-XrSpaceFromSpatialGraphNodeCreateInfoMSFT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SPACE_FROM_SPATIAL_GRAPH_NODE_CREATE_INFO_MSFT</code></p>
+<p><a id="VUID-XrSpatialGraphNodeSpaceCreateInfoMSFT-type-type" href="#VUID-XrSpatialGraphNodeSpaceCreateInfoMSFT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT</code></p>
 </li>
 <li>
-<p><a id="VUID-XrSpaceFromSpatialGraphNodeCreateInfoMSFT-next-next" href="#VUID-XrSpaceFromSpatialGraphNodeCreateInfoMSFT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
+<p><a id="VUID-XrSpatialGraphNodeSpaceCreateInfoMSFT-next-next" href="#VUID-XrSpatialGraphNodeSpaceCreateInfoMSFT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
 </li>
 <li>
-<p><a id="VUID-XrSpaceFromSpatialGraphNodeCreateInfoMSFT-spatialGraphNodeType-parameter" href="#VUID-XrSpaceFromSpatialGraphNodeCreateInfoMSFT-spatialGraphNodeType-parameter"></a> <code>spatialGraphNodeType</code> <strong class="purple">must</strong> be a valid <a href="#XrSpatialGraphNodeTypeMSFT">XrSpatialGraphNodeTypeMSFT</a> value</p>
+<p><a id="VUID-XrSpatialGraphNodeSpaceCreateInfoMSFT-spatialGraphNodeType-parameter" href="#VUID-XrSpatialGraphNodeSpaceCreateInfoMSFT-spatialGraphNodeType-parameter"></a> <code>spatialGraphNodeType</code> <strong class="purple">must</strong> be a valid <a href="#XrSpatialGraphNodeTypeMSFT">XrSpatialGraphNodeTypeMSFT</a> value</p>
 </li>
 </ul>
 </div>
@@ -35701,8 +35742,7 @@ with given spatial node type and node Id.</p>
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
-<p>The enum <a href="#XrSpatialGraphNodeTypeMSFT">XrSpatialGraphNodeTypeMSFT</a> describes the type of spatial graph nodes.
-It is defined as:</p>
+<p>The enum <a href="#XrSpatialGraphNodeTypeMSFT">XrSpatialGraphNodeTypeMSFT</a> describes the types of spatial graph nodes.</p>
 </div>
 <div id="XrSpatialGraphNodeTypeMSFT" class="paragraph">
 <p></p>
@@ -35717,7 +35757,7 @@ It is defined as:</p>
 </div>
 </div>
 <div class="paragraph">
-<p>There are two types of spatial graph nodes; static and dynamic.</p>
+<p>There are two types of spatial graph nodes: static and dynamic.</p>
 </div>
 <div class="paragraph">
 <p>Static spatial nodes represent a static point in the stationary frame of reference.
@@ -35746,13 +35786,25 @@ Dynamic spatial nodes are represented by <code>XR_SPATIAL_GRAPH_NODE_TYPE_DYNAMI
 <p><strong>New Enum Constants</strong></p>
 </div>
 <div class="paragraph">
+<p><code>XR_TYPE_SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT</code></p>
+</div>
+<div class="paragraph">
 <p><strong>New Enums</strong></p>
+</div>
+<div class="paragraph">
+<p><a href="#XrSpatialGraphNodeTypeMSFT">XrSpatialGraphNodeTypeMSFT</a></p>
 </div>
 <div class="paragraph">
 <p><strong>New Structures</strong></p>
 </div>
 <div class="paragraph">
+<p><a href="#XrSpatialGraphNodeSpaceCreateInfoMSFT">XrSpatialGraphNodeSpaceCreateInfoMSFT</a></p>
+</div>
+<div class="paragraph">
 <p><strong>New Functions</strong></p>
+</div>
+<div class="paragraph">
+<p><a href="#xrCreateSpatialGraphNodeSpaceMSFT">xrCreateSpatialGraphNodeSpaceMSFT</a></p>
 </div>
 <div class="paragraph">
 <p><strong>Issues</strong></p>
@@ -37188,13 +37240,13 @@ which indicates various state information for the main session.</p>
 <p><a href="#xrCreateSession">xrCreateSession</a></p>
 </li>
 <li>
-<p><a href="#xrCreateSpaceFromSpatialGraphNodeMSFT">xrCreateSpaceFromSpatialGraphNodeMSFT</a></p>
-</li>
-<li>
 <p><a href="#xrCreateSpatialAnchorMSFT">xrCreateSpatialAnchorMSFT</a></p>
 </li>
 <li>
 <p><a href="#xrCreateSpatialAnchorSpaceMSFT">xrCreateSpatialAnchorSpaceMSFT</a></p>
+</li>
+<li>
+<p><a href="#xrCreateSpatialGraphNodeSpaceMSFT">xrCreateSpatialGraphNodeSpaceMSFT</a></p>
 </li>
 <li>
 <p><a href="#xrCreateSwapchain">xrCreateSwapchain</a></p>
@@ -37616,12 +37668,6 @@ which indicates various state information for the main session.</p>
 <p><a href="#XrFrameEndInfo">XrFrameEndInfo</a></p>
 </li>
 <li>
-<p><a href="#XrFrameEndSecondaryViewConfigurationInfoMSFT">XrFrameEndSecondaryViewConfigurationInfoMSFT</a></p>
-</li>
-<li>
-<p><a href="#XrFrameSecondaryViewConfigurationsStateMSFT">XrFrameSecondaryViewConfigurationsStateMSFT</a></p>
-</li>
-<li>
 <p><a href="#XrFrameState">XrFrameState</a></p>
 </li>
 <li>
@@ -37748,10 +37794,22 @@ which indicates various state information for the main session.</p>
 <p><a href="#XrReferenceSpaceCreateInfo">XrReferenceSpaceCreateInfo</a></p>
 </li>
 <li>
+<p><a href="#XrSecondaryViewConfigurationFrameEndInfoMSFT">XrSecondaryViewConfigurationFrameEndInfoMSFT</a></p>
+</li>
+<li>
+<p><a href="#XrSecondaryViewConfigurationFrameStateMSFT">XrSecondaryViewConfigurationFrameStateMSFT</a></p>
+</li>
+<li>
 <p><a href="#XrSecondaryViewConfigurationLayerInfoMSFT">XrSecondaryViewConfigurationLayerInfoMSFT</a></p>
 </li>
 <li>
+<p><a href="#XrSecondaryViewConfigurationSessionBeginInfoMSFT">XrSecondaryViewConfigurationSessionBeginInfoMSFT</a></p>
+</li>
+<li>
 <p><a href="#XrSecondaryViewConfigurationStateMSFT">XrSecondaryViewConfigurationStateMSFT</a></p>
+</li>
+<li>
+<p><a href="#XrSecondaryViewConfigurationSwapchainCreateInfoMSFT">XrSecondaryViewConfigurationSwapchainCreateInfoMSFT</a></p>
 </li>
 <li>
 <p><a href="#XrSessionActionSetsAttachInfo">XrSessionActionSetsAttachInfo</a></p>
@@ -37760,16 +37818,10 @@ which indicates various state information for the main session.</p>
 <p><a href="#XrSessionBeginInfo">XrSessionBeginInfo</a></p>
 </li>
 <li>
-<p><a href="#XrSessionBeginSecondaryViewConfigurationInfoMSFT">XrSessionBeginSecondaryViewConfigurationInfoMSFT</a></p>
-</li>
-<li>
 <p><a href="#XrSessionCreateInfo">XrSessionCreateInfo</a></p>
 </li>
 <li>
 <p><a href="#XrSessionCreateInfoOverlayEXTX">XrSessionCreateInfoOverlayEXTX</a></p>
-</li>
-<li>
-<p><a href="#XrSpaceFromSpatialGraphNodeCreateInfoMSFT">XrSpaceFromSpatialGraphNodeCreateInfoMSFT</a></p>
 </li>
 <li>
 <p><a href="#XrSpaceLocation">XrSpaceLocation</a></p>
@@ -37782,6 +37834,9 @@ which indicates various state information for the main session.</p>
 </li>
 <li>
 <p><a href="#XrSpatialAnchorSpaceCreateInfoMSFT">XrSpatialAnchorSpaceCreateInfoMSFT</a></p>
+</li>
+<li>
+<p><a href="#XrSpatialGraphNodeSpaceCreateInfoMSFT">XrSpatialGraphNodeSpaceCreateInfoMSFT</a></p>
 </li>
 <li>
 <p><a href="#XrSwapchainCreateInfo">XrSwapchainCreateInfo</a></p>
@@ -37812,9 +37867,6 @@ which indicates various state information for the main session.</p>
 </li>
 <li>
 <p><a href="#XrSwapchainImageWaitInfo">XrSwapchainImageWaitInfo</a></p>
-</li>
-<li>
-<p><a href="#XrSwapchainSecondaryViewConfigurationCreateInfoMSFT">XrSwapchainSecondaryViewConfigurationCreateInfoMSFT</a></p>
 </li>
 <li>
 <p><a href="#XrSwapchainSubImage">XrSwapchainSubImage</a></p>
@@ -38066,7 +38118,7 @@ the application binary interface.</p>
     XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT = 1000039001,
     XR_TYPE_VIEW_CONFIGURATION_DEPTH_RANGE_EXT = 1000046000,
     XR_TYPE_VIEW_CONFIGURATION_VIEW_FOV_EPIC = 1000059000,
-    XR_TYPE_SPACE_FROM_SPATIAL_GRAPH_NODE_CREATE_INFO_MSFT = 1000049000,
+    XR_TYPE_SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT = 1000049000,
     XR_TYPE_HAND_TRACKER_CREATE_INFO_MSFT = 1000051000,
     XR_TYPE_HAND_TRACKER_STATE_MSFT = 1000051001,
     XR_TYPE_HAND_JOINT_SPACE_CREATE_INFO_MSFT = 1000051002,
@@ -38077,12 +38129,12 @@ the application binary interface.</p>
     XR_TYPE_HAND_MESH_MSFT = 1000052002,
     XR_TYPE_SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT = 1000052003,
     XR_TYPE_HAND_POSE_TYPE_INFO_MSFT = 1000052004,
-    XR_TYPE_SESSION_BEGIN_SECONDARY_VIEW_CONFIGURATION_INFO_MSFT = 1000053000,
+    XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT = 1000053000,
     XR_TYPE_SECONDARY_VIEW_CONFIGURATION_STATE_MSFT = 1000053001,
-    XR_TYPE_FRAME_SECONDARY_VIEW_CONFIGURATIONS_STATE_MSFT = 1000053002,
-    XR_TYPE_FRAME_END_SECONDARY_VIEW_CONFIGURATION_INFO_MSFT = 1000053003,
+    XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_STATE_MSFT = 1000053002,
+    XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT = 1000053003,
     XR_TYPE_SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT = 1000053004,
-    XR_TYPE_SWAPCHAIN_SECONDARY_VIEW_CONFIGURATION_CREATE_INFO_MSFT = 1000053005,
+    XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT = 1000053005,
     XR_TYPE_ACTION_STATE_POSE_CONTROLLER_MODEL_MSFT = 1000055000,
     XR_TYPE_CONTROLLER_MODEL_NODE_PROPERTIES_MSFT = 1000055001,
     XR_TYPE_CONTROLLER_MODEL_PROPERTIES_MSFT = 1000055002,
@@ -39168,7 +39220,7 @@ the time of their most recent contribution, are listed below.</p>
 <div id="footer">
 <div id="footer-text">
 Version 1.0.8<br>
-Last updated 2020-03-21 13:43:37 -0700
+Last updated 2020-05-01 23:30:07 -0700
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">

@@ -64,14 +64,14 @@ namespace {
             XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
             createInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
             createInfo.poseInReferenceSpace = Pose::Identity();
-            CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext.Session, &createInfo, m_viewSpace.Put()));
+            CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext.Session.Handle, &createInfo, m_viewSpace.Put()));
         }
 
         void OnUpdate(const FrameTime& frameTime) override {
             XrActionStateBoolean state{XR_TYPE_ACTION_STATE_BOOLEAN};
             XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
             getInfo.action = m_selectAction;
-            CHECK_XRCMD(xrGetActionStateBoolean(m_sceneContext.Session, &getInfo, &state));
+            CHECK_XRCMD(xrGetActionStateBoolean(m_sceneContext.Session.Handle, &getInfo, &state));
             const bool isSelectPressed = state.isActive && state.changedSinceLastSync && state.currentState;
             const bool firstUpdate = !m_sun->IsVisible();
 

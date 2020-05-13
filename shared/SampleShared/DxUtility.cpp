@@ -114,8 +114,8 @@ namespace sample::dx {
         swapchainCreateInfo.createFlags = createFlags;
         swapchainCreateInfo.usageFlags = usageFlags;
 
-        XrSwapchainSecondaryViewConfigurationCreateInfoMSFT secondaryViewConfigCreateInfo{
-            XR_TYPE_SWAPCHAIN_SECONDARY_VIEW_CONFIGURATION_CREATE_INFO_MSFT};
+        XrSecondaryViewConfigurationSwapchainCreateInfoMSFT secondaryViewConfigCreateInfo{
+            XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT};
         if (viewConfigurationForSwapchain.has_value()) {
             secondaryViewConfigCreateInfo.viewConfigurationType = viewConfigurationForSwapchain.value();
             swapchainCreateInfo.next = &secondaryViewConfigCreateInfo;

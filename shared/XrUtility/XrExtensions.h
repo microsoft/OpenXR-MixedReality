@@ -26,7 +26,7 @@
     _(xrCreateHandMeshSpaceMSFT)                 \
     _(xrUpdateHandMeshMSFT)                      \
     _(xrConvertWin32PerformanceCounterToTimeKHR) \
-    _(xrCreateSpaceFromSpatialGraphNodeMSFT)     \
+    _(xrCreateSpatialGraphNodeSpaceMSFT)         \
     _(xrGetD3D11GraphicsRequirementsKHR)         \
     _(xrLoadControllerModelMSFT)                 \
     _(xrGetControllerModelPropertiesMSFT)        \
@@ -51,5 +51,4 @@ namespace xr {
 #undef DEFINE_PROC_MEMBER
 #undef GET_INSTANCE_PROC_ADDRESS
 #undef FOR_EACH_EXTENSION_FUNCTION
-
 
