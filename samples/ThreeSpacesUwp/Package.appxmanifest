@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" xmlns:uap2="http://schemas.microsoft.com/appx/manifest/uap/windows10/2" IgnorableNamespaces="uap mp uap2">
-  <Identity Name="ThreeCubesUwp" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="1.0.0.0" />
+  <Identity Name="ThreeSpacesUwp" Publisher="CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US" Version="1.0.0.0" />
   <mp:PhoneIdentity PhoneProductId="309c7a45-edf9-45bd-8df1-eab43feff765" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>ThreeCubesUwp</DisplayName>
+    <DisplayName>ThreeSpacesUwp</DisplayName>
     <PublisherDisplayName>Microsoft Corporation</PublisherDisplayName>
     <Logo>SampleShared_uwp\UWPAssets\storelogo-sdk.png</Logo>
   </Properties>
@@ -15,7 +15,7 @@
   </Resources>
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="App.App">
-      <uap:VisualElements DisplayName="ThreeCubesUwp" Square150x150Logo="SampleShared_uwp\UWPAssets\squareTile-sdk.png" Square44x44Logo="SampleShared_uwp\UWPAssets\smallTile-sdk.png" Description="ThreeCubesUwp" BackgroundColor="#00B2F0">
+      <uap:VisualElements DisplayName="ThreeSpacesUwp" Square150x150Logo="SampleShared_uwp\UWPAssets\squareTile-sdk.png" Square44x44Logo="SampleShared_uwp\UWPAssets\smallTile-sdk.png" Description="ThreeSpacesUwp" BackgroundColor="#00B2F0">
         <uap:SplashScreen Image="SampleShared_uwp\UWPAssets\splash-sdk.png" />
         <uap:DefaultTile>
           <uap:ShowNameOnTiles>

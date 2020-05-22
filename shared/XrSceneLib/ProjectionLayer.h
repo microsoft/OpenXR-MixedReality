@@ -15,6 +15,7 @@
 //*********************************************************
 #pragma once
 
+#include <functional>
 #include <XrUtility/XrStereoView.h>
 #include <XrUtility/XrHandle.h>
 #include <XrUtility/XrMath.h>
@@ -36,7 +37,7 @@ struct ProjectionLayerConfig {
     bool SubmitDepthInfo = true;
     bool ContentProtected = false;
     bool ForceReset = false;
-    DirectX::XMVECTORF32 ClearColor = DirectX::Colors::Transparent;
+    DirectX::XMFLOAT4 ClearColor = {0, 0, 0, 0}; // Transparent
 };
 
 struct Scene;

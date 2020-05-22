@@ -38,6 +38,7 @@
   <PropertyGroup Label="Globals">
     <ProjectGuid>{1b09b21c-2d7a-4278-81c8-84a47d5834a7}</ProjectGuid>
     <Keyword>HolographicApp</Keyword>
+    <ProjectName>BasicXrApp_uwp</ProjectName>
     <RootNamespace>BasicXrApp</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>15.0</MinimumVisualStudioVersion>

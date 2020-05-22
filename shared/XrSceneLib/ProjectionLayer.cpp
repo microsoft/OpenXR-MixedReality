@@ -278,7 +278,8 @@ bool ProjectionLayer::Render(SceneContext& sceneContext,
 
                 // In double wide mode, the first projection clears the whole RTV and DSV.
                 if ((viewIndex == 0) || !currentConfig.DoubleWideMode) {
-                    sceneContext.DeviceContext->ClearRenderTargetView(renderTargets[0], Config().ClearColor);
+                    sceneContext.DeviceContext->ClearRenderTargetView(renderTargets[0],
+                                                                      reinterpret_cast<const float*>(&Config().ClearColor));
 
                     const float clearDepthValue = reversedZ ? 0.f : 1.f;
                     sceneContext.DeviceContext->ClearDepthStencilView(

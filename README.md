@@ -29,16 +29,16 @@ For more detailed information on getting the best visual quality and performance
 
 # OpenXR preview extensions
 
-The [openxr_preview](https://github.com/microsoft/OpenXR-MixedReality/tree/master/openxr_preview) folder contains a set of [preview header files](https://github.com/microsoft/OpenXR-MixedReality/tree/master/openxr_preview/include/openxr) containing the following preview OpenXR extensions:
+The [openxr_preview](https://github.com/microsoft/OpenXR-MixedReality/tree/master/openxr_preview) folder contains a set of [preview header files](https://github.com/microsoft/OpenXR-MixedReality/tree/master/openxr_preview/include/openxr) containing the following OpenXR extensions that's only available [in preview runtime](http://aka.ms/openxr-preview).
 
-1. [XR_MSFT_hand_tracking_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_hand_tracking_preview)
-1. [XR_MSFT_hand_tracking_mesh_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_hand_tracking_mesh_preview)
-1. [XR_MSFT_secondary_view_configuration_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_secondary_view_configuration_preview)
-1. [XR_MSFT_first_person_observer_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_first_person_observer_preview)
-1. [XR_MSFT_spatial_graph_bridge_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_spatial_graph_bridge_preview)
+1. [XR_EXT_hand_tracking](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_EXT_hand_tracking)
+1. [XR_MSFT_hand_tracking_mesh](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_hand_tracking_mesh)
+1. [XR_MSFT_secondary_view_configuration](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_secondary_view_configuration)
+1. [XR_MSFT_first_person_observer](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_first_person_observer)
+1. [XR_MSFT_spatial_graph_bridge](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_spatial_graph_bridge)
 1. [XR_MSFT_controller_model_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_controller_model_preview)
 
-For sample code demonstrating how to use the preview extensions above, see the [SampleSceneUwp](https://github.com/microsoft/OpenXR-MixedReality/tree/master/samples/SampleSceneUwp), [ThreeCubes](https://github.com/microsoft/OpenXR-MixedReality/tree/master/samples/ThreeCubesUwp) and [XrSceneLib](https://github.com/microsoft/OpenXR-MixedReality/tree/master/samples/XrSceneLib) preview extensions.  Please file feedback on these preview extensions as [GitHub issues](https://github.com/microsoft/OpenXR-MixedReality/issues).  We are planning to incorporate your feedback and finalize these extensions as vendor extensions (MSFT) or cross-vendor extensions (EXT) in the central Khronos OpenXR [headers](https://github.com/KhronosGroup/OpenXR-SDK/tree/master/include/openxr) and [spec](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html) over the coming months.
+For sample code demonstrating how to use the preview extensions above, see the [SampleSceneUwp](https://github.com/microsoft/OpenXR-MixedReality/tree/master/samples/SampleSceneUwp), [ThreeSpaces](https://github.com/microsoft/OpenXR-MixedReality/tree/master/samples/ThreeSpacesUwp) and [XrSceneLib](https://github.com/microsoft/OpenXR-MixedReality/tree/master/samples/XrSceneLib) preview extensions.  Please file feedback on these preview extensions as [GitHub issues](https://github.com/microsoft/OpenXR-MixedReality/issues).  We are planning to incorporate your feedback and finalize these extensions as vendor extensions (MSFT) or cross-vendor extensions (EXT) in the central Khronos OpenXR [headers](https://github.com/KhronosGroup/OpenXR-SDK/tree/master/include/openxr) and [spec](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html) over the coming months.
 
 # Contributing
 

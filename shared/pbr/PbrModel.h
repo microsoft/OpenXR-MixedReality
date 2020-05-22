@@ -55,7 +55,7 @@ namespace Pbr {
         Model(bool createRootNode = true);
 
         // Add a node to the model.
-        NodeIndex_t XM_CALLCONV AddNode(DirectX::FXMMATRIX transform, NodeIndex_t parentIndex, std::string name);
+        NodeIndex_t XM_CALLCONV AddNode(DirectX::FXMMATRIX transform, NodeIndex_t parentIndex, std::string name = "");
 
         // Add a primitive to the model.
         void AddPrimitive(Primitive primitive);

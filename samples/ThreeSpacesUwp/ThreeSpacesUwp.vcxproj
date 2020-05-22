@@ -39,7 +39,8 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{66973A07-2499-4DB1-B16B-7558C0FC87D9}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>ThreeCubesUwp</RootNamespace>
+    <ProjectName>ThreeSpacesUwp</ProjectName>
+    <RootNamespace>ThreeSpacesUwp</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
@@ -131,7 +132,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Scene_ThreeCubes.cpp" />
+    <ClCompile Include="Scene_ThreeSpaces.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>

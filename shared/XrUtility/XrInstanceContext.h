@@ -15,8 +15,8 @@
 //*********************************************************
 #pragma once
 
-#include <XrUtility/XrHandle.h>
-#include <XrUtility/XrStruct.h>
+#include "XrHandle.h"
+#include "XrStruct.h"
 
 namespace xr {
     struct InstanceContext {

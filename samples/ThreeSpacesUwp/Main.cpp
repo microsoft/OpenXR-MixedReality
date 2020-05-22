@@ -17,22 +17,21 @@
 #include <XrSceneLib/XrApp.h>
 
 std::unique_ptr<Scene> TryCreateTitleScene(SceneContext& sceneContext);
-std::unique_ptr<Scene> TryCreateThreeCubesScene(SceneContext& sceneContext);
+std::unique_ptr<Scene> TryCreateThreeSpacesScene(SceneContext& sceneContext);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
     try {
         CHECK_HRCMD(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
         auto on_exit = MakeScopeGuard([] { ::CoUninitialize(); });
 
-        const std::vector<const char*> requiredExtensions = {
-            XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME,
-            XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME,
-            XR_MSFT_HAND_INTERACTION_EXTENSION_NAME,
-        };
+        XrAppConfiguration appConfig({"ThreeSpacesUwp", 1});
+        appConfig.RequestedExtensions.push_back(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
 
-        auto app = CreateXrApp({"ThreeCubesUwp", 1}, requiredExtensions);
+        auto app = CreateXrApp(appConfig);
         app->AddScene(TryCreateTitleScene(app->SceneContext()));
-        app->AddScene(TryCreateThreeCubesScene(app->SceneContext()));
+        app->AddScene(TryCreateThreeSpacesScene(app->SceneContext()));
         app->Run();
     } catch (const std::exception& ex) {
         sample::Trace("Unhandled Exception: {}\n", ex.what());

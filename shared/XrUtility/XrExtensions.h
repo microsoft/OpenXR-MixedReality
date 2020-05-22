@@ -19,15 +19,15 @@
     _(xrCreateSpatialAnchorMSFT)                 \
     _(xrCreateSpatialAnchorSpaceMSFT)            \
     _(xrDestroySpatialAnchorMSFT)                \
-    _(xrCreateHandTrackerMSFT)                   \
-    _(xrDestroyHandTrackerMSFT)                  \
-    _(xrGetHandTrackerStateMSFT)                 \
-    _(xrCreateHandJointSpaceMSFT)                \
+    _(xrCreateHandTrackerEXT)                    \
+    _(xrDestroyHandTrackerEXT)                   \
+    _(xrLocateHandJointsEXT)                     \
     _(xrCreateHandMeshSpaceMSFT)                 \
     _(xrUpdateHandMeshMSFT)                      \
     _(xrConvertWin32PerformanceCounterToTimeKHR) \
     _(xrCreateSpatialGraphNodeSpaceMSFT)         \
     _(xrGetD3D11GraphicsRequirementsKHR)         \
+    _(xrGetControllerModelKeyMSFT)               \
     _(xrLoadControllerModelMSFT)                 \
     _(xrGetControllerModelPropertiesMSFT)        \
     _(xrGetControllerModelStateMSFT)             \

@@ -15,9 +15,9 @@
 //*********************************************************
 #pragma once
 
-#include <XrUtility/XrError.h>
-#include <XrUtility/XrEnumerate.h>
-#include <XrUtility/XrExtensions.h>
+#include "XrError.h"
+#include "XrEnumerate.h"
+#include "XrExtensions.h"
 
 namespace xr {
     struct ExtensionContext : xr::ExtensionDispatchTable {
@@ -34,6 +34,7 @@ namespace xr {
         bool SupportsSpatialGraphBridge;
         bool SupportsControllerModel;
         bool SupportsSecondaryViewConfiguration;
+        bool SupportsHolographicWindowAttachment;
 
         std::vector<const char*> EnabledExtensions;
     };
@@ -70,11 +71,12 @@ namespace xr {
         extensions.SupportsSpatialAnchor = isExtensionEnabled(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
         extensions.SupportsHandInteraction = isExtensionEnabled(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
         extensions.SupportsEyeGazeInteraction = isExtensionEnabled(XR_EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME);
-        extensions.SupportsHandJointTracking = isExtensionEnabled(XR_MSFT_HAND_TRACKING_PREVIEW_EXTENSION_NAME);
-        extensions.SupportsHandMeshTracking = isExtensionEnabled(XR_MSFT_HAND_TRACKING_MESH_PREVIEW_EXTENSION_NAME);
-        extensions.SupportsSpatialGraphBridge = isExtensionEnabled(XR_MSFT_SPATIAL_GRAPH_BRIDGE_PREVIEW_EXTENSION_NAME);
+        extensions.SupportsSecondaryViewConfiguration = isExtensionEnabled(XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME);
+        extensions.SupportsHandJointTracking = isExtensionEnabled(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
+        extensions.SupportsHandMeshTracking = isExtensionEnabled(XR_MSFT_HAND_TRACKING_MESH_EXTENSION_NAME);
+        extensions.SupportsSpatialGraphBridge = isExtensionEnabled(XR_MSFT_SPATIAL_GRAPH_BRIDGE_EXTENSION_NAME);
         extensions.SupportsControllerModel = isExtensionEnabled(XR_MSFT_CONTROLLER_MODEL_PREVIEW_EXTENSION_NAME);
-        extensions.SupportsSecondaryViewConfiguration = isExtensionEnabled(XR_MSFT_SECONDARY_VIEW_CONFIGURATION_PREVIEW_EXTENSION_NAME);
+        extensions.SupportsHolographicWindowAttachment = isExtensionEnabled(XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_PREVIEW_EXTENSION_NAME);
 
         return extensions;
     }

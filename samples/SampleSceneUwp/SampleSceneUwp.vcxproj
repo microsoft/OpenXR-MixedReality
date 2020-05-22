@@ -39,6 +39,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{11ADC3A8-3996-40EC-B481-5EAA3ACB63C9}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>SampleSceneUwp</ProjectName>
     <RootNamespace>SampleSceneUwp</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppContainerApplication>true</AppContainerApplication>

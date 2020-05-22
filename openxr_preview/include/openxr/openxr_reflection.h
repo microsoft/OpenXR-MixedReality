@@ -193,17 +193,17 @@ XR_ENUM_STR(XrResult);
     _(XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT, 1000039000) \
     _(XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT, 1000039001) \
     _(XR_TYPE_VIEW_CONFIGURATION_DEPTH_RANGE_EXT, 1000046000) \
-    _(XR_TYPE_VIEW_CONFIGURATION_VIEW_FOV_EPIC, 1000059000) \
+    _(XR_TYPE_GRAPHICS_BINDING_EGL_MNDX, 1000048004) \
     _(XR_TYPE_SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT, 1000049000) \
-    _(XR_TYPE_HAND_TRACKER_CREATE_INFO_MSFT, 1000051000) \
-    _(XR_TYPE_HAND_TRACKER_STATE_MSFT, 1000051001) \
-    _(XR_TYPE_HAND_JOINT_SPACE_CREATE_INFO_MSFT, 1000051002) \
-    _(XR_TYPE_HAND_JOINT_RADIUS_MSFT, 1000051003) \
-    _(XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_MSFT, 1000051004) \
-    _(XR_TYPE_HAND_MESH_SPACE_CREATE_INFO_MSFT, 1000052000) \
-    _(XR_TYPE_HAND_MESH_UPDATE_INFO_MSFT, 1000052001) \
-    _(XR_TYPE_HAND_MESH_MSFT, 1000052002) \
-    _(XR_TYPE_SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT, 1000052003) \
+    _(XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_EXT, 1000051000) \
+    _(XR_TYPE_HAND_TRACKER_CREATE_INFO_EXT, 1000051001) \
+    _(XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT, 1000051002) \
+    _(XR_TYPE_HAND_JOINT_LOCATIONS_EXT, 1000051003) \
+    _(XR_TYPE_HAND_JOINT_VELOCITIES_EXT, 1000051004) \
+    _(XR_TYPE_SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT, 1000052000) \
+    _(XR_TYPE_HAND_MESH_SPACE_CREATE_INFO_MSFT, 1000052001) \
+    _(XR_TYPE_HAND_MESH_UPDATE_INFO_MSFT, 1000052002) \
+    _(XR_TYPE_HAND_MESH_MSFT, 1000052003) \
     _(XR_TYPE_HAND_POSE_TYPE_INFO_MSFT, 1000052004) \
     _(XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT, 1000053000) \
     _(XR_TYPE_SECONDARY_VIEW_CONFIGURATION_STATE_MSFT, 1000053001) \
@@ -211,11 +211,13 @@ XR_ENUM_STR(XrResult);
     _(XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT, 1000053003) \
     _(XR_TYPE_SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT, 1000053004) \
     _(XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT, 1000053005) \
-    _(XR_TYPE_ACTION_STATE_POSE_CONTROLLER_MODEL_MSFT, 1000055000) \
+    _(XR_TYPE_VIEW_CONFIGURATION_VIEW_FOV_EPIC, 1000059000) \
+    _(XR_TYPE_CONTROLLER_MODEL_KEY_STATE_MSFT, 1000055000) \
     _(XR_TYPE_CONTROLLER_MODEL_NODE_PROPERTIES_MSFT, 1000055001) \
     _(XR_TYPE_CONTROLLER_MODEL_PROPERTIES_MSFT, 1000055002) \
     _(XR_TYPE_CONTROLLER_MODEL_NODE_STATE_MSFT, 1000055003) \
     _(XR_TYPE_CONTROLLER_MODEL_STATE_MSFT, 1000055004) \
+    _(XR_TYPE_HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT, 1000063000) \
     _(XR_STRUCTURE_TYPE_MAX_ENUM, 0x7FFFFFFF)
 
 #define XR_LIST_ENUM_XrFormFactor(_) \
@@ -279,7 +281,7 @@ XR_ENUM_STR(XrResult);
     _(XR_OBJECT_TYPE_ACTION, 6) \
     _(XR_OBJECT_TYPE_DEBUG_UTILS_MESSENGER_EXT, 1000019000) \
     _(XR_OBJECT_TYPE_SPATIAL_ANCHOR_MSFT, 1000039000) \
-    _(XR_OBJECT_TYPE_HAND_TRACKER_MSFT, 1000051000) \
+    _(XR_OBJECT_TYPE_HAND_TRACKER_EXT, 1000051000) \
     _(XR_OBJECT_TYPE_MAX_ENUM, 0x7FFFFFFF)
 
 #define XR_LIST_ENUM_XrAndroidThreadTypeKHR(_) \
@@ -324,39 +326,43 @@ XR_ENUM_STR(XrResult);
     _(XR_SPATIAL_GRAPH_NODE_TYPE_DYNAMIC_MSFT, 2) \
     _(XR_SPATIAL_GRAPH_NODE_TYPE_MAX_ENUM_MSFT, 0x7FFFFFFF)
 
-#define XR_LIST_ENUM_XrHandMSFT(_) \
-    _(XR_HAND_LEFT_MSFT, 1) \
-    _(XR_HAND_RIGHT_MSFT, 2) \
-    _(XR_HAND_MAX_ENUM_MSFT, 0x7FFFFFFF)
+#define XR_LIST_ENUM_XrHandEXT(_) \
+    _(XR_HAND_LEFT_EXT, 1) \
+    _(XR_HAND_RIGHT_EXT, 2) \
+    _(XR_HAND_MAX_ENUM_EXT, 0x7FFFFFFF)
 
-#define XR_LIST_ENUM_XrHandJointMSFT(_) \
-    _(XR_HAND_JOINT_PALM_MSFT, 0) \
-    _(XR_HAND_JOINT_WRIST_MSFT, 1) \
-    _(XR_HAND_JOINT_THUMB_METACARPAL_MSFT, 2) \
-    _(XR_HAND_JOINT_THUMB_PROXIMAL_MSFT, 3) \
-    _(XR_HAND_JOINT_THUMB_DISTAL_MSFT, 4) \
-    _(XR_HAND_JOINT_THUMB_TIP_MSFT, 5) \
-    _(XR_HAND_JOINT_INDEX_METACARPAL_MSFT, 6) \
-    _(XR_HAND_JOINT_INDEX_PROXIMAL_MSFT, 7) \
-    _(XR_HAND_JOINT_INDEX_INTERMEDIATE_MSFT, 8) \
-    _(XR_HAND_JOINT_INDEX_DISTAL_MSFT, 9) \
-    _(XR_HAND_JOINT_INDEX_TIP_MSFT, 10) \
-    _(XR_HAND_JOINT_MIDDLE_METACARPAL_MSFT, 11) \
-    _(XR_HAND_JOINT_MIDDLE_PROXIMAL_MSFT, 12) \
-    _(XR_HAND_JOINT_MIDDLE_INTERMEDIATE_MSFT, 13) \
-    _(XR_HAND_JOINT_MIDDLE_DISTAL_MSFT, 14) \
-    _(XR_HAND_JOINT_MIDDLE_TIP_MSFT, 15) \
-    _(XR_HAND_JOINT_RING_METACARPAL_MSFT, 16) \
-    _(XR_HAND_JOINT_RING_PROXIMAL_MSFT, 17) \
-    _(XR_HAND_JOINT_RING_INTERMEDIATE_MSFT, 18) \
-    _(XR_HAND_JOINT_RING_DISTAL_MSFT, 19) \
-    _(XR_HAND_JOINT_RING_TIP_MSFT, 20) \
-    _(XR_HAND_JOINT_LITTLE_METACARPAL_MSFT, 21) \
-    _(XR_HAND_JOINT_LITTLE_PROXIMAL_MSFT, 22) \
-    _(XR_HAND_JOINT_LITTLE_INTERMEDIATE_MSFT, 23) \
-    _(XR_HAND_JOINT_LITTLE_DISTAL_MSFT, 24) \
-    _(XR_HAND_JOINT_LITTLE_TIP_MSFT, 25) \
-    _(XR_HAND_JOINT_MAX_ENUM_MSFT, 0x7FFFFFFF)
+#define XR_LIST_ENUM_XrHandJointEXT(_) \
+    _(XR_HAND_JOINT_PALM_EXT, 0) \
+    _(XR_HAND_JOINT_WRIST_EXT, 1) \
+    _(XR_HAND_JOINT_THUMB_METACARPAL_EXT, 2) \
+    _(XR_HAND_JOINT_THUMB_PROXIMAL_EXT, 3) \
+    _(XR_HAND_JOINT_THUMB_DISTAL_EXT, 4) \
+    _(XR_HAND_JOINT_THUMB_TIP_EXT, 5) \
+    _(XR_HAND_JOINT_INDEX_METACARPAL_EXT, 6) \
+    _(XR_HAND_JOINT_INDEX_PROXIMAL_EXT, 7) \
+    _(XR_HAND_JOINT_INDEX_INTERMEDIATE_EXT, 8) \
+    _(XR_HAND_JOINT_INDEX_DISTAL_EXT, 9) \
+    _(XR_HAND_JOINT_INDEX_TIP_EXT, 10) \
+    _(XR_HAND_JOINT_MIDDLE_METACARPAL_EXT, 11) \
+    _(XR_HAND_JOINT_MIDDLE_PROXIMAL_EXT, 12) \
+    _(XR_HAND_JOINT_MIDDLE_INTERMEDIATE_EXT, 13) \
+    _(XR_HAND_JOINT_MIDDLE_DISTAL_EXT, 14) \
+    _(XR_HAND_JOINT_MIDDLE_TIP_EXT, 15) \
+    _(XR_HAND_JOINT_RING_METACARPAL_EXT, 16) \
+    _(XR_HAND_JOINT_RING_PROXIMAL_EXT, 17) \
+    _(XR_HAND_JOINT_RING_INTERMEDIATE_EXT, 18) \
+    _(XR_HAND_JOINT_RING_DISTAL_EXT, 19) \
+    _(XR_HAND_JOINT_RING_TIP_EXT, 20) \
+    _(XR_HAND_JOINT_LITTLE_METACARPAL_EXT, 21) \
+    _(XR_HAND_JOINT_LITTLE_PROXIMAL_EXT, 22) \
+    _(XR_HAND_JOINT_LITTLE_INTERMEDIATE_EXT, 23) \
+    _(XR_HAND_JOINT_LITTLE_DISTAL_EXT, 24) \
+    _(XR_HAND_JOINT_LITTLE_TIP_EXT, 25) \
+    _(XR_HAND_JOINT_MAX_ENUM_EXT, 0x7FFFFFFF)
+
+#define XR_LIST_ENUM_XrHandJointSetEXT(_) \
+    _(XR_HAND_JOINT_SET_DEFAULT_EXT, 0) \
+    _(XR_HAND_JOINT_SET_MAX_ENUM_EXT, 0x7FFFFFFF)
 
 #define XR_LIST_ENUM_XrHandPoseTypeMSFT(_) \
     _(XR_HAND_POSE_TYPE_TRACKED_MSFT, 0) \
@@ -1130,44 +1136,71 @@ XR_ENUM_STR(XrResult);
     _(recommendedFarZ) \
     _(maxFarZ)
 
+#define XR_LIST_STRUCT_XrGraphicsBindingEGLMNDX(_) \
+    _(type) \
+    _(next) \
+    _(getProcAddress) \
+    _(display) \
+    _(config) \
+    _(context)
+
 #define XR_LIST_STRUCT_XrSpatialGraphNodeSpaceCreateInfoMSFT(_) \
     _(type) \
     _(next) \
-    _(spatialGraphNodeType) \
+    _(nodeType) \
     _(nodeId) \
     _(pose)
 
-#define XR_LIST_STRUCT_XrHandTrackerCreateInfoMSFT(_) \
-    _(type) \
-    _(next) \
-    _(hand)
-
-#define XR_LIST_STRUCT_XrHandTrackerStateMSFT(_) \
-    _(type) \
-    _(next) \
-    _(isActive)
-
-#define XR_LIST_STRUCT_XrHandJointSpaceCreateInfoMSFT(_) \
-    _(type) \
-    _(next) \
-    _(handTracker) \
-    _(joint) \
-    _(poseInJointSpace)
-
-#define XR_LIST_STRUCT_XrHandJointRadiusMSFT(_) \
-    _(type) \
-    _(next) \
-    _(radius)
-
-#define XR_LIST_STRUCT_XrSystemHandTrackingPropertiesMSFT(_) \
+#define XR_LIST_STRUCT_XrSystemHandTrackingPropertiesEXT(_) \
     _(type) \
     _(next) \
     _(supportsHandTracking)
 
+#define XR_LIST_STRUCT_XrHandTrackerCreateInfoEXT(_) \
+    _(type) \
+    _(next) \
+    _(hand) \
+    _(handJointSet)
+
+#define XR_LIST_STRUCT_XrHandJointsLocateInfoEXT(_) \
+    _(type) \
+    _(next) \
+    _(baseSpace) \
+    _(time)
+
+#define XR_LIST_STRUCT_XrHandJointLocationEXT(_) \
+    _(locationFlags) \
+    _(pose) \
+    _(radius)
+
+#define XR_LIST_STRUCT_XrHandJointVelocityEXT(_) \
+    _(velocityFlags) \
+    _(linearVelocity) \
+    _(angularVelocity)
+
+#define XR_LIST_STRUCT_XrHandJointLocationsEXT(_) \
+    _(type) \
+    _(next) \
+    _(isActive) \
+    _(jointCount) \
+    _(jointLocations)
+
+#define XR_LIST_STRUCT_XrHandJointVelocitiesEXT(_) \
+    _(type) \
+    _(next) \
+    _(jointCount) \
+    _(jointVelocities)
+
+#define XR_LIST_STRUCT_XrSystemHandTrackingMeshPropertiesMSFT(_) \
+    _(type) \
+    _(next) \
+    _(supportsHandTrackingMesh) \
+    _(maxHandMeshIndexCount) \
+    _(maxHandMeshVertexCount)
+
 #define XR_LIST_STRUCT_XrHandMeshSpaceCreateInfoMSFT(_) \
     _(type) \
     _(next) \
-    _(handTracker) \
     _(handPoseType) \
     _(poseInHandMeshSpace)
 
@@ -1201,13 +1234,6 @@ XR_ENUM_STR(XrResult);
     _(vertexBufferChanged) \
     _(indexBuffer) \
     _(vertexBuffer)
-
-#define XR_LIST_STRUCT_XrSystemHandTrackingMeshPropertiesMSFT(_) \
-    _(type) \
-    _(next) \
-    _(supportsHandTrackingMesh) \
-    _(maxHandMeshIndexCount) \
-    _(maxHandMeshVertexCount)
 
 #define XR_LIST_STRUCT_XrHandPoseTypeInfoMSFT(_) \
     _(type) \
@@ -1251,10 +1277,9 @@ XR_ENUM_STR(XrResult);
     _(next) \
     _(viewConfigurationType)
 
-#define XR_LIST_STRUCT_XrActionStatePoseControllerModelMSFT(_) \
+#define XR_LIST_STRUCT_XrControllerModelKeyStateMSFT(_) \
     _(type) \
     _(next) \
-    _(modelKeyValid) \
     _(modelKey)
 
 #define XR_LIST_STRUCT_XrControllerModelNodePropertiesMSFT(_) \
@@ -1287,6 +1312,12 @@ XR_ENUM_STR(XrResult);
     _(next) \
     _(recommendedMutableFov) \
     _(maxMutableFov)
+
+#define XR_LIST_STRUCT_XrHolographicWindowAttachmentMSFT(_) \
+    _(type) \
+    _(next) \
+    _(holographicSpace) \
+    _(coreWindow)
 
 
 

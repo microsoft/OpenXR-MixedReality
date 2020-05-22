@@ -37,7 +37,7 @@ extern "C" {
     ((((major) & 0xffffULL) << 48) | (((minor) & 0xffffULL) << 32) | ((patch) & 0xffffffffULL))
 
 // OpenXR current version number.
-#define XR_CURRENT_API_VERSION XR_MAKE_VERSION(1, 0, 8)
+#define XR_CURRENT_API_VERSION XR_MAKE_VERSION(1, 0, 9)
 
 #define XR_VERSION_MAJOR(version) (uint16_t)(((uint64_t)(version) >> 48)& 0xffffULL)
 #define XR_VERSION_MINOR(version) (uint16_t)(((uint64_t)(version) >> 32) & 0xffffULL)
@@ -290,17 +290,17 @@ typedef enum XrStructureType {
     XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT = 1000039000,
     XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT = 1000039001,
     XR_TYPE_VIEW_CONFIGURATION_DEPTH_RANGE_EXT = 1000046000,
-    XR_TYPE_VIEW_CONFIGURATION_VIEW_FOV_EPIC = 1000059000,
+    XR_TYPE_GRAPHICS_BINDING_EGL_MNDX = 1000048004,
     XR_TYPE_SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT = 1000049000,
-    XR_TYPE_HAND_TRACKER_CREATE_INFO_MSFT = 1000051000,
-    XR_TYPE_HAND_TRACKER_STATE_MSFT = 1000051001,
-    XR_TYPE_HAND_JOINT_SPACE_CREATE_INFO_MSFT = 1000051002,
-    XR_TYPE_HAND_JOINT_RADIUS_MSFT = 1000051003,
-    XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_MSFT = 1000051004,
-    XR_TYPE_HAND_MESH_SPACE_CREATE_INFO_MSFT = 1000052000,
-    XR_TYPE_HAND_MESH_UPDATE_INFO_MSFT = 1000052001,
-    XR_TYPE_HAND_MESH_MSFT = 1000052002,
-    XR_TYPE_SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT = 1000052003,
+    XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_EXT = 1000051000,
+    XR_TYPE_HAND_TRACKER_CREATE_INFO_EXT = 1000051001,
+    XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT = 1000051002,
+    XR_TYPE_HAND_JOINT_LOCATIONS_EXT = 1000051003,
+    XR_TYPE_HAND_JOINT_VELOCITIES_EXT = 1000051004,
+    XR_TYPE_SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT = 1000052000,
+    XR_TYPE_HAND_MESH_SPACE_CREATE_INFO_MSFT = 1000052001,
+    XR_TYPE_HAND_MESH_UPDATE_INFO_MSFT = 1000052002,
+    XR_TYPE_HAND_MESH_MSFT = 1000052003,
     XR_TYPE_HAND_POSE_TYPE_INFO_MSFT = 1000052004,
     XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT = 1000053000,
     XR_TYPE_SECONDARY_VIEW_CONFIGURATION_STATE_MSFT = 1000053001,
@@ -308,11 +308,13 @@ typedef enum XrStructureType {
     XR_TYPE_SECONDARY_VIEW_CONFIGURATION_FRAME_END_INFO_MSFT = 1000053003,
     XR_TYPE_SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT = 1000053004,
     XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT = 1000053005,
-    XR_TYPE_ACTION_STATE_POSE_CONTROLLER_MODEL_MSFT = 1000055000,
+    XR_TYPE_VIEW_CONFIGURATION_VIEW_FOV_EPIC = 1000059000,
+    XR_TYPE_CONTROLLER_MODEL_KEY_STATE_MSFT = 1000055000,
     XR_TYPE_CONTROLLER_MODEL_NODE_PROPERTIES_MSFT = 1000055001,
     XR_TYPE_CONTROLLER_MODEL_PROPERTIES_MSFT = 1000055002,
     XR_TYPE_CONTROLLER_MODEL_NODE_STATE_MSFT = 1000055003,
     XR_TYPE_CONTROLLER_MODEL_STATE_MSFT = 1000055004,
+    XR_TYPE_HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT = 1000063000,
     XR_STRUCTURE_TYPE_MAX_ENUM = 0x7FFFFFFF
 } XrStructureType;
 
@@ -384,7 +386,7 @@ typedef enum XrObjectType {
     XR_OBJECT_TYPE_ACTION = 6,
     XR_OBJECT_TYPE_DEBUG_UTILS_MESSENGER_EXT = 1000019000,
     XR_OBJECT_TYPE_SPATIAL_ANCHOR_MSFT = 1000039000,
-    XR_OBJECT_TYPE_HAND_TRACKER_MSFT = 1000051000,
+    XR_OBJECT_TYPE_HAND_TRACKER_EXT = 1000051000,
     XR_OBJECT_TYPE_MAX_ENUM = 0x7FFFFFFF
 } XrObjectType;
 typedef XrFlags64 XrInstanceCreateFlags;
@@ -1729,9 +1731,9 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetInputDeviceLocationEXT(
 #endif
 
 
-#define XR_MSFT_spatial_graph_bridge_preview 1
-#define XR_MSFT_spatial_graph_bridge_preview_SPEC_VERSION 1
-#define XR_MSFT_SPATIAL_GRAPH_BRIDGE_PREVIEW_EXTENSION_NAME "XR_MSFT_spatial_graph_bridge_preview"
+#define XR_MSFT_spatial_graph_bridge 1
+#define XR_MSFT_spatial_graph_bridge_SPEC_VERSION 1
+#define XR_MSFT_SPATIAL_GRAPH_BRIDGE_EXTENSION_NAME "XR_MSFT_spatial_graph_bridge"
 
 typedef enum XrSpatialGraphNodeTypeMSFT {
     XR_SPATIAL_GRAPH_NODE_TYPE_STATIC_MSFT = 1,
@@ -1741,17 +1743,17 @@ typedef enum XrSpatialGraphNodeTypeMSFT {
 typedef struct XrSpatialGraphNodeSpaceCreateInfoMSFT {
     XrStructureType               type;
     const void* XR_MAY_ALIAS      next;
-    XrSpatialGraphNodeTypeMSFT    spatialGraphNodeType;
+    XrSpatialGraphNodeTypeMSFT    nodeType;
     uint8_t                       nodeId[16];
     XrPosef                       pose;
 } XrSpatialGraphNodeSpaceCreateInfoMSFT;
 
-typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialGraphNodeSpaceMSFT)(XrSession session, const XrSpatialGraphNodeSpaceCreateInfoMSFT*spaceCreateInfo, XrSpace*space);
+typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialGraphNodeSpaceMSFT)(XrSession session, const XrSpatialGraphNodeSpaceCreateInfoMSFT* createInfo, XrSpace* space);
 
 #ifndef XR_NO_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpatialGraphNodeSpaceMSFT(
     XrSession                                   session,
-    const XrSpatialGraphNodeSpaceCreateInfoMSFT* spaceCreateInfo,
+    const XrSpatialGraphNodeSpaceCreateInfoMSFT* createInfo,
     XrSpace*                                    space);
 #endif
 
@@ -1761,119 +1763,141 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpatialGraphNodeSpaceMSFT(
 #define XR_MSFT_HAND_INTERACTION_EXTENSION_NAME "XR_MSFT_hand_interaction"
 
 
-#define XR_MSFT_hand_tracking_preview 1
+#define XR_EXT_hand_tracking 1
 
-            XR_DEFINE_HANDLE(XrHandTrackerMSFT)
+#define XR_HAND_JOINT_COUNT_EXT 26
 
-#define XR_MSFT_hand_tracking_preview_SPEC_VERSION 1
-#define XR_MSFT_HAND_TRACKING_PREVIEW_EXTENSION_NAME "XR_MSFT_hand_tracking_preview"
+XR_DEFINE_HANDLE(XrHandTrackerEXT)
+#define XR_EXT_hand_tracking_SPEC_VERSION 2
+#define XR_EXT_HAND_TRACKING_EXTENSION_NAME "XR_EXT_hand_tracking"
 
-typedef enum XrHandMSFT {
-    XR_HAND_LEFT_MSFT = 1,
-    XR_HAND_RIGHT_MSFT = 2,
-    XR_HAND_MAX_ENUM_MSFT = 0x7FFFFFFF
-} XrHandMSFT;
+typedef enum XrHandEXT {
+    XR_HAND_LEFT_EXT = 1,
+    XR_HAND_RIGHT_EXT = 2,
+    XR_HAND_MAX_ENUM_EXT = 0x7FFFFFFF
+} XrHandEXT;
 
-typedef enum XrHandJointMSFT {
-    XR_HAND_JOINT_PALM_MSFT = 0,
-    XR_HAND_JOINT_WRIST_MSFT = 1,
-    XR_HAND_JOINT_THUMB_METACARPAL_MSFT = 2,
-    XR_HAND_JOINT_THUMB_PROXIMAL_MSFT = 3,
-    XR_HAND_JOINT_THUMB_DISTAL_MSFT = 4,
-    XR_HAND_JOINT_THUMB_TIP_MSFT = 5,
-    XR_HAND_JOINT_INDEX_METACARPAL_MSFT = 6,
-    XR_HAND_JOINT_INDEX_PROXIMAL_MSFT = 7,
-    XR_HAND_JOINT_INDEX_INTERMEDIATE_MSFT = 8,
-    XR_HAND_JOINT_INDEX_DISTAL_MSFT = 9,
-    XR_HAND_JOINT_INDEX_TIP_MSFT = 10,
-    XR_HAND_JOINT_MIDDLE_METACARPAL_MSFT = 11,
-    XR_HAND_JOINT_MIDDLE_PROXIMAL_MSFT = 12,
-    XR_HAND_JOINT_MIDDLE_INTERMEDIATE_MSFT = 13,
-    XR_HAND_JOINT_MIDDLE_DISTAL_MSFT = 14,
-    XR_HAND_JOINT_MIDDLE_TIP_MSFT = 15,
-    XR_HAND_JOINT_RING_METACARPAL_MSFT = 16,
-    XR_HAND_JOINT_RING_PROXIMAL_MSFT = 17,
-    XR_HAND_JOINT_RING_INTERMEDIATE_MSFT = 18,
-    XR_HAND_JOINT_RING_DISTAL_MSFT = 19,
-    XR_HAND_JOINT_RING_TIP_MSFT = 20,
-    XR_HAND_JOINT_LITTLE_METACARPAL_MSFT = 21,
-    XR_HAND_JOINT_LITTLE_PROXIMAL_MSFT = 22,
-    XR_HAND_JOINT_LITTLE_INTERMEDIATE_MSFT = 23,
-    XR_HAND_JOINT_LITTLE_DISTAL_MSFT = 24,
-    XR_HAND_JOINT_LITTLE_TIP_MSFT = 25,
-    XR_HAND_JOINT_MAX_ENUM_MSFT = 0x7FFFFFFF
-} XrHandJointMSFT;
-typedef struct XrHandTrackerCreateInfoMSFT {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    XrHandMSFT                  hand;
-} XrHandTrackerCreateInfoMSFT;
+typedef enum XrHandJointEXT {
+    XR_HAND_JOINT_PALM_EXT = 0,
+    XR_HAND_JOINT_WRIST_EXT = 1,
+    XR_HAND_JOINT_THUMB_METACARPAL_EXT = 2,
+    XR_HAND_JOINT_THUMB_PROXIMAL_EXT = 3,
+    XR_HAND_JOINT_THUMB_DISTAL_EXT = 4,
+    XR_HAND_JOINT_THUMB_TIP_EXT = 5,
+    XR_HAND_JOINT_INDEX_METACARPAL_EXT = 6,
+    XR_HAND_JOINT_INDEX_PROXIMAL_EXT = 7,
+    XR_HAND_JOINT_INDEX_INTERMEDIATE_EXT = 8,
+    XR_HAND_JOINT_INDEX_DISTAL_EXT = 9,
+    XR_HAND_JOINT_INDEX_TIP_EXT = 10,
+    XR_HAND_JOINT_MIDDLE_METACARPAL_EXT = 11,
+    XR_HAND_JOINT_MIDDLE_PROXIMAL_EXT = 12,
+    XR_HAND_JOINT_MIDDLE_INTERMEDIATE_EXT = 13,
+    XR_HAND_JOINT_MIDDLE_DISTAL_EXT = 14,
+    XR_HAND_JOINT_MIDDLE_TIP_EXT = 15,
+    XR_HAND_JOINT_RING_METACARPAL_EXT = 16,
+    XR_HAND_JOINT_RING_PROXIMAL_EXT = 17,
+    XR_HAND_JOINT_RING_INTERMEDIATE_EXT = 18,
+    XR_HAND_JOINT_RING_DISTAL_EXT = 19,
+    XR_HAND_JOINT_RING_TIP_EXT = 20,
+    XR_HAND_JOINT_LITTLE_METACARPAL_EXT = 21,
+    XR_HAND_JOINT_LITTLE_PROXIMAL_EXT = 22,
+    XR_HAND_JOINT_LITTLE_INTERMEDIATE_EXT = 23,
+    XR_HAND_JOINT_LITTLE_DISTAL_EXT = 24,
+    XR_HAND_JOINT_LITTLE_TIP_EXT = 25,
+    XR_HAND_JOINT_MAX_ENUM_EXT = 0x7FFFFFFF
+} XrHandJointEXT;
 
-typedef struct XrHandTrackerStateMSFT {
-    XrStructureType       type;
-    void* XR_MAY_ALIAS    next;
-    XrBool32              isActive;
-} XrHandTrackerStateMSFT;
-
-typedef struct XrHandJointSpaceCreateInfoMSFT {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    XrHandTrackerMSFT           handTracker;
-    XrHandJointMSFT             joint;
-    XrPosef                     poseInJointSpace;
-} XrHandJointSpaceCreateInfoMSFT;
-
-typedef struct XrHandJointRadiusMSFT {
-    XrStructureType       type;
-    void* XR_MAY_ALIAS    next;
-    float                 radius;
-} XrHandJointRadiusMSFT;
-
-typedef struct XrSystemHandTrackingPropertiesMSFT {
+typedef enum XrHandJointSetEXT {
+    XR_HAND_JOINT_SET_DEFAULT_EXT = 0,
+    XR_HAND_JOINT_SET_MAX_ENUM_EXT = 0x7FFFFFFF
+} XrHandJointSetEXT;
+typedef struct XrSystemHandTrackingPropertiesEXT {
     XrStructureType       type;
     void* XR_MAY_ALIAS    next;
     XrBool32              supportsHandTracking;
-} XrSystemHandTrackingPropertiesMSFT;
+} XrSystemHandTrackingPropertiesEXT;
 
-typedef XrResult (XRAPI_PTR *PFN_xrCreateHandTrackerMSFT)(XrSession session, const XrHandTrackerCreateInfoMSFT* createInfo, XrHandTrackerMSFT* handTracker);
-typedef XrResult (XRAPI_PTR *PFN_xrDestroyHandTrackerMSFT)(XrHandTrackerMSFT handTracker);
-typedef XrResult (XRAPI_PTR *PFN_xrGetHandTrackerStateMSFT)(XrHandTrackerMSFT handTracker, XrTime time, XrHandTrackerStateMSFT* state);
-typedef XrResult (XRAPI_PTR *PFN_xrCreateHandJointSpaceMSFT)(XrSession session, const XrHandJointSpaceCreateInfoMSFT* createInfo, XrSpace* space);
+typedef struct XrHandTrackerCreateInfoEXT {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    XrHandEXT                   hand;
+    XrHandJointSetEXT           handJointSet;
+} XrHandTrackerCreateInfoEXT;
+
+typedef struct XrHandJointsLocateInfoEXT {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    XrSpace                     baseSpace;
+    XrTime                      time;
+} XrHandJointsLocateInfoEXT;
+
+typedef struct XrHandJointLocationEXT {
+    XrSpaceLocationFlags    locationFlags;
+    XrPosef                 pose;
+    float                   radius;
+} XrHandJointLocationEXT;
+
+typedef struct XrHandJointVelocityEXT {
+    XrSpaceVelocityFlags    velocityFlags;
+    XrVector3f              linearVelocity;
+    XrVector3f              angularVelocity;
+} XrHandJointVelocityEXT;
+
+typedef struct XrHandJointLocationsEXT {
+    XrStructureType            type;
+    void* XR_MAY_ALIAS         next;
+    XrBool32                   isActive;
+    uint32_t                   jointCount;
+    XrHandJointLocationEXT*    jointLocations;
+} XrHandJointLocationsEXT;
+
+typedef struct XrHandJointVelocitiesEXT {
+    XrStructureType            type;
+    void* XR_MAY_ALIAS         next;
+    uint32_t                   jointCount;
+    XrHandJointVelocityEXT*    jointVelocities;
+} XrHandJointVelocitiesEXT;
+
+typedef XrResult (XRAPI_PTR *PFN_xrCreateHandTrackerEXT)(XrSession session, const XrHandTrackerCreateInfoEXT* createInfo, XrHandTrackerEXT* handTracker);
+typedef XrResult (XRAPI_PTR *PFN_xrDestroyHandTrackerEXT)(XrHandTrackerEXT handTracker);
+typedef XrResult (XRAPI_PTR *PFN_xrLocateHandJointsEXT)(XrHandTrackerEXT handTracker, const XrHandJointsLocateInfoEXT* locateInfo, XrHandJointLocationsEXT* locations);
 
 #ifndef XR_NO_PROTOTYPES
-XRAPI_ATTR XrResult XRAPI_CALL xrCreateHandTrackerMSFT(
+XRAPI_ATTR XrResult XRAPI_CALL xrCreateHandTrackerEXT(
     XrSession                                   session,
-    const XrHandTrackerCreateInfoMSFT*          createInfo,
-    XrHandTrackerMSFT*                          handTracker);
+    const XrHandTrackerCreateInfoEXT*           createInfo,
+    XrHandTrackerEXT*                           handTracker);
 
-XRAPI_ATTR XrResult XRAPI_CALL xrDestroyHandTrackerMSFT(
-    XrHandTrackerMSFT                           handTracker);
+XRAPI_ATTR XrResult XRAPI_CALL xrDestroyHandTrackerEXT(
+    XrHandTrackerEXT                            handTracker);
 
-XRAPI_ATTR XrResult XRAPI_CALL xrGetHandTrackerStateMSFT(
-    XrHandTrackerMSFT                           handTracker,
-    XrTime                                      time,
-    XrHandTrackerStateMSFT*                     state);
-
-XRAPI_ATTR XrResult XRAPI_CALL xrCreateHandJointSpaceMSFT(
-    XrSession                                   session,
-    const XrHandJointSpaceCreateInfoMSFT*       createInfo,
-    XrSpace*                                    space);
+XRAPI_ATTR XrResult XRAPI_CALL xrLocateHandJointsEXT(
+    XrHandTrackerEXT                            handTracker,
+    const XrHandJointsLocateInfoEXT*            locateInfo,
+    XrHandJointLocationsEXT*                    locations);
 #endif
 
 
-#define XR_MSFT_hand_tracking_mesh_preview 1
-#define XR_MSFT_hand_tracking_mesh_preview_SPEC_VERSION 1
-#define XR_MSFT_HAND_TRACKING_MESH_PREVIEW_EXTENSION_NAME "XR_MSFT_hand_tracking_mesh_preview"
+#define XR_MSFT_hand_tracking_mesh 1
+#define XR_MSFT_hand_tracking_mesh_SPEC_VERSION 2
+#define XR_MSFT_HAND_TRACKING_MESH_EXTENSION_NAME "XR_MSFT_hand_tracking_mesh"
 
 typedef enum XrHandPoseTypeMSFT {
     XR_HAND_POSE_TYPE_TRACKED_MSFT = 0,
     XR_HAND_POSE_TYPE_REFERENCE_OPEN_PALM_MSFT = 1,
     XR_HAND_POSE_TYPE_MAX_ENUM_MSFT = 0x7FFFFFFF
 } XrHandPoseTypeMSFT;
+typedef struct XrSystemHandTrackingMeshPropertiesMSFT {
+    XrStructureType       type;
+    void* XR_MAY_ALIAS    next;
+    XrBool32              supportsHandTrackingMesh;
+    uint32_t              maxHandMeshIndexCount;
+    uint32_t              maxHandMeshVertexCount;
+} XrSystemHandTrackingMeshPropertiesMSFT;
+
 typedef struct XrHandMeshSpaceCreateInfoMSFT {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
-    XrHandTrackerMSFT           handTracker;
     XrHandPoseTypeMSFT          handPoseType;
     XrPosef                     poseInHandMeshSpace;
 } XrHandMeshSpaceCreateInfoMSFT;
@@ -1914,39 +1938,31 @@ typedef struct XrHandMeshMSFT {
     XrHandMeshVertexBufferMSFT    vertexBuffer;
 } XrHandMeshMSFT;
 
-typedef struct XrSystemHandTrackingMeshPropertiesMSFT {
-    XrStructureType       type;
-    void* XR_MAY_ALIAS    next;
-    XrBool32              supportsHandTrackingMesh;
-    uint32_t              maxHandMeshIndexCount;
-    uint32_t              maxHandMeshVertexCount;
-} XrSystemHandTrackingMeshPropertiesMSFT;
-
 typedef struct XrHandPoseTypeInfoMSFT {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
     XrHandPoseTypeMSFT          handPoseType;
 } XrHandPoseTypeInfoMSFT;
 
-typedef XrResult (XRAPI_PTR *PFN_xrCreateHandMeshSpaceMSFT)(XrSession session, const XrHandMeshSpaceCreateInfoMSFT* createInfo, XrSpace* space);
-typedef XrResult (XRAPI_PTR *PFN_xrUpdateHandMeshMSFT)(XrHandTrackerMSFT handTracker, const XrHandMeshUpdateInfoMSFT* updateInfo, XrHandMeshMSFT* handMesh);
+typedef XrResult (XRAPI_PTR *PFN_xrCreateHandMeshSpaceMSFT)(XrHandTrackerEXT handTracker, const XrHandMeshSpaceCreateInfoMSFT* createInfo, XrSpace* space);
+typedef XrResult (XRAPI_PTR *PFN_xrUpdateHandMeshMSFT)(XrHandTrackerEXT handTracker, const XrHandMeshUpdateInfoMSFT* updateInfo, XrHandMeshMSFT* handMesh);
 
 #ifndef XR_NO_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrCreateHandMeshSpaceMSFT(
-    XrSession                                   session,
+    XrHandTrackerEXT                            handTracker,
     const XrHandMeshSpaceCreateInfoMSFT*        createInfo,
     XrSpace*                                    space);
 
 XRAPI_ATTR XrResult XRAPI_CALL xrUpdateHandMeshMSFT(
-    XrHandTrackerMSFT                           handTracker,
+    XrHandTrackerEXT                            handTracker,
     const XrHandMeshUpdateInfoMSFT*             updateInfo,
     XrHandMeshMSFT*                             handMesh);
 #endif
 
 
-#define XR_MSFT_secondary_view_configuration_preview 1
-#define XR_MSFT_secondary_view_configuration_preview_SPEC_VERSION 1
-#define XR_MSFT_SECONDARY_VIEW_CONFIGURATION_PREVIEW_EXTENSION_NAME "XR_MSFT_secondary_view_configuration_preview"
+#define XR_MSFT_secondary_view_configuration 1
+#define XR_MSFT_secondary_view_configuration_SPEC_VERSION 1
+#define XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME "XR_MSFT_secondary_view_configuration"
 typedef struct XrSecondaryViewConfigurationSessionBeginInfoMSFT {
     XrStructureType                   type;
     const void* XR_MAY_ALIAS          next;
@@ -1992,24 +2008,26 @@ typedef struct XrSecondaryViewConfigurationSwapchainCreateInfoMSFT {
 
 
 
-#define XR_MSFT_first_person_observer_preview 1
-#define XR_MSFT_first_person_observer_preview_SPEC_VERSION 1
-#define XR_MSFT_FIRST_PERSON_OBSERVER_PREVIEW_EXTENSION_NAME "XR_MSFT_first_person_observer_preview"
+#define XR_MSFT_first_person_observer 1
+#define XR_MSFT_first_person_observer_SPEC_VERSION 1
+#define XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME "XR_MSFT_first_person_observer"
 
 
 #define XR_MSFT_controller_model_preview 1
+
+#define XR_NULL_CONTROLLER_MODEL_KEY_MSFT 0
+
 
             XR_DEFINE_ATOM(XrControllerModelKeyMSFT)
 
 #define XR_MSFT_controller_model_preview_SPEC_VERSION 1
 #define XR_MSFT_CONTROLLER_MODEL_PREVIEW_EXTENSION_NAME "XR_MSFT_controller_model_preview"
 #define XR_MAX_CONTROLLER_MODEL_NODE_NAME_SIZE_MSFT 64
-typedef struct XrActionStatePoseControllerModelMSFT {
+typedef struct XrControllerModelKeyStateMSFT {
     XrStructureType             type;
     void* XR_MAY_ALIAS          next;
-    XrBool32                    modelKeyValid;
     XrControllerModelKeyMSFT    modelKey;
-} XrActionStatePoseControllerModelMSFT;
+} XrControllerModelKeyStateMSFT;
 
 typedef struct XrControllerModelNodePropertiesMSFT {
     XrStructureType       type;
@@ -2040,11 +2058,17 @@ typedef struct XrControllerModelStateMSFT {
     XrControllerModelNodeStateMSFT*    nodeStates;
 } XrControllerModelStateMSFT;
 
+typedef XrResult (XRAPI_PTR *PFN_xrGetControllerModelKeyMSFT)(XrSession session, XrPath topLevelUserPath, XrControllerModelKeyStateMSFT* controllerModelKeyState);
 typedef XrResult (XRAPI_PTR *PFN_xrLoadControllerModelMSFT)(XrSession session, XrControllerModelKeyMSFT modelKey, uint32_t sizeInput, uint32_t*sizeOutput, uint8_t*buffer);
 typedef XrResult (XRAPI_PTR *PFN_xrGetControllerModelPropertiesMSFT)(XrSession session, XrControllerModelKeyMSFT modelKey, XrControllerModelPropertiesMSFT*properties);
 typedef XrResult (XRAPI_PTR *PFN_xrGetControllerModelStateMSFT)(XrSession session, XrControllerModelKeyMSFT modelKey, XrControllerModelStateMSFT*state);
 
 #ifndef XR_NO_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrGetControllerModelKeyMSFT(
+    XrSession                                   session,
+    XrPath                                      topLevelUserPath,
+    XrControllerModelKeyStateMSFT*              controllerModelKeyState);
+
 XRAPI_ATTR XrResult XRAPI_CALL xrLoadControllerModelMSFT(
     XrSession                                   session,
     XrControllerModelKeyMSFT                    modelKey,
@@ -2079,6 +2103,11 @@ typedef struct XrViewConfigurationViewFovEPIC {
     XrFovf                      maxMutableFov;
 } XrViewConfigurationViewFovEPIC;
 
+
+
+#define XR_HUAWEI_controller_interaction 1
+#define XR_HUAWEI_controller_interaction_SPEC_VERSION 1
+#define XR_HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_HUAWEI_controller_interaction"
 
 #ifdef __cplusplus
 }

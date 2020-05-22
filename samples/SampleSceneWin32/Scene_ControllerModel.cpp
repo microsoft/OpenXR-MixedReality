@@ -18,34 +18,66 @@
 #include <XrSceneLib/Scene.h>
 #include <XrSceneLib/ControllerObject.h>
 
-using namespace DirectX;
-using namespace std::literals::chrono_literals;
-
 namespace {
-    struct ControllerModeScene : Scene {
-        ControllerModeScene(SceneContext& sceneContext)
-            : Scene(sceneContext) {
+    struct ControllerModelScene : Scene {
+        ControllerModelScene(SceneContext& sceneContext)
+            : Scene(sceneContext)
+            , m_leftController(sceneContext.LeftHand)
+            , m_rightController(sceneContext.RightHand) {
             xr::ActionSet& actionSet = ActionContext().CreateActionSet("controller_model_action_set", "Controller Model Action Set");
 
             const std::vector<std::string> subactionPathBothHands = {"/user/hand/right", "/user/hand/left"};
-            XrAction gripPoseAction = actionSet.CreateAction("grip_pose", "Grip Pose", XR_ACTION_TYPE_POSE_INPUT, subactionPathBothHands);
+            m_gripPoseAction = actionSet.CreateAction("grip_pose", "Grip Pose", XR_ACTION_TYPE_POSE_INPUT, subactionPathBothHands);
             ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/microsoft/motion_controller",
                                                               {
-                                                                  {gripPoseAction, "/user/hand/right/input/grip"},
-                                                                  {gripPoseAction, "/user/hand/left/input/grip"},
+                                                                  {m_gripPoseAction, "/user/hand/right/input/grip"},
+                                                                  {m_gripPoseAction, "/user/hand/left/input/grip"},
                                                               });
 
-            // Controller objects are created with empty model.  It will be loaded when available.
-            m_leftController = AddSceneObject(CreateControllerObject(m_sceneContext, gripPoseAction, m_sceneContext.LeftHand));
-            m_rightController = AddSceneObject(CreateControllerObject(m_sceneContext, gripPoseAction, m_sceneContext.RightHand));
+            XrActionSpaceCreateInfo actionSpaceCreateInfo{XR_TYPE_ACTION_SPACE_CREATE_INFO};
+            actionSpaceCreateInfo.poseInActionSpace = xr::math::Pose::Identity();
+
+            for (ControllerData& controller : {std::ref(m_leftController), std::ref(m_rightController)}) {
+                actionSpaceCreateInfo.subactionPath = controller.UserPath;
+                actionSpaceCreateInfo.action = m_gripPoseAction;
+                CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session.Handle, &actionSpaceCreateInfo, controller.GripSpace.Put()));
+
+                // Controller objects are created with empty model.  It will be loaded when available.
+                controller.Object = AddSceneObject(CreateControllerObject(m_sceneContext, controller.UserPath));
+            }
+        }
+
+        void OnUpdate(const FrameTime& frameTime) override {
+            for (ControllerData& controller : {std::ref(m_leftController), std::ref(m_rightController)}) {
+                // Update the grip pose and place the controller model to it.
+                XrSpaceLocation location{XR_TYPE_SPACE_LOCATION};
+                CHECK_XRCMD(
+                    xrLocateSpace(controller.GripSpace.Get(), m_sceneContext.SceneSpace, frameTime.PredictedDisplayTime, &location));
+                if (xr::math::Pose::IsPoseValid(location)) {
+                    controller.Object->SetVisible(true);
+                    controller.Object->Pose() = location.pose;
+                } else {
+                    controller.Object->SetVisible(false);
+                }
+            }
         }
 
     private:
-        std::shared_ptr<SceneObject> m_leftController, m_rightController;
+        struct ControllerData {
+            const XrPath UserPath;
+            xr::SpaceHandle GripSpace{};
+            std::shared_ptr<SceneObject> Object;
+
+            explicit ControllerData(XrPath userPath)
+                : UserPath(userPath) {
+            }
+        };
+        XrAction m_gripPoseAction{XR_NULL_HANDLE};
+        ControllerData m_leftController, m_rightController;
     };
 
 } // namespace
 
 std::unique_ptr<Scene> TryCreateControllerModelScene(SceneContext& sceneContext) {
-    return sceneContext.Extensions.SupportsControllerModel ? std::make_unique<ControllerModeScene>(sceneContext) : nullptr;
+    return sceneContext.Extensions.SupportsControllerModel ? std::make_unique<ControllerModelScene>(sceneContext) : nullptr;
 }

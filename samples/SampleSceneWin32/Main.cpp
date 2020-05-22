@@ -24,9 +24,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int)
         CHECK_HRCMD(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
         auto on_exit = MakeScopeGuard([] { ::CoUninitialize(); });
 
-        const std::vector<const char*> requiredExtensions = {XR_MSFT_CONTROLLER_MODEL_PREVIEW_EXTENSION_NAME};
+        XrAppConfiguration appConfig({"SampleSceneWin32", 1});
+        appConfig.RequestedExtensions.push_back(XR_MSFT_CONTROLLER_MODEL_PREVIEW_EXTENSION_NAME);
 
-        auto app = CreateXrApp({"SampleSceneWin32", 1}, requiredExtensions);
+        auto app = CreateXrApp(appConfig);
         app->AddScene(TryCreateTitleScene(app->SceneContext()));
         app->AddScene(TryCreateControllerModelScene(app->SceneContext()));
         app->Run();

@@ -17,8 +17,8 @@
 
 #include <set>
 
-#include <XrUtility/XrString.h>
-#include <XrUtility/XrHandle.h>
+#include "XrString.h"
+#include "XrHandle.h"
 
 namespace xr {
     class ActionSet {

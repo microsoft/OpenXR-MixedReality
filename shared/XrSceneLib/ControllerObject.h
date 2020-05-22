@@ -17,4 +17,4 @@
 
 #include "SceneObject.h"
 
-std::shared_ptr<SceneObject> CreateControllerObject(SceneContext& sceneContext, XrAction gripPoseAction, XrPath controllerUserPath);
+std::shared_ptr<SceneObject> CreateControllerObject(SceneContext& sceneContext, XrPath controllerUserPath);

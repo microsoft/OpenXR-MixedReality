@@ -91,6 +91,6 @@ namespace xr {
     class SpaceHandle : public UniqueHandle<XrSpace, xrDestroySpace> {};
     class SwapchainHandle : public UniqueHandle<XrSwapchain, xrDestroySwapchain> {};
     class SpatialAnchorHandle : public UniqueExtHandle<XrSpatialAnchorMSFT> {};
-    class HandTrackerHandle : public UniqueExtHandle<XrHandTrackerMSFT> {};
+    class HandTrackerHandle : public UniqueExtHandle<XrHandTrackerEXT> {};
 
 } // namespace xr
