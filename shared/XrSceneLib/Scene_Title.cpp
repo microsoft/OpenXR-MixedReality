@@ -83,9 +83,9 @@ namespace {
             XrSpaceLocation viewInScene = {XR_TYPE_SPACE_LOCATION};
             CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_sceneContext.SceneSpace, frameTime.PredictedDisplayTime, &viewInScene));
             if (Pose::IsPoseValid(viewInScene)) {
-                XrPosef titleInView = {{0, 0, 0, 1}, {0, 0, -2.f}}; // 2 meter in front
+                XrPosef titleInView = {{0, 0, 0, 1}, {0, 0, -1.f}}; // 1 meter in front
                 XrPosef titleInScene = titleInView * viewInScene.pose;
-                titleInScene.position.y = 1.0f; // fixed at 1 meter above the LOCAL
+                titleInScene.position.y = 0.5f; // floating in the top of user's view
                 XrVector3f forward = titleInScene.position - viewInScene.pose.position;
                 m_targetPose = Pose::LookAt(titleInScene.position, forward, {0, 1, 0});
 
