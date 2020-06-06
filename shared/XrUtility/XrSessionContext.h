@@ -15,9 +15,9 @@
 //*********************************************************
 #pragma once
 
-#include <XrUtility/XrEnumerate.h>
-#include <XrUtility/XrSystemContext.h>
-#include <XrUtility/XrViewConfiguration.h>
+#include "XrEnumerate.h"
+#include "XrSystemContext.h"
+#include "XrViewConfiguration.h"
 
 namespace xr {
     struct SessionContext {

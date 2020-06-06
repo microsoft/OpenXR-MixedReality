@@ -32,8 +32,8 @@ namespace {
     // she/he can observe the different behaviors of different type of spaces.
     // Typically each three-cubes will gradually tear apart due to different optimization of the underlying tracking techs.
     //
-    struct ThreeCubesScene : public Scene {
-        ThreeCubesScene(SceneContext& sceneContext)
+    struct ThreeSpacesScene : public Scene {
+        ThreeSpacesScene(SceneContext& sceneContext)
             : Scene(sceneContext) {
             xr::ActionSet& actionSet = ActionContext().CreateActionSet("three_cubes_scene_actions", "Three Cubes Scene Actions");
 
@@ -95,13 +95,13 @@ namespace {
             getInfo.subactionPath = m_sceneContext.RightHand;
             CHECK_XRCMD(xrGetActionStateBoolean(m_sceneContext.Session.Handle, &getInfo, &selectState));
             if (selectState.isActive && selectState.changedSinceLastSync && selectState.currentState) {
-                PlaceThreeCubes(m_rightAimSpace.Get(), selectState.lastChangeTime);
+                PlaceThreeSpaces(m_rightAimSpace.Get(), selectState.lastChangeTime);
             }
 
             getInfo.subactionPath = m_sceneContext.LeftHand;
             CHECK_XRCMD(xrGetActionStateBoolean(m_sceneContext.Session.Handle, &getInfo, &selectState));
             if (selectState.isActive && selectState.changedSinceLastSync && selectState.currentState) {
-                PlaceThreeCubes(m_leftAimSpace.Get(), selectState.lastChangeTime);
+                PlaceThreeSpaces(m_leftAimSpace.Get(), selectState.lastChangeTime);
             }
 
             for (auto& hologram : m_holograms) {
@@ -132,7 +132,7 @@ namespace {
             }
         }
 
-        void PlaceThreeCubes(XrSpace space, XrTime time) {
+        void PlaceThreeSpaces(XrSpace space, XrTime time) {
             constexpr float cubeSize = 0.05f;
             constexpr XMFLOAT3 sideLength = {cubeSize, cubeSize, cubeSize};
 
@@ -230,6 +230,6 @@ namespace {
     };
 } // namespace
 
-std::unique_ptr<Scene> TryCreateThreeCubesScene(SceneContext& sceneContext) {
-    return std::make_unique<ThreeCubesScene>(sceneContext);
+std::unique_ptr<Scene> TryCreateThreeSpacesScene(SceneContext& sceneContext) {
+    return std::make_unique<ThreeSpacesScene>(sceneContext);
 }

@@ -67,7 +67,7 @@ namespace xr {
     inline bool IsRecommendedSwapchainSizeChanged(const std::vector<XrViewConfigurationView>& oldConfigs,
                                                   const std::vector<XrViewConfigurationView>& newConfigs) {
         assert(oldConfigs.size() == newConfigs.size());
-        size_t end = std::min(oldConfigs.size(), newConfigs.size());
+        size_t end = (std::min)(oldConfigs.size(), newConfigs.size());
         for (size_t i = 0; i < end; i++) {
             if ((oldConfigs[i].recommendedImageRectWidth != newConfigs[i].recommendedImageRectWidth) ||
                 (oldConfigs[i].recommendedImageRectHeight != newConfigs[i].recommendedImageRectHeight)) {

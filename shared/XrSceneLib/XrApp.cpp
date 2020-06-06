@@ -67,15 +67,14 @@ namespace {
         D3D_FEATURE_LEVEL_10_0,
     };
 
-    std::vector<const char*> AppendSceneLibRequiredExtensions(const std::vector<const char*>& extensions) {
-        std::vector<const char*> mergedExtensions = extensions;
-        for (auto extension : {
-                 XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
-                 XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME,
-                 XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME,
-                 XR_MSFT_SECONDARY_VIEW_CONFIGURATION_PREVIEW_EXTENSION_NAME,
-                 XR_MSFT_FIRST_PERSON_OBSERVER_PREVIEW_EXTENSION_NAME,
-             }) {
+    std::vector<std::string> AppendSceneLibRequiredExtensions(std::vector<std::string> extensions) {
+        std::vector<std::string> mergedExtensions = extensions;
+        for (auto extension : {XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
+                               XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME,
+                               XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME,
+                               XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
+                               XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME,
+                               XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_PREVIEW_EXTENSION_NAME}) {
             if (std::find(mergedExtensions.begin(), mergedExtensions.end(), extension) == mergedExtensions.end()) {
                 mergedExtensions.push_back(extension);
             }
@@ -85,7 +84,7 @@ namespace {
 
     class ImplementXrApp : public XrApp {
     public:
-        ImplementXrApp(const xr::NameVersion& appInfo, const std::vector<const char*>& desiredExtensions, bool singleThreadedD3D11Device);
+        ImplementXrApp(XrAppConfiguration appConfiguration);
         ~ImplementXrApp();
 
         void AddScene(std::unique_ptr<Scene> scene) override;
@@ -93,6 +92,7 @@ namespace {
 
         void Run() override;
         void Stop() override;
+        bool Step() override;
 
         ::SceneContext& SceneContext() const override {
             return *m_sceneContext;
@@ -103,6 +103,8 @@ namespace {
         }
 
     private:
+
+        const XrAppConfiguration m_appConfiguration;
 
         std::unique_ptr<::SceneContext> m_sceneContext;
         xr::SpaceHandle m_viewSpace;
@@ -118,7 +120,8 @@ namespace {
         std::vector<std::unique_ptr<Scene>> m_scenes;
 
         std::atomic<bool> m_sessionRunning{false};
-        std::atomic<bool> m_appLoopRunning{false};
+        std::atomic<bool> m_appForceStop{false};
+        bool m_actionBindingsFinalized{false};
 
         std::thread m_renderThread;
         std::atomic<bool> m_renderThreadRunning{false};
@@ -134,27 +137,33 @@ namespace {
         void StopRenderThreadIfRunning();
         void UpdateFrame();
         void RenderFrame();
+        void NotifyFrameRenderThread();
         void RenderViewConfiguration(const std::scoped_lock<std::mutex>& proofOfSceneLock,
                                      XrViewConfigurationType viewConfigurationType,
                                      CompositionLayers& layers);
         void SetSecondaryViewConfigurationActive(xr::ViewConfigurationState& secondaryViewConfigState, bool active);
 
-        void FinalizeActionBindings(const std::scoped_lock<std::mutex>& proofOfSceneLock);
+        void FinalizeActionBindings();
         void SyncActions(const std::scoped_lock<std::mutex>& proofOfSceneLock);
 
         void BeginSession();
         void EndSession();
     };
 
-    ImplementXrApp::ImplementXrApp(const xr::NameVersion& appInfo,
-                                   const std::vector<const char*>& desiredExtensions,
-                                   bool singleThreadedD3D11Device) {
+    ImplementXrApp::ImplementXrApp(XrAppConfiguration appConfiguration)
+        : m_appConfiguration(std::move(appConfiguration)) {
 
         // Create an instance using combined extensions of XrSceneLib and the application.
         // The extension context record those supported by the runtime and enabled by the instance.
-        std::vector<const char*> combinedExtensions = AppendSceneLibRequiredExtensions(desiredExtensions);
-        xr::ExtensionContext extensions = xr::CreateExtensionContext(combinedExtensions);
-        xr::InstanceContext instance = xr::CreateInstanceContext(appInfo, {"XrSceneLib", 1}, extensions.EnabledExtensions);
+        std::vector<std::string> combinedExtensions = AppendSceneLibRequiredExtensions(m_appConfiguration.RequestedExtensions);
+        std::vector<const char*> combinedExtensionsCStr;
+        for (const std::string& ext : combinedExtensions) {
+            combinedExtensionsCStr.push_back(ext.c_str());
+        }
+
+        xr::ExtensionContext extensions = xr::CreateExtensionContext(combinedExtensionsCStr);
+        xr::InstanceContext instance =
+            xr::CreateInstanceContext(m_appConfiguration.AppInfo, {"XrSceneLib", 1}, extensions.EnabledExtensions);
         extensions.PopulateDispatchTable(instance.Handle);
 
         // For example, this sample currently requires D3D11 extension to be supported.
@@ -181,11 +190,20 @@ namespace {
             throw std::logic_error("The system doesn't support required primary view configuration.");
         }
 
-        auto [d3d11Binding, device, deviceContext] =
-            sample::dx::CreateD3D11Binding(instance.Handle, system.Id, extensions, singleThreadedD3D11Device, SupportedFeatureLevels);
+        auto [d3d11Binding, device, deviceContext] = sample::dx::CreateD3D11Binding(
+            instance.Handle, system.Id, extensions, m_appConfiguration.SingleThreadedD3D11Device, SupportedFeatureLevels);
 
         xr::SessionHandle sessionHandle;
-        XrSessionCreateInfo sessionCreateInfo{XR_TYPE_SESSION_CREATE_INFO, &d3d11Binding, 0, system.Id};
+        XrSessionCreateInfo sessionCreateInfo{XR_TYPE_SESSION_CREATE_INFO, nullptr, 0, system.Id};
+
+        xr::InsertExtensionStruct(sessionCreateInfo, d3d11Binding);
+
+        XrHolographicWindowAttachmentMSFT holographicWindowAttachment;
+        if (m_appConfiguration.HolographicWindowAttachment.has_value() && extensions.SupportsHolographicWindowAttachment) {
+            holographicWindowAttachment = m_appConfiguration.HolographicWindowAttachment.value();
+            xr::InsertExtensionStruct(sessionCreateInfo, holographicWindowAttachment);
+        }
+
         CHECK_XRCMD(xrCreateSession(instance.Handle, &sessionCreateInfo, sessionHandle.Put()));
 
         xr::SessionContext session(std::move(sessionHandle),
@@ -241,8 +259,6 @@ namespace {
         }
 
         std::scoped_lock lock(m_sceneMutex);
-        assert(!m_appLoopRunning); // Cannot add scene after app loop is running
-
         m_scenes.push_back(std::move(scene));
     }
 
@@ -253,34 +269,49 @@ namespace {
     void ImplementXrApp::Run() {
         ::SetThreadDescription(::GetCurrentThread(), L"App Thread");
 
-        m_appLoopRunning = true;
-        {
-            std::scoped_lock sceneLock(m_sceneMutex);
-            FinalizeActionBindings(sceneLock);
-        }
-
-        while (m_appLoopRunning) {
-            if (!ProcessEvents()) {
-                break;
-            }
-
-            if (m_sessionRunning) {
-                StartRenderThreadIfNotRunning();
-
-                UpdateFrame();
-
-                {
-                    std::unique_lock lock(m_frameReadyToRenderMutex);
-                    m_frameReadyToRender = true;
-                }
-                m_frameReadyToRenderNotify.notify_all();
-            } else {
-                std::this_thread::sleep_for(0.1s);
-            }
+        m_appForceStop = false;
+        while (Step()) {
         }
     }
 
-    void ImplementXrApp::FinalizeActionBindings(const std::scoped_lock<std::mutex>& proofOfSceneLock) {
+    bool ImplementXrApp::Step() {
+        if (!ProcessEvents()) {
+            return false;
+        }
+
+        // Defer action bindings until the first game step.
+        if (!m_actionBindingsFinalized) {
+            FinalizeActionBindings();
+            m_actionBindingsFinalized = true;
+        }
+
+        if (m_sessionRunning) {
+            if (!m_appConfiguration.RenderSynchronously) {
+                StartRenderThreadIfNotRunning();
+                UpdateFrame();
+                NotifyFrameRenderThread();
+            } else {
+                UpdateFrame();
+                RenderFrame();
+            }
+        } else {
+            std::this_thread::sleep_for(0.1s);
+        }
+
+        return !m_appForceStop;
+    }
+
+    void ImplementXrApp::NotifyFrameRenderThread() {
+        {
+            std::unique_lock lock(m_frameReadyToRenderMutex);
+            m_frameReadyToRender = true;
+        }
+        m_frameReadyToRenderNotify.notify_all();
+    }
+
+    void ImplementXrApp::FinalizeActionBindings() {
+        std::scoped_lock sceneLock(m_sceneMutex);
+
         std::vector<const xr::ActionContext*> actionContexts;
         for (const auto& scene : m_scenes) {
             actionContexts.push_back(&scene->ActionContext());
@@ -342,7 +373,7 @@ namespace {
         if (m_sessionRunning) {
             CHECK_XRCMD(xrRequestExitSession(SceneContext().Session.Handle));
         } else {
-            m_appLoopRunning = false; // quit app message loop
+            m_appForceStop = true; // quit app message loop
         }
     }
 
@@ -605,8 +636,9 @@ namespace {
         m_projectionLayers.ForEachLayerWithLock([this, &layers, &views, viewConfigurationType](ProjectionLayer& projectionLayer) {
             bool opaqueClearColor = (layers.LayerCount() == 0); // Only the first projection layer need opaque background
             opaqueClearColor &= (SceneContext().Session.PrimaryViewConfigurationBlendMode == XR_ENVIRONMENT_BLEND_MODE_OPAQUE);
-            projectionLayer.Config().ClearColor.v =
-                opaqueClearColor ? DirectX::XMColorSRGBToRGB(DirectX::Colors::CornflowerBlue) : DirectX::Colors::Transparent;
+            DirectX::XMStoreFloat4(&projectionLayer.Config().ClearColor,
+                                   opaqueClearColor ? DirectX::XMColorSRGBToRGB(DirectX::Colors::CornflowerBlue)
+                                                    : DirectX::Colors::Transparent);
             const bool shouldSubmitProjectionLayer = projectionLayer.Render(
                 SceneContext(), m_currentFrameTime, SceneContext().SceneSpace, views, m_scenes, viewConfigurationType);
 
@@ -623,9 +655,7 @@ namespace {
 
 } // namespace
 
-std::unique_ptr<XrApp> CreateXrApp(const xr::NameVersion& appInfo,
-                                   const std::vector<const char*>& desiredExtensions,
-                                   bool singleThreadedD3D11Device) {
-    return std::make_unique<ImplementXrApp>(appInfo, desiredExtensions, singleThreadedD3D11Device);
+std::unique_ptr<XrApp> CreateXrApp(XrAppConfiguration appConfiguration) {
+    return std::make_unique<ImplementXrApp>(std::move(appConfiguration));
 }
 

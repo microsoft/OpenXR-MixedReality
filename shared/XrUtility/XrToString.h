@@ -58,8 +58,8 @@ namespace xr {
     MAKE_TO_STRING_FUNCS(XrEyeVisibility);
     MAKE_TO_STRING_FUNCS(XrObjectType);
     MAKE_TO_STRING_FUNCS(XrActionType);
-    MAKE_TO_STRING_FUNCS(XrHandMSFT);
+    MAKE_TO_STRING_FUNCS(XrHandEXT);
     MAKE_TO_STRING_FUNCS(XrHandPoseTypeMSFT);
-    MAKE_TO_CSTRING_FUNC(XrHandJointMSFT);
+    MAKE_TO_CSTRING_FUNC(XrHandJointEXT);
     MAKE_TO_STRING_FUNCS(XrVisibilityMaskTypeKHR);
 } // namespace xr

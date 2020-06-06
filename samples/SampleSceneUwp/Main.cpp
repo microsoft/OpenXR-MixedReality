@@ -25,15 +25,14 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         CHECK_HRCMD(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
         auto on_exit = MakeScopeGuard([] { ::CoUninitialize(); });
 
-        const std::vector<const char*> requiredExtensions = {
-            XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME,
-            XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME,
-            XR_MSFT_HAND_INTERACTION_EXTENSION_NAME,
-            XR_MSFT_HAND_TRACKING_PREVIEW_EXTENSION_NAME,
-            XR_MSFT_HAND_TRACKING_MESH_PREVIEW_EXTENSION_NAME,
-        };
+        XrAppConfiguration appConfig({"SampleSceneUwp", 1});
+        appConfig.RequestedExtensions.push_back(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_MSFT_HAND_TRACKING_MESH_EXTENSION_NAME);
 
-        auto app = CreateXrApp({"SampleSceneUwp", 1}, requiredExtensions);
+        auto app = CreateXrApp(appConfig);
         app->AddScene(TryCreateTitleScene(app->SceneContext()));
         app->AddScene(TryCreateOrbitScene(app->SceneContext()));
         app->AddScene(TryCreateHandTrackingScene(app->SceneContext()));

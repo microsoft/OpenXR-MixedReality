@@ -37,6 +37,8 @@ namespace xr::math {
 
         constexpr bool IsPoseValid(const XrSpaceLocation& location);
         constexpr bool IsPoseTracked(const XrSpaceLocation& location);
+        constexpr bool IsPoseValid(const XrHandJointLocationEXT& jointLocation);
+        constexpr bool IsPoseTracked(const XrHandJointLocationEXT& jointLocation);
         constexpr bool IsPoseValid(const XrViewState& viewState);
         constexpr bool IsPoseTracked(const XrViewState& viewState);
 
@@ -115,10 +117,12 @@ namespace xr::math {
         }
     } // namespace detail
 
+#ifdef _MSC_VER
     template <typename X, typename Y>
     constexpr const X& cast(const Y& value) {
         static_assert(false, "Undefined cast from Y to type X");
     }
+#endif
 
 #define DEFINE_CAST(X, Y)                             \
     template <>                                       \
@@ -350,6 +354,17 @@ namespace xr::math {
             constexpr XrSpaceLocationFlags PoseTrackedFlags =
                 XR_SPACE_LOCATION_POSITION_TRACKED_BIT | XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT;
             return (spaceLocation.locationFlags & PoseTrackedFlags) == PoseTrackedFlags;
+        }
+
+        constexpr bool IsPoseValid(const XrHandJointLocationEXT& jointLocation) {
+            constexpr XrSpaceLocationFlags PoseValidFlags = XR_SPACE_LOCATION_POSITION_VALID_BIT | XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
+            return (jointLocation.locationFlags & PoseValidFlags) == PoseValidFlags;
+        }
+
+        constexpr bool IsPoseTracked(const XrHandJointLocationEXT& jointLocation) {
+            constexpr XrSpaceLocationFlags PoseTrackedFlags =
+                XR_SPACE_LOCATION_POSITION_TRACKED_BIT | XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT;
+            return (jointLocation.locationFlags & PoseTrackedFlags) == PoseTrackedFlags;
         }
 
         constexpr bool IsPoseValid(const XrViewState& viewState) {

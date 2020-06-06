@@ -17,16 +17,17 @@
 
 #include <optional>
 #include <unordered_map>
-#include <XrUtility/XrEnumerate.h>
-#include <XrUtility/XrExtensionContext.h>
-#include <XrUtility/XrViewConfiguration.h>
+#include "XrEnumerate.h"
+#include "XrExtensionContext.h"
+#include "XrViewConfiguration.h"
+#include "XrStruct.h"
 
 namespace xr {
     struct SystemContext {
         XrSystemId Id = XR_NULL_SYSTEM_ID;
         XrFormFactor FormFactor{};
         XrSystemProperties Properties{XR_TYPE_SYSTEM_PROPERTIES};
-        XrSystemHandTrackingPropertiesMSFT HandTrackingProperties{XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_MSFT};
+        XrSystemHandTrackingPropertiesEXT HandTrackingProperties{XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_EXT};
         XrSystemHandTrackingMeshPropertiesMSFT HandMeshProperties{XR_TYPE_SYSTEM_HAND_TRACKING_MESH_PROPERTIES_MSFT};
         XrSystemEyeGazeInteractionPropertiesEXT EyeGazeInteractionProperties{XR_TYPE_SYSTEM_EYE_GAZE_INTERACTION_PROPERTIES_EXT};
 

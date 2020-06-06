@@ -378,6 +378,38 @@ XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimeToTimespecTimeKHR(
 #endif
 #endif /* XR_USE_TIMESPEC */
 
+#ifdef XR_USE_PLATFORM_EGL
+
+#define XR_MNDX_egl_enable 1
+#define XR_MNDX_egl_enable_SPEC_VERSION   1
+#define XR_MNDX_EGL_ENABLE_EXTENSION_NAME "XR_MNDX_egl_enable"
+typedef struct XrGraphicsBindingEGLMNDX {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    PFNEGLGETPROCADDRESSPROC    getProcAddress;
+    EGLDisplay                  display;
+    EGLConfig                   config;
+    EGLContext                  context;
+} XrGraphicsBindingEGLMNDX;
+
+#endif /* XR_USE_PLATFORM_EGL */
+
+#ifdef XR_USE_PLATFORM_WIN32
+
+#define XR_MSFT_holographic_window_attachment_preview 1
+#define XR_MSFT_holographic_window_attachment_preview_SPEC_VERSION 1
+#define XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_PREVIEW_EXTENSION_NAME "XR_MSFT_holographic_window_attachment_preview"
+#ifdef XR_USE_PLATFORM_WIN32
+typedef struct XrHolographicWindowAttachmentMSFT {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    IUnknown*                   holographicSpace;
+    IUnknown*                   coreWindow;
+} XrHolographicWindowAttachmentMSFT;
+#endif // XR_USE_PLATFORM_WIN32
+
+#endif /* XR_USE_PLATFORM_WIN32 */
+
 #ifdef __cplusplus
 }
 #endif

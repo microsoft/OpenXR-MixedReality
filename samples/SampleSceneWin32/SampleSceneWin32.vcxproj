@@ -23,6 +23,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{4D888630-45DB-4CAA-8AAA-3C4CE33F90AB}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>SampleSceneWin32</ProjectName>
     <RootNamespace>SampleSceneWin32</RootNamespace>
     <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
   </PropertyGroup>

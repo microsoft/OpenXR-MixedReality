@@ -15,6 +15,7 @@
 //*********************************************************
 #pragma once
 
+#include <mutex>
 #include <XrUtility/XrActionContext.h>
 
 #include "FrameTime.h"

@@ -15,6 +15,8 @@
 //*********************************************************
 #pragma once
 
+#include <memory.h>
+#include <functional>
 #include <string.h>
 
 namespace xr {
@@ -27,4 +29,45 @@ namespace xr {
         memcpy(&dest, &src, sizeof(GUID2));
 #endif
     }
+
+    struct XrGuid {
+        const uint8_t* Data() const {
+            return m_data.data();
+        }
+
+        bool operator==(const XrGuid& other) const {
+            return m_data == other.m_data;
+        }
+
+    private:
+        std::array<uint8_t, 16> m_data{};
+    };
+
+    template <typename TGuid>
+    XrGuid ToXrGuid(TGuid& guid) {
+        XrGuid dest;
+        static_assert(sizeof(guid) == sizeof(dest), "GUID sizes must be equal");
+#ifdef _MSC_VER
+        memcpy_s(&dest, sizeof(dest), &guid, sizeof(guid));
+#else
+        memcpy(&dest, &guid, sizeof(dest));
+#endif
+        return dest;
+    }
+
 } // namespace xr
+
+namespace std {
+    // This template specialization allows XrGuid to be used as the key in a std::unordered_map.
+    template <>
+    struct hash<xr::XrGuid> {
+        std::size_t operator()(const xr::XrGuid& guid) const {
+            static_assert(sizeof(guid) == sizeof(uint64_t) * 2);
+            const uint64_t* v = reinterpret_cast<const uint64_t*>(guid.Data());
+            if constexpr (sizeof(std::size_t) == 4) {
+                return std::hash<uint64_t>{}(v[0] ^ v[1]);
+            }
+            return static_cast<std::size_t>(v[0] ^ v[1]);
+        }
+    };
+} // namespace std

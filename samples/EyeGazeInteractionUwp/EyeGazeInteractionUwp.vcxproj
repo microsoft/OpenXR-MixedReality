@@ -39,6 +39,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{A4D2019B-622D-49B9-9510-16877979807A}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
+    <ProjectName>EyeGazeInteractionUwp</ProjectName>
     <RootNamespace>EyeGazeInteractionUwp</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppContainerApplication>true</AppContainerApplication>

@@ -24,11 +24,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         CHECK_HRCMD(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
         auto on_exit = MakeScopeGuard([] { ::CoUninitialize(); });
 
-        const std::vector<const char*> requiredExtensions = {
-            XR_EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME,
-        };
+        XrAppConfiguration appConfig({"EyeGazeInteractionUwp", 1});
+        appConfig.RequestedExtensions.push_back(XR_EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME);
 
-        auto app = CreateXrApp({"EyeGazeInteractionUwp", 1}, requiredExtensions);
+        auto app = CreateXrApp(appConfig);
         app->AddScene(TryCreateTitleScene(app->SceneContext()));
         app->AddScene(TryCreateEyeGazeInteractionScene(app->SceneContext()));
         app->Run();
