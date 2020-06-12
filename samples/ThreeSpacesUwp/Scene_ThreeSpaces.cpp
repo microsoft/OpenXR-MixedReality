@@ -74,7 +74,7 @@ namespace {
             spaceCreateInfo.poseInActionSpace = Pose::Identity();
 
             spaceCreateInfo.action = m_aimPoseAction;
-            spaceCreateInfo.poseInActionSpace = Pose::Translation({0, 0, -0.2f});
+            spaceCreateInfo.poseInActionSpace = Pose::Translation({0, 0, -0.1f});
             spaceCreateInfo.subactionPath = m_sceneContext.RightHand;
             CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session.Handle, &spaceCreateInfo, m_rightAimSpace.Put()));
             spaceCreateInfo.subactionPath = m_sceneContext.LeftHand;

@@ -32,10 +32,10 @@ int APIENTRY wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int)
         app->AddScene(TryCreateControllerModelScene(app->SceneContext()));
         app->Run();
     } catch (const std::exception& ex) {
-        sample::Trace("Unhandled Exception: {}\n", ex.what());
+        sample::Trace("Unhandled Exception: {}", ex.what());
         return 1;
     } catch (...) {
-        sample::Trace(L"Unhandled Exception\n");
+        sample::Trace(L"Unhandled Exception");
         return 1;
     }
 
