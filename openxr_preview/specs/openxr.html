@@ -444,8 +444,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="details">
 <span id="author" class="author">Copyright (c) 2017-2020 The Khronos Group Inc.</span><br>
 <span id="revnumber">version 1.0.9,</span>
-<span id="revdate">Mon, 01 Jun 2020 16:32:27 +0000</span>
-<br><span id="revremark">from git branch: last-integration-point commit: 8e2dca6301551425145e3b87abb63a68f9c8dadb</span>
+<span id="revdate">Thu, 11 Jun 2020 00:43:50 +0000</span>
+<br><span id="revremark">from git branch: master commit: bb979543693369d3fe357c24a7e3be1e12175207</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -32510,9 +32510,6 @@ the runtime <strong class="purple">must</strong> return <code>XR_ERROR_CONTROLLE
 <p><code>XR_ERROR_VALIDATION_FAILURE</code></p>
 </li>
 <li>
-<p><code>XR_ERROR_SIZE_INSUFFICIENT</code></p>
-</li>
-<li>
 <p><code>XR_ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT</code></p>
 </li>
 <li>
@@ -32790,9 +32787,6 @@ the runtime <strong class="purple">must</strong> return <code>XR_ERROR_CONTROLLE
 </li>
 <li>
 <p><code>XR_ERROR_VALIDATION_FAILURE</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_SIZE_INSUFFICIENT</code></p>
 </li>
 <li>
 <p><code>XR_ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT</code></p>
@@ -37592,8 +37586,8 @@ that information.</p>
 <div class="sect4">
 <h5 id="_modifications_to_xrendframe_behavior"><a class="anchor" href="#_modifications_to_xrendframe_behavior"></a>Modifications to xrEndFrame Behavior</h5>
 <div class="paragraph">
-<p><a href="#composition-layer-behavior">Composition Layer Behavior</a> currently states
-that if <a href="#xrEndFrame">xrEndFrame</a> is called with 0 layers, then the runtime should
+<p><a href="#frame-submission">Frame Submission</a> currently states
+that if <a href="#xrEndFrame">xrEndFrame</a> is called with no layers, then the runtime should
 clear the VR display.</p>
 </div>
 <div class="paragraph">

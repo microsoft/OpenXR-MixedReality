@@ -286,13 +286,13 @@ namespace {
         }
 
         if (m_sessionRunning) {
-            if (!m_appConfiguration.RenderSynchronously) {
+            if (m_appConfiguration.RenderSynchronously) {
+                UpdateFrame();
+                RenderFrame();
+            } else {
                 StartRenderThreadIfNotRunning();
                 UpdateFrame();
                 NotifyFrameRenderThread();
-            } else {
-                UpdateFrame();
-                RenderFrame();
             }
         } else {
             std::this_thread::sleep_for(0.1s);
