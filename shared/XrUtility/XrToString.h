@@ -63,3 +63,4 @@ namespace xr {
     MAKE_TO_CSTRING_FUNC(XrHandJointEXT);
     MAKE_TO_STRING_FUNCS(XrVisibilityMaskTypeKHR);
 } // namespace xr
+

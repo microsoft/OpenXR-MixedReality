@@ -444,8 +444,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="details">
 <span id="author" class="author">Copyright (c) 2017-2020 The Khronos Group Inc.</span><br>
 <span id="revnumber">version 1.0.9,</span>
-<span id="revdate">Thu, 11 Jun 2020 00:43:50 +0000</span>
-<br><span id="revremark">from git branch: master commit: bb979543693369d3fe357c24a7e3be1e12175207</span>
+<span id="revdate">Mon, 22 Jun 2020 18:45:31 +0000</span>
+<br><span id="revremark">from git branch: master commit: 3ad53cba1e21504eedd74b88a286277bdcb10898</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -15135,7 +15135,7 @@ do not collide are not affected and are processed as normal.</p>
 the runtime <strong class="purple">must</strong> return <code>XR_ERROR_NAME_INVALID</code> or
 <code>XR_ERROR_LOCALIZED_NAME_INVALID</code> respectively.
 If <code>actionSetName</code> or <code>localizedActionSetName</code> are duplicates of the
-corresponding field for any existing action set in the specified session,
+corresponding field for any existing action set in the specified instance,
 the runtime <strong class="purple">must</strong> return <code>XR_ERROR_NAME_DUPLICATED</code> or
 <code>XR_ERROR_LOCALIZED_NAME_DUPLICATED</code> respectively.
 If the conflicting action set is destroyed, the conflicting field is no
@@ -20270,7 +20270,7 @@ i.e. <a href="#XrCompositionLayerProjection">XrCompositionLayerProjection</a>.</
 </div>
 <div class="paragraph">
 <p>The XR runtime <strong class="purple">may</strong> use this information to perform more accurate
-reprojections taking depth into account.</p>
+reprojections taking depth into account.  Use of this extension does not affect the order of layer composition as described in <a href="#compositing">Compositing</a>.</p>
 </div>
 <div class="paragraph">
 <p><strong>New Object Types</strong></p>
@@ -21418,11 +21418,12 @@ output structure.</p>
 <p>The <a href="#xrGetD3D11GraphicsRequirementsKHR">xrGetD3D11GraphicsRequirementsKHR</a> function identifies to the
 application what graphics device (Windows LUID) needs to be used and the
 minimum feature level to use.
-<a href="#xrGetD3D11GraphicsRequirementsKHR">xrGetD3D11GraphicsRequirementsKHR</a> <strong class="purple">must</strong> be called prior to calling
-<a href="#xrCreateSession">xrCreateSession</a>, and the LUID and feature level that
-<a href="#xrGetD3D11GraphicsRequirementsKHR">xrGetD3D11GraphicsRequirementsKHR</a> returns should be used to create the
-<code>ID3D11Device</code> that the application passes to <a href="#xrCreateSession">xrCreateSession</a> in
-the <a href="#XrGraphicsBindingD3D11KHR">XrGraphicsBindingD3D11KHR</a>.</p>
+The runtime <strong class="purple">must</strong> return <code>XR_ERROR_VALIDATION_FAILURE</code> on calls to
+<a href="#xrCreateSession">xrCreateSession</a> if <a href="#xrGetD3D11GraphicsRequirementsKHR">xrGetD3D11GraphicsRequirementsKHR</a> has not
+been called for the same <code>instance</code> and <code>systemId</code>.
+The LUID and feature level that <a href="#xrGetD3D11GraphicsRequirementsKHR">xrGetD3D11GraphicsRequirementsKHR</a>
+returns should be used to create the <code>ID3D11Device</code> that the application
+passes to <a href="#xrCreateSession">xrCreateSession</a> in the <a href="#XrGraphicsBindingD3D11KHR">XrGraphicsBindingD3D11KHR</a>.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -21985,11 +21986,12 @@ output structure.</p>
 <p>The <a href="#xrGetD3D12GraphicsRequirementsKHR">xrGetD3D12GraphicsRequirementsKHR</a> function identifies to the
 application what graphics device (Windows LUID) needs to be used and the
 minimum feature level to use.
-<a href="#xrGetD3D12GraphicsRequirementsKHR">xrGetD3D12GraphicsRequirementsKHR</a> <strong class="purple">must</strong> be called prior to calling
-<a href="#xrCreateSession">xrCreateSession</a>, and the LUID and feature level that
-<a href="#xrGetD3D12GraphicsRequirementsKHR">xrGetD3D12GraphicsRequirementsKHR</a> returns should be used to create the
-<code>ID3D12Device</code> that the application passes to <a href="#xrCreateSession">xrCreateSession</a> in
-the <a href="#XrGraphicsBindingD3D12KHR">XrGraphicsBindingD3D12KHR</a>.</p>
+The runtime <strong class="purple">must</strong> return <code>XR_ERROR_VALIDATION_FAILURE</code> on calls to
+<a href="#xrCreateSession">xrCreateSession</a> if <a href="#xrGetD3D12GraphicsRequirementsKHR">xrGetD3D12GraphicsRequirementsKHR</a> has not
+been called for the same <code>instance</code> and <code>systemId</code>.
+The LUID and feature level that <a href="#xrGetD3D12GraphicsRequirementsKHR">xrGetD3D12GraphicsRequirementsKHR</a>
+returns should be used to create the <code>ID3D12Device</code> that the application
+passes to <a href="#xrCreateSession">xrCreateSession</a> in the <a href="#XrGraphicsBindingD3D12KHR">XrGraphicsBindingD3D12KHR</a>.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -22833,8 +22835,9 @@ output structure.</p>
 <p>The <a href="#xrGetOpenGLGraphicsRequirementsKHR">xrGetOpenGLGraphicsRequirementsKHR</a> function identifies to the
 application the minimum OpenGL version requirement and the highest known
 tested OpenGL version.
-<a href="#xrGetOpenGLGraphicsRequirementsKHR">xrGetOpenGLGraphicsRequirementsKHR</a> <strong class="purple">must</strong> be called prior to calling
-<a href="#xrCreateSession">xrCreateSession</a>.</p>
+The runtime <strong class="purple">must</strong> return <code>XR_ERROR_VALIDATION_FAILURE</code> on calls to
+<a href="#xrCreateSession">xrCreateSession</a> if <a href="#xrGetOpenGLGraphicsRequirementsKHR">xrGetOpenGLGraphicsRequirementsKHR</a> has not
+been called for the same <code>instance</code> and <code>systemId</code>.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -23404,8 +23407,9 @@ output structure.</p>
 <p>The <a href="#xrGetOpenGLESGraphicsRequirementsKHR">xrGetOpenGLESGraphicsRequirementsKHR</a> function identifies to the
 application the minimum OpenGL ES version requirement and the highest known
 tested OpenGL ES version.
-<a href="#xrGetOpenGLESGraphicsRequirementsKHR">xrGetOpenGLESGraphicsRequirementsKHR</a> <strong class="purple">must</strong> be called prior to calling
-<a href="#xrCreateSession">xrCreateSession</a>.</p>
+The runtime <strong class="purple">must</strong> return <code>XR_ERROR_VALIDATION_FAILURE</code> on calls to
+<a href="#xrCreateSession">xrCreateSession</a> if <a href="#xrGetOpenGLESGraphicsRequirementsKHR">xrGetOpenGLESGraphicsRequirementsKHR</a> has not
+been called for the same <code>instance</code> and <code>systemId</code>.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -24563,8 +24567,9 @@ output structure.</p>
 <p>The <a href="#xrGetVulkanGraphicsRequirementsKHR">xrGetVulkanGraphicsRequirementsKHR</a> function identifies to the
 application the minimum Vulkan version requirement and the highest known
 tested Vulkan version.
-<a href="#xrGetVulkanGraphicsRequirementsKHR">xrGetVulkanGraphicsRequirementsKHR</a> <strong class="purple">must</strong> be called prior to calling
-<a href="#xrCreateSession">xrCreateSession</a>.</p>
+The runtime <strong class="purple">must</strong> return <code>XR_ERROR_VALIDATION_FAILURE</code> on calls to
+<a href="#xrCreateSession">xrCreateSession</a> if <a href="#xrGetVulkanGraphicsRequirementsKHR">xrGetVulkanGraphicsRequirementsKHR</a> has not
+been called for the same <code>instance</code> and <code>systemId</code>.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -31569,7 +31574,7 @@ properly in the AppContainer execution environment.</p>
 </dd>
 <dt class="hdlist1"><strong>Revision</strong></dt>
 <dd>
-<p>1</p>
+<p>2</p>
 </dd>
 <dt class="hdlist1"><strong>Extension and Version Dependencies</strong></dt>
 <dd>
@@ -31644,7 +31649,7 @@ the field-of-view for that view.</p>
 <pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrViewConfigurationViewFovEPIC {
     XrStructureType    type;
     const void*        next;
-    XrFovf             recommendedMutableFov;
+    XrFovf             recommendedFov;
     XrFovf             maxMutableFov;
 } XrViewConfigurationViewFovEPIC;</code></pre>
 </div>
@@ -31703,6 +31708,16 @@ display.</p>
 </div>
 <div class="ulist">
 <ul>
+<li>
+<p>Revision 2, 2020-06-04 (Jules Blok)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Fixed incorrect member name.</p>
+</li>
+</ul>
+</div>
+</li>
 <li>
 <p>Revision 1, 2020-03-05 (Jules Blok)</p>
 <div class="ulist">
@@ -32675,10 +32690,10 @@ that doesn&#8217;t match any gltTF nodes in the corresponding controller model.<
 <p><a id="VUID-XrControllerModelNodePropertiesMSFT-next-next" href="#VUID-XrControllerModelNodePropertiesMSFT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
 </li>
 <li>
-<p>[[VUID-XrControllerModelNodePropertiesMSFT-parentNodeName[XR_MAX_CONTROLLER_MODEL_NODE_NAME_SIZE_MSFT]-parameter]] <code>parentNodeName</code>[XR_MAX_CONTROLLER_MODEL_NODE_NAME_SIZE_MSFT] <strong class="purple">must</strong> be a valid</p>
+<p><a id="VUID-XrControllerModelNodePropertiesMSFT-parentNodeName-parameter" href="#VUID-XrControllerModelNodePropertiesMSFT-parentNodeName-parameter"></a> <code>parentNodeName</code> <strong class="purple">must</strong> be a null-terminated UTF-8 string whose length is less than or equal to XR_MAX_CONTROLLER_MODEL_NODE_NAME_SIZE_MSFT</p>
 </li>
 <li>
-<p>[[VUID-XrControllerModelNodePropertiesMSFT-nodeName[XR_MAX_CONTROLLER_MODEL_NODE_NAME_SIZE_MSFT]-parameter]] <code>nodeName</code>[XR_MAX_CONTROLLER_MODEL_NODE_NAME_SIZE_MSFT] <strong class="purple">must</strong> be a valid</p>
+<p><a id="VUID-XrControllerModelNodePropertiesMSFT-nodeName-parameter" href="#VUID-XrControllerModelNodePropertiesMSFT-nodeName-parameter"></a> <code>nodeName</code> <strong class="purple">must</strong> be a null-terminated UTF-8 string whose length is less than or equal to XR_MAX_CONTROLLER_MODEL_NODE_NAME_SIZE_MSFT</p>
 </li>
 </ul>
 </div>
@@ -34871,7 +34886,7 @@ applications on the HoloLens.</p>
 <div class="paragraph">
 <p>The session state of a holographic window-backed <a href="#XrSession">XrSession</a> will only reach
 <code>XR_SESSION_STATE_VISIBLE</code> when the provided CoreWindow is made visible.
-If the CoreWindow is for a secondary app view, the application must programatically request to make
+If the CoreWindow is for a secondary app view, the application must programmatically request to make
 the CoreWindow visible (e.g. with ApplicationViewSwitcher.TryShowAsStandaloneAsync or
 ApplicationViewSwitcher.SwitchAsync).</p>
 </div>
@@ -34907,21 +34922,27 @@ otherwise the call <strong class="purple">may</strong> deadlock.</p>
 </div>
 <div class="sect3">
 <h4 id="_sample_code_2"><a class="anchor" href="#_sample_code_2"></a>12.32.1. Sample code</h4>
+<div class="paragraph">
+<p>Following example demos the usage of holographic window attachment and
+use the attached CoreWindow to receive keyboard input,
+use CoreTextEditContext to hand text typing experience,
+and use IActivatedEventArgs to handle protocol launching arguments.</p>
+</div>
 <div class="listingblock">
 <div class="content">
-<pre class="prettyprint highlight linenums"><code data-lang="c++">// [...]
-
-struct AppView : implements&lt;AppView, IFrameworkViewSource, IFrameworkView&gt; {
-    IFrameworkView CreateView() {
-        return *this;
-    }
-
+<pre class="prettyprint highlight linenums"><code data-lang="c++">struct AppView : implements&lt;AppView, IFrameworkView&gt; {
     void Initialize(CoreApplicationView const&amp; applicationView) {
         applicationView.Activated({this, &amp;AppView::OnActivated});
     }
 
+    void Load(winrt::hstring const&amp; entryPoint) {
+    }
+
+    void Uninitialize() {
+    }
+
     void Run() {
-        // The HolographicSpace must be created before the window is activated.
+        // Creating a HolographicSpace before activating the CoreWindow to make it a holographic window
         CoreWindow window = CoreWindow::GetForCurrentThread();
         HolographicSpace holographicSpace = Windows::Graphics::Holographic::HolographicSpace::CreateForCoreWindow(window);
         window.Activate();
@@ -34940,10 +34961,8 @@ struct AppView : implements&lt;AppView, IFrameworkViewSource, IFrameworkView&gt;
         XrSession session;
         CHECK_XRCMD(xrCreateSession(instance, &amp;sessionCreateInfo, &amp;session));
 
-        CoreDispatcher dispatcher = window.Dispatcher();
-
         while (!m_windowClosed) {
-            dispatcher.ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
+            window.Dispatcher().ProcessEvents(CoreProcessEventsOption::ProcessAllIfPresent);
 
             // [OpenXR calls: Poll events, sync actions, render, and submit frames].
         }
@@ -34952,8 +34971,12 @@ struct AppView : implements&lt;AppView, IFrameworkViewSource, IFrameworkView&gt;
     void SetWindow(CoreWindow const&amp; window) {
         window.Closed({this, &amp;AppView::OnWindowClosed});
         window.KeyDown({this, &amp;AppView::OnKeyDown});
-        window.KeyUp({this, &amp;AppView::OnKeyUp});
-        window.Dispatcher().AcceleratorKeyActivated({this, &amp;AppView::OnAcceleratorKey});
+
+        // This sample customizes the text input pane with manual display policy and email address scope.
+        windows::CoreTextServicesManager manager = windows::CoreTextServicesManager::GetForCurrentView();
+        windows::CoreTextEditContext editingContext = manager.CreateEditContext();
+        editingContext.InputPaneDisplayPolicy(windows::CoreTextInputPaneDisplayPolicy::Manual);
+        editingContext.InputScope(windows::CoreTextInputScope::EmailAddress);
     }
 
     void OnWindowClosed(CoreWindow const&amp; sender, CoreWindowEventArgs const&amp; args) {
@@ -34964,23 +34987,17 @@ struct AppView : implements&lt;AppView, IFrameworkViewSource, IFrameworkView&gt;
         // [Process key down]
     }
 
-    void OnKeyUp(CoreWindow const&amp; sender, KeyEventArgs const&amp; args) {
-        // [Process key up]
-    }
-
-    void OnAcceleratorKey(CoreDispatcher const&amp; sender, AcceleratorKeyEventArgs const&amp; args) {
-        // [Process accelerator keys]
-    }
-
     void OnActivated(CoreApplicationView const&amp;, IActivatedEventArgs const&amp; args) {
-        // Example handling file activation.
-        if (FileActivatedEventArgs fileActivationArgs = args.try_as&lt;FileActivatedEventArgs&gt;()) {
-            // [Process file activation]
+        if (args.Kind() == windows::ActivationKind::Protocol) {
+            auto eventArgs{args.as&lt;windows::ProtocolActivatedEventArgs&gt;()};
+            // Use the protocol activation parameters in eventArgs.Uri();
         }
 
-        // Example of inspecting
-        if (!HolographicApplicationPreview::IsHolographicActivation(args)) {
-            // [Handle activation differently. For example, show a 2D XAML UI instead of starting an OpenXR session]
+        // Inspecting whether the application is launched from within holographic shell or from desktop.
+        if (windows::HolographicApplicationPreview::IsHolographicActivation(args)) {
+            // App activation is targeted at the holographic shell.
+        } else {
+            // App activation is targeted at the desktop.
         }
 
         // NOTE: CoreWindow is activated later after the HolographicSpace has been created.
@@ -34989,8 +35006,14 @@ struct AppView : implements&lt;AppView, IFrameworkViewSource, IFrameworkView&gt;
     bool m_windowClosed{false};
 };
 
+struct AppViewSource : winrt::implements&lt;AppViewSource, IFrameworkViewSource&gt; {
+    windows::IFrameworkView CreateView() {
+        return winrt::make&lt;AppView&gt;();
+    }
+};
+
 int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
-    CoreApplication::Run(make&lt;AppView&gt;());
+    CoreApplication::Run(make&lt;AppViewSource&gt;());
 }</code></pre>
 </div>
 </div>
