@@ -53,7 +53,7 @@ namespace xr {
             }
         }
 
-        auto isExtensionEnabled = [& list = extensions.EnabledExtensions](const char* extensionName) -> bool {
+        auto isExtensionEnabled = [&list = extensions.EnabledExtensions](const char* extensionName) -> bool {
             return list.end() !=
                    std::find_if(list.begin(), list.end(), [&extensionName](auto&& i) { return 0 == strcmp(i, extensionName); });
         };

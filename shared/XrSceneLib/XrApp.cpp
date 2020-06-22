@@ -120,7 +120,7 @@ namespace {
         std::vector<std::unique_ptr<Scene>> m_scenes;
 
         std::atomic<bool> m_sessionRunning{false};
-        std::atomic<bool> m_appForceStop{false};
+        std::atomic<bool> m_abortFrameLoop{false};
         bool m_actionBindingsFinalized{false};
 
         std::thread m_renderThread;
@@ -269,14 +269,14 @@ namespace {
     void ImplementXrApp::Run() {
         ::SetThreadDescription(::GetCurrentThread(), L"App Thread");
 
-        m_appForceStop = false;
+        m_abortFrameLoop = false;
         while (Step()) {
         }
     }
 
     bool ImplementXrApp::Step() {
-        if (!ProcessEvents()) {
-            return false;
+        if (m_abortFrameLoop || !ProcessEvents()) {
+            return false; // quit frame loop
         }
 
         // Defer action bindings until the first game step.
@@ -298,7 +298,7 @@ namespace {
             std::this_thread::sleep_for(0.1s);
         }
 
-        return !m_appForceStop;
+        return true; // continue frame loop
     }
 
     void ImplementXrApp::NotifyFrameRenderThread() {
@@ -335,20 +335,28 @@ namespace {
         if (m_renderThreadRunning.compare_exchange_strong(alreadyRunning, true)) {
             m_frameReadyToRender = false; // Always wait for xrWaitFrame before begin rendering frames.
             m_renderThread = std::thread([this]() {
-                ::SetThreadDescription(::GetCurrentThread(), L"Render Thread");
+                try {
+                    ::SetThreadDescription(::GetCurrentThread(), L"Render Thread");
 
-                while (m_renderThreadRunning && m_sessionRunning) {
-                    {
-                        std::unique_lock lock(m_frameReadyToRenderMutex);
-                        m_frameReadyToRenderNotify.wait(lock, [this] { return m_frameReadyToRender; });
-                        m_frameReadyToRender = false;
+                    while (m_renderThreadRunning && m_sessionRunning) {
+                        {
+                            std::unique_lock lock(m_frameReadyToRenderMutex);
+                            m_frameReadyToRenderNotify.wait(lock, [this] { return m_frameReadyToRender; });
+                            m_frameReadyToRender = false;
+                        }
+
+                        if (!m_renderThreadRunning || !m_sessionRunning) {
+                            break; // check again after waiting
+                        }
+
+                        RenderFrame();
                     }
-
-                    if (!m_renderThreadRunning || !m_sessionRunning) {
-                        break; // check again after waiting
-                    }
-
-                    RenderFrame();
+                } catch (const std::exception& ex) {
+                    sample::Trace("Render thread exception: {}", ex.what());
+                    m_abortFrameLoop = true;
+                } catch (...) {
+                    sample::Trace(L"Render thread exception");
+                    m_abortFrameLoop = true;
                 }
             });
         }
@@ -373,7 +381,7 @@ namespace {
         if (m_sessionRunning) {
             CHECK_XRCMD(xrRequestExitSession(SceneContext().Session.Handle));
         } else {
-            m_appForceStop = true; // quit app message loop
+            m_abortFrameLoop = true; // quit app frame loop
         }
     }
 

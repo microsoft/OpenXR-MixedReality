@@ -2059,9 +2059,9 @@ typedef struct XrControllerModelStateMSFT {
 } XrControllerModelStateMSFT;
 
 typedef XrResult (XRAPI_PTR *PFN_xrGetControllerModelKeyMSFT)(XrSession session, XrPath topLevelUserPath, XrControllerModelKeyStateMSFT* controllerModelKeyState);
-typedef XrResult (XRAPI_PTR *PFN_xrLoadControllerModelMSFT)(XrSession session, XrControllerModelKeyMSFT modelKey, uint32_t sizeInput, uint32_t*sizeOutput, uint8_t*buffer);
-typedef XrResult (XRAPI_PTR *PFN_xrGetControllerModelPropertiesMSFT)(XrSession session, XrControllerModelKeyMSFT modelKey, XrControllerModelPropertiesMSFT*properties);
-typedef XrResult (XRAPI_PTR *PFN_xrGetControllerModelStateMSFT)(XrSession session, XrControllerModelKeyMSFT modelKey, XrControllerModelStateMSFT*state);
+typedef XrResult (XRAPI_PTR *PFN_xrLoadControllerModelMSFT)(XrSession session, XrControllerModelKeyMSFT modelKey, uint32_t sizeInput, uint32_t* sizeOutput, uint8_t* buffer);
+typedef XrResult (XRAPI_PTR *PFN_xrGetControllerModelPropertiesMSFT)(XrSession session, XrControllerModelKeyMSFT modelKey, XrControllerModelPropertiesMSFT* properties);
+typedef XrResult (XRAPI_PTR *PFN_xrGetControllerModelStateMSFT)(XrSession session, XrControllerModelKeyMSFT modelKey, XrControllerModelStateMSFT* state);
 
 #ifndef XR_NO_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrGetControllerModelKeyMSFT(
@@ -2094,12 +2094,12 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetControllerModelStateMSFT(
 
 
 #define XR_EPIC_view_configuration_fov 1
-#define XR_EPIC_view_configuration_fov_SPEC_VERSION 1
+#define XR_EPIC_view_configuration_fov_SPEC_VERSION 2
 #define XR_EPIC_VIEW_CONFIGURATION_FOV_EXTENSION_NAME "XR_EPIC_view_configuration_fov"
 typedef struct XrViewConfigurationViewFovEPIC {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
-    XrFovf                      recommendedMutableFov;
+    XrFovf                      recommendedFov;
     XrFovf                      maxMutableFov;
 } XrViewConfigurationViewFovEPIC;
 

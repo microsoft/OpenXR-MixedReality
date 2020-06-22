@@ -75,7 +75,7 @@ namespace {
 
         void OnActivated(windows::CoreApplicationView const&, windows::IActivatedEventArgs const& args) {
             if (args.Kind() == windows::ActivationKind::Protocol) {
-                auto eventArgs{args.as<windows::ProtocolActivatedEventArgs>()};
+                windows::ProtocolActivatedEventArgs eventArgs{args.as<windows::ProtocolActivatedEventArgs>()};
                 sample::Trace("Protocol uri : {}", winrt::to_string(eventArgs.Uri().RawUri()).c_str());
             }
 
@@ -94,7 +94,7 @@ namespace {
 
             // Creating a HolographicSpace before activating the CoreWindow to make it a holographic window
             windows::CoreWindow window = windows::CoreWindow::GetForCurrentThread();
-            auto holographicSpace = windows::HolographicSpace::CreateForCoreWindow(window);
+            windows::HolographicSpace holographicSpace = windows::HolographicSpace::CreateForCoreWindow(window);
             window.Activate();
 
             XrHolographicWindowAttachmentMSFT holographicWindowAttachment{XR_TYPE_HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT};
@@ -118,8 +118,8 @@ namespace {
 
         void InitializeTextEditingContext() {
             // This sample customizes the text input pane with manual display policy and email address scope.
-            auto manager = windows::CoreTextServicesManager::GetForCurrentView();
-            auto editingContext = manager.CreateEditContext();
+            windows::CoreTextServicesManager manager = windows::CoreTextServicesManager::GetForCurrentView();
+            windows::CoreTextEditContext editingContext = manager.CreateEditContext();
             editingContext.InputPaneDisplayPolicy(windows::CoreTextInputPaneDisplayPolicy::Manual);
             editingContext.InputScope(windows::CoreTextInputScope::EmailAddress);
         }

@@ -222,9 +222,7 @@ bool ProjectionLayer::Render(SceneContext& sceneContext,
             projectionViews[viewIndex].subImage.imageRect = viewConfigComponent.LayerColorImageRect[viewIndex];
 
             D3D11_VIEWPORT viewport = viewports[viewIndex];
-            if (!currentConfig.SubmitDepthInfo) {
-                projectionViews[viewIndex].next = nullptr;
-            } else {
+            if (currentConfig.SubmitDepthInfo && sceneContext.Extensions.SupportsDepthInfo) {
                 depthInfo[viewIndex] = {XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR};
                 depthInfo[viewIndex].minDepth = viewport.MinDepth = normalizedViewportMinDepth;
                 depthInfo[viewIndex].maxDepth = viewport.MaxDepth = normalizedViewportMaxDepth;
@@ -235,6 +233,8 @@ bool ProjectionLayer::Render(SceneContext& sceneContext,
                 depthInfo[viewIndex].subImage.imageRect = viewConfigComponent.LayerDepthImageRect[viewIndex];
 
                 projectionViews[viewIndex].next = &depthInfo[viewIndex];
+            } else {
+                projectionViews[viewIndex].next = nullptr;
             }
 
             // Render for this view pose.

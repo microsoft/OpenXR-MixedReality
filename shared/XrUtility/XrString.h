@@ -80,7 +80,8 @@ namespace xr {
 
         // WideCharToMultiByte returns number of chars of the input buffer, regardless of null terminitor
         narrowText.resize(narrowLength, 0);
-        const int length = ::WideCharToMultiByte(CP_UTF8, 0, wideText.data(), (int)wideText.size(), narrowText.data(), narrowLength, nullptr, nullptr);
+        const int length =
+            ::WideCharToMultiByte(CP_UTF8, 0, wideText.data(), (int)wideText.size(), narrowText.data(), narrowLength, nullptr, nullptr);
         if (length != narrowLength) {
             DEBUG_PRINT("wide_to_utf8 convert string error:  {}", ::GetLastError());
             return {};
