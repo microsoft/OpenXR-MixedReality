@@ -68,13 +68,20 @@ namespace {
     };
 
     std::vector<std::string> AppendSceneLibRequiredExtensions(std::vector<std::string> extensions) {
+        const std::vector<std::string> libraryRequiredExtensions = {
+            XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
+            XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME,
+            XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME,
+            XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
+            XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME,
+#if UWP
+            XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_PREVIEW_EXTENSION_NAME,
+            XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME,
+#endif
+        };
+
         std::vector<std::string> mergedExtensions = extensions;
-        for (auto extension : {XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
-                               XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME,
-                               XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME,
-                               XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
-                               XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME,
-                               XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_PREVIEW_EXTENSION_NAME}) {
+        for (auto extension : libraryRequiredExtensions) {
             if (std::find(mergedExtensions.begin(), mergedExtensions.end(), extension) == mergedExtensions.end()) {
                 mergedExtensions.push_back(extension);
             }
@@ -160,6 +167,7 @@ namespace {
         for (const std::string& ext : combinedExtensions) {
             combinedExtensionsCStr.push_back(ext.c_str());
         }
+
 
         xr::ExtensionContext extensions = xr::CreateExtensionContext(combinedExtensionsCStr);
         xr::InstanceContext instance =
