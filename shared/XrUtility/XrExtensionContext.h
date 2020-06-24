@@ -34,20 +34,21 @@ namespace xr {
         bool SupportsSpatialGraphBridge;
         bool SupportsControllerModel;
         bool SupportsSecondaryViewConfiguration;
+        bool SupportsAppContainer;
         bool SupportsHolographicWindowAttachment;
 
         std::vector<const char*> EnabledExtensions;
     };
 
-    inline ExtensionContext CreateExtensionContext(const std::vector<const char*>& desiredExtensions) {
+    inline ExtensionContext CreateExtensionContext(const std::vector<const char*>& requestedExtensions) {
         const std::vector<XrExtensionProperties> runtimeSupportedExtensions = xr::EnumerateInstanceExtensionProperties();
 
-        // Filter desired extensions to make sure enabled extensions are supported by current runtime
+        // Filter requested extensions to make sure enabled extensions are supported by current runtime
         xr::ExtensionContext extensions{};
-        for (auto& desiredExtension : desiredExtensions) {
+        for (auto& requestedExtension : requestedExtensions) {
             for (const auto& supportedExtension : runtimeSupportedExtensions) {
-                if (strcmp(supportedExtension.extensionName, desiredExtension) == 0) {
-                    extensions.EnabledExtensions.push_back(desiredExtension);
+                if (strcmp(supportedExtension.extensionName, requestedExtension) == 0) {
+                    extensions.EnabledExtensions.push_back(requestedExtension);
                     break;
                 }
             }
@@ -76,6 +77,7 @@ namespace xr {
         extensions.SupportsHandMeshTracking = isExtensionEnabled(XR_MSFT_HAND_TRACKING_MESH_EXTENSION_NAME);
         extensions.SupportsSpatialGraphBridge = isExtensionEnabled(XR_MSFT_SPATIAL_GRAPH_BRIDGE_EXTENSION_NAME);
         extensions.SupportsControllerModel = isExtensionEnabled(XR_MSFT_CONTROLLER_MODEL_PREVIEW_EXTENSION_NAME);
+        extensions.SupportsAppContainer = isExtensionEnabled(XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME);
         extensions.SupportsHolographicWindowAttachment = isExtensionEnabled(XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_PREVIEW_EXTENSION_NAME);
 
         return extensions;
