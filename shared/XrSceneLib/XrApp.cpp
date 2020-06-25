@@ -67,19 +67,26 @@ namespace {
         D3D_FEATURE_LEVEL_10_0,
     };
 
-    std::vector<std::string> AppendSceneLibRequiredExtensions(std::vector<std::string> extensions) {
-        std::vector<std::string> mergedExtensions = extensions;
-        for (auto extension : {XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
-                               XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME,
-                               XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME,
-                               XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
-                               XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME,
-                               XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_PREVIEW_EXTENSION_NAME}) {
-            if (std::find(mergedExtensions.begin(), mergedExtensions.end(), extension) == mergedExtensions.end()) {
-                mergedExtensions.push_back(extension);
+    std::vector<std::string> CombineSceneLibRequestedExtensions(const std::vector<std::string>& extensions) {
+        const std::vector<std::string> libraryRequestedExtensions = {
+            XR_KHR_D3D11_ENABLE_EXTENSION_NAME,
+            XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME,
+            XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME,
+            XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
+            XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME,
+#if UWP
+            XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_PREVIEW_EXTENSION_NAME,
+            XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME,
+#endif
+        };
+
+        std::vector<std::string> combinedExtensions = extensions;
+        for (auto extension : libraryRequestedExtensions) {
+            if (std::find(combinedExtensions.begin(), combinedExtensions.end(), extension) == combinedExtensions.end()) {
+                combinedExtensions.push_back(extension);
             }
         }
-        return mergedExtensions;
+        return combinedExtensions;
     }
 
     class ImplementXrApp : public XrApp {
@@ -155,13 +162,13 @@ namespace {
 
         // Create an instance using combined extensions of XrSceneLib and the application.
         // The extension context record those supported by the runtime and enabled by the instance.
-        std::vector<std::string> combinedExtensions = AppendSceneLibRequiredExtensions(m_appConfiguration.RequestedExtensions);
-        std::vector<const char*> combinedExtensionsCStr;
-        for (const std::string& ext : combinedExtensions) {
-            combinedExtensionsCStr.push_back(ext.c_str());
+        std::vector<std::string> requestedExtensions = CombineSceneLibRequestedExtensions(m_appConfiguration.RequestedExtensions);
+        std::vector<const char*> requestedExtensionsCStr;
+        for (const std::string& ext : requestedExtensions) {
+            requestedExtensionsCStr.push_back(ext.c_str());
         }
 
-        xr::ExtensionContext extensions = xr::CreateExtensionContext(combinedExtensionsCStr);
+        xr::ExtensionContext extensions = xr::CreateExtensionContext(requestedExtensionsCStr);
         xr::InstanceContext instance =
             xr::CreateInstanceContext(m_appConfiguration.AppInfo, {"XrSceneLib", 1}, extensions.EnabledExtensions);
         extensions.PopulateDispatchTable(instance.Handle);
@@ -170,6 +177,12 @@ namespace {
         if (!extensions.SupportsD3D11) {
             throw std::logic_error("This sample currently only supports D3D11.");
         }
+
+#if UWP
+        if (!extensions.SupportsAppContainer) {
+            throw std::logic_error("The UWP version of this sample requires XR_EXT_win32_appcontainer_compatible extension.");
+        }
+#endif
 
         // Then get the active system with required form factor.
         // If no system is plugged in, wait until the device is plugged in.

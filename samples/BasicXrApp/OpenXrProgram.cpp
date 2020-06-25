@@ -64,7 +64,7 @@ namespace {
             // Build out the extensions to enable. Some extensions are required and some are optional.
             const std::vector<const char*> enabledExtensions = SelectExtensions();
 
-            // Create the instance with desired extensions.
+            // Create the instance with enabled extensions.
             XrInstanceCreateInfo createInfo{XR_TYPE_INSTANCE_CREATE_INFO};
             createInfo.enabledExtensionCount = (uint32_t)enabledExtensions.size();
             createInfo.enabledExtensionNames = enabledExtensions.data();
@@ -98,6 +98,11 @@ namespace {
 
             // D3D11 extension is required for this sample, so check if it's supported.
             CHECK(EnableExtentionIfSupported(XR_KHR_D3D11_ENABLE_EXTENSION_NAME));
+
+#if UWP
+            // Require XR_EXT_win32_appcontainer_compatible extension when building in UWP context.
+            CHECK(EnableExtentionIfSupported(XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME));
+#endif
 
             // Additional optional extensions for enhanced functionality. Track whether enabled in m_optionalExtensions.
             m_optionalExtensions.DepthExtensionSupported = EnableExtentionIfSupported(XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME);
