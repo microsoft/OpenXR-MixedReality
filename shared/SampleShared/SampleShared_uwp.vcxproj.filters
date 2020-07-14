@@ -42,6 +42,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="Sample_DiffuseHDR.dds" />
+    <None Include="Sample_SpecularHDR.dds" />
+    <None Include="$(OpenXRLoaderBinaryRoot)\bin\openxr_loader.dll" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="UWPAssets\smallTile-sdk.png">

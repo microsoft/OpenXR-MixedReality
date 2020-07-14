@@ -44,10 +44,10 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-    <PackageCertificateThumbprint>0071016DCE22933BB0F19305D78E0794B55121C8</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>2C8ECCE422302CD00B52EAE031E9F8BBF1C6ABA7</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />

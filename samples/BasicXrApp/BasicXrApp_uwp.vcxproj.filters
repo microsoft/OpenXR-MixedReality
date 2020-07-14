@@ -8,9 +8,9 @@
     <ClCompile Include="DxUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="App.h" />
     <ClInclude Include="pch.h" />
     <ClInclude Include="DxUtility.h" />
+    <ClInclude Include="OpenXrProgram.h" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="Assets\SplashScreen.scale-200.png">
