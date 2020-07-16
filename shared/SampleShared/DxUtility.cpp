@@ -17,6 +17,15 @@
 #include "DxUtility.h"
 #include "Trace.h"
 
+#include <DirectXMath.h>
+
+#include <bx/platform.h>
+#include <bx/math.h>
+#include <bx/pixelformat.h>
+
+#include <bgfx/platform.h>
+#include <bgfx/embedded_shader.h>
+
 namespace sample::dx {
     winrt::com_ptr<IDXGIAdapter1> GetAdapter(LUID adapterId) {
         // Create the DXGI factory.
