@@ -41,7 +41,7 @@
     <Keyword>Win32Proj</Keyword>
     <RootNamespace>SampleShared_uwp</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>

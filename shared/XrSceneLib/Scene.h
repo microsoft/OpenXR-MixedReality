@@ -35,7 +35,10 @@ struct Scene {
         return m_isActive;
     }
     void SetActive(bool active) {
-        m_isActive = active;
+        if (m_isActive != active) {
+            m_isActive = active;
+            OnActiveChanged();
+        }
     }
     void ToggleActive() {
         SetActive(!IsActive());
@@ -90,6 +93,8 @@ protected:
     virtual void OnRender(const FrameTime& frameTime [[maybe_unused]]) const {
     }
     virtual void OnEvent(const XrEventDataBuffer& eventData [[maybe_unused]]) {
+    }
+    virtual void OnActiveChanged() {
     }
 
 private:

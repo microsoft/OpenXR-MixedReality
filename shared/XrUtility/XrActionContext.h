@@ -170,10 +170,12 @@ namespace xr {
             }
         }
 
-        XrActionsSyncInfo syncInfo{XR_TYPE_ACTIONS_SYNC_INFO};
-        syncInfo.countActiveActionSets = static_cast<uint32_t>(std::size(activeActionSets));
-        syncInfo.activeActionSets = activeActionSets.data();
-        CHECK_XRCMD(xrSyncActions(session, &syncInfo));
+        if (!activeActionSets.empty()) {
+            XrActionsSyncInfo syncInfo{XR_TYPE_ACTIONS_SYNC_INFO};
+            syncInfo.countActiveActionSets = static_cast<uint32_t>(std::size(activeActionSets));
+            syncInfo.activeActionSets = activeActionSets.data();
+            CHECK_XRCMD(xrSyncActions(session, &syncInfo));
+        }
     }
 
 } // namespace xr

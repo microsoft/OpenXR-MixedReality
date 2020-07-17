@@ -3,7 +3,7 @@
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp" />
-    <ClCompile Include="Scene_HandTracking.cpp" />
+    <ClCompile Include="Scene_ThreeSpaces.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -11,6 +11,7 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="TemporaryKey.pfx" />
+    <None Include="$(OpenXRLoaderBinaryRoot)\bin\openxr_loader.dll" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DeploymentContent">

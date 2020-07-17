@@ -169,20 +169,20 @@ namespace {
         }
 
         xr::ExtensionContext extensions = xr::CreateExtensionContext(requestedExtensionsCStr);
-        xr::InstanceContext instance =
-            xr::CreateInstanceContext(m_appConfiguration.AppInfo, {"XrSceneLib", 1}, extensions.EnabledExtensions);
-        extensions.PopulateDispatchTable(instance.Handle);
 
         // For example, this sample currently requires D3D11 extension to be supported.
         if (!extensions.SupportsD3D11) {
             throw std::logic_error("This sample currently only supports D3D11.");
         }
-
 #if UWP
         if (!extensions.SupportsAppContainer) {
             throw std::logic_error("The UWP version of this sample requires XR_EXT_win32_appcontainer_compatible extension.");
         }
 #endif
+
+        xr::InstanceContext instance =
+            xr::CreateInstanceContext(m_appConfiguration.AppInfo, {"XrSceneLib", 1}, extensions.EnabledExtensions);
+        extensions.PopulateDispatchTable(instance.Handle);
 
         // Then get the active system with required form factor.
         // If no system is plugged in, wait until the device is plugged in.
