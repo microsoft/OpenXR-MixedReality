@@ -21,6 +21,7 @@
 
 #include <SampleShared/FileUtility.h>
 #include <SampleShared/DxUtility.h>
+#include <SampleShared/BgfxUtility.h>
 #include <SampleShared/Trace.h>
 
 #include "XrApp.h"
@@ -203,7 +204,7 @@ namespace {
             throw std::logic_error("The system doesn't support required primary view configuration.");
         }
 
-        auto [d3d11Binding, device, deviceContext] = sample::dx::CreateD3D11Binding(
+        auto [d3d11Binding, device, deviceContext] = sample::bg::CreateD3D11Binding(
             instance.Handle, system.Id, extensions, m_appConfiguration.SingleThreadedD3D11Device, SupportedFeatureLevels);
 
         xr::SessionHandle sessionHandle;
@@ -278,10 +279,12 @@ namespace {
     const std::vector<std::unique_ptr<Scene>>& ImplementXrApp::Scenes() const {
         return m_scenes;
     }
-
+     // initialize bgfx here
+     //sample::bgfx {
+     //   void* InitializeDevice(sample::RendererType rendererType, LUID adapterLuid) override {
     void ImplementXrApp::Run() {
         ::SetThreadDescription(::GetCurrentThread(), L"App Thread");
-
+        
         m_abortFrameLoop = false;
         while (Step()) {
         }
