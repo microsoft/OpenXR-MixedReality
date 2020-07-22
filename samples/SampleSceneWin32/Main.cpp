@@ -16,20 +16,20 @@
 #include "pch.h"
 #include <XrSceneLib/XrApp.h>
 
-std::unique_ptr<Scene> TryCreateTitleScene(SceneContext& sceneContext);
-std::unique_ptr<Scene> TryCreateControllerModelScene(SceneContext& sceneContext);
+std::unique_ptr<engine::Scene> TryCreateTitleScene(engine::Context& context);
+std::unique_ptr<engine::Scene> TryCreateControllerModelScene(engine::Context& context);
 
 int APIENTRY wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int) {
     try {
         CHECK_HRCMD(::CoInitializeEx(nullptr, COINIT_MULTITHREADED));
         auto on_exit = MakeScopeGuard([] { ::CoUninitialize(); });
 
-        XrAppConfiguration appConfig({"SampleSceneWin32", 1});
+        engine::XrAppConfiguration appConfig({"SampleSceneWin32", 1});
         appConfig.RequestedExtensions.push_back(XR_MSFT_CONTROLLER_MODEL_PREVIEW_EXTENSION_NAME);
 
-        auto app = CreateXrApp(appConfig);
-        app->AddScene(TryCreateTitleScene(app->SceneContext()));
-        app->AddScene(TryCreateControllerModelScene(app->SceneContext()));
+        auto app = engine::CreateXrApp(appConfig);
+        app->AddScene(TryCreateTitleScene(app->Context()));
+        app->AddScene(TryCreateControllerModelScene(app->Context()));
         app->Run();
     } catch (const std::exception& ex) {
         sample::Trace("Unhandled Exception: {}", ex.what());

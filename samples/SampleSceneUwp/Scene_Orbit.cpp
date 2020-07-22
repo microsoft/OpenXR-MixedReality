@@ -28,9 +28,9 @@ namespace {
     // and shows how to pause the animation when the session lost focus while it continues rendering.
     // Also demos Gaze-Select interaction, that the user can air tap to move the orbit in front of the user.
     //
-    struct OrbitScene : public Scene {
-        OrbitScene(SceneContext& sceneContext)
-            : Scene(sceneContext) {
+    struct OrbitScene : public engine::Scene {
+        OrbitScene(engine::Context& context)
+            : Scene(context) {
             xr::ActionSet& actionSet = ActionContext().CreateActionSet("orbit_scene_actions", "Orbit Scene Actions");
 
             m_selectAction = actionSet.CreateAction("select_action", "Select Action", XR_ACTION_TYPE_BOOLEAN_INPUT, {});
@@ -47,7 +47,7 @@ namespace {
                                                                   {m_selectAction, "/user/hand/left/input/trigger"},
                                                               });
 
-            if (sceneContext.Extensions.SupportsHandInteraction) {
+            if (context.Extensions.SupportsHandInteraction) {
                 ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction",
                                                                   {
                                                                       {m_selectAction, "/user/hand/right/input/select"},
@@ -55,30 +55,30 @@ namespace {
                                                                   });
             }
 
-            m_sun = AddSceneObject(CreateSphere(m_sceneContext.PbrResources, 0.5f, 20, Pbr::FromSRGB(Colors::OrangeRed)));
+            m_sun = AddObject(engine::CreateSphere(m_context.PbrResources, 0.5f, 20, Pbr::FromSRGB(Colors::OrangeRed)));
             m_sun->SetVisible(false); // invisible until tracking is valid and placement succeeded.
 
-            m_earth = AddSceneObject(CreateSphere(m_sceneContext.PbrResources, 0.1f, 20, Pbr::FromSRGB(Colors::SeaGreen)));
+            m_earth = AddObject(engine::CreateSphere(m_context.PbrResources, 0.1f, 20, Pbr::FromSRGB(Colors::SeaGreen)));
             m_earth->SetParent(m_sun);
 
             XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
             createInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
             createInfo.poseInReferenceSpace = Pose::Identity();
-            CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext.Session.Handle, &createInfo, m_viewSpace.Put()));
+            CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &createInfo, m_viewSpace.Put()));
         }
 
-        void OnUpdate(const FrameTime& frameTime) override {
+        void OnUpdate(const engine::FrameTime& frameTime) override {
             XrActionStateBoolean state{XR_TYPE_ACTION_STATE_BOOLEAN};
             XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
             getInfo.action = m_selectAction;
-            CHECK_XRCMD(xrGetActionStateBoolean(m_sceneContext.Session.Handle, &getInfo, &state));
+            CHECK_XRCMD(xrGetActionStateBoolean(m_context.Session.Handle, &getInfo, &state));
             const bool isSelectPressed = state.isActive && state.changedSinceLastSync && state.currentState;
             const bool firstUpdate = !m_sun->IsVisible();
 
             if (firstUpdate || isSelectPressed) {
                 const XrTime time = state.isActive ? state.lastChangeTime : frameTime.PredictedDisplayTime;
                 XrSpaceLocation viewInScene = {XR_TYPE_SPACE_LOCATION};
-                CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_sceneContext.SceneSpace, time, &viewInScene));
+                CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_context.SceneSpace, time, &viewInScene));
 
                 if (Pose::IsPoseValid(viewInScene)) {
                     // Project the forward of the view to the scene's horizontal plane
@@ -103,7 +103,7 @@ namespace {
             m_sun->Pose() = Pose::Slerp(m_sun->Pose(), m_targetPoseInScene, 0.05f);
 
             // Animate the earth orbiting the sun, and pause when app lost focus.
-            if (m_sceneContext.SessionState == XR_SESSION_STATE_FOCUSED) {
+            if (m_context.SessionState == XR_SESSION_STATE_FOCUSED) {
                 const float angle = frameTime.TotalElapsedSeconds * XM_PI; // half circle a second
 
                 XrVector3f earthPosition;
@@ -117,12 +117,12 @@ namespace {
     private:
         XrAction m_selectAction{XR_NULL_HANDLE};
         XrPosef m_targetPoseInScene = Pose::Identity();
-        std::shared_ptr<PbrModelObject> m_sun;
-        std::shared_ptr<PbrModelObject> m_earth;
+        std::shared_ptr<engine::PbrModelObject> m_sun;
+        std::shared_ptr<engine::PbrModelObject> m_earth;
         xr::SpaceHandle m_viewSpace;
     };
 } // namespace
 
-std::unique_ptr<Scene> TryCreateOrbitScene(SceneContext& sceneContext) {
-    return std::make_unique<OrbitScene>(sceneContext);
+std::unique_ptr<engine::Scene> TryCreateOrbitScene(engine::Context& context) {
+    return std::make_unique<OrbitScene>(context);
 }

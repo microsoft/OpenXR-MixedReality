@@ -121,10 +121,10 @@
     <ClInclude Include="ProjectionLayer.h" />
     <ClInclude Include="QuadLayerObject.h" />
     <ClInclude Include="Scene.h" />
-    <ClInclude Include="SceneObject.h" />
+    <ClInclude Include="Object.h" />
     <ClInclude Include="XrApp.h" />
     <ClInclude Include="FrameTime.h" />
-    <ClInclude Include="SceneContext.h" />
+    <ClInclude Include="Context.h" />
     <ClInclude Include="ObjectMotion.h" />
   </ItemGroup>
   <ItemGroup>
@@ -138,7 +138,7 @@
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
     <ClCompile Include="QuadLayerObject.cpp" />
-    <ClCompile Include="SceneObject.cpp" />
+    <ClCompile Include="Object.cpp" />
     <ClCompile Include="Scene.cpp" />
     <ClCompile Include="XrApp.cpp" />
     <ClCompile Include="Scene_Title.cpp" />

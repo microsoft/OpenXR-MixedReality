@@ -40,11 +40,11 @@ namespace {
         return projectionOnZ < -std::cos(angleTolerance);
     }
 
-    struct EyeGazeInteractionScene : public Scene {
-        EyeGazeInteractionScene(SceneContext& sceneContext)
-            : Scene(sceneContext) {
-            const bool supportsEyeGazeAction = sceneContext.Extensions.SupportsEyeGazeInteraction &&
-                                               sceneContext.System.EyeGazeInteractionProperties.supportsEyeGazeInteraction;
+    struct EyeGazeInteractionScene : public engine::Scene {
+        EyeGazeInteractionScene(engine::Context& context)
+            : Scene(context) {
+            const bool supportsEyeGazeAction = context.Extensions.SupportsEyeGazeInteraction &&
+                                               context.System.EyeGazeInteractionProperties.supportsEyeGazeInteraction;
             if (supportsEyeGazeAction) {
                 xr::ActionSet& actionSet =
                     ActionContext().CreateActionSet("eye_gaze_interaction_scene_actions", "Eye Gaze Interaction Scene Actions");
@@ -59,19 +59,19 @@ namespace {
                 XrActionSpaceCreateInfo createInfo{XR_TYPE_ACTION_SPACE_CREATE_INFO};
                 createInfo.action = gazeAction;
                 createInfo.poseInActionSpace = Pose::Identity();
-                CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session.Handle, &createInfo, m_gazeSpace.Put()));
+                CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &createInfo, m_gazeSpace.Put()));
             } else {
                 // Use VIEW reference space to simulate eye gaze when the system doesn't support
                 XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
                 createInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
                 createInfo.poseInReferenceSpace = Pose::Identity();
-                CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext.Session.Handle, &createInfo, m_gazeSpace.Put()));
+                CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &createInfo, m_gazeSpace.Put()));
             }
 
-            m_gazeObject = AddSceneObject(CreateSceneObject());
+            m_gazeObject = AddObject(engine::CreateObject());
 
             // Draw a small axis object 2 meters in front to visualize the orientation of gaze
-            m_gazeLookAtAxis = AddSceneObject(CreateAxis(m_sceneContext.PbrResources, 0.05f));
+            m_gazeLookAtAxis = AddObject(engine::CreateAxis(m_context.PbrResources, 0.05f));
             m_gazeLookAtAxis->Pose() = Pose::Translation({0, 0, -2});
             m_gazeLookAtAxis->SetParent(m_gazeObject);
 
@@ -83,7 +83,7 @@ namespace {
             // Draw a circle of objects around the user, and they will rotate when user is looking at them.
             const float angleDistance = XM_2PI / numberOfObjects;
             for (int i = 0; i < numberOfObjects; i++) {
-                auto object = AddSceneObject(CreateSphere(m_sceneContext.PbrResources, objectDiameter, 3, randomColor()));
+                auto object = AddObject(engine::CreateSphere(m_context.PbrResources, objectDiameter, 3, randomColor()));
                 object->Pose().position.x = layoutRadius * std::sin(i * angleDistance);
                 object->Pose().position.z = layoutRadius * std::cos(i * angleDistance);
                 object->Motion.SetRotation({0, 0, 1}, XM_2PI); // Rotate around per second
@@ -91,9 +91,9 @@ namespace {
             }
         }
 
-        void OnUpdate(const FrameTime& frameTime) override {
+        void OnUpdate(const engine::FrameTime& frameTime) override {
             XrSpaceLocation location{XR_TYPE_SPACE_LOCATION};
-            CHECK_XRCMD(xrLocateSpace(m_gazeSpace.Get(), m_sceneContext.SceneSpace, frameTime.PredictedDisplayTime, &location));
+            CHECK_XRCMD(xrLocateSpace(m_gazeSpace.Get(), m_context.SceneSpace, frameTime.PredictedDisplayTime, &location));
 
             if (Pose::IsPoseValid(location)) {
                 m_gazeObject->SetVisible(true);
@@ -113,12 +113,12 @@ namespace {
 
     private:
         xr::SpaceHandle m_gazeSpace;
-        std::shared_ptr<SceneObject> m_gazeObject;
-        std::shared_ptr<SceneObject> m_gazeLookAtAxis;
-        std::vector<std::shared_ptr<SceneObject>> m_lookAtObjects;
+        std::shared_ptr<engine::Object> m_gazeObject;
+        std::shared_ptr<engine::Object> m_gazeLookAtAxis;
+        std::vector<std::shared_ptr<engine::Object>> m_lookAtObjects;
     };
 } // namespace
 
-std::unique_ptr<Scene> TryCreateEyeGazeInteractionScene(SceneContext& sceneContext) {
-    return std::make_unique<EyeGazeInteractionScene>(sceneContext);
+std::unique_ptr<engine::Scene> TryCreateEyeGazeInteractionScene(engine::Context& context) {
+    return std::make_unique<EyeGazeInteractionScene>(context);
 }

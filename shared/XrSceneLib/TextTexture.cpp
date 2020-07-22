@@ -21,10 +21,10 @@ namespace {
     constexpr DXGI_FORMAT TextFormat = DXGI_FORMAT_B8G8R8A8_UNORM;
 }
 
-TextTexture::TextTexture(SceneContext& sceneContext, TextTextureInfo textInfo)
+engine::TextTexture::TextTexture(Context& context, TextTextureInfo textInfo)
     : m_textInfo(std::move(textInfo)) {
-    const winrt::com_ptr<ID3D11Device> device = sceneContext.Device;
-    const winrt::com_ptr<ID3D11DeviceContext> context = sceneContext.DeviceContext;
+    const winrt::com_ptr<ID3D11Device> device = context.Device;
+    const winrt::com_ptr<ID3D11DeviceContext> deviceContext = context.DeviceContext;
 
     D2D1_FACTORY_OPTIONS options{};
     CHECK_HRCMD(D2D1CreateFactory(D2D1_FACTORY_TYPE_SINGLE_THREADED, winrt::guid_of<ID2D1Factory2>(), &options, m_d2dFactory.put_void()));
@@ -82,7 +82,7 @@ TextTexture::TextTexture(SceneContext& sceneContext, TextTextureInfo textInfo)
     CHECK_HRCMD(m_d2dContext->CreateSolidColorBrush(brushColor, m_brush.put()));
 }
 
-void TextTexture::Draw(const wchar_t* text) {
+void engine::TextTexture::Draw(const wchar_t* text) {
     m_d2dContext->SaveDrawingState(m_stateBlock.get());
 
     const D2D1_SIZE_F renderTargetSize = m_d2dContext->GetSize();
@@ -109,11 +109,11 @@ void TextTexture::Draw(const wchar_t* text) {
     m_d2dContext->RestoreDrawingState(m_stateBlock.get());
 }
 
-ID3D11Texture2D* TextTexture::Texture() const {
+ID3D11Texture2D* engine::TextTexture::Texture() const {
     return m_textDWriteTexture.get();
 }
 
-std::shared_ptr<Pbr::Material> TextTexture::CreatePbrMaterial(const Pbr::Resources& pbrResources) const {
+std::shared_ptr<Pbr::Material> engine::TextTexture::CreatePbrMaterial(const Pbr::Resources& pbrResources) const {
     auto material = Pbr::Material::CreateFlat(pbrResources, Pbr::RGBA::White);
 
     winrt::com_ptr<ID3D11ShaderResourceView> textSrv;

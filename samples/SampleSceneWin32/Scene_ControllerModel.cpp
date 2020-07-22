@@ -19,11 +19,11 @@
 #include <XrSceneLib/ControllerObject.h>
 
 namespace {
-    struct ControllerModelScene : Scene {
-        ControllerModelScene(SceneContext& sceneContext)
-            : Scene(sceneContext)
-            , m_leftController(sceneContext.LeftHand)
-            , m_rightController(sceneContext.RightHand) {
+    struct ControllerModelScene : public engine::Scene {
+        ControllerModelScene(engine::Context& context)
+            : Scene(context)
+            , m_leftController(context.LeftHand)
+            , m_rightController(context.RightHand) {
             xr::ActionSet& actionSet = ActionContext().CreateActionSet("controller_model_action_set", "Controller Model Action Set");
 
             const std::vector<std::string> subactionPathBothHands = {"/user/hand/right", "/user/hand/left"};
@@ -40,19 +40,18 @@ namespace {
             for (ControllerData& controller : {std::ref(m_leftController), std::ref(m_rightController)}) {
                 actionSpaceCreateInfo.subactionPath = controller.UserPath;
                 actionSpaceCreateInfo.action = m_gripPoseAction;
-                CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session.Handle, &actionSpaceCreateInfo, controller.GripSpace.Put()));
+                CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &actionSpaceCreateInfo, controller.GripSpace.Put()));
 
                 // Controller objects are created with empty model.  It will be loaded when available.
-                controller.Object = AddSceneObject(CreateControllerObject(m_sceneContext, controller.UserPath));
+                controller.Object = AddObject(CreateControllerObject(m_context, controller.UserPath));
             }
         }
 
-        void OnUpdate(const FrameTime& frameTime) override {
+        void OnUpdate(const engine::FrameTime& frameTime) override {
             for (ControllerData& controller : {std::ref(m_leftController), std::ref(m_rightController)}) {
                 // Update the grip pose and place the controller model to it.
                 XrSpaceLocation location{XR_TYPE_SPACE_LOCATION};
-                CHECK_XRCMD(
-                    xrLocateSpace(controller.GripSpace.Get(), m_sceneContext.SceneSpace, frameTime.PredictedDisplayTime, &location));
+                CHECK_XRCMD(xrLocateSpace(controller.GripSpace.Get(), m_context.SceneSpace, frameTime.PredictedDisplayTime, &location));
                 if (xr::math::Pose::IsPoseValid(location)) {
                     controller.Object->SetVisible(true);
                     controller.Object->Pose() = location.pose;
@@ -66,7 +65,7 @@ namespace {
         struct ControllerData {
             const XrPath UserPath;
             xr::SpaceHandle GripSpace{};
-            std::shared_ptr<SceneObject> Object;
+            std::shared_ptr<engine::Object> Object;
 
             explicit ControllerData(XrPath userPath)
                 : UserPath(userPath) {
@@ -78,6 +77,6 @@ namespace {
 
 } // namespace
 
-std::unique_ptr<Scene> TryCreateControllerModelScene(SceneContext& sceneContext) {
-    return sceneContext.Extensions.SupportsControllerModel ? std::make_unique<ControllerModelScene>(sceneContext) : nullptr;
+std::unique_ptr<engine::Scene> TryCreateControllerModelScene(engine::Context& context) {
+    return context.Extensions.SupportsControllerModel ? std::make_unique<ControllerModelScene>(context) : nullptr;
 }

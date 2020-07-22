@@ -15,6 +15,8 @@
 //*********************************************************
 #pragma once
 
-#include "SceneObject.h"
+#include "Object.h"
 
-std::shared_ptr<SceneObject> CreateControllerObject(SceneContext& sceneContext, XrPath controllerUserPath);
+namespace engine {
+    std::shared_ptr<engine::Object> CreateControllerObject(Context& context, XrPath controllerUserPath);
+}

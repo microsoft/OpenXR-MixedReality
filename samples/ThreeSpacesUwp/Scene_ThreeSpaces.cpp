@@ -32,9 +32,9 @@ namespace {
     // she/he can observe the different behaviors of different type of spaces.
     // Typically each three-cubes will gradually tear apart due to different optimization of the underlying tracking techs.
     //
-    struct ThreeSpacesScene : public Scene {
-        ThreeSpacesScene(SceneContext& sceneContext)
-            : Scene(sceneContext) {
+    struct ThreeSpacesScene : public engine::Scene {
+        ThreeSpacesScene(engine::Context& context)
+            : Scene(context) {
             xr::ActionSet& actionSet = ActionContext().CreateActionSet("three_cubes_scene_actions", "Three Cubes Scene Actions");
 
             const std::vector<std::string> subactionPathBothHands = {"/user/hand/right", "/user/hand/left"};
@@ -50,7 +50,7 @@ namespace {
                                                                   {m_aimPoseAction, "/user/hand/right/input/aim/pose"},
                                                               });
 
-            if (sceneContext.Extensions.SupportsHandInteraction) {
+            if (context.Extensions.SupportsHandInteraction) {
                 ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction",
                                                                   {
                                                                       {m_selectAction, "/user/hand/left/input/select/value"},
@@ -63,11 +63,11 @@ namespace {
             XrReferenceSpaceCreateInfo referenceSpaceCreateInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
             referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
             referenceSpaceCreateInfo.poseInReferenceSpace = Pose::Identity();
-            CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext.Session.Handle, &referenceSpaceCreateInfo, m_localSpace.Put()));
+            CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &referenceSpaceCreateInfo, m_localSpace.Put()));
 
-            if (m_sceneContext.Extensions.SupportsUnboundedSpace) {
+            if (m_context.Extensions.SupportsUnboundedSpace) {
                 referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT;
-                CHECK_XRCMD(xrCreateReferenceSpace(m_sceneContext.Session.Handle, &referenceSpaceCreateInfo, m_unboundedSpace.Put()));
+                CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &referenceSpaceCreateInfo, m_unboundedSpace.Put()));
             }
 
             XrActionSpaceCreateInfo spaceCreateInfo{XR_TYPE_ACTION_SPACE_CREATE_INFO};
@@ -75,31 +75,31 @@ namespace {
 
             spaceCreateInfo.action = m_aimPoseAction;
             spaceCreateInfo.poseInActionSpace = Pose::Translation({0, 0, -0.1f});
-            spaceCreateInfo.subactionPath = m_sceneContext.RightHand;
-            CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session.Handle, &spaceCreateInfo, m_rightAimSpace.Put()));
-            spaceCreateInfo.subactionPath = m_sceneContext.LeftHand;
-            CHECK_XRCMD(xrCreateActionSpace(m_sceneContext.Session.Handle, &spaceCreateInfo, m_leftAimSpace.Put()));
+            spaceCreateInfo.subactionPath = m_context.RightHand;
+            CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &spaceCreateInfo, m_rightAimSpace.Put()));
+            spaceCreateInfo.subactionPath = m_context.LeftHand;
+            CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &spaceCreateInfo, m_leftAimSpace.Put()));
 
             m_holograms.emplace_back(m_rightAimSpace.Get(),
-                                     AddSceneObject(CreateSphere(m_sceneContext.PbrResources, 0.05f, 20, Pbr::FromSRGB(Colors::Magenta))));
+                AddObject(engine::CreateSphere(m_context.PbrResources, 0.05f, 20, Pbr::FromSRGB(Colors::Magenta))));
 
             m_holograms.emplace_back(m_leftAimSpace.Get(),
-                                     AddSceneObject(CreateSphere(m_sceneContext.PbrResources, 0.05f, 20, Pbr::FromSRGB(Colors::Cyan))));
+                AddObject(engine::CreateSphere(m_context.PbrResources, 0.05f, 20, Pbr::FromSRGB(Colors::Cyan))));
         }
 
-        void OnUpdate(const FrameTime& frameTime) override {
+        void OnUpdate(const engine::FrameTime& frameTime) override {
             XrActionStateBoolean selectState{XR_TYPE_ACTION_STATE_BOOLEAN};
             XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
             getInfo.action = m_selectAction;
 
-            getInfo.subactionPath = m_sceneContext.RightHand;
-            CHECK_XRCMD(xrGetActionStateBoolean(m_sceneContext.Session.Handle, &getInfo, &selectState));
+            getInfo.subactionPath = m_context.RightHand;
+            CHECK_XRCMD(xrGetActionStateBoolean(m_context.Session.Handle, &getInfo, &selectState));
             if (selectState.isActive && selectState.changedSinceLastSync && selectState.currentState) {
                 PlaceThreeSpaces(m_rightAimSpace.Get(), selectState.lastChangeTime);
             }
 
-            getInfo.subactionPath = m_sceneContext.LeftHand;
-            CHECK_XRCMD(xrGetActionStateBoolean(m_sceneContext.Session.Handle, &getInfo, &selectState));
+            getInfo.subactionPath = m_context.LeftHand;
+            CHECK_XRCMD(xrGetActionStateBoolean(m_context.Session.Handle, &getInfo, &selectState));
             if (selectState.isActive && selectState.changedSinceLastSync && selectState.currentState) {
                 PlaceThreeSpaces(m_leftAimSpace.Get(), selectState.lastChangeTime);
             }
@@ -117,7 +117,7 @@ namespace {
             }
 
             XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
-            CHECK_XRCMD(xrLocateSpace(hologram.Space, m_sceneContext.SceneSpace, time, &spaceLocation));
+            CHECK_XRCMD(xrLocateSpace(hologram.Space, m_context.SceneSpace, time, &spaceLocation));
 
             if (Pose::IsPoseValid(spaceLocation)) {
                 hologram.Object->SetVisible(true);
@@ -145,7 +145,7 @@ namespace {
                 CHECK_XRCMD(xrLocateSpace(space, baseSpace, time, &spaceLocation));
 
                 Hologram hologram;
-                hologram.Object = AddSceneObject(CreateCube(m_sceneContext.PbrResources, sideLength, color));
+                hologram.Object = AddObject(engine::CreateCube(m_context.PbrResources, sideLength, color));
                 hologram.Space = baseSpace;
                 hologram.Pose = Pose::Multiply(Pose::Translation(offset), spaceLocation.pose);
                 m_holograms.emplace_back(std::move(hologram));
@@ -157,24 +157,24 @@ namespace {
         }
 
         XrSpace CreateSpacialAnchorSpace(XrSpace space, XrTime time) {
-            if (!m_sceneContext.Extensions.SupportsSpatialAnchor) {
+            if (!m_context.Extensions.SupportsSpatialAnchor) {
                 return XR_NULL_HANDLE; // cannot create hologram on spatial anchor.
             }
 
             AnchorSpace anchorSpace;
             XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
-            CHECK_XRCMD(xrLocateSpace(space, m_sceneContext.SceneSpace, time, &spaceLocation));
+            CHECK_XRCMD(xrLocateSpace(space, m_context.SceneSpace, time, &spaceLocation));
 
             if (Pose::IsPoseValid(spaceLocation)) {
                 XrSpatialAnchorCreateInfoMSFT createInfo{XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT};
-                createInfo.space = m_sceneContext.SceneSpace;
+                createInfo.space = m_context.SceneSpace;
                 createInfo.pose = spaceLocation.pose;
                 createInfo.time = time;
 
-                XrResult result = m_sceneContext.Extensions.xrCreateSpatialAnchorMSFT(
-                    m_sceneContext.Session.Handle,
+                XrResult result = m_context.Extensions.xrCreateSpatialAnchorMSFT(
+                    m_context.Session.Handle,
                     &createInfo,
-                    anchorSpace.Anchor.Put(m_sceneContext.Extensions.xrDestroySpatialAnchorMSFT));
+                    anchorSpace.Anchor.Put(m_context.Extensions.xrDestroySpatialAnchorMSFT));
                 if (result == XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT) {
                     // Cannot create spatial anchor at this place
                     return XR_NULL_HANDLE;
@@ -187,8 +187,8 @@ namespace {
                 XrSpatialAnchorSpaceCreateInfoMSFT createInfo{XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT};
                 createInfo.anchor = anchorSpace.Anchor.Get();
                 createInfo.poseInAnchorSpace = Pose::Identity();
-                CHECK_XRCMD(m_sceneContext.Extensions.xrCreateSpatialAnchorSpaceMSFT(
-                    m_sceneContext.Session.Handle, &createInfo, anchorSpace.Space.Put()));
+                CHECK_XRCMD(m_context.Extensions.xrCreateSpatialAnchorSpaceMSFT(
+                    m_context.Session.Handle, &createInfo, anchorSpace.Space.Put()));
             }
 
             // Keep a copy of the handles to keep the anchor and space alive.
@@ -207,13 +207,13 @@ namespace {
             Hologram(Hologram&) = delete;
             Hologram(Hologram&&) = default;
 
-            Hologram(XrSpace space, std::shared_ptr<SceneObject> object, std::optional<XrPosef> pose = {})
+            Hologram(XrSpace space, std::shared_ptr<engine::Object> object, std::optional<XrPosef> pose = {})
                 : Object(std::move(object))
                 , Space(space)
                 , Pose(pose) {
             }
 
-            std::shared_ptr<SceneObject> Object;
+            std::shared_ptr<engine::Object> Object;
             XrSpace Space = XR_NULL_HANDLE;
             std::optional<XrPosef> Pose = {};
         };
@@ -230,6 +230,6 @@ namespace {
     };
 } // namespace
 
-std::unique_ptr<Scene> TryCreateThreeSpacesScene(SceneContext& sceneContext) {
-    return std::make_unique<ThreeSpacesScene>(sceneContext);
+std::unique_ptr<engine::Scene> TryCreateThreeSpacesScene(engine::Context& context) {
+    return std::make_unique<ThreeSpacesScene>(context);
 }

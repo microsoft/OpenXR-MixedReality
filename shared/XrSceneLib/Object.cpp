@@ -14,16 +14,28 @@
 //
 //*********************************************************
 #include "pch.h"
-#include "SceneObject.h"
+#include "Object.h"
 
-void SceneObject::Update(const FrameTime& frameTime) {
+using engine::Object;
+
+void Object::SetOnlyVisibleForViewIndex(uint32_t viewIndex) {
+    assert(viewIndex < m_visibleViewIndexMask.MaxViewCount);
+    m_visibleViewIndexMask.m_mask = 1 << viewIndex;
+}
+
+bool Object::IsVisibleForViewIndex(uint32_t viewIndex) const {
+    assert(viewIndex < m_visibleViewIndexMask.MaxViewCount);
+    return (m_visibleViewIndexMask.m_mask & (1 << viewIndex)) > 0;
+}
+
+void Object::Update(engine::Context& /*context*/, const FrameTime& frameTime) {
     Motion.UpdateMotionAndPose(Pose(), frameTime.Elapsed);
 }
 
-void SceneObject::Render(SceneContext& sceneContext) const {
+void Object::Render(Context& context) const {
 }
 
-DirectX::XMMATRIX SceneObject::LocalTransform() const {
+DirectX::XMMATRIX Object::LocalTransform() const {
     if (!m_localTransformDirty) {
         return DirectX::XMLoadFloat4x4(&m_localTransform);
     }
@@ -39,6 +51,6 @@ DirectX::XMMATRIX SceneObject::LocalTransform() const {
     return localTransform;
 }
 
-DirectX::XMMATRIX SceneObject::WorldTransform() const {
+DirectX::XMMATRIX Object::WorldTransform() const {
     return m_parent ? XMMatrixMultiply(LocalTransform(), m_parent->WorldTransform()) : LocalTransform();
 }

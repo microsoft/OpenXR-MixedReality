@@ -15,34 +15,37 @@
 //*********************************************************
 #pragma once
 
-// Information of frame timing
-struct FrameTime {
-    using clock = std::chrono::high_resolution_clock;
+namespace engine {
 
-    uint64_t FrameIndex = 0;
-    const clock::time_point StartTime = clock::now();
-    clock::time_point Now = StartTime;
-    clock::duration Elapsed = {};
-    clock::duration TotalElapsed = {};
-    float ElapsedSeconds = {};
-    float TotalElapsedSeconds = {};
+    // Information of frame timing
+    struct FrameTime {
+        using clock = std::chrono::high_resolution_clock;
 
-    XrTime PredictedDisplayTime = {};
-    XrDuration PredictedDisplayPeriod = {};
-    bool ShouldRender = {};
+        uint64_t FrameIndex = 0;
+        const clock::time_point StartTime = clock::now();
+        clock::time_point Now = StartTime;
+        clock::duration Elapsed = {};
+        clock::duration TotalElapsed = {};
+        float ElapsedSeconds = {};
+        float TotalElapsedSeconds = {};
 
-    void Update(const XrFrameState& frameState) {
-        FrameIndex++;
-        PredictedDisplayTime = frameState.predictedDisplayTime;
-        PredictedDisplayPeriod = frameState.predictedDisplayPeriod;
-        ShouldRender = frameState.shouldRender;
+        XrTime PredictedDisplayTime = {};
+        XrDuration PredictedDisplayPeriod = {};
+        bool ShouldRender = {};
 
-        const auto now = FrameTime::clock::now();
-        Elapsed = now - Now;
-        Now = now;
-        TotalElapsed = now - StartTime;
+        void Update(const XrFrameState& frameState) {
+            FrameIndex++;
+            PredictedDisplayTime = frameState.predictedDisplayTime;
+            PredictedDisplayPeriod = frameState.predictedDisplayPeriod;
+            ShouldRender = frameState.shouldRender;
 
-        ElapsedSeconds = std::chrono::duration_cast<std::chrono::duration<float>>(Elapsed).count();
-        TotalElapsedSeconds = std::chrono::duration_cast<std::chrono::duration<float>>(TotalElapsed).count();
-    }
-};
+            const auto now = FrameTime::clock::now();
+            Elapsed = now - Now;
+            Now = now;
+            TotalElapsed = now - StartTime;
+
+            ElapsedSeconds = std::chrono::duration_cast<std::chrono::duration<float>>(Elapsed).count();
+            TotalElapsedSeconds = std::chrono::duration_cast<std::chrono::duration<float>>(TotalElapsed).count();
+        }
+    };
+} // namespace engine
