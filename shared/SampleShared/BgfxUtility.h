@@ -20,12 +20,9 @@
 #include <XrUtility/XrHandle.h>
 #include <XrUtility/XrExtensionContext.h>
 
-namespace sample::dx {
-
+namespace sample::bg {
+    
     winrt::com_ptr<IDXGIAdapter1> GetAdapter(LUID adapterId);
-
-    std::tuple<winrt::com_ptr<ID3D11Device>, winrt::com_ptr<ID3D11DeviceContext>> CreateD3D11DeviceAndContext(
-        IDXGIAdapter1* adapter, const std::vector<D3D_FEATURE_LEVEL>& featureLevels, bool singleThreadedD3D11Device);
 
     std::tuple<XrGraphicsBindingD3D11KHR, winrt::com_ptr<ID3D11Device>, winrt::com_ptr<ID3D11DeviceContext>>
     CreateD3D11Binding(XrInstance instance,
@@ -51,10 +48,4 @@ namespace sample::dx {
                                         XrSwapchainCreateFlags createFlags,
                                         XrSwapchainUsageFlags usageFlags,
                                         std::optional<XrViewConfigurationType> viewConfigurationForSwapchain = std::nullopt);
-    void CreateD3D11DeviceAndContext(IDXGIAdapter1* adapter,
-                                     const std::vector<D3D_FEATURE_LEVEL>& featureLevels,
-                                     ID3D11Device** device,
-                                     ID3D11DeviceContext** deviceContext);
-
-    winrt::com_ptr<ID3DBlob> CompileShader(const char* hlsl, const char* entrypoint, const char* shaderTarget);
-} // namespace sample::dx
+} // namespace sample::bgfx
