@@ -4,6 +4,10 @@
         <ClCompile>
             <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)\bgfx\include\compat\msvc;$(MSBuildThisFileDirectory)\bgfx\include;$(OpenXrSdkPath)\include;$(SharedPath);$(SharedPath)\ext;$(IntDir)\CompiledShaders;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
         </ClCompile>
+        <Link>
+            <AdditionalDependencies>windowsapp.lib;bgfxd.lib;bxd.lib;%(AdditionalDependencies)</AdditionalDependencies>
+            <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)\bgfx\lib\$(Configuration)\$(Platform)</AdditionalLibraryDirectories>
+        </Link>
     </ItemDefinitionGroup>
 
 </Project>
