@@ -4,13 +4,9 @@
         <ClCompile>
             <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)\bgfx\include\compat\msvc;$(MSBuildThisFileDirectory)\bgfx\include;$(OpenXrSdkPath)\include;$(SharedPath);$(SharedPath)\ext;$(SharedPath)\ext\rapidjson;$(IntDir)\CompiledShaders;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
         </ClCompile>
-        <Link Condition="'$(Configuration)'=='Debug'">
-            <AdditionalDependencies>windowsapp.lib;bimg_decodedebug.lib;bimg_encodedebug.lib;bimgdebug.lib;bgfxdebug.lib;bxdebug.lib;%(AdditionalDependencies)</AdditionalDependencies>
-            <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)\bgfx\lib\$(Configuration)\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-        </Link>
-        <Link Condition="'$(Configuration)'=='Release'">
-            <AdditionalDependencies>windowsapp.lib;bimg_decoderelease.lib;bimg_encoderelease.lib;bimgrelease.lib;bgfx.lib;bxrelease.lib;%(AdditionalDependencies)</AdditionalDependencies>
-            <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)\bgfx\lib\$(Configuration)\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+        <Link>
+            <AdditionalDependencies>windowsapp.lib;bimg_decode$(Configuration).lib;bimg$(Configuration).lib;bgfx$(Configuration).lib;bx$(Configuration).lib;%(AdditionalDependencies)</AdditionalDependencies>
+            <AdditionalLibraryDirectories>$(MSBuildThisFileDirectory)\bgfx\lib\$(Platform);%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
         </Link>
     </ItemDefinitionGroup>
 

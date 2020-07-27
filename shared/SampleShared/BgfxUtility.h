@@ -25,6 +25,7 @@ namespace sample::bg {
     winrt::com_ptr<IDXGIAdapter1> GetAdapter(LUID adapterId);
 
     std::tuple<XrGraphicsBindingD3D11KHR, winrt::com_ptr<ID3D11Device>, winrt::com_ptr<ID3D11DeviceContext>>
+    __stdcall
     CreateD3D11Binding(XrInstance instance,
                        XrSystemId systemId,
                        const xr::ExtensionContext& extensions,
@@ -39,7 +40,7 @@ namespace sample::bg {
         std::vector<XrSwapchainImageD3D11KHR> Images;
     };
 
-    SwapchainD3D11 CreateSwapchainD3D11(XrSession session,
+    SwapchainD3D11 __stdcall CreateSwapchainD3D11(XrSession session,
                                         DXGI_FORMAT format,
                                         int32_t width,
                                         int32_t height,

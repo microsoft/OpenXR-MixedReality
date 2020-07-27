@@ -20,12 +20,8 @@
 
 #include <DirectXMath.h>
 
-#include <bx/platform.h>
-#include <bx/math.h>
-#include <bx/pixelformat.h>
-
+#include <bgfx/bgfx.h>
 #include <bgfx/platform.h>
-#include <bgfx/embedded_shader.h>
 
 namespace sample::bg {
     enum class RendererType {
