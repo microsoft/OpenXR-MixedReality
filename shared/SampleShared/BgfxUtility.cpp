@@ -16,16 +16,22 @@
 #include "pch.h"
 #include "BgfxUtility.h"
 #include "Trace.h"
+
 #pragma comment(lib, "D3DCompiler.lib")
 
 #include <DirectXMath.h>
 
+#include <bgfx/bgfx.h>
 #include <bx/platform.h>
 #include <bx/math.h>
 #include <bx/pixelformat.h>
+#include <bx/file.h>
+#include <bx/mutex.h>
 
 #include <bgfx/platform.h>
 #include <bgfx/embedded_shader.h>
+
+#include <bx/uint32_t.h>
 
 namespace sample::bg {
     enum class RendererType {
@@ -104,26 +110,25 @@ namespace sample::bg {
                        const xr::ExtensionContext& extensions,
                        bool singleThreadedD3D11Device,
                        const std::vector<D3D_FEATURE_LEVEL>& appSupportedFeatureLevels) {
-        if (!extensions.SupportsD3D11) {
-            throw std::exception("The runtime doesn't support D3D11 extensions.");
-        }
-        _Analysis_assume_(extensions.xrGetD3D11GraphicsRequirementsKHR != nullptr);
+        //if (!extensions.SupportsD3D11) {
+        //    throw std::exception("The runtime doesn't support D3D11 extensions.");
+        //}
+        //_Analysis_assume_(extensions.xrGetD3D11GraphicsRequirementsKHR != nullptr);
 
-        // automatically assume any function calling this is using D3D11 rendering
-        auto rendererType = sample::bg::RendererType::D3D11;
-        // Create the D3D11 device for the adapter associated with the system.
-        XrGraphicsRequirementsD3D11KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
-        CHECK_XRCMD(extensions.xrGetD3D11GraphicsRequirementsKHR(instance, systemId, &graphicsRequirements));
-        const winrt::com_ptr<IDXGIAdapter1> adapter = GetAdapter(graphicsRequirements.adapterLuid);
+        //// automatically assume any function calling this is using D3D11 rendering
+        //auto rendererType = sample::bg::RendererType::D3D11;
+        //// Create the D3D11 device for the adapter associated with the system.
+        //XrGraphicsRequirementsD3D11KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
+        //CHECK_XRCMD(extensions.xrGetD3D11GraphicsRequirementsKHR(instance, systemId, &graphicsRequirements));
+        //const winrt::com_ptr<IDXGIAdapter1> adapter = GetAdapter(graphicsRequirements.adapterLuid);
 
-        DXGI_ADAPTER_DESC desc{};
-        adapter->GetDesc(&desc);
+        //DXGI_ADAPTER_DESC desc{};
+        //adapter->GetDesc(&desc);
 
-        bgfx::renderFrame();
-
+        //bgfx::renderFrame();
         bgfx::Init init;
         
-        switch (rendererType) {
+        /*switch (rendererType) {
         case sample::bg::RendererType::D3D11:
             init.type = bgfx::RendererType::Direct3D11;
             break;
@@ -134,47 +139,48 @@ namespace sample::bg {
 
         default:
             CHECK(false);
-        }
-        init.vendorId = static_cast<uint16_t>(desc.VendorId);
-        init.deviceId = static_cast<uint16_t>(desc.DeviceId);
-        init.resolution.width = 1280;
-        init.resolution.height = 720;
-        init.resolution.reset = BGFX_RESET_SRGB_BACKBUFFER;
-#ifdef _DEBUG
-        init.debug = true;
-#else
-        init.debug = false;
-#endif
-        bgfx::init(init);
+        }*/
+        //init.vendorId = static_cast<uint16_t>(desc.VendorId);
+        //init.deviceId = static_cast<uint16_t>(desc.DeviceId);
+        //init.resolution.width = 1280;
+        //init.resolution.height = 720;
+        //init.resolution.reset = BGFX_RESET_SRGB_BACKBUFFER;
 
+        //bgfx::init(init);
+ 
+        
+        
 
-        bgfx::frame();
+        //bgfx::frame();
 
 
         // Create a list of feature levels which are both supported by the OpenXR runtime and this application.
-        std::vector<D3D_FEATURE_LEVEL> featureLevels;
-        for (auto level : appSupportedFeatureLevels) {
-            if (level >= graphicsRequirements.minFeatureLevel) {
-                featureLevels.push_back(level);
-            }
-        }
+        //std::vector<D3D_FEATURE_LEVEL> featureLevels;
+        //for (auto level : appSupportedFeatureLevels) {
+        //    if (level >= graphicsRequirements.minFeatureLevel) {
+        //        featureLevels.push_back(level);
+        //    }
+        //}
 
-        if (featureLevels.size() == 0) {
-            throw std::exception("Unsupported minimum feature level!");
-        }
-        ID3D11Device* rawDevicePtr = reinterpret_cast<ID3D11Device*>(bgfx::getInternalData()->context);
+        //if (featureLevels.size() == 0) {
+        //    throw std::exception("Unsupported minimum feature level!");
+        //}
 
+        /*ID3D11Device* rawDevicePtr = (ID3D11Device*)(bgfx::getInternalData()->context);
+        ID3D11DeviceContext* ppImmediateContext;
+        rawDevicePtr->GetImmediateContext(&ppImmediateContext);*/
 
         winrt::com_ptr<ID3D11Device> device;
-        device.copy_from(rawDevicePtr);
-        ID3D11DeviceContext* rawDeviceContextPtr = (ID3D11DeviceContext*)bgfx::getInternalData()->context;
         winrt::com_ptr<ID3D11DeviceContext> deviceContext;
-        deviceContext.copy_from(rawDeviceContextPtr);
+        /*device.copy_from(rawDevicePtr);
+        //deviceContext.copy_from(ppImmediateContext);*/
 
         XrGraphicsBindingD3D11KHR d3d11Binding{XR_TYPE_GRAPHICS_BINDING_D3D11_KHR};
-        d3d11Binding.device = device.get();
+        //d3d11Binding.device = device.get();
 
         return {d3d11Binding, device, deviceContext};
+
+        
     }
 
 } // namespace sample::bgfx

@@ -41,6 +41,42 @@ namespace sample::dx {
             }
         }
     }
+    std::tuple<XrGraphicsBindingD3D11KHR, winrt::com_ptr<ID3D11Device>, winrt::com_ptr<ID3D11DeviceContext>>
+    CreateD3D11Binding(XrInstance instance,
+                       XrSystemId systemId,
+                       const xr::ExtensionContext& extensions,
+                       bool singleThreadedD3D11Device,
+                       const std::vector<D3D_FEATURE_LEVEL>& appSupportedFeatureLevels) {
+        if (!extensions.SupportsD3D11) {
+            throw std::exception("The runtime doesn't support D3D11 extensions.");
+        }
+        _Analysis_assume_(extensions.xrGetD3D11GraphicsRequirementsKHR != nullptr);
+        
+
+        // Create the D3D11 device for the adapter associated with the system.
+        XrGraphicsRequirementsD3D11KHR graphicsRequirements{XR_TYPE_GRAPHICS_REQUIREMENTS_D3D11_KHR};
+        CHECK_XRCMD(extensions.xrGetD3D11GraphicsRequirementsKHR(instance, systemId, &graphicsRequirements));
+        const winrt::com_ptr<IDXGIAdapter1> adapter = sample::dx::GetAdapter(graphicsRequirements.adapterLuid);
+
+        // Create a list of feature levels which are both supported by the OpenXR runtime and this application.
+        std::vector<D3D_FEATURE_LEVEL> featureLevels;
+        for (auto level : appSupportedFeatureLevels) {
+            if (level >= graphicsRequirements.minFeatureLevel) {
+                featureLevels.push_back(level);
+            }
+        }
+
+        if (featureLevels.size() == 0) {
+            throw std::exception("Unsupported minimum feature level!");
+        }
+
+        auto [device, deviceContext] = sample::dx::CreateD3D11DeviceAndContext(adapter.get(), featureLevels, singleThreadedD3D11Device);
+
+        XrGraphicsBindingD3D11KHR d3d11Binding{XR_TYPE_GRAPHICS_BINDING_D3D11_KHR};
+        d3d11Binding.device = device.get();
+
+        return {d3d11Binding, device, deviceContext};
+    }
 
     void CreateD3D11DeviceAndContext(IDXGIAdapter1* adapter,
                                      const std::vector<D3D_FEATURE_LEVEL>& featureLevels,

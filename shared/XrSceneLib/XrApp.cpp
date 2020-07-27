@@ -27,6 +27,8 @@
 #include "XrApp.h"
 #include "CompositionLayers.h"
 #include "SceneContext.h"
+#include <bgfx/bgfx.h>
+
 
 using namespace DirectX;
 using namespace std::chrono_literals;
@@ -203,7 +205,6 @@ namespace {
         if (!xr::Contains(system.SupportedPrimaryViewConfigurationTypes, PrimaryViewConfigurationType)) {
             throw std::logic_error("The system doesn't support required primary view configuration.");
         }
-
         auto [d3d11Binding, device, deviceContext] = sample::bg::CreateD3D11Binding(
             instance.Handle, system.Id, extensions, m_appConfiguration.SingleThreadedD3D11Device, SupportedFeatureLevels);
 
