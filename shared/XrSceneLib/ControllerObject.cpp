@@ -39,11 +39,13 @@ namespace {
 
         // Load the controller model as GLTF binary stream using two call idiom
         uint32_t bufferSize = 0;
-        if (context.Extensions.xrLoadControllerModelMSFT(context.Session.Handle, modelKey, 0, &bufferSize, nullptr) ==
-            XR_ERROR_CONTROLLER_MODEL_UNAVAILABLE_MSFT) {
+        XrResult result = context.Extensions.xrLoadControllerModelMSFT(context.Session.Handle, modelKey, 0, &bufferSize, nullptr);
+        if (result == XR_ERROR_CONTROLLER_MODEL_UNAVAILABLE_MSFT) {
             // The controller model is not ready yet; early return and let the app try again in the next frame
             return nullptr;
         }
+        CHECK_XRRESULT(result, "xrLoadControllerModelMSFT");
+
         auto modelBuffer = std::make_unique<byte[]>(bufferSize);
         CHECK_XRCMD(context.Extensions.xrLoadControllerModelMSFT(
             context.Session.Handle, modelKey, bufferSize, &bufferSize, modelBuffer.get()));
