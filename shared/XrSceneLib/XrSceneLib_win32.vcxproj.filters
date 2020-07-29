@@ -6,7 +6,7 @@
     <ClCompile Include="PbrModelObject.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
-    <ClCompile Include="SceneObject.cpp">
+    <ClCompile Include="Object.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
     <ClCompile Include="TextTexture.cpp">
@@ -43,10 +43,10 @@
     <ClInclude Include="FrameTime.h">
       <Filter>Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="SceneContext.h">
+    <ClInclude Include="Context.h">
       <Filter>Scenes</Filter>
     </ClInclude>
-    <ClInclude Include="SceneObject.h">
+    <ClInclude Include="Object.h">
       <Filter>Objects</Filter>
     </ClInclude>
     <ClInclude Include="TextTexture.h">

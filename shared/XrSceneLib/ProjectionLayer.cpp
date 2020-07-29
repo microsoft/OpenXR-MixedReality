@@ -23,11 +23,11 @@
 #include "ProjectionLayer.h"
 #include "CompositionLayers.h"
 #include "Scene.h"
-#include "SceneContext.h"
+#include "Context.h"
 
 using namespace DirectX;
 
-ProjectionLayer::ProjectionLayer(const xr::SessionContext& sessionContext) {
+engine::ProjectionLayer::ProjectionLayer(const xr::SessionContext& sessionContext) {
     auto primaryViewConfiguraionType = sessionContext.PrimaryViewConfigurationType;
     auto colorSwapchainFormat = sessionContext.SupportedColorSwapchainFormats[0];
     auto depthSwapchainFormat = sessionContext.SupportedDepthSwapchainFormats[0];
@@ -46,9 +46,9 @@ ProjectionLayer::ProjectionLayer(const xr::SessionContext& sessionContext) {
     }
 }
 
-void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
-                                       XrViewConfigurationType viewConfigType,
-                                       const std::vector<XrViewConfigurationView>& viewConfigViews) {
+void engine::ProjectionLayer::PrepareRendering(const Context& context,
+                                               XrViewConfigurationType viewConfigType,
+                                               const std::vector<XrViewConfigurationView>& viewConfigViews) {
     ViewConfigComponent& viewConfigComponent = m_viewConfigComponents.at(viewConfigType);
     ProjectionLayerConfig& layerPendingConfig = viewConfigComponent.PendingConfig;
     ProjectionLayerConfig& layerCurrentConfig = viewConfigComponent.CurrentConfig;
@@ -60,7 +60,7 @@ void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
                                 layerCurrentConfig.ContentProtected != layerPendingConfig.ContentProtected;
 
     if (!shouldResetSwapchain && layerCurrentConfig.ColorSwapchainFormat != layerPendingConfig.ColorSwapchainFormat) {
-        if (!xr::Contains(sceneContext.Session.SupportedColorSwapchainFormats, layerPendingConfig.ColorSwapchainFormat)) {
+        if (!xr::Contains(context.Session.SupportedColorSwapchainFormats, layerPendingConfig.ColorSwapchainFormat)) {
             throw std::runtime_error(
                 fmt::format("Unsupported color swapchain format: {}", layerPendingConfig.ColorSwapchainFormat).c_str());
         }
@@ -68,7 +68,7 @@ void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
     }
 
     if (!shouldResetSwapchain && layerCurrentConfig.DepthSwapchainFormat != layerPendingConfig.DepthSwapchainFormat) {
-        if (!xr::Contains(sceneContext.Session.SupportedDepthSwapchainFormats, layerPendingConfig.DepthSwapchainFormat)) {
+        if (!xr::Contains(context.Session.SupportedDepthSwapchainFormats, layerPendingConfig.DepthSwapchainFormat)) {
             throw std::runtime_error(
                 fmt::format("Unsupported depth swapchain format: {}", layerPendingConfig.DepthSwapchainFormat).c_str());
         }
@@ -129,11 +129,11 @@ void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
     const uint32_t arrayLength = layerCurrentConfig.DoubleWideMode ? 1 : (uint32_t)viewConfigViews.size();
 
     const std::optional<XrViewConfigurationType> viewConfigurationForSwapchain =
-        sceneContext.Extensions.SupportsSecondaryViewConfiguration ? std::optional{viewConfigType} : std::nullopt;
+        context.Extensions.SupportsSecondaryViewConfiguration ? std::optional{viewConfigType} : std::nullopt;
 
     // Create color swapchain with recommended properties.
     viewConfigComponent.ColorSwapchain =
-        sample::dx::CreateSwapchainD3D11(sceneContext.Session.Handle,
+        sample::dx::CreateSwapchainD3D11(context.Session.Handle,
                                          layerCurrentConfig.ColorSwapchainFormat,
                                          swapchainImageWidth * wideScale,
                                          swapchainImageHeight,
@@ -145,7 +145,7 @@ void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
 
     // Create depth swapchain with recommended properties.
     viewConfigComponent.DepthSwapchain =
-        sample::dx::CreateSwapchainD3D11(sceneContext.Session.Handle,
+        sample::dx::CreateSwapchainD3D11(context.Session.Handle,
                                          layerCurrentConfig.DepthSwapchainFormat,
                                          swapchainImageWidth * wideScale,
                                          swapchainImageHeight,
@@ -162,19 +162,19 @@ void ProjectionLayer::PrepareRendering(const SceneContext& sceneContext,
         depthStencilDesc.DepthWriteMask = D3D11_DEPTH_WRITE_MASK_ALL;
         depthStencilDesc.DepthFunc = D3D11_COMPARISON_GREATER;
         m_reversedZDepthNoStencilTest = nullptr;
-        CHECK_HRCMD(sceneContext.Device->CreateDepthStencilState(&depthStencilDesc, m_reversedZDepthNoStencilTest.put()));
+        CHECK_HRCMD(context.Device->CreateDepthStencilState(&depthStencilDesc, m_reversedZDepthNoStencilTest.put()));
     }
 
     viewConfigComponent.ProjectionViews.resize(viewConfigViews.size());
     viewConfigComponent.DepthInfo.resize(viewConfigViews.size());
 }
 
-bool ProjectionLayer::Render(SceneContext& sceneContext,
-                             const FrameTime& frameTime,
-                             XrSpace layerSpace,
-                             const std::vector<XrView>& views,
-                             const std::vector<std::unique_ptr<Scene>>& activeScenes,
-                             XrViewConfigurationType viewConfig) {
+bool engine::ProjectionLayer::Render(Context& context,
+                                     const engine::FrameTime& frameTime,
+                                     XrSpace layerSpace,
+                                     const std::vector<XrView>& views,
+                                     const std::vector<std::unique_ptr<Scene>>& activeScenes,
+                                     XrViewConfigurationType viewConfig) {
 
     ViewConfigComponent& viewConfigComponent = m_viewConfigComponents.at(viewConfig);
     const sample::dx::SwapchainD3D11& colorSwapchain = viewConfigComponent.ColorSwapchain;
@@ -222,7 +222,7 @@ bool ProjectionLayer::Render(SceneContext& sceneContext,
             projectionViews[viewIndex].subImage.imageRect = viewConfigComponent.LayerColorImageRect[viewIndex];
 
             D3D11_VIEWPORT viewport = viewports[viewIndex];
-            if (currentConfig.SubmitDepthInfo && sceneContext.Extensions.SupportsDepthInfo) {
+            if (currentConfig.SubmitDepthInfo && context.Extensions.SupportsDepthInfo) {
                 depthInfo[viewIndex] = {XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR};
                 depthInfo[viewIndex].minDepth = viewport.MinDepth = normalizedViewportMinDepth;
                 depthInfo[viewIndex].maxDepth = viewport.MaxDepth = normalizedViewportMaxDepth;
@@ -240,7 +240,7 @@ bool ProjectionLayer::Render(SceneContext& sceneContext,
             // Render for this view pose.
             {
                 // Set the Viewport.
-                sceneContext.DeviceContext->RSSetViewports(1, &viewport);
+                context.DeviceContext->RSSetViewports(1, &viewport);
 
                 const uint32_t firstArraySliceForColor = projectionViews[viewIndex].subImage.imageArrayIndex;
 
@@ -253,7 +253,7 @@ bool ProjectionLayer::Render(SceneContext& sceneContext,
                     0 /* mipSlice */,
                     firstArraySliceForColor,
                     1 /* arraySize */);
-                CHECK_HRCMD(sceneContext.Device->CreateRenderTargetView(
+                CHECK_HRCMD(context.Device->CreateRenderTargetView(
                     colorSwapchain.Images[colorSwapchainImageIndex].texture, &renderTargetViewDesc, renderTargetView.put()));
 
                 const uint32_t firstArraySliceForDepth = depthImageArrayIndex;
@@ -267,46 +267,46 @@ bool ProjectionLayer::Render(SceneContext& sceneContext,
                     0 /* mipSlice */,
                     firstArraySliceForDepth,
                     1 /* arraySize */);
-                CHECK_HRCMD(sceneContext.Device->CreateDepthStencilView(
+                CHECK_HRCMD(context.Device->CreateDepthStencilView(
                     depthSwapchain.Images[depthSwapchainImageIndex].texture, &depthStencilViewDesc, depthStencilView.put()));
 
                 const bool reversedZ = (currentConfig.NearFar.Near > currentConfig.NearFar.Far);
 
                 // Clear and render to the render target.
                 ID3D11RenderTargetView* const renderTargets[] = {renderTargetView.get()};
-                sceneContext.DeviceContext->OMSetRenderTargets(1, renderTargets, depthStencilView.get());
+                context.DeviceContext->OMSetRenderTargets(1, renderTargets, depthStencilView.get());
 
                 // In double wide mode, the first projection clears the whole RTV and DSV.
                 if ((viewIndex == 0) || !currentConfig.DoubleWideMode) {
-                    sceneContext.DeviceContext->ClearRenderTargetView(renderTargets[0],
+                    context.DeviceContext->ClearRenderTargetView(renderTargets[0],
                                                                       reinterpret_cast<const float*>(&Config().ClearColor));
 
                     const float clearDepthValue = reversedZ ? 0.f : 1.f;
-                    sceneContext.DeviceContext->ClearDepthStencilView(
+                    context.DeviceContext->ClearDepthStencilView(
                         depthStencilView.get(), D3D11_CLEAR_DEPTH | D3D11_CLEAR_STENCIL, clearDepthValue, 0);
                 }
 
                 const DirectX::XMMATRIX projectionMatrix = xr::math::ComposeProjectionMatrix(fov, currentConfig.NearFar);
 
                 if (reversedZ) {
-                    sceneContext.DeviceContext->OMSetDepthStencilState(m_reversedZDepthNoStencilTest.get(), 0);
+                    context.DeviceContext->OMSetDepthStencilState(m_reversedZDepthNoStencilTest.get(), 0);
                 } else {
-                    sceneContext.DeviceContext->OMSetDepthStencilState(nullptr, 0);
+                    context.DeviceContext->OMSetDepthStencilState(nullptr, 0);
                 }
 
                 // Set state for any objects which use PBR rendering.
                 // PBR library expects traditional view transform (world to view).
                 DirectX::XMMATRIX worldToViewMatrix = xr::math::LoadInvertedXrPose(projectionViews[viewIndex].pose);
 
-                sceneContext.PbrResources.SetViewProjection(worldToViewMatrix, projectionMatrix);
-                sceneContext.PbrResources.Bind(sceneContext.DeviceContext.get());
-                sceneContext.PbrResources.SetDepthFuncReversed(reversedZ);
+                context.PbrResources.SetViewProjection(worldToViewMatrix, projectionMatrix);
+                context.PbrResources.Bind(context.DeviceContext.get());
+                context.PbrResources.SetDepthFuncReversed(reversedZ);
 
                 // Render all active scenes.
                 for (const std::unique_ptr<Scene>& scene : activeScenes) {
-                    if (scene->IsActive() && !std::empty(scene->GetSceneObjects())) {
+                    if (scene->IsActive() && !std::empty(scene->GetObjects())) {
                         submitProjectionLayer = true;
-                        scene->Render(frameTime);
+                        scene->Render(frameTime, viewIndex);
                     }
                 }
             }
@@ -319,12 +319,12 @@ bool ProjectionLayer::Render(SceneContext& sceneContext,
     CHECK_XRCMD(xrReleaseSwapchainImage(colorSwapchain.Handle.Get(), &releaseInfo));
     CHECK_XRCMD(xrReleaseSwapchainImage(depthSwapchain.Handle.Get(), &releaseInfo));
 
-    sceneContext.PbrResources.UpdateAnimationTime(frameTime.TotalElapsed);
+    context.PbrResources.UpdateAnimationTime(frameTime.TotalElapsed);
 
     return submitProjectionLayer;
 }
 
-void AppendProjectionLayer(CompositionLayers& layers, const ProjectionLayer* layer, XrViewConfigurationType viewConfig) {
+void engine::AppendProjectionLayer(CompositionLayers& layers, const ProjectionLayer* layer, XrViewConfigurationType viewConfig) {
     XrCompositionLayerProjection& projectionLayer = layers.AddProjectionLayer(layer->Config(viewConfig).LayerFlags);
     projectionLayer.space = layer->LayerSpace(viewConfig);
     projectionLayer.viewCount = (uint32_t)layer->ProjectionViews(viewConfig).size();

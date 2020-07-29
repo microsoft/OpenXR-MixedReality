@@ -18,45 +18,52 @@
 #include <pbr/PbrModel.h>
 #include <pbr/PbrMaterial.h>
 #include "Scene.h"
-#include "SceneContext.h"
+#include "Context.h"
 
-class PbrModelObject : public SceneObject {
-public:
-    PbrModelObject(std::shared_ptr<Pbr::Model> pbrModel = nullptr,
-                   Pbr::ShadingMode shadingMode = Pbr::ShadingMode::Regular,
-                   Pbr::FillMode fillMode = Pbr::FillMode::Solid);
+namespace engine {
 
-    void SetModel(std::shared_ptr<Pbr::Model> model);
-    std::shared_ptr<Pbr::Model> GetModel() const;
+    class PbrModelObject : public Object {
+    public:
+        PbrModelObject(std::shared_ptr<Pbr::Model> pbrModel = nullptr,
+                       Pbr::ShadingMode shadingMode = Pbr::ShadingMode::Regular,
+                       Pbr::FillMode fillMode = Pbr::FillMode::Solid);
 
-    void SetShadingMode(const Pbr::ShadingMode& shadingMode);
-    void SetFillMode(const Pbr::FillMode& fillMode);
-    void SetBaseColorFactor(Pbr::RGBAColor color);
+        void SetModel(std::shared_ptr<Pbr::Model> model);
+        std::shared_ptr<Pbr::Model> GetModel() const;
 
-    void Render(SceneContext& sceneContext) const override;
+        void SetShadingMode(const Pbr::ShadingMode& shadingMode);
+        void SetFillMode(const Pbr::FillMode& fillMode);
+        void SetBaseColorFactor(Pbr::RGBAColor color);
 
-private:
-    std::shared_ptr<Pbr::Model> m_pbrModel;
-    Pbr::ShadingMode m_shadingMode;
-    Pbr::FillMode m_fillMode;
-};
+        void Render(Context& context) const override;
 
-std::shared_ptr<PbrModelObject> CreateCube(
-    const Pbr::Resources& pbrResources, DirectX::XMFLOAT3 sideLengths, Pbr::RGBAColor color, float roughness = 1.0f, float metallic = 0.0f);
+    private:
+        std::shared_ptr<Pbr::Model> m_pbrModel;
+        Pbr::ShadingMode m_shadingMode;
+        Pbr::FillMode m_fillMode;
+    };
 
-std::shared_ptr<PbrModelObject> CreateQuad(const Pbr::Resources& pbrResources,
-                                         DirectX::XMFLOAT2 sideLengths,
-                                         std::shared_ptr<Pbr::Material> material);
+    std::shared_ptr<PbrModelObject> CreateCube(const Pbr::Resources& pbrResources,
+                                               DirectX::XMFLOAT3 sideLengths,
+                                               Pbr::RGBAColor color,
+                                               float roughness = 1.0f,
+                                               float metallic = 0.0f);
 
-std::shared_ptr<PbrModelObject> CreateSphere(const Pbr::Resources& pbrResources,
-                                           float size,
-                                           uint32_t tesselation,
-                                           Pbr::RGBAColor color,
-                                           float roughness = 1.0f,
-                                           float metallic = 0.0f);
+    std::shared_ptr<PbrModelObject> CreateQuad(const Pbr::Resources& pbrResources,
+                                               DirectX::XMFLOAT2 sideLengths,
+                                               std::shared_ptr<Pbr::Material> material);
 
-std::shared_ptr<PbrModelObject> CreateAxis(const Pbr::Resources& pbrResources,
-                                         float axisLength = 1.0f,
-                                         float axisThickness = 0.01f,
-                                         float roughness = 0.85f,
-                                         float metallic = 0.01f);
+    std::shared_ptr<PbrModelObject> CreateSphere(const Pbr::Resources& pbrResources,
+                                                 float size,
+                                                 uint32_t tesselation,
+                                                 Pbr::RGBAColor color,
+                                                 float roughness = 1.0f,
+                                                 float metallic = 0.0f);
+
+    std::shared_ptr<PbrModelObject> CreateAxis(const Pbr::Resources& pbrResources,
+                                               float axisLength = 1.0f,
+                                               float axisThickness = 0.01f,
+                                               float roughness = 0.85f,
+                                               float metallic = 0.01f);
+
+} // namespace engine

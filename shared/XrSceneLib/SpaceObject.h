@@ -15,16 +15,18 @@
 //*********************************************************
 #pragma once
 
-#include "SceneObject.h"
+#include "Object.h"
 
-class SpaceObject : public SceneObject {
-public:
-    SpaceObject(SceneContext& sceneContext, std::unique_ptr<xr::SpaceHandle> space, bool hideWhenPoseInvalid = true);
+namespace engine {
 
-    void Update(const FrameTime& frameTime) override;
+    class SpaceObject : public Object {
+    public:
+        SpaceObject(std::unique_ptr<xr::SpaceHandle> space, bool hideWhenPoseInvalid = true);
 
-private:
-    SceneContext& m_sceneContext;
-    std::unique_ptr<xr::SpaceHandle> m_space;
-    const bool m_hideWhenPoseInvalid;
-};
+        void Update(engine::Context& context, const engine::FrameTime& frameTime) override;
+
+    private:
+        std::unique_ptr<xr::SpaceHandle> m_space;
+        const bool m_hideWhenPoseInvalid;
+    };
+} // namespace engine

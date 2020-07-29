@@ -444,8 +444,8 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <div class="details">
 <span id="author" class="author">Copyright (c) 2017-2020 The Khronos Group Inc.</span><br>
 <span id="revnumber">version 1.0.9,</span>
-<span id="revdate">Mon, 22 Jun 2020 18:45:31 +0000</span>
-<br><span id="revremark">from git branch: master commit: 3ad53cba1e21504eedd74b88a286277bdcb10898</span>
+<span id="revdate">Wed, 22 Jul 2020 06:49:16 +0000</span>
+<br><span id="revremark">from git branch:  commit: 3b9357a606759084d369450d3278824e5f738472</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -29917,7 +29917,7 @@ XrHandTrackerEXT leftHandTracker{};
 XrHandJointLocationEXT jointLocations[XR_HAND_JOINT_COUNT_EXT];
 XrHandJointVelocityEXT jointVelocities[XR_HAND_JOINT_COUNT_EXT];
 
-XrHandJointVelocitiesEXT velocities{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
+XrHandJointVelocitiesEXT velocities{XR_TYPE_HAND_JOINT_VELOCITIES_EXT};
 velocities.jointCount = XR_HAND_JOINT_COUNT_EXT;
 velocities.jointVelocities = jointVelocities;
 
@@ -35266,10 +35266,9 @@ configuration type was hinted when swapchain image was created.</p>
 <h4 id="_enable_secondary_view_configuration"><a class="anchor" href="#_enable_secondary_view_configuration"></a>12.33.4. Enable secondary view configuration</h4>
 <div class="paragraph">
 <p>The application indicates to the runtime which secondary view configurations
-it can support by enabling them during the call to <a href="#xrBeginSession">xrBeginSession</a> by
-attaching the extension structure
-<a href="#XrSecondaryViewConfigurationSessionBeginInfoMSFT">XrSecondaryViewConfigurationSessionBeginInfoMSFT</a> to the
-<a href="#XrSessionBeginInfo">XrSessionBeginInfo</a>::<code>next</code> pointer.</p>
+it can support by chaining an
+<a href="#XrSecondaryViewConfigurationSessionBeginInfoMSFT">XrSecondaryViewConfigurationSessionBeginInfoMSFT</a> structure to the
+<a href="#XrSessionBeginInfo">XrSessionBeginInfo</a>::<code>next</code> pointer when calling <a href="#xrBeginSession">xrBeginSession</a>.</p>
 </div>
 <div class="openblock">
 <div class="content">
@@ -40460,7 +40459,7 @@ the time of their most recent contribution, are listed below.</p>
 <div id="footer">
 <div id="footer-text">
 Version 1.0.9<br>
-Last updated 2020-05-29 13:03:07 -0700
+Last updated 2020-07-20 12:29:21 -0700
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">

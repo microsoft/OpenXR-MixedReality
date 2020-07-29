@@ -19,14 +19,14 @@
 
 using namespace DirectX;
 
-std::shared_ptr<QuadLayerObject> CreateQuadLayerObject(XrSpace space, XrSwapchainSubImage image) {
-    auto result = std::make_shared<QuadLayerObject>();
+std::shared_ptr<engine::QuadLayerObject> engine::CreateQuadLayerObject(XrSpace space, XrSwapchainSubImage image) {
+    auto result = std::make_shared<engine::QuadLayerObject>();
     result->Image = std::move(image);
     result->Space = space;
     return result;
 }
 
-void AppendQuadLayer(CompositionLayers& layers, QuadLayerObject* quad) {
+void engine::AppendQuadLayer(engine::CompositionLayers& layers, engine::QuadLayerObject* quad) {
     XrCompositionLayerQuad& quadLayer = layers.AddQuadLayer();
     quadLayer.type = XR_TYPE_COMPOSITION_LAYER_QUAD;
     quadLayer.subImage = quad->Image;

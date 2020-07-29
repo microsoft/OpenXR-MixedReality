@@ -16,9 +16,9 @@
 #include "pch.h"
 
 #include <XrSceneLib/XrApp.h>
-std::unique_ptr<Scene> TryCreateTitleScene(SceneContext& sceneContext);
-std::unique_ptr<Scene> TryCreateOrbitScene(SceneContext& sceneContext);
-std::unique_ptr<Scene> TryCreateHandTrackingScene(SceneContext& sceneContext);
+std::unique_ptr<engine::Scene> TryCreateTitleScene(engine::Context& context);
+std::unique_ptr<engine::Scene> TryCreateOrbitScene(engine::Context& context);
+std::unique_ptr<engine::Scene> TryCreateHandTrackingScene(engine::Context& context);
 
 #include <Unknwn.h> // Required to interop with IUnknown. Must be included before C++/WinRT headers.
 #include <winrt/Windows.Foundation.h>
@@ -41,8 +41,8 @@ namespace windows {
 } // namespace windows
 
 namespace {
-    std::unique_ptr<XrApp> CreateUwpXrApp(XrHolographicWindowAttachmentMSFT&& holographicWindowAttachment) {
-        XrAppConfiguration appConfig({"SampleSceneUwp", 2});
+    std::unique_ptr<engine::XrApp> CreateUwpXrApp(XrHolographicWindowAttachmentMSFT&& holographicWindowAttachment) {
+        engine::XrAppConfiguration appConfig({"SampleSceneUwp", 2});
         appConfig.HolographicWindowAttachment = std::move(holographicWindowAttachment);
 
         appConfig.RequestedExtensions.push_back(XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME);
@@ -53,9 +53,9 @@ namespace {
         appConfig.RequestedExtensions.push_back(XR_MSFT_HAND_TRACKING_MESH_EXTENSION_NAME);
 
         auto app = CreateXrApp(appConfig);
-        app->AddScene(TryCreateTitleScene(app->SceneContext()));
-        app->AddScene(TryCreateOrbitScene(app->SceneContext()));
-        app->AddScene(TryCreateHandTrackingScene(app->SceneContext()));
+        app->AddScene(TryCreateTitleScene(app->Context()));
+        app->AddScene(TryCreateOrbitScene(app->Context()));
+        app->AddScene(TryCreateHandTrackingScene(app->Context()));
         return app;
     }
 
@@ -101,7 +101,7 @@ namespace {
             holographicWindowAttachment.coreWindow = window.as<::IUnknown>().get();
             holographicWindowAttachment.holographicSpace = holographicSpace.as<::IUnknown>().get();
 
-            std::unique_ptr<XrApp> app = CreateUwpXrApp(std::move(holographicWindowAttachment));
+            std::unique_ptr<engine::XrApp> app = CreateUwpXrApp(std::move(holographicWindowAttachment));
 
             while (!m_windowClosed && app->Step()) {
                 window.Dispatcher().ProcessEvents(windows::CoreProcessEventsOption::ProcessAllIfPresent);

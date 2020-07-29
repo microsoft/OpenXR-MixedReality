@@ -17,6 +17,8 @@
 #include "pch.h"
 #include "ObjectMotion.h"
 
+using engine::Motion;
+
 void Motion::SetGravity(float gravitationalAcceleration) {
     LinearAcceleration = {0, -gravitationalAcceleration, 0};
 }
