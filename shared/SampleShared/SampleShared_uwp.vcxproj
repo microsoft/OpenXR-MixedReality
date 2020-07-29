@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="..\..\packages\OpenXR.Loader.1.0.6.2\build\native\OpenXR.Loader.props" Condition="Exists('..\..\packages\OpenXR.Loader.1.0.6.2\build\native\OpenXR.Loader.props')" />
+  <Import Project="..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.props" Condition="Exists('..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|ARM">
       <Configuration>Debug</Configuration>
@@ -372,6 +372,7 @@
     <Image Include="UWPAssets\storeLogo-sdk.png" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Sample_DiffuseHDR.dds">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -379,18 +380,15 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <None Include="packages.config" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
-    <Import Project="..\..\packages\OpenXR.Loader.1.0.6.2\build\native\OpenXR.Loader.targets" Condition="Exists('..\..\packages\OpenXR.Loader.1.0.6.2\build\native\OpenXR.Loader.targets')" />
+    <Import Project="..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.targets" Condition="Exists('..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('..\..\packages\OpenXR.Loader.1.0.6.2\build\native\OpenXR.Loader.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenXR.Loader.1.0.6.2\build\native\OpenXR.Loader.props'))" />
-    <Error Condition="!Exists('..\..\packages\OpenXR.Loader.1.0.6.2\build\native\OpenXR.Loader.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenXR.Loader.1.0.6.2\build\native\OpenXR.Loader.targets'))" />
+    <Error Condition="!Exists('..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.props'))" />
+    <Error Condition="!Exists('..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.targets'))" />
   </Target>
 </Project>
