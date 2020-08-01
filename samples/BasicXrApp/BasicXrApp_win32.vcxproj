@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\..\packages\OpenXR.Headers.1.0.10\build\native\OpenXR.Headers.props" Condition="Exists('..\..\packages\OpenXR.Headers.1.0.10\build\native\OpenXR.Headers.props')" />
   <Import Project="..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.props" Condition="Exists('..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.props')" />
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -114,6 +115,7 @@
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
     <Import Project="..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.targets" Condition="Exists('..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.targets')" />
+    <Import Project="..\..\packages\OpenXR.Headers.1.0.10\build\native\OpenXR.Headers.targets" Condition="Exists('..\..\packages\OpenXR.Headers.1.0.10\build\native\OpenXR.Headers.targets')" />
   </ImportGroup>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
@@ -121,5 +123,7 @@
     </PropertyGroup>
     <Error Condition="!Exists('..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.props'))" />
     <Error Condition="!Exists('..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenXR.Loader.1.0.10\build\native\OpenXR.Loader.targets'))" />
+    <Error Condition="!Exists('..\..\packages\OpenXR.Headers.1.0.10\build\native\OpenXR.Headers.props')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenXR.Headers.1.0.10\build\native\OpenXR.Headers.props'))" />
+    <Error Condition="!Exists('..\..\packages\OpenXR.Headers.1.0.10\build\native\OpenXR.Headers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenXR.Headers.1.0.10\build\native\OpenXR.Headers.targets'))" />
   </Target>
 </Project>
