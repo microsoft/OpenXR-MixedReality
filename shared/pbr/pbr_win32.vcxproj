@@ -351,15 +351,15 @@
       <FileType>Document</FileType>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>g_%(Filename)</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\%(Filename).h</HeaderFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+      <HeaderFileOutput>$(IntDir)\%(Filename).h</HeaderFileOutput>
+      <ObjectFileOutput />
     </None>
     <None Include="Shaders\PbrShared.hlsl">
       <FileType>Document</FileType>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>g_%(Filename)</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\%(Filename).h</HeaderFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+      <HeaderFileOutput>$(IntDir)\%(Filename).h</HeaderFileOutput>
+      <ObjectFileOutput />
     </None>
     <FxCompile Include="Shaders\PbrPixelShader.hlsl">
       <FileType>Document</FileType>
@@ -374,7 +374,6 @@
     <FxCompile Include="Shaders\PbrVertexShader.hlsl">
       <FileType>Document</FileType>
       <DeploymentContent>false</DeploymentContent>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
       <ShaderType>Vertex</ShaderType>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>g_%(Filename)</VariableName>
@@ -386,8 +385,8 @@
       <FileType>Document</FileType>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>g_%(Filename)</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\%(Filename).h</HeaderFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
+      <HeaderFileOutput>$(IntDir)\%(Filename).h</HeaderFileOutput>
+      <ObjectFileOutput />
     </None>
     <FxCompile Include="Shaders\HighlightPixelShader.hlsl">
       <ShaderType>Pixel</ShaderType>
@@ -401,8 +400,7 @@
       <ShaderModel>5.0</ShaderModel>
       <VariableName>g_%(Filename)</VariableName>
       <HeaderFileOutput>$(IntDir)\%(Filename).h</HeaderFileOutput>
-      <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-      </ObjectFileOutput>
+      <ObjectFileOutput />
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
