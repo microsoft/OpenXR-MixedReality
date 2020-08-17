@@ -22,6 +22,13 @@
 #define FOR_EACH_WIN32_EXTENSION_FUNCTION(_)
 #endif
 
+#ifdef XR_USE_GRAPHICS_API_D3D11
+#define FOR_EACH_D3D11_EXTENSION_FUNCTION(_) \
+    _(xrGetD3D11GraphicsRequirementsKHR)
+#else
+#define FOR_EACH_D3D11_EXTENSION_FUNCTION(_)
+#endif
+
 #ifdef XR_MSFT_CONTROLLER_MODEL_PREVIEW_EXTENSION_NAME
 #define FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_) \
     _(xrGetControllerModelKeyMSFT)               \
@@ -42,9 +49,9 @@
     _(xrCreateHandMeshSpaceMSFT)                    \
     _(xrUpdateHandMeshMSFT)                         \
     _(xrCreateSpatialGraphNodeSpaceMSFT)            \
-    _(xrGetD3D11GraphicsRequirementsKHR)            \
     _(xrGetVisibilityMaskKHR)                       \
     FOR_EACH_WIN32_EXTENSION_FUNCTION(_)            \
+    FOR_EACH_D3D11_EXTENSION_FUNCTION(_)            \
     FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_)
 
 #define GET_INSTANCE_PROC_ADDRESS(name) \
