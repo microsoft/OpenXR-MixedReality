@@ -114,7 +114,7 @@
     <WindowsSDKDesktopARM64Support>true</WindowsSDKDesktopARM64Support>
   </PropertyGroup>
   <PropertyGroup>
-    <IncludePath>..;..\ext;$(IntDir)\CompiledShaders;$(IncludePath);</IncludePath>
+    <IncludePath>..;..\ext;$(IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>

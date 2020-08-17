@@ -159,7 +159,7 @@
     <LinkIncremental>false</LinkIncremental>
   </PropertyGroup>
   <PropertyGroup>
-    <IncludePath>..;..\ext;$(IntDir)\CompiledShaders;$(IncludePath);</IncludePath>
+    <IncludePath>..;..\ext;$(IntDir);$(IncludePath);</IncludePath>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
@@ -375,14 +375,14 @@
       <FileType>Document</FileType>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>g_%(Filename)</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\CompiledShaders\%(Filename).h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\%(Filename).h</HeaderFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     </None>
     <None Include="Shaders\PbrShared.hlsl">
       <FileType>Document</FileType>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>g_%(Filename)</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\CompiledShaders\%(Filename).h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\%(Filename).h</HeaderFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     </None>
     <FxCompile Include="Shaders\PbrPixelShader.hlsl">
@@ -392,7 +392,7 @@
       <VariableName>g_psPbrMain</VariableName>
       <EnableDebuggingInformation>true</EnableDebuggingInformation>
       <VariableName>g_%(Filename)</VariableName>
-      <HeaderFileOutput>$(IntDir)\CompiledShaders\%(Filename).h</HeaderFileOutput>
+      <HeaderFileOutput>$(IntDir)\%(Filename).h</HeaderFileOutput>
       <ObjectFileOutput />
     </FxCompile>
     <FxCompile Include="Shaders\PbrVertexShader.hlsl">
@@ -403,28 +403,28 @@
       <ShaderModel>5.0</ShaderModel>
       <VariableName>g_%(Filename)</VariableName>
       <ObjectFileOutput />
-      <HeaderFileOutput>$(IntDir)\CompiledShaders\%(Filename).h</HeaderFileOutput>
+      <HeaderFileOutput>$(IntDir)\%(Filename).h</HeaderFileOutput>
       <DeploymentContent />
     </FxCompile>
     <None Include="Shaders\HighlightShared.hlsl">
       <FileType>Document</FileType>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>g_%(Filename)</VariableName>
-      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\CompiledShaders\%(Filename).h</HeaderFileOutput>
+      <HeaderFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(IntDir)\%(Filename).h</HeaderFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" />
     </None>
     <FxCompile Include="Shaders\HighlightPixelShader.hlsl">
       <ShaderType>Pixel</ShaderType>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>g_%(Filename)</VariableName>
-      <HeaderFileOutput>$(IntDir)\CompiledShaders\%(Filename).h</HeaderFileOutput>
+      <HeaderFileOutput>$(IntDir)\%(Filename).h</HeaderFileOutput>
       <ObjectFileOutput />
     </FxCompile>
     <FxCompile Include="Shaders\HighlightVertexShader.hlsl">
       <ShaderType>Vertex</ShaderType>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>g_%(Filename)</VariableName>
-      <HeaderFileOutput>$(IntDir)\CompiledShaders\%(Filename).h</HeaderFileOutput>
+      <HeaderFileOutput>$(IntDir)\%(Filename).h</HeaderFileOutput>
       <ObjectFileOutput Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
       </ObjectFileOutput>
     </FxCompile>

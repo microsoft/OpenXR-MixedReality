@@ -2,7 +2,7 @@
 
     <ItemDefinitionGroup>
         <ClCompile>
-            <AdditionalIncludeDirectories>$(OpenXrSdkPath)\include;$(SharedPath);$(SharedPath)\ext;$(IntDir)\CompiledShaders;%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
+            <AdditionalIncludeDirectories>$(OpenXrSdkPath)\include;$(SharedPath);$(SharedPath)\ext;$(IntDir);%(AdditionalIncludeDirectories);</AdditionalIncludeDirectories>
         </ClCompile>
     </ItemDefinitionGroup>
 

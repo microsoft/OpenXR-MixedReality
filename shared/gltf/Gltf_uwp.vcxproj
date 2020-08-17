@@ -92,7 +92,7 @@
   </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IncludePath>..;..\ext;$(IntDir)\CompiledShaders;$(IncludePath);</IncludePath>
+    <IncludePath>..;..\ext;$(IncludePath);</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <LinkIncremental>true</LinkIncremental>
