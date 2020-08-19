@@ -674,23 +674,41 @@ namespace {
             return swapchainImageIndex;
         }
 
-        void UpdateSpinningCube(XrTime predictedDisplayTime) {
-            if (!m_mainCubeIndex) {
+        void InitializeSpinningCube(XrTime predictedDisplayTime) {
+            auto createReferenceSpace = [session = m_session.Get()](XrReferenceSpaceType referenceSpaceType, XrPosef poseInReferenceSpace) {
+                xr::SpaceHandle space;
+                XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
+                createInfo.referenceSpaceType = referenceSpaceType;
+                createInfo.poseInReferenceSpace = poseInReferenceSpace;
+                CHECK_XRCMD(xrCreateReferenceSpace(session, &createInfo, space.Put()));
+                return space;
+            };
+
+            {
                 // Initialize a big cube 1 meter in front of user.
-                Hologram hologram = CreateHologram(xr::math::Pose::Translation({0, 0, -1}), predictedDisplayTime);
+                Hologram hologram{};
                 hologram.Cube.Scale = {0.25f, 0.25f, 0.25f};
+                hologram.Cube.Space = createReferenceSpace(XR_REFERENCE_SPACE_TYPE_LOCAL, xr::math::Pose::Translation({0, 0, -1}));
                 m_holograms.push_back(std::move(hologram));
                 m_mainCubeIndex = (uint32_t)m_holograms.size() - 1;
             }
 
-            if (!m_spinningCubeIndex) {
+            {
                 // Initialize a small cube and remember the time when animation is started.
-                Hologram hologram = CreateHologram(xr::math::Pose::Translation({0, 0, -1}), predictedDisplayTime);
+                Hologram hologram{};
                 hologram.Cube.Scale = {0.1f, 0.1f, 0.1f};
+                hologram.Cube.Space = createReferenceSpace(XR_REFERENCE_SPACE_TYPE_LOCAL, xr::math::Pose::Translation({0, 0, -1}));
                 m_holograms.push_back(std::move(hologram));
                 m_spinningCubeIndex = (uint32_t)m_holograms.size() - 1;
 
                 m_spinningCubeStartTime = predictedDisplayTime;
+            }
+        }
+
+        void UpdateSpinningCube(XrTime predictedDisplayTime) {
+            if (!m_mainCubeIndex || !m_spinningCubeIndex) {
+                // Deferred initialization of spinning cubes so they appear at right place for the first frame.
+                InitializeSpinningCube(predictedDisplayTime);
             }
 
             // Pause spinning cube animation when app loses 3D focus
