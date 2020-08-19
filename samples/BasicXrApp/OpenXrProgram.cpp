@@ -688,7 +688,7 @@ namespace {
                 // Initialize a big cube 1 meter in front of user.
                 Hologram hologram{};
                 hologram.Cube.Scale = {0.25f, 0.25f, 0.25f};
-                hologram.Cube.Space = createReferenceSpace(m_sceneSpaceType, xr::math::Pose::Translation({0, 0, -1}));
+                hologram.Cube.Space = createReferenceSpace(XR_REFERENCE_SPACE_TYPE_LOCAL, xr::math::Pose::Translation({0, 0, -1}));
                 m_holograms.push_back(std::move(hologram));
                 m_mainCubeIndex = (uint32_t)m_holograms.size() - 1;
             }
@@ -697,7 +697,7 @@ namespace {
                 // Initialize a small cube and remember the time when animation is started.
                 Hologram hologram{};
                 hologram.Cube.Scale = {0.1f, 0.1f, 0.1f};
-                hologram.Cube.Space = createReferenceSpace(m_sceneSpaceType, xr::math::Pose::Translation({0, 0, -1}));
+                hologram.Cube.Space = createReferenceSpace(XR_REFERENCE_SPACE_TYPE_LOCAL, xr::math::Pose::Translation({0, 0, -1}));
                 m_holograms.push_back(std::move(hologram));
                 m_spinningCubeIndex = (uint32_t)m_holograms.size() - 1;
 
