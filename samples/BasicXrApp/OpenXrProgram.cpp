@@ -610,7 +610,7 @@ namespace {
             XrFrameBeginInfo frameBeginInfo{XR_TYPE_FRAME_BEGIN_INFO};
             CHECK_XRCMD(xrBeginFrame(m_session.Get(), &frameBeginInfo));
 
-            // xrEndFrame can submit mutiple layers.  This sample submits one.
+            // xrEndFrame can submit multiple layers. This sample submits one.
             std::vector<XrCompositionLayerBaseHeader*> layers;
 
             // The projection layer consists of projection layer views.
