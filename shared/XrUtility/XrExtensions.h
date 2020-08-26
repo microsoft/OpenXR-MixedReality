@@ -16,27 +16,43 @@
 #pragma once
 
 #ifdef XR_USE_PLATFORM_WIN32
-#define FOR_EACH_WIN32_EXTENSION_FUNCTION(_) \
-    _(xrConvertWin32PerformanceCounterToTimeKHR)
+#define FOR_EACH_WIN32_EXTENSION_FUNCTION(_) _(xrConvertWin32PerformanceCounterToTimeKHR)
 #else
 #define FOR_EACH_WIN32_EXTENSION_FUNCTION(_)
 #endif
 
 #ifdef XR_USE_GRAPHICS_API_D3D11
-#define FOR_EACH_D3D11_EXTENSION_FUNCTION(_) \
-    _(xrGetD3D11GraphicsRequirementsKHR)
+#define FOR_EACH_D3D11_EXTENSION_FUNCTION(_) _(xrGetD3D11GraphicsRequirementsKHR)
 #else
 #define FOR_EACH_D3D11_EXTENSION_FUNCTION(_)
 #endif
 
-#ifdef XR_MSFT_CONTROLLER_MODEL_PREVIEW_EXTENSION_NAME
+#ifdef XR_MSFT_controller_model_preview
 #define FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_) \
-    _(xrGetControllerModelKeyMSFT)               \
-    _(xrLoadControllerModelMSFT)                 \
-    _(xrGetControllerModelPropertiesMSFT)        \
+    _(xrGetControllerModelKeyMSFT)                      \
+    _(xrLoadControllerModelMSFT)                        \
+    _(xrGetControllerModelPropertiesMSFT)               \
     _(xrGetControllerModelStateMSFT)
 #else
 #define FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_)
+#endif
+
+#if XR_MSFT_perception_anchor_interop_preview && defined(XR_USE_PLATFORM_WIN32)
+#define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_) \
+    _(xrCreateSpatialAnchorFromPerceptionAnchorMSFT)   \
+    _(xrTryGetPerceptionAnchorFromSpatialAnchorMSFT)
+#else
+#define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)
+#endif
+
+#if XR_MSFT_spatial_anchor_export_preview
+#define FOR_EACH_SPATIAL_ANCHOR_EXPORT_FUNCTION(_)     \
+    _(xrCreateSpatialAnchorNeighborhoodDataStreamMSFT) \
+    _(xrReadSpatialAnchorNeighborhoodDataMSFT)         \
+    _(xrGetSpatialAnchorExportSufficiencyMSFT)         \
+    _(xrDestroySpatialAnchorNeighborhoodDataStreamMSFT)
+#else
+#define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)
 #endif
 
 #define FOR_EACH_EXTENSION_FUNCTION(_)              \
@@ -52,7 +68,9 @@
     _(xrGetVisibilityMaskKHR)                       \
     FOR_EACH_WIN32_EXTENSION_FUNCTION(_)            \
     FOR_EACH_D3D11_EXTENSION_FUNCTION(_)            \
-    FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_)
+    FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_) \
+    FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)  \
+    FOR_EACH_SPATIAL_ANCHOR_EXPORT_FUNCTION(_)
 
 #define GET_INSTANCE_PROC_ADDRESS(name) \
     (void)xrGetInstanceProcAddr(instance, #name, reinterpret_cast<PFN_xrVoidFunction*>(const_cast<PFN_##name*>(&name)));

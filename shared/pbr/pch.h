@@ -10,6 +10,7 @@
 #include <optional>
 #include <string>
 #include <chrono>
+#include <mutex>
 
 #include <DirectXMath.h>
 

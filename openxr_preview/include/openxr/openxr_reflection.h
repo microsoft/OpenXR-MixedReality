@@ -4,19 +4,7 @@
 /*
 ** Copyright (c) 2017-2020 The Khronos Group Inc.
 **
-** SPDX-License-Identifier: Apache-2.0
-**
-** Licensed under the Apache License, Version 2.0 (the "License");
-** you may not use this file except in compliance with the License.
-** You may obtain a copy of the License at
-**
-**     http://www.apache.org/licenses/LICENSE-2.0
-**
-** Unless required by applicable law or agreed to in writing, software
-** distributed under the License is distributed on an "AS IS" BASIS,
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-** See the License for the specific language governing permissions and
-** limitations under the License.
+** SPDX-License-Identifier: Apache-2.0 OR MIT
 */
 
 /*
@@ -102,6 +90,9 @@ XR_ENUM_STR(XrResult);
     _(XR_ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT, -1000053000) \
     _(XR_ERROR_CONTROLLER_MODEL_UNAVAILABLE_MSFT, -1000055000) \
     _(XR_ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT, -1000055001) \
+    _(XR_SPATIAL_ANCHOR_EXPORT_DATA_UNAVAILABLE_MSFT, 1000062000) \
+    _(XR_ERROR_SPATIAL_ANCHOR_EXPORT_FAILED_MSFT, -1000062000) \
+    _(XR_ERROR_SPATIAL_ANCHOR_SUFFICIENCY_QUERY_FAILED_MSFT, -1000062001) \
     _(XR_RESULT_MAX_ENUM, 0x7FFFFFFF)
 
 #define XR_LIST_ENUM_XrStructureType(_) \
@@ -212,12 +203,15 @@ XR_ENUM_STR(XrResult);
     _(XR_TYPE_SECONDARY_VIEW_CONFIGURATION_LAYER_INFO_MSFT, 1000053004) \
     _(XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SWAPCHAIN_CREATE_INFO_MSFT, 1000053005) \
     _(XR_TYPE_VIEW_CONFIGURATION_VIEW_FOV_EPIC, 1000059000) \
+    _(XR_TYPE_HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT, 1000063000) \
+    _(XR_TYPE_INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE, 1000079000) \
     _(XR_TYPE_CONTROLLER_MODEL_KEY_STATE_MSFT, 1000055000) \
     _(XR_TYPE_CONTROLLER_MODEL_NODE_PROPERTIES_MSFT, 1000055001) \
     _(XR_TYPE_CONTROLLER_MODEL_PROPERTIES_MSFT, 1000055002) \
     _(XR_TYPE_CONTROLLER_MODEL_NODE_STATE_MSFT, 1000055003) \
     _(XR_TYPE_CONTROLLER_MODEL_STATE_MSFT, 1000055004) \
-    _(XR_TYPE_HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT, 1000063000) \
+    _(XR_TYPE_SPATIAL_ANCHOR_EXPORT_PURPOSE_INFO_MSFT, 1000062000) \
+    _(XR_TYPE_SPATIAL_ANCHOR_EXPORT_SUFFICIENCY_MSFT, 1000062001) \
     _(XR_STRUCTURE_TYPE_MAX_ENUM, 0x7FFFFFFF)
 
 #define XR_LIST_ENUM_XrFormFactor(_) \
@@ -282,6 +276,7 @@ XR_ENUM_STR(XrResult);
     _(XR_OBJECT_TYPE_DEBUG_UTILS_MESSENGER_EXT, 1000019000) \
     _(XR_OBJECT_TYPE_SPATIAL_ANCHOR_MSFT, 1000039000) \
     _(XR_OBJECT_TYPE_HAND_TRACKER_EXT, 1000051000) \
+    _(XR_OBJECT_TYPE_SPATIAL_ANCHOR_NEIGHBORHOOD_DATA_STREAM_MSFT, 1000062000) \
     _(XR_OBJECT_TYPE_MAX_ENUM, 0x7FFFFFFF)
 
 #define XR_LIST_ENUM_XrAndroidThreadTypeKHR(_) \
@@ -369,6 +364,11 @@ XR_ENUM_STR(XrResult);
     _(XR_HAND_POSE_TYPE_REFERENCE_OPEN_PALM_MSFT, 1) \
     _(XR_HAND_POSE_TYPE_MAX_ENUM_MSFT, 0x7FFFFFFF)
 
+#define XR_LIST_ENUM_XrSpatialAnchorExportPurposeMSFT(_) \
+    _(XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_RELOCALIZATION_MSFT, 0) \
+    _(XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_SHARING_MSFT, 1) \
+    _(XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_MAX_ENUM_MSFT, 0x7FFFFFFF)
+
 #define XR_LIST_BITS_XrInstanceCreateFlags(_)
 
 #define XR_LIST_BITS_XrSessionCreateFlags(_)
@@ -395,6 +395,7 @@ XR_ENUM_STR(XrResult);
     _(XR_SWAPCHAIN_USAGE_TRANSFER_DST_BIT, 0x00000010) \
     _(XR_SWAPCHAIN_USAGE_SAMPLED_BIT, 0x00000020) \
     _(XR_SWAPCHAIN_USAGE_MUTABLE_FORMAT_BIT, 0x00000040) \
+    _(XR_SWAPCHAIN_USAGE_INPUT_ATTACHMENT_BIT_MND, 0x00000080) \
 
 #define XR_LIST_BITS_XrCompositionLayerFlags(_) \
     _(XR_COMPOSITION_LAYER_CORRECT_CHROMATIC_ABERRATION_BIT, 0x00000001) \
@@ -1313,11 +1314,33 @@ XR_ENUM_STR(XrResult);
     _(recommendedFov) \
     _(maxMutableFov) \
 
+#define XR_LIST_STRUCT_XrSpatialAnchorExportPurposeInfoMSFT(_) \
+    _(type) \
+    _(next) \
+    _(exportPurpose) \
+
+#define XR_LIST_STRUCT_XrSpatialAnchorExportSufficiencyMSFT(_) \
+    _(type) \
+    _(next) \
+    _(isMinimallySufficient) \
+    _(recommendedSufficiencyLevel) \
+    _(sufficiencyLevel) \
+
 #define XR_LIST_STRUCT_XrHolographicWindowAttachmentMSFT(_) \
     _(type) \
     _(next) \
     _(holographicSpace) \
     _(coreWindow) \
+
+#define XR_LIST_STRUCT_XrInteractionProfileAnalogThresholdVALVE(_) \
+    _(type) \
+    _(next) \
+    _(action) \
+    _(binding) \
+    _(onThreshold) \
+    _(offThreshold) \
+    _(onHaptic) \
+    _(offHaptic) \
 
 
 
@@ -1412,6 +1435,9 @@ XR_ENUM_STR(XrResult);
     _(XrControllerModelNodeStateMSFT, XR_TYPE_CONTROLLER_MODEL_NODE_STATE_MSFT) \
     _(XrControllerModelStateMSFT, XR_TYPE_CONTROLLER_MODEL_STATE_MSFT) \
     _(XrViewConfigurationViewFovEPIC, XR_TYPE_VIEW_CONFIGURATION_VIEW_FOV_EPIC) \
+    _(XrSpatialAnchorExportPurposeInfoMSFT, XR_TYPE_SPATIAL_ANCHOR_EXPORT_PURPOSE_INFO_MSFT) \
+    _(XrSpatialAnchorExportSufficiencyMSFT, XR_TYPE_SPATIAL_ANCHOR_EXPORT_SUFFICIENCY_MSFT) \
+    _(XrInteractionProfileAnalogThresholdVALVE, XR_TYPE_INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE) \
 
 
 
@@ -1448,6 +1474,42 @@ XR_ENUM_STR(XrResult);
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL(_)
 #endif
 
+#if defined(XR_USE_GRAPHICS_API_OPENGL) && defined(XR_USE_PLATFORM_WAYLAND)
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WAYLAND(_) \
+    _(XrGraphicsBindingOpenGLWaylandKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_WAYLAND_KHR) \
+
+
+#else
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WAYLAND(_)
+#endif
+
+#if defined(XR_USE_GRAPHICS_API_OPENGL) && defined(XR_USE_PLATFORM_WIN32)
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WIN32(_) \
+    _(XrGraphicsBindingOpenGLWin32KHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR) \
+
+
+#else
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WIN32(_)
+#endif
+
+#if defined(XR_USE_GRAPHICS_API_OPENGL) && defined(XR_USE_PLATFORM_XCB)
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XCB(_) \
+    _(XrGraphicsBindingOpenGLXcbKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_XCB_KHR) \
+
+
+#else
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XCB(_)
+#endif
+
+#if defined(XR_USE_GRAPHICS_API_OPENGL) && defined(XR_USE_PLATFORM_XLIB)
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XLIB(_) \
+    _(XrGraphicsBindingOpenGLXlibKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR) \
+
+
+#else
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XLIB(_)
+#endif
+
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES(_) \
     _(XrSwapchainImageOpenGLESKHR, XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR) \
@@ -1456,15 +1518,6 @@ XR_ENUM_STR(XrResult);
 
 #else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES(_)
-#endif
-
-#if defined(XR_USE_GRAPHICS_API_OPENGL_ES) && defined(XR_USE_PLATFORM_ANDROID)
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES_XR_USE_PLATFORM_ANDROID(_) \
-    _(XrGraphicsBindingOpenGLESAndroidKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR) \
-
-
-#else
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES_XR_USE_PLATFORM_ANDROID(_)
 #endif
 
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
@@ -1488,6 +1541,15 @@ XR_ENUM_STR(XrResult);
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ANDROID(_)
 #endif
 
+#if defined(XR_USE_PLATFORM_ANDROID) && defined(XR_USE_GRAPHICS_API_OPENGL_ES)
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ANDROID_XR_USE_GRAPHICS_API_OPENGL_ES(_) \
+    _(XrGraphicsBindingOpenGLESAndroidKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR) \
+
+
+#else
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ANDROID_XR_USE_GRAPHICS_API_OPENGL_ES(_)
+#endif
+
 #if defined(XR_USE_PLATFORM_EGL)
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_EGL(_) \
     _(XrGraphicsBindingEGLMNDX, XR_TYPE_GRAPHICS_BINDING_EGL_MNDX) \
@@ -1495,15 +1557,6 @@ XR_ENUM_STR(XrResult);
 
 #else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_EGL(_)
-#endif
-
-#if defined(XR_USE_PLATFORM_WAYLAND) && defined(XR_USE_GRAPHICS_API_OPENGL)
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WAYLAND_XR_USE_GRAPHICS_API_OPENGL(_) \
-    _(XrGraphicsBindingOpenGLWaylandKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_WAYLAND_KHR) \
-
-
-#else
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WAYLAND_XR_USE_GRAPHICS_API_OPENGL(_)
 #endif
 
 #if defined(XR_USE_PLATFORM_WIN32)
@@ -1515,48 +1568,70 @@ XR_ENUM_STR(XrResult);
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WIN32(_)
 #endif
 
-#if defined(XR_USE_PLATFORM_WIN32) && defined(XR_USE_GRAPHICS_API_OPENGL)
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WIN32_XR_USE_GRAPHICS_API_OPENGL(_) \
-    _(XrGraphicsBindingOpenGLWin32KHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR) \
-
-
-#else
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WIN32_XR_USE_GRAPHICS_API_OPENGL(_)
-#endif
-
-#if defined(XR_USE_PLATFORM_XCB) && defined(XR_USE_GRAPHICS_API_OPENGL)
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_XCB_XR_USE_GRAPHICS_API_OPENGL(_) \
-    _(XrGraphicsBindingOpenGLXcbKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_XCB_KHR) \
-
-
-#else
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_XCB_XR_USE_GRAPHICS_API_OPENGL(_)
-#endif
-
-#if defined(XR_USE_PLATFORM_XLIB) && defined(XR_USE_GRAPHICS_API_OPENGL)
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_XLIB_XR_USE_GRAPHICS_API_OPENGL(_) \
-    _(XrGraphicsBindingOpenGLXlibKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR) \
-
-
-#else
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_XLIB_XR_USE_GRAPHICS_API_OPENGL(_)
-#endif
-
 #define XR_LIST_STRUCTURE_TYPES(_) \
     XR_LIST_STRUCTURE_TYPES_CORE(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_D3D11(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_D3D12(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL(_) \
+    XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WAYLAND(_) \
+    XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WIN32(_) \
+    XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XCB(_) \
+    XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XLIB(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES(_) \
-    XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES_XR_USE_PLATFORM_ANDROID(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_VULKAN(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ANDROID(_) \
+    XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ANDROID_XR_USE_GRAPHICS_API_OPENGL_ES(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_EGL(_) \
-    XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WAYLAND_XR_USE_GRAPHICS_API_OPENGL(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WIN32(_) \
-    XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WIN32_XR_USE_GRAPHICS_API_OPENGL(_) \
-    XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_XCB_XR_USE_GRAPHICS_API_OPENGL(_) \
-    XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_XLIB_XR_USE_GRAPHICS_API_OPENGL(_) \
+
+
+#define XR_LIST_EXTENSIONS(_) \
+    _(XR_KHR_android_thread_settings, 4) \
+    _(XR_KHR_android_surface_swapchain, 5) \
+    _(XR_KHR_composition_layer_cube, 7) \
+    _(XR_KHR_android_create_instance, 9) \
+    _(XR_KHR_composition_layer_depth, 11) \
+    _(XR_KHR_vulkan_swapchain_format_list, 15) \
+    _(XR_EXT_performance_settings, 16) \
+    _(XR_EXT_thermal_query, 17) \
+    _(XR_KHR_composition_layer_cylinder, 18) \
+    _(XR_KHR_composition_layer_equirect, 19) \
+    _(XR_EXT_debug_utils, 20) \
+    _(XR_KHR_opengl_enable, 24) \
+    _(XR_KHR_opengl_es_enable, 25) \
+    _(XR_KHR_vulkan_enable, 26) \
+    _(XR_KHR_D3D11_enable, 28) \
+    _(XR_KHR_D3D12_enable, 29) \
+    _(XR_EXT_eye_gaze_interaction, 31) \
+    _(XR_KHR_visibility_mask, 32) \
+    _(XR_EXTX_overlay, 34) \
+    _(XR_KHR_win32_convert_performance_counter_time, 36) \
+    _(XR_KHR_convert_timespec_time, 37) \
+    _(XR_VARJO_quad_views, 38) \
+    _(XR_MSFT_unbounded_reference_space, 39) \
+    _(XR_MSFT_spatial_anchor, 40) \
+    _(XR_MND_headless, 43) \
+    _(XR_OCULUS_android_session_state_enable, 45) \
+    _(XR_EXT_view_configuration_depth_range, 47) \
+    _(XR_EXT_conformance_automation, 48) \
+    _(XR_MNDX_egl_enable, 49) \
+    _(XR_MSFT_spatial_graph_bridge, 50) \
+    _(XR_MSFT_hand_interaction, 51) \
+    _(XR_EXT_hand_tracking, 52) \
+    _(XR_MSFT_hand_tracking_mesh, 53) \
+    _(XR_MSFT_secondary_view_configuration, 54) \
+    _(XR_MSFT_first_person_observer, 55) \
+    _(XR_MSFT_controller_model_preview, 56) \
+    _(XR_MSFT_perception_anchor_interop_preview, 57) \
+    _(XR_EXT_win32_appcontainer_compatible, 58) \
+    _(XR_EPIC_view_configuration_fov, 60) \
+    _(XR_MSFT_spatial_anchor_export_preview, 63) \
+    _(XR_MSFT_holographic_window_attachment, 64) \
+    _(XR_HUAWEI_controller_interaction, 70) \
+    _(XR_VALVE_analog_threshold, 80) \
+    _(XR_EXT_samsung_odyssey_controller, 95) \
+    _(XR_EXT_hp_mixed_reality_controller, 96) \
+    _(XR_MND_swapchain_usage_input_attachment_bit, 97) \
 
 
 #endif

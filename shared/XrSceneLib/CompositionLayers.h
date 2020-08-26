@@ -21,7 +21,7 @@ namespace engine {
     class CompositionLayers;
 
     void AppendQuadLayer(CompositionLayers& layers, QuadLayerObject* quad);
-    void AppendProjectionLayer(CompositionLayers& layers, const ProjectionLayer* layer, XrViewConfigurationType type);
+    void AppendProjectionLayer(CompositionLayers& layers, ProjectionLayer* layer, XrViewConfigurationType type);
 
     class CompositionLayers {
     public:

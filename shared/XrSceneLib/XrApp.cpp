@@ -74,8 +74,9 @@ namespace {
             XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME,
             XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
             XR_MSFT_FIRST_PERSON_OBSERVER_EXTENSION_NAME,
+            XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME,
 #if UWP
-            XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_PREVIEW_EXTENSION_NAME,
+            XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME,
             XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME,
 #endif
         };
@@ -240,7 +241,8 @@ namespace {
         CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_viewSpace.Put()));
 
         // Create main app space
-        spaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
+        spaceCreateInfo.referenceSpaceType =
+            extensions.SupportsUnboundedSpace ? XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT : XR_REFERENCE_SPACE_TYPE_LOCAL;
         CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_sceneSpace.Put()));
 
         Pbr::Resources pbrResources = sample::InitializePbrResources(device.get());

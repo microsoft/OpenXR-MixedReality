@@ -4,19 +4,7 @@
 /*
 ** Copyright (c) 2017-2020 The Khronos Group Inc.
 **
-** SPDX-License-Identifier: Apache-2.0
-**
-** Licensed under the Apache License, Version 2.0 (the "License");
-** you may not use this file except in compliance with the License.
-** You may obtain a copy of the License at
-**
-**     http://www.apache.org/licenses/LICENSE-2.0
-**
-** Unless required by applicable law or agreed to in writing, software
-** distributed under the License is distributed on an "AS IS" BASIS,
-** WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-** See the License for the specific language governing permissions and
-** limitations under the License.
+** SPDX-License-Identifier: Apache-2.0 OR MIT
 */
 
 /*
@@ -396,9 +384,30 @@ typedef struct XrGraphicsBindingEGLMNDX {
 
 #ifdef XR_USE_PLATFORM_WIN32
 
-#define XR_MSFT_holographic_window_attachment_preview 1
-#define XR_MSFT_holographic_window_attachment_preview_SPEC_VERSION 1
-#define XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_PREVIEW_EXTENSION_NAME "XR_MSFT_holographic_window_attachment_preview"
+#define XR_MSFT_perception_anchor_interop_preview 1
+#define XR_MSFT_perception_anchor_interop_preview_SPEC_VERSION 1
+#define XR_MSFT_PERCEPTION_ANCHOR_INTEROP_PREVIEW_EXTENSION_NAME "XR_MSFT_perception_anchor_interop_preview"
+typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialAnchorFromPerceptionAnchorMSFT)(XrSession session, IUnknown* perceptionAnchor, XrSpatialAnchorMSFT* anchor);
+typedef XrResult (XRAPI_PTR *PFN_xrTryGetPerceptionAnchorFromSpatialAnchorMSFT)(XrSession session, XrSpatialAnchorMSFT anchor, IUnknown** perceptionAnchor);
+
+#ifndef XR_NO_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpatialAnchorFromPerceptionAnchorMSFT(
+    XrSession                                   session,
+    IUnknown*                                   perceptionAnchor,
+    XrSpatialAnchorMSFT*                        anchor);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrTryGetPerceptionAnchorFromSpatialAnchorMSFT(
+    XrSession                                   session,
+    XrSpatialAnchorMSFT                         anchor,
+    IUnknown**                                  perceptionAnchor);
+#endif
+#endif /* XR_USE_PLATFORM_WIN32 */
+
+#ifdef XR_USE_PLATFORM_WIN32
+
+#define XR_MSFT_holographic_window_attachment 1
+#define XR_MSFT_holographic_window_attachment_SPEC_VERSION 1
+#define XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME "XR_MSFT_holographic_window_attachment"
 #ifdef XR_USE_PLATFORM_WIN32
 typedef struct XrHolographicWindowAttachmentMSFT {
     XrStructureType             type;
