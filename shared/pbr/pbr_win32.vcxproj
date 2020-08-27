@@ -347,6 +347,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="packages.config" />
     <None Include="Shaders\Shared.hlsl">
       <FileType>Document</FileType>
       <ShaderModel>5.0</ShaderModel>
@@ -374,6 +375,7 @@
     <FxCompile Include="Shaders\PbrVertexShader.hlsl">
       <FileType>Document</FileType>
       <DeploymentContent>false</DeploymentContent>
+      <ExcludedFromBuild/>
       <ShaderType>Vertex</ShaderType>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>g_%(Filename)</VariableName>

@@ -27,6 +27,12 @@
 #define FOR_EACH_D3D11_EXTENSION_FUNCTION(_)
 #endif
 
+#if XR_KHR_visibility_mask
+#define FOR_EACH_VISIBILITY_MASK_FUNCTION(_) _(xrGetVisibilityMaskKHR)
+#else
+#define FOR_EACH_VISIBILITY_MASK_FUNCTION(_)
+#endif
+
 #ifdef XR_MSFT_controller_model_preview
 #define FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_) \
     _(xrGetControllerModelKeyMSFT)                      \
@@ -55,19 +61,46 @@
 #define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)
 #endif
 
+#if XR_MSFT_spatial_anchor
+#define FOR_EACH_SPATIAL_ANCHOR_FUNCTION(_) \
+    _(xrCreateSpatialAnchorMSFT)            \
+    _(xrCreateSpatialAnchorSpaceMSFT)       \
+    _(xrDestroySpatialAnchorMSFT)
+#else
+#define FOR_EACH_SPATIAL_ANCHOR_FUNCTION(_)
+#endif
+
+#if XR_EXT_hand_tracking
+#define FOR_EACH_HAND_TRACKING_FUNCTION(_) \
+    _(xrCreateHandTrackerEXT)              \
+    _(xrDestroyHandTrackerEXT)             \
+    _(xrLocateHandJointsEXT)
+#else
+#define FOR_EACH_HAND_TRACKING_FUNCTION(_)
+#endif
+
+#if XR_MSFT_hand_tracking_mesh
+#define FOR_EACH_HAND_TRACKING_MESH_FUNCTION(_) \
+    _(xrCreateHandMeshSpaceMSFT)                \
+    _(xrUpdateHandMeshMSFT)
+#else
+#define FOR_EACH_HAND_TRACKING_MESH_FUNCTION(_)
+#endif
+
+#if XR_MSFT_spatial_graph_bridge
+#define FOR_EACH_SPATIAL_GRAPH_BRIDGE_FUNCTION(_) _(xrCreateSpatialGraphNodeSpaceMSFT)
+#else
+#define FOR_EACH_SPATIAL_GRAPH_BRIDGE_FUNCTION(_)
+#endif
+
 #define FOR_EACH_EXTENSION_FUNCTION(_)              \
-    _(xrCreateSpatialAnchorMSFT)                    \
-    _(xrCreateSpatialAnchorSpaceMSFT)               \
-    _(xrDestroySpatialAnchorMSFT)                   \
-    _(xrCreateHandTrackerEXT)                       \
-    _(xrDestroyHandTrackerEXT)                      \
-    _(xrLocateHandJointsEXT)                        \
-    _(xrCreateHandMeshSpaceMSFT)                    \
-    _(xrUpdateHandMeshMSFT)                         \
-    _(xrCreateSpatialGraphNodeSpaceMSFT)            \
-    _(xrGetVisibilityMaskKHR)                       \
     FOR_EACH_WIN32_EXTENSION_FUNCTION(_)            \
     FOR_EACH_D3D11_EXTENSION_FUNCTION(_)            \
+    FOR_EACH_VISIBILITY_MASK_FUNCTION(_)            \
+    FOR_EACH_HAND_TRACKING_FUNCTION(_)              \
+    FOR_EACH_HAND_TRACKING_MESH_FUNCTION(_)         \
+    FOR_EACH_SPATIAL_GRAPH_BRIDGE_FUNCTION(_)       \
+    FOR_EACH_SPATIAL_ANCHOR_FUNCTION(_)             \
     FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_) \
     FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)  \
     FOR_EACH_SPATIAL_ANCHOR_EXPORT_FUNCTION(_)
