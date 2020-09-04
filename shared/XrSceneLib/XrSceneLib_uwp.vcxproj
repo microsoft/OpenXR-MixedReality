@@ -151,13 +151,13 @@
     <ClCompile Include="Scene_Title.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SharedPath)\gltf\Gltf_uwp.vcxproj">
+    <ProjectReference Include="..\gltf\Gltf_uwp.vcxproj">
       <Project>{63475578-0c83-4b2f-9ac5-a4513de2907f}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SharedPath)\pbr\pbr_uwp.vcxproj">
+    <ProjectReference Include="..\pbr\pbr_uwp.vcxproj">
       <Project>{334e53b6-28dc-4f46-a7d9-ccec681f4feb}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SharedPath)\SampleShared\SampleShared_uwp.vcxproj">
+    <ProjectReference Include="..\SampleShared\SampleShared_uwp.vcxproj">
       <Project>{7a3653fd-90a8-4627-9185-f3eefa539f49}</Project>
     </ProjectReference>
   </ItemGroup>

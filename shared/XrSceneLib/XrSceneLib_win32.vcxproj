@@ -144,13 +144,13 @@
     <ClCompile Include="Scene_Title.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="$(SharedPath)\gltf\Gltf_win32.vcxproj">
+    <ProjectReference Include="..\gltf\Gltf_win32.vcxproj">
       <Project>{6a3225a3-0750-47b7-8004-80ca543f8b8b}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SharedPath)\pbr\pbr_win32.vcxproj">
+    <ProjectReference Include="..\pbr\pbr_win32.vcxproj">
       <Project>{2b7688f8-9ae6-4a67-809b-1bac82094f21}</Project>
     </ProjectReference>
-    <ProjectReference Include="$(SharedPath)\SampleShared\SampleShared_win32.vcxproj">
+    <ProjectReference Include="..\SampleShared\SampleShared_win32.vcxproj">
       <Project>{269c12fa-e68d-470b-a734-4701034306bd}</Project>
     </ProjectReference>
   </ItemGroup>
