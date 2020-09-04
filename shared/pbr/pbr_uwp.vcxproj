@@ -371,20 +371,9 @@
     </Image>
   </ItemGroup>
   <ItemGroup>
-    <None Include="Shaders\Shared.hlsl">
-      <FileType>Document</FileType>
-      <ShaderModel>5.0</ShaderModel>
-      <VariableName>g_%(Filename)</VariableName>
-      <HeaderFileOutput>$(IntDir)\%(Filename).h</HeaderFileOutput>
-      <ObjectFileOutput />
-    </None>
-    <None Include="Shaders\PbrShared.hlsl">
-      <FileType>Document</FileType>
-      <ShaderModel>5.0</ShaderModel>
-      <VariableName>g_%(Filename)</VariableName>
-      <HeaderFileOutput>$(IntDir)\%(Filename).h</HeaderFileOutput>
-      <ObjectFileOutput />
-    </None>
+    <None Include="packages.config" />
+    <None Include="Shaders\Shared.hlsl" />
+    <None Include="Shaders\PbrShared.hlsl" />
     <FxCompile Include="Shaders\PbrPixelShader.hlsl">
       <FileType>Document</FileType>
       <ShaderType>Pixel</ShaderType>
@@ -398,6 +387,7 @@
     <FxCompile Include="Shaders\PbrVertexShader.hlsl">
       <FileType>Document</FileType>
       <DeploymentContent>false</DeploymentContent>
+      <ExcludedFromBuild/>
       <ShaderType>Vertex</ShaderType>
       <ShaderModel>5.0</ShaderModel>
       <VariableName>g_%(Filename)</VariableName>
@@ -405,13 +395,7 @@
       <HeaderFileOutput>$(IntDir)\%(Filename).h</HeaderFileOutput>
       <DeploymentContent />
     </FxCompile>
-    <None Include="Shaders\HighlightShared.hlsl">
-      <FileType>Document</FileType>
-      <ShaderModel>5.0</ShaderModel>
-      <VariableName>g_%(Filename)</VariableName>
-      <HeaderFileOutput>$(IntDir)\%(Filename).h</HeaderFileOutput>
-      <ObjectFileOutput />
-    </None>
+    <None Include="Shaders\HighlightShared.hlsl" />
     <FxCompile Include="Shaders\HighlightPixelShader.hlsl">
       <ShaderType>Pixel</ShaderType>
       <ShaderModel>5.0</ShaderModel>
@@ -428,6 +412,5 @@
     </FxCompile>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
-  <ImportGroup Label="ExtensionTargets">
-  </ImportGroup>
+  <ImportGroup Label="ExtensionTargets" />
 </Project>

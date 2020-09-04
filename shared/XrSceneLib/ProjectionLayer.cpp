@@ -324,7 +324,7 @@ bool engine::ProjectionLayer::Render(Context& context,
     return submitProjectionLayer;
 }
 
-void engine::AppendProjectionLayer(CompositionLayers& layers, const ProjectionLayer* layer, XrViewConfigurationType viewConfig) {
+void engine::AppendProjectionLayer(CompositionLayers& layers, ProjectionLayer* layer, XrViewConfigurationType viewConfig) {
     XrCompositionLayerProjection& projectionLayer = layers.AddProjectionLayer(layer->Config(viewConfig).LayerFlags);
     projectionLayer.space = layer->LayerSpace(viewConfig);
     projectionLayer.viewCount = (uint32_t)layer->ProjectionViews(viewConfig).size();

@@ -37,7 +37,7 @@ namespace {
             CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &createInfo, m_viewSpace.Put()));
 
             constexpr float margin = 0.01f;
-            constexpr float titleWidth = 0.5f;
+            constexpr float titleWidth = 0.6f;
             constexpr float titleHeight = titleWidth / 3;
             const auto& material = Pbr::Material::CreateFlat(m_context.PbrResources, Pbr::FromSRGB(Colors::DarkGray));
             m_background = AddObject(engine::CreateQuad(m_context.PbrResources, {titleWidth, titleHeight}, material));
@@ -83,11 +83,11 @@ namespace {
             XrSpaceLocation viewInScene = {XR_TYPE_SPACE_LOCATION};
             CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_context.SceneSpace, frameTime.PredictedDisplayTime, &viewInScene));
             if (Pose::IsPoseValid(viewInScene)) {
-                XrPosef titleInView = {{0, 0, 0, 1}, {0, 0, -1.f}}; // 1 meter in front
+                XrPosef titleInView = {{0, 0, 0, 1}, {0, 0, -2.0f}}; // 2.0 meter in front
                 XrPosef titleInScene = titleInView * viewInScene.pose;
-                titleInScene.position.y = 0.5f; // floating in the top of user's view
                 XrVector3f forward = titleInScene.position - viewInScene.pose.position;
                 m_targetPose = Pose::LookAt(titleInScene.position, forward, {0, 1, 0});
+                m_targetPose.position.y += 0.25f; // floating in the top of user's view
 
                 if (!m_background->IsVisible()) {
                     m_background->SetVisible(true);

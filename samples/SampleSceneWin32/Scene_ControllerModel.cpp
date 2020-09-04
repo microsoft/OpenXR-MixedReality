@@ -34,6 +34,26 @@ namespace {
                                                                   {m_gripPoseAction, "/user/hand/left/input/grip"},
                                                               });
 
+            ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/oculus/touch_controller",
+                                                              {
+                                                                  {m_gripPoseAction, "/user/hand/right/input/grip"},
+                                                                  {m_gripPoseAction, "/user/hand/left/input/grip"},
+                                                              });
+
+            ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/khr/simple_controller",
+                                                              {
+                                                                  {m_gripPoseAction, "/user/hand/right/input/grip"},
+                                                                  {m_gripPoseAction, "/user/hand/left/input/grip"},
+                                                              });
+
+            if (context.Extensions.SupportsHPMixedRealityController) {
+                ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/hp/mixed_reality_controller",
+                                                                  {
+                                                                      {m_gripPoseAction, "/user/hand/right/input/grip"},
+                                                                      {m_gripPoseAction, "/user/hand/left/input/grip"},
+                                                                  });
+            }
+
             XrActionSpaceCreateInfo actionSpaceCreateInfo{XR_TYPE_ACTION_SPACE_CREATE_INFO};
             actionSpaceCreateInfo.poseInActionSpace = xr::math::Pose::Identity();
 

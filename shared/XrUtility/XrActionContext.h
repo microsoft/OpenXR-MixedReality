@@ -16,6 +16,8 @@
 #pragma once
 
 #include <set>
+#include <list>
+#include <unordered_map>
 
 #include "XrString.h"
 #include "XrHandle.h"

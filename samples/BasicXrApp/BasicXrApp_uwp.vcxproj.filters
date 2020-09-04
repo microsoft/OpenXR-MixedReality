@@ -47,7 +47,7 @@
     <None Include="TemporaryKey.pfx">
       <Filter>Assets</Filter>
     </None>
-    <None Include="packages.config" />
     <None Include="$(OpenXRLoaderBinaryRoot)\bin\openxr_loader.dll" />
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

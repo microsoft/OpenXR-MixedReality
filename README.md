@@ -29,7 +29,10 @@ or choose x64 platform when running on a Windows Desktop PC with the HoloLens 2 
 The [openxr_preview](https://github.com/microsoft/OpenXR-MixedReality/tree/master/openxr_preview) folder contains a set of [preview header files](https://github.com/microsoft/OpenXR-MixedReality/tree/master/openxr_preview/include/openxr) containing the following OpenXR extensions that are only available [in preview runtime](http://aka.ms/openxr-preview).
 
 1. [XR_MSFT_controller_model_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_controller_model_preview)
-1. [XR_MSFT_holographic_window_attachment_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_holographic_window_attachment_preview)
+
+1. [XR_MSFT_spatial_anchor_export_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_spatial_anchor_export_preview)
+
+1. [XR_MSFT_perception_anchor_interop_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_perception_anchor_interop_preview)
 
 Please send feedback on preview extensions and samples at [GitHub issues](https://github.com/microsoft/OpenXR-MixedReality/issues).
 We are planning to incorporate your feedback and finalize these extensions as vendor extensions (MSFT) or cross-vendor extensions (EXT)
@@ -65,7 +68,7 @@ demos the usage of [XR_MSFT_controller_model_preview](https://microsoft.github.i
 
 - **Holographic window attachment** <br/> 
 The [SampleSceneUwp/Main.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/samples/SampleSceneUwp/Main.cpp) file demos protocol activation for XR apps, 
-and using [XR_MSFT_holographic_window_attachment_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_holographic_window_attachment_preview) extension
+and using [XR_MSFT_holographic_window_attachment](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_holographic_window_attachment) extension
 to interop with CoreWindow in order to support [keyboard inputs](https://docs.microsoft.com/en-us/windows/mixed-reality/keyboard-mouse-and-controller-input-in-directx#subscribe-for-corewindow-input-events) 
 and [TextEditingContext](https://docs.microsoft.com/en-us/uwp/api/Windows.UI.Text.Core.CoreTextEditContext?view=winrt-19041).
 

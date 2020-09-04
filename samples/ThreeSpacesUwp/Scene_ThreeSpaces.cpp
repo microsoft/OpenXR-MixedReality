@@ -14,6 +14,7 @@
 //
 //*********************************************************
 #include "pch.h"
+#include <XrUtility/XrToString.h>
 #include <XrSceneLib/PbrModelObject.h>
 #include <XrSceneLib/Scene.h>
 
@@ -65,26 +66,35 @@ namespace {
             referenceSpaceCreateInfo.poseInReferenceSpace = Pose::Identity();
             CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &referenceSpaceCreateInfo, m_localSpace.Put()));
 
+            // Create an axis at the origin of the LOCAL space
+            m_holograms.emplace_back(m_localSpace.Get(),
+                                     AddObject(engine::CreateAxis(m_context.PbrResources, 0.1f /*length*/, 0.05f /*thickness*/)));
+
             if (m_context.Extensions.SupportsUnboundedSpace) {
                 referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT;
                 CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &referenceSpaceCreateInfo, m_unboundedSpace.Put()));
+
+                // Create a thin axis at the origin of the UNBOUNDED space
+                m_holograms.emplace_back(m_unboundedSpace.Get(),
+                                         AddObject(engine::CreateAxis(m_context.PbrResources, 0.2f /*length*/, 0.01f /*thickness*/)));
             }
 
             XrActionSpaceCreateInfo spaceCreateInfo{XR_TYPE_ACTION_SPACE_CREATE_INFO};
             spaceCreateInfo.poseInActionSpace = Pose::Identity();
 
             spaceCreateInfo.action = m_aimPoseAction;
-            spaceCreateInfo.poseInActionSpace = Pose::Translation({0, 0, -0.1f});
+            // Place the cursor in front of hand so that the cubes can be created on the surface.
+            spaceCreateInfo.poseInActionSpace = Pose::Translation({0, 0, -0.05f});
             spaceCreateInfo.subactionPath = m_context.RightHand;
             CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &spaceCreateInfo, m_rightAimSpace.Put()));
             spaceCreateInfo.subactionPath = m_context.LeftHand;
             CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &spaceCreateInfo, m_leftAimSpace.Put()));
 
             m_holograms.emplace_back(m_rightAimSpace.Get(),
-                AddObject(engine::CreateSphere(m_context.PbrResources, 0.05f, 20, Pbr::FromSRGB(Colors::Magenta))));
+                                     AddObject(engine::CreateSphere(m_context.PbrResources, 0.05f, 20, Pbr::FromSRGB(Colors::Magenta))));
 
             m_holograms.emplace_back(m_leftAimSpace.Get(),
-                AddObject(engine::CreateSphere(m_context.PbrResources, 0.05f, 20, Pbr::FromSRGB(Colors::Cyan))));
+                                     AddObject(engine::CreateSphere(m_context.PbrResources, 0.05f, 20, Pbr::FromSRGB(Colors::Cyan))));
         }
 
         void OnUpdate(const engine::FrameTime& frameTime) override {
@@ -109,6 +119,12 @@ namespace {
             }
         }
 
+        void OnEvent(const XrEventDataBuffer& eventData [[maybe_unused]]) override {
+            if (auto* referenceSpaceChangePending = xr::event_cast<XrEventDataReferenceSpaceChangePending>(&eventData)) {
+                sample::Trace("Reference space change pending: {}", xr::ToCString(referenceSpaceChangePending->referenceSpaceType));
+            }
+        }
+
     private:
         struct Hologram;
         void UpdateHologramPlacement(Hologram& hologram, XrTime time) {
@@ -126,7 +142,6 @@ namespace {
                 } else {
                     hologram.Object->Pose() = spaceLocation.pose;
                 }
-
             } else {
                 hologram.Object->SetVisible(false);
             }
@@ -144,11 +159,14 @@ namespace {
                 XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
                 CHECK_XRCMD(xrLocateSpace(space, baseSpace, time, &spaceLocation));
 
-                Hologram hologram;
-                hologram.Object = AddObject(engine::CreateCube(m_context.PbrResources, sideLength, color));
-                hologram.Space = baseSpace;
-                hologram.Pose = Pose::Multiply(Pose::Translation(offset), spaceLocation.pose);
-                m_holograms.emplace_back(std::move(hologram));
+                // Only create a new hologram if the space is tracked
+                if (xr::math::Pose::IsPoseTracked(spaceLocation)) {
+                    Hologram hologram;
+                    hologram.Object = AddObject(engine::CreateCube(m_context.PbrResources, sideLength, color));
+                    hologram.Space = baseSpace;
+                    hologram.Pose = Pose::Multiply(Pose::Translation(offset), spaceLocation.pose);
+                    m_holograms.emplace_back(std::move(hologram));
+                }
             };
 
             createHologram(m_localSpace.Get(), Pbr::FromSRGB(Colors::Red), {-cubeSize, 0, 0});
@@ -172,9 +190,7 @@ namespace {
                 createInfo.time = time;
 
                 XrResult result = m_context.Extensions.xrCreateSpatialAnchorMSFT(
-                    m_context.Session.Handle,
-                    &createInfo,
-                    anchorSpace.Anchor.Put(m_context.Extensions.xrDestroySpatialAnchorMSFT));
+                    m_context.Session.Handle, &createInfo, anchorSpace.Anchor.Put(m_context.Extensions.xrDestroySpatialAnchorMSFT));
                 if (result == XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT) {
                     // Cannot create spatial anchor at this place
                     return XR_NULL_HANDLE;
@@ -187,8 +203,8 @@ namespace {
                 XrSpatialAnchorSpaceCreateInfoMSFT createInfo{XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT};
                 createInfo.anchor = anchorSpace.Anchor.Get();
                 createInfo.poseInAnchorSpace = Pose::Identity();
-                CHECK_XRCMD(m_context.Extensions.xrCreateSpatialAnchorSpaceMSFT(
-                    m_context.Session.Handle, &createInfo, anchorSpace.Space.Put()));
+                CHECK_XRCMD(
+                    m_context.Extensions.xrCreateSpatialAnchorSpaceMSFT(m_context.Session.Handle, &createInfo, anchorSpace.Space.Put()));
             }
 
             // Keep a copy of the handles to keep the anchor and space alive.
