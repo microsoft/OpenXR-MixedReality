@@ -20,6 +20,8 @@ or [Windows Mixed Reality device](https://docs.microsoft.com/windows/mixed-reali
 
 - Clone the samples repo: `git clone https://github.com/microsoft/OpenXR-MixedReality.git`
 
+- Run the Generate-BgfxProjects.ps1 powershell script
+
 - Open the `BasicXrApp.sln` or `Samples.sln` file in Visual Studio. F5 to build and run the sample.
 You typically choose ARM64 platform when running on HoloLens 2 devices,
 or choose x64 platform when running on a Windows Desktop PC with the HoloLens 2 Emulator or a Windows Mixed Reality immersive headset (or simulator).

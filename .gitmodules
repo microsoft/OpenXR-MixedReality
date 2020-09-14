@@ -1,0 +1,9 @@
+[submodule "shared/ext/bimg"]
+	path = shared/ext/bimg
+	url = https://github.com/bkaradzic/bimg.git
+[submodule "shared/ext/bx"]
+	path = shared/ext/bx
+	url = https://github.com/bkaradzic/bx.git
+[submodule "shared/ext/bgfx"]
+	path = shared/ext/bgfx
+	url = https://github.com/majaeger/bgfx.git
