@@ -42,6 +42,7 @@
     <None Include="Shaders\Shared.hlsl">
       <Filter>Shaders</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Shaders">
