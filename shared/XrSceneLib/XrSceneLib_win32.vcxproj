@@ -112,6 +112,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BgfxRenderer.h" />
     <ClInclude Include="ControllerObject.h" />
     <ClInclude Include="SpaceObject.h" />
     <ClInclude Include="TextTexture.h" />
@@ -128,6 +129,7 @@
     <ClInclude Include="ObjectMotion.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BgfxRenderer.cpp" />
     <ClCompile Include="ControllerObject.cpp" />
     <ClCompile Include="ObjectMotion.cpp" />
     <ClCompile Include="SpaceObject.cpp" />
