@@ -7,7 +7,6 @@
     </ClCompile>
     <ClCompile Include="FileUtility.cpp" />
     <ClCompile Include="DxUtility.cpp" />
-    <ClCompile Include="bgfx_utils.cpp" />
     <ClCompile Include="BgfxUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -33,7 +32,6 @@
     <ClInclude Include="ScopeGuard.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="Guid.h" />
-    <ClInclude Include="bgfx_utils.h" />
     <ClInclude Include="BgfxUtility.h" />
   </ItemGroup>
   <ItemGroup>

@@ -145,7 +145,7 @@ namespace sample::bg {
     }
 
 std::unique_ptr<Swapchain> __stdcall CreateSwapchain(
-                                                XrSession session,
+                                               XrSession session,
                                                DXGI_FORMAT format,
                                                uint32_t width,
                                                uint32_t height,
@@ -298,8 +298,8 @@ std::unique_ptr<Swapchain> __stdcall CreateSwapchain(
                     DXGI_FORMAT colorSwapchainFormat,
                     void* colorTexture,
                     DXGI_FORMAT depthSwapchainFormat,
-                    void* depthTexture
-                    ,const std::vector<std::unique_ptr<Scene>>& activeScenes,
+                    void* depthTexture,
+                    const std::vector<std::unique_ptr<Scene>>& activeScenes,
                     const FrameTime& frameTime, 
                     bool& submitProjectionLayer
     ) {
