@@ -17,7 +17,6 @@ namespace stl = tinystl;
 #include <bx/math.h>
 #include <bx/readerwriter.h>
 #include <bx/string.h>
-#include "BgfxUtility.h"
 //#include "entry/entry.h"
 #include "meshoptimizer/src/meshoptimizer.h"
 
