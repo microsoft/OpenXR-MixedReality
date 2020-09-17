@@ -113,18 +113,6 @@ namespace sample::bg {
                        bool singleThreadedD3D11Device,
                        const std::vector<D3D_FEATURE_LEVEL>& appSupportedFeatureLevels);
 
-    
-    void RenderView(const XrRect2Di& imageRect,
-                    const float renderTargetClearColor[4],
-                    const std::vector<xr::math::ViewProjection>& viewProjections,
-                    DXGI_FORMAT colorSwapchainFormat,
-                    void* colorTexture,
-                    DXGI_FORMAT depthSwapchainFormat,
-                    void* depthTexture
-                    ,const std::vector<std::unique_ptr<Scene>>& activeScenes,
-                    const FrameTime& frameTime, 
-                    bool& submitProjectionLayer
-    );
     std::unique_ptr<Swapchain> __stdcall CreateSwapchain(
         XrSession session,
         DXGI_FORMAT format,
@@ -136,9 +124,4 @@ namespace sample::bg {
         XrSwapchainUsageFlags usageFlags,
         std::optional<XrViewConfigurationType> viewConfigurationForSwapchain = std::nullopt);
 
-    struct CachedFrameBuffer {
-        std::vector<unique_bgfx_handle<bgfx::FrameBufferHandle>> FrameBuffers;
-        winrt::com_ptr<ID3D12CommandAllocator> CommandAllocator;
-    };
-    
 } // namespace sample::bgfx

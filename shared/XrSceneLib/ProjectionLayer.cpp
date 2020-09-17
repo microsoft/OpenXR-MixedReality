@@ -24,6 +24,7 @@
 #include "CompositionLayers.h"
 #include "Scene.h"
 #include "Context.h"
+#include "BgfxRenderer.h"
 
 using namespace DirectX;
 

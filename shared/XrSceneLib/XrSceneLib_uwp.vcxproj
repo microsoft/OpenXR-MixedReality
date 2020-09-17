@@ -119,6 +119,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="BgfxRenderer.h" />
     <ClInclude Include="ControllerObject.h" />
     <ClInclude Include="PbrModelObject.h" />
     <ClInclude Include="pch.h" />
@@ -135,6 +136,7 @@
     <ClInclude Include="ObjectMotion.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="BgfxRenderer.cpp" />
     <ClCompile Include="ControllerObject.cpp" />
     <ClCompile Include="ObjectMotion.cpp" />
     <ClCompile Include="PbrModelObject.cpp" />

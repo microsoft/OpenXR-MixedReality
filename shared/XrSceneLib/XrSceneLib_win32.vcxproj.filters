@@ -33,6 +33,7 @@
     <ClCompile Include="ObjectMotion.cpp">
       <Filter>Objects</Filter>
     </ClCompile>
+    <ClCompile Include="BgfxRenderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -73,6 +74,7 @@
     <ClInclude Include="ObjectMotion.h">
       <Filter>Objects</Filter>
     </ClInclude>
+    <ClInclude Include="BgfxRenderer.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Objects">
