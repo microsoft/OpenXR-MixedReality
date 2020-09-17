@@ -32,8 +32,8 @@ namespace sample::bg {
                     void* colorTexture,
                     DXGI_FORMAT depthSwapchainFormat,
                     void* depthTexture,
-                    const std::vector<std::unique_ptr<Scene>>& activeScenes,
-                    const FrameTime& frameTime, 
+                    const std::vector<std::unique_ptr<engine::Scene>>& activeScenes,
+                    const engine::FrameTime& frameTime, 
                     bool& submitProjectionLayer
     );
 } // namespace sample::bgfx

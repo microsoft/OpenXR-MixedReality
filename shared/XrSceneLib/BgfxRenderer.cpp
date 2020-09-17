@@ -18,6 +18,8 @@
 #include "pch.h"
 #include "BgfxRenderer.h"
 
+using namespace engine;
+
 namespace sample::bg {
 
     struct CachedFrameBuffer {
@@ -158,7 +160,7 @@ namespace sample::bg {
             //submitProjectionLayer = true;
             {
                 for (const std::unique_ptr<Scene>& scene : activeScenes) {
-                    if (scene->IsActive() && !std::empty(scene->GetSceneObjects())) {
+                    if (scene->IsActive() && !std::empty(scene->GetObjects())) {
                         submitProjectionLayer = true;
                         scene->Render(frameTime, viewId);
                     }
