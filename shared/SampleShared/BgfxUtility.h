@@ -74,6 +74,22 @@ namespace sample::bg {
     //    D3D12,
     //};
 
+    struct Swapchain {
+        virtual ~Swapchain() = default;
+
+        xr::SwapchainHandle Handle;
+        DXGI_FORMAT Format{DXGI_FORMAT_UNKNOWN};
+        uint32_t Width{0};
+        uint32_t Height{0};
+        uint32_t ArraySize{0};
+    };
+    struct SwapchainD3D11 : public sample::bg::Swapchain {
+        std::vector<XrSwapchainImageD3D11KHR> Images;
+    };
+
+    struct SwapchainD3D12 : public sample::bg::Swapchain {
+        // std::vector<XrSwapchainImageD3D12KHR> Images;
+    };
 
     static bx::FileReaderI* s_fileReader = NULL;
     static bx::FileWriterI* s_fileWriter = NULL;
