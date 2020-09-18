@@ -25,7 +25,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPWSTR, _In_ int)
         auto on_exit = MakeScopeGuard([] { ::CoUninitialize(); });
 
         engine::XrAppConfiguration appConfig({"SampleSceneWin32", 1});
-        appConfig.RequestedExtensions.push_back(XR_MSFT_CONTROLLER_MODEL_PREVIEW_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_MSFT_CONTROLLER_MODEL_EXTENSION_NAME);
 
         auto app = engine::CreateXrApp(appConfig);
         app->AddScene(TryCreateTitleScene(app->Context()));

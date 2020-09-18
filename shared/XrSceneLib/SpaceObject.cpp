@@ -16,15 +16,15 @@
 #include "pch.h"
 #include "SpaceObject.h"
 
-engine::SpaceObject::SpaceObject(std::unique_ptr<xr::SpaceHandle> space, bool hideWhenPoseInvalid)
+engine::SpaceObject::SpaceObject(xr::SpaceHandle space, bool hideWhenPoseInvalid)
     : m_space(std::move(space))
     , m_hideWhenPoseInvalid(hideWhenPoseInvalid) {
-    assert(m_space != nullptr);
+    assert(m_space.Get() != XR_NULL_HANDLE);
 }
 
 void engine::SpaceObject::Update(engine::Context& context, const engine::FrameTime& frameTime) {
     XrSpaceLocation location{XR_TYPE_SPACE_LOCATION};
-    xrLocateSpace(m_space->Get(), context.SceneSpace, frameTime.PredictedDisplayTime, &location);
+    CHECK_XRCMD(xrLocateSpace(m_space.Get(), context.SceneSpace, frameTime.PredictedDisplayTime, &location));
     const bool poseValid = xr::math::Pose::IsPoseValid(location);
     if (poseValid) {
         Pose() = location.pose;

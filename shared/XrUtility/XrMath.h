@@ -190,6 +190,36 @@ namespace xr::math {
     DEFINE_CAST(DirectX::XMFLOAT2, XrExtent2Df);
 #undef DEFINE_CAST
 
+#define VECTOR2F_OPERATOR(op)                                                    \
+    constexpr XrVector2f operator op(const XrVector2f& a, const XrVector2f& b) { \
+        return XrVector2f{a.x op b.x, a.y op b.y};                               \
+    }
+    VECTOR2F_OPERATOR(+);
+    VECTOR2F_OPERATOR(-);
+    VECTOR2F_OPERATOR(*);
+    VECTOR2F_OPERATOR(/);
+#undef VECTOR2F_OPERATOR
+
+#define VECTOR2F_OPERATOR(op)                                        \
+    constexpr XrVector2f operator op(const XrVector2f& a, float s) { \
+        return XrVector2f{a.x op s, a.y op s};                       \
+    }
+    VECTOR2F_OPERATOR(+);
+    VECTOR2F_OPERATOR(-);
+    VECTOR2F_OPERATOR(*);
+    VECTOR2F_OPERATOR(/);
+#undef VECTOR2F_OPERATOR
+
+#define VECTOR2F_OPERATOR(op)                                        \
+    constexpr XrVector2f operator op(float s, const XrVector2f& a) { \
+        return XrVector2f{s op a.x, s op a.y};                       \
+    }
+    VECTOR2F_OPERATOR(+);
+    VECTOR2F_OPERATOR(-);
+    VECTOR2F_OPERATOR(*);
+    VECTOR2F_OPERATOR(/);
+#undef VECTOR2F_OPERATOR
+
 #define VECTOR3F_OPERATOR(op)                                                    \
     constexpr XrVector3f operator op(const XrVector3f& a, const XrVector3f& b) { \
         return XrVector3f{a.x op b.x, a.y op b.y, a.z op b.z};                   \

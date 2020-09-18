@@ -28,8 +28,6 @@ or choose x64 platform when running on a Windows Desktop PC with the HoloLens 2 
 
 The [openxr_preview](https://github.com/microsoft/OpenXR-MixedReality/tree/master/openxr_preview) folder contains a set of [preview header files](https://github.com/microsoft/OpenXR-MixedReality/tree/master/openxr_preview/include/openxr) containing the following OpenXR extensions that are only available [in preview runtime](http://aka.ms/openxr-preview).
 
-1. [XR_MSFT_controller_model_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_controller_model_preview)
-
 1. [XR_MSFT_spatial_anchor_export_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_spatial_anchor_export_preview)
 
 1. [XR_MSFT_perception_anchor_interop_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_perception_anchor_interop_preview)
@@ -49,8 +47,8 @@ captures a typical OpenXR app code flow for session initialization, event handli
 
 - **Hand tracking** <br/> 
 The [Scene_HandTracking.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/samples/SampleSceneUwp/Scene_HandTracking.cpp)
-demos the usage of [XR_EXT_hand_tracking](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_EXT_hand_tracking)
-and [XR_MSFT_hand_tracking_mesh](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_hand_tracking_mesh) extensions.
+demos the usage of [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)
+and [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh) extensions.
 
 - **Eye tracking** <br/>
 The [Scene_EyeGazeInteraction.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/samples/EyeGazeInteractionUwp/Scene_EyeGazeInteraction.cpp) file
@@ -58,13 +56,13 @@ demos the usage of [XR_EXT_eye_gaze_interaction](https://www.khronos.org/registr
 
 - **Mixed reality capture support** <br/>
 Search "secondary" in [XrApp.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/shared/XrSceneLib/XrApp.cpp) file 
-to understand the usage of [XR_MSFT_secondary_view_configuration](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_secondary_view_configuration)
-and [XR_MSFT_first_person_observer](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_first_person_observer) extensions.
+to understand the usage of [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)
+and [XR_MSFT_first_person_observer](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_first_person_observer) extensions.
 
 - **Render the motion controller model** <br/>
 The [ControllerObject.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/shared/XrSceneLib/ControllerObject.cpp) and
 [Scene_ControllerModel.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/samples/SampleSceneWin32/Scene_ControllerModel.cpp) files
-demos the usage of [XR_MSFT_controller_model_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_controller_model_preview) extension.
+demos the usage of [XR_MSFT_controller_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_controller_model) extension.
 
 - **Holographic window attachment** <br/> 
 The [SampleSceneUwp/Main.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/samples/SampleSceneUwp/Main.cpp) file demos protocol activation for XR apps, 
@@ -74,9 +72,9 @@ and [TextEditingContext](https://docs.microsoft.com/en-us/uwp/api/Windows.UI.Tex
 
 - **Understand the local, unbounded and anchor spaces**<br/> 
 The [ThreeSpacesUwp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/samples/ThreeSpacesUwp/Scene_ThreeSpaces.cpp) project
-demos the usage and differences of [LOCAL](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#reference-spaces), 
-[UNBOUNDED](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_unbounded_reference_space) reference spaces
-and [spatial anchors](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_spatial_anchor).
+demos the usage and differences of [LOCAL](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#reference-spaces), 
+[UNBOUNDED](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_unbounded_reference_space) reference spaces
+and [spatial anchors](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_anchor).
 
 * The sample code for [XR_MSFT_spatial_graph_bridge](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_graph_bridge) is coming soon ...
 

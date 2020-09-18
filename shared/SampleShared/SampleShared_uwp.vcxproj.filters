@@ -30,7 +30,6 @@
     <ClInclude Include="Trace.h" />
     <ClInclude Include="ScopeGuard.h" />
     <ClInclude Include="ThreadPool.h" />
-    <ClInclude Include="Guid.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DirectXTK">
