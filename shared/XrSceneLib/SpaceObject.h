@@ -21,12 +21,12 @@ namespace engine {
 
     class SpaceObject : public Object {
     public:
-        SpaceObject(std::unique_ptr<xr::SpaceHandle> space, bool hideWhenPoseInvalid = true);
+        SpaceObject(xr::SpaceHandle space, bool hideWhenPoseInvalid = true);
 
         void Update(engine::Context& context, const engine::FrameTime& frameTime) override;
 
     private:
-        std::unique_ptr<xr::SpaceHandle> m_space;
+        xr::SpaceHandle m_space;
         const bool m_hideWhenPoseInvalid;
     };
 } // namespace engine

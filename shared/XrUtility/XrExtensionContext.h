@@ -40,6 +40,7 @@ namespace xr {
         bool SupportsHPMixedRealityController;
         bool SupportsSpatialAnchorExport;
         bool SupportsPerceptionAnchorInterop;
+        bool SupportsColorScaleBias;
 
         std::vector<const char*> EnabledExtensions;
     };
@@ -80,13 +81,14 @@ namespace xr {
         extensions.SupportsHandJointTracking = isExtensionEnabled(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
         extensions.SupportsHandMeshTracking = isExtensionEnabled(XR_MSFT_HAND_TRACKING_MESH_EXTENSION_NAME);
         extensions.SupportsSpatialGraphBridge = isExtensionEnabled(XR_MSFT_SPATIAL_GRAPH_BRIDGE_EXTENSION_NAME);
-        extensions.SupportsControllerModel = isExtensionEnabled(XR_MSFT_CONTROLLER_MODEL_PREVIEW_EXTENSION_NAME);
+        extensions.SupportsControllerModel = isExtensionEnabled(XR_MSFT_CONTROLLER_MODEL_EXTENSION_NAME);
         extensions.SupportsAppContainer = isExtensionEnabled(XR_EXT_WIN32_APPCONTAINER_COMPATIBLE_EXTENSION_NAME);
         extensions.SupportsHolographicWindowAttachment = isExtensionEnabled(XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME);
         extensions.SupportsSamsungOdysseyController = isExtensionEnabled(XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME);
         extensions.SupportsHPMixedRealityController = isExtensionEnabled(XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME);
         extensions.SupportsSpatialAnchorExport = isExtensionEnabled(XR_MSFT_SPATIAL_ANCHOR_EXPORT_PREVIEW_EXTENSION_NAME);
         extensions.SupportsPerceptionAnchorInterop = isExtensionEnabled(XR_MSFT_PERCEPTION_ANCHOR_INTEROP_PREVIEW_EXTENSION_NAME);
+        extensions.SupportsColorScaleBias = isExtensionEnabled(XR_KHR_COMPOSITION_LAYER_COLOR_SCALE_BIAS_EXTENSION_NAME);
 
         return extensions;
     }

@@ -15,6 +15,7 @@
 //*********************************************************
 #pragma once
 
+#include <future>
 #include <pbr/PbrModel.h>
 #include <pbr/PbrMaterial.h>
 #include "Scene.h"
@@ -41,6 +42,26 @@ namespace engine {
         std::shared_ptr<Pbr::Model> m_pbrModel;
         Pbr::ShadingMode m_shadingMode;
         Pbr::FillMode m_fillMode;
+    };
+
+    // Helper for loading GLB files in the background. 
+    struct PbrModelLoadOperation {
+        PbrModelLoadOperation() = default;
+        PbrModelLoadOperation(PbrModelLoadOperation&&) = default;
+        PbrModelLoadOperation& operator=(PbrModelLoadOperation&&) = default;
+
+        static PbrModelLoadOperation LoadGltfBinaryAsync(Pbr::Resources& pbrResources, std::wstring filename);
+
+        // Take the model (can only be done once) once it has been loaded.
+        std::shared_ptr<Pbr::Model> TakeModelWhenReady();
+
+        // Dtor ensures outstanding operation is complete before returning.
+        ~PbrModelLoadOperation();
+
+    private:
+        explicit PbrModelLoadOperation(std::future<std::shared_ptr<Pbr::Model>> loadModelTask);
+
+        std::future<std::shared_ptr<Pbr::Model>> m_loadModelTask;
     };
 
     std::shared_ptr<PbrModelObject> CreateCube(const Pbr::Resources& pbrResources,

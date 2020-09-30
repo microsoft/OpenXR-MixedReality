@@ -15,6 +15,8 @@
 //*********************************************************
 #include "pch.h"
 #include <pbr/PbrModel.h>
+#include <pbr/GltfLoader.h>
+#include <SampleShared/FileUtility.h>
 #include "PbrModelObject.h"
 
 using namespace DirectX;
@@ -59,6 +61,35 @@ void PbrModelObject::SetBaseColorFactor(const Pbr::RGBAColor color) {
         auto& material = GetModel()->GetPrimitive(k).GetMaterial();
         material->Parameters().BaseColorFactor = color;
     }
+}
+
+using engine::PbrModelLoadOperation;
+
+/* static */ PbrModelLoadOperation PbrModelLoadOperation::LoadGltfBinaryAsync(Pbr::Resources& pbrResources, std::wstring filename) {
+    return PbrModelLoadOperation(std::async(std::launch::async, [&pbrResources, filename = std::move(filename)]() {
+        const std::vector<uint8_t> glbData = sample::ReadFileBytes(sample::FindFileInAppFolder(filename.c_str()));
+        return Gltf::FromGltfBinary(pbrResources, glbData);
+    }));
+}
+
+std::shared_ptr<Pbr::Model> PbrModelLoadOperation::TakeModelWhenReady() {
+    if (m_loadModelTask.valid() && m_loadModelTask.wait_for(std::chrono::milliseconds(0)) == std::future_status::ready) {
+        return m_loadModelTask.get();
+    }
+
+    return nullptr;
+}
+
+PbrModelLoadOperation::~PbrModelLoadOperation() {
+    // Caller ensures reference to Pbr::Resources stays alive only until this object is destroyed, so delay destruction if it is
+    // still in use.
+    if (m_loadModelTask.valid()) {
+        m_loadModelTask.get();
+    }
+}
+
+PbrModelLoadOperation::PbrModelLoadOperation(std::future<std::shared_ptr<Pbr::Model>> loadModelTask)
+    : m_loadModelTask(std::move(loadModelTask)) {
 }
 
 std::shared_ptr<PbrModelObject> engine::CreateCube(const Pbr::Resources& pbrResources,

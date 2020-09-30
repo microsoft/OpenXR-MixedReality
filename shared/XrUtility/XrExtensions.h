@@ -33,7 +33,7 @@
 #define FOR_EACH_VISIBILITY_MASK_FUNCTION(_)
 #endif
 
-#ifdef XR_MSFT_controller_model_preview
+#ifdef XR_MSFT_controller_model
 #define FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_) \
     _(xrGetControllerModelKeyMSFT)                      \
     _(xrLoadControllerModelMSFT)                        \

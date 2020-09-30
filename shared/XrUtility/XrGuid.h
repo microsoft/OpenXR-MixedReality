@@ -44,7 +44,7 @@ namespace xr {
     };
 
     template <typename TGuid>
-    XrGuid ToXrGuid(TGuid& guid) {
+    XrGuid ToXrGuid(const TGuid& guid) {
         XrGuid dest;
         static_assert(sizeof(guid) == sizeof(dest), "GUID sizes must be equal");
 #ifdef _MSC_VER
