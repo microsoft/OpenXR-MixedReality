@@ -40,6 +40,7 @@ namespace xr {
         bool SupportsHPMixedRealityController;
         bool SupportsSpatialAnchorExport;
         bool SupportsPerceptionAnchorInterop;
+        bool SupportsColorScaleBias;
 
         std::vector<const char*> EnabledExtensions;
     };
