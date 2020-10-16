@@ -25,6 +25,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         auto on_exit = MakeScopeGuard([] { ::CoUninitialize(); });
 
         engine::XrAppConfiguration appConfig({"SceneUnderstandingUwp", 1});
+        appConfig.RequestedExtensions.push_back(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_MSFT_SCENE_UNDERSTANDING_PREVIEW_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_MSFT_SCENE_UNDERSTANDING_SERIALIZATION_PREVIEW_EXTENSION_NAME);
 
