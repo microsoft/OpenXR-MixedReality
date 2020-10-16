@@ -61,8 +61,7 @@ namespace {
             };
 
             m_title.Text =
-                fmt::format(L"{}, v{}", xr::utf8_to_wide(m_context.Instance.AppInfo.Name), m_context.Instance.AppInfo.Version)
-                    .c_str();
+                fmt::format(L"{}, v{}", xr::utf8_to_wide(m_context.Instance.AppInfo.Name), m_context.Instance.AppInfo.Version).c_str();
             textInfo.FontSize = 16.0f;
             placeTextBlock(m_title, margin, titleHeight / 2 - margin * 2);
 
@@ -80,13 +79,13 @@ namespace {
         }
 
         void OnUpdate(const engine::FrameTime& frameTime) override {
-            XrSpaceLocation viewInScene = {XR_TYPE_SPACE_LOCATION};
-            CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_context.SceneSpace, frameTime.PredictedDisplayTime, &viewInScene));
-            if (Pose::IsPoseValid(viewInScene)) {
+            XrSpaceLocation viewInApp = {XR_TYPE_SPACE_LOCATION};
+            CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_context.AppSpace, frameTime.PredictedDisplayTime, &viewInApp));
+            if (Pose::IsPoseValid(viewInApp)) {
                 XrPosef titleInView = {{0, 0, 0, 1}, {0, 0, -2.0f}}; // 2.0 meter in front
-                XrPosef titleInScene = titleInView * viewInScene.pose;
-                XrVector3f forward = titleInScene.position - viewInScene.pose.position;
-                m_targetPose = Pose::LookAt(titleInScene.position, forward, {0, 1, 0});
+                XrPosef titleInApp = titleInView * viewInApp.pose;
+                XrVector3f forward = titleInApp.position - viewInApp.pose.position;
+                m_targetPose = Pose::LookAt(titleInApp.position, forward, {0, 1, 0});
                 m_targetPose.position.y += 0.25f; // floating in the top of user's view
 
                 if (!m_background->IsVisible()) {

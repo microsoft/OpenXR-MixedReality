@@ -17,6 +17,7 @@
 
 #include "XrHandle.h"
 #include "XrStruct.h"
+#include "XrString.h"
 
 namespace xr {
     struct InstanceContext {
@@ -24,6 +25,8 @@ namespace xr {
         const NameVersion AppInfo;
         const NameVersion EngineInfo;
         const XrInstanceProperties Properties{XR_TYPE_INSTANCE_PROPERTIES};
+        const XrPath LeftHandPath;
+        const XrPath RightHandPath;
 
     public:
         InstanceContext(xr::InstanceHandle instance, NameVersion appInfo, NameVersion engineInfo, XrInstanceProperties instanceProperties)
@@ -31,7 +34,9 @@ namespace xr {
             , AppInfo(std::move(appInfo))
             , EngineInfo(std::move(engineInfo))
             , Properties(std::move(instanceProperties))
-            , m_instance(std::move(instance)) {
+            , m_instance(std::move(instance))
+            , LeftHandPath(xr::StringToPath(Handle, "/user/hand/left"))
+            , RightHandPath(xr::StringToPath(Handle, "/user/hand/right")) {
         }
 
     private:

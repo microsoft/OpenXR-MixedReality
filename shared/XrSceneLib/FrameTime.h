@@ -32,12 +32,14 @@ namespace engine {
         XrTime PredictedDisplayTime = {};
         XrDuration PredictedDisplayPeriod = {};
         bool ShouldRender = {};
+        bool IsSessionFocused = {};
 
-        void Update(const XrFrameState& frameState) {
+        void Update(const XrFrameState& frameState, XrSessionState sessionState) {
             FrameIndex++;
             PredictedDisplayTime = frameState.predictedDisplayTime;
             PredictedDisplayPeriod = frameState.predictedDisplayPeriod;
             ShouldRender = frameState.shouldRender;
+            IsSessionFocused = sessionState == XR_SESSION_STATE_FOCUSED;
 
             const auto now = FrameTime::clock::now();
             Elapsed = now - Now;

@@ -11,5 +11,13 @@
 
     <SharedPath>$(MSBuildThisFileDirectory)shared</SharedPath>
     <OpenXrSdkPath>$(MSBuildThisFileDirectory)openxr_preview</OpenXrSdkPath>
+
+    <ItemDefinitionGroup>
+      <ClCompile>
+        <TreatWarningAsError>true</TreatWarningAsError>
+        <ConformanceMode>true</ConformanceMode>
+      </ClCompile>
+    </ItemDefinitionGroup>
+
   </PropertyGroup>
 </Project>

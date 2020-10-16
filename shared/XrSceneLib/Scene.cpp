@@ -64,6 +64,7 @@ void engine::Scene::Update(const engine::FrameTime& frameTime) {
     std::vector uninitializedObjects = std::move(m_uninitializedObjects);
     std::vector uninitializedQuadLayerObjects = std::move(m_uninitializedQuadLayerObjects);
     lk.unlock();
+
     AddPendingObjects(&m_objects, std::move(uninitializedObjects));
     AddPendingObjects(&m_quadLayerObjects, std::move(uninitializedQuadLayerObjects));
 
@@ -76,9 +77,11 @@ void engine::Scene::Update(const engine::FrameTime& frameTime) {
     OnUpdate(frameTime);
 }
 
+void engine::Scene::BeforeRender(const FrameTime& frameTime) {
+    OnBeforeRender(frameTime);
+}
+
 void engine::Scene::Render(const FrameTime& frameTime, uint32_t viewIndex) {
     RenderObjects(m_objects, m_context, viewIndex);
     RenderObjects(m_quadLayerObjects, m_context, viewIndex);
-
-    OnRender(frameTime);
 }

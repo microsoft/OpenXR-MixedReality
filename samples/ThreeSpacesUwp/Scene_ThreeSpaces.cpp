@@ -85,9 +85,9 @@ namespace {
             spaceCreateInfo.action = m_aimPoseAction;
             // Place the cursor in front of hand so that the cubes can be created on the surface.
             spaceCreateInfo.poseInActionSpace = Pose::Translation({0, 0, -0.05f});
-            spaceCreateInfo.subactionPath = m_context.RightHand;
+            spaceCreateInfo.subactionPath = m_context.Instance.RightHandPath;
             CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &spaceCreateInfo, m_rightAimSpace.Put()));
-            spaceCreateInfo.subactionPath = m_context.LeftHand;
+            spaceCreateInfo.subactionPath = m_context.Instance.LeftHandPath;
             CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &spaceCreateInfo, m_leftAimSpace.Put()));
 
             m_holograms.emplace_back(m_rightAimSpace.Get(),
@@ -102,13 +102,13 @@ namespace {
             XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
             getInfo.action = m_selectAction;
 
-            getInfo.subactionPath = m_context.RightHand;
+            getInfo.subactionPath = m_context.Instance.RightHandPath;
             CHECK_XRCMD(xrGetActionStateBoolean(m_context.Session.Handle, &getInfo, &selectState));
             if (selectState.isActive && selectState.changedSinceLastSync && selectState.currentState) {
                 PlaceThreeSpaces(m_rightAimSpace.Get(), selectState.lastChangeTime);
             }
 
-            getInfo.subactionPath = m_context.LeftHand;
+            getInfo.subactionPath = m_context.Instance.LeftHandPath;
             CHECK_XRCMD(xrGetActionStateBoolean(m_context.Session.Handle, &getInfo, &selectState));
             if (selectState.isActive && selectState.changedSinceLastSync && selectState.currentState) {
                 PlaceThreeSpaces(m_leftAimSpace.Get(), selectState.lastChangeTime);
@@ -133,7 +133,7 @@ namespace {
             }
 
             XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
-            CHECK_XRCMD(xrLocateSpace(hologram.Space, m_context.SceneSpace, time, &spaceLocation));
+            CHECK_XRCMD(xrLocateSpace(hologram.Space, m_context.AppSpace, time, &spaceLocation));
 
             if (Pose::IsPoseValid(spaceLocation)) {
                 hologram.Object->SetVisible(true);
@@ -142,6 +142,8 @@ namespace {
                 } else {
                     hologram.Object->Pose() = spaceLocation.pose;
                 }
+
+                hologram.Object->SetFillMode(Pose::IsPoseTracked(spaceLocation) ? Pbr::FillMode::Solid : Pbr::FillMode::Wireframe);
             } else {
                 hologram.Object->SetVisible(false);
             }
@@ -181,11 +183,11 @@ namespace {
 
             AnchorSpace anchorSpace;
             XrSpaceLocation spaceLocation{XR_TYPE_SPACE_LOCATION};
-            CHECK_XRCMD(xrLocateSpace(space, m_context.SceneSpace, time, &spaceLocation));
+            CHECK_XRCMD(xrLocateSpace(space, m_context.AppSpace, time, &spaceLocation));
 
             if (Pose::IsPoseValid(spaceLocation)) {
                 XrSpatialAnchorCreateInfoMSFT createInfo{XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT};
-                createInfo.space = m_context.SceneSpace;
+                createInfo.space = m_context.AppSpace;
                 createInfo.pose = spaceLocation.pose;
                 createInfo.time = time;
 
@@ -223,13 +225,13 @@ namespace {
             Hologram(Hologram&) = delete;
             Hologram(Hologram&&) = default;
 
-            Hologram(XrSpace space, std::shared_ptr<engine::Object> object, std::optional<XrPosef> pose = {})
+            Hologram(XrSpace space, std::shared_ptr<engine::PbrModelObject> object, std::optional<XrPosef> pose = {})
                 : Object(std::move(object))
                 , Space(space)
                 , Pose(pose) {
             }
 
-            std::shared_ptr<engine::Object> Object;
+            std::shared_ptr<engine::PbrModelObject> Object;
             XrSpace Space = XR_NULL_HANDLE;
             std::optional<XrPosef> Pose = {};
         };

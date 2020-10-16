@@ -22,8 +22,8 @@ namespace {
     struct ControllerModelScene : public engine::Scene {
         ControllerModelScene(engine::Context& context)
             : Scene(context)
-            , m_leftController(context.LeftHand)
-            , m_rightController(context.RightHand) {
+            , m_leftController(context.Instance.LeftHandPath)
+            , m_rightController(context.Instance.RightHandPath) {
             xr::ActionSet& actionSet = ActionContext().CreateActionSet("controller_model_action_set", "Controller Model Action Set");
 
             const std::vector<std::string> subactionPathBothHands = {"/user/hand/right", "/user/hand/left"};
@@ -71,7 +71,7 @@ namespace {
             for (ControllerData& controller : {std::ref(m_leftController), std::ref(m_rightController)}) {
                 // Update the grip pose and place the controller model to it.
                 XrSpaceLocation location{XR_TYPE_SPACE_LOCATION};
-                CHECK_XRCMD(xrLocateSpace(controller.GripSpace.Get(), m_context.SceneSpace, frameTime.PredictedDisplayTime, &location));
+                CHECK_XRCMD(xrLocateSpace(controller.GripSpace.Get(), m_context.AppSpace, frameTime.PredictedDisplayTime, &location));
                 if (xr::math::Pose::IsPoseValid(location)) {
                     controller.Object->SetVisible(true);
                     controller.Object->Pose() = location.pose;

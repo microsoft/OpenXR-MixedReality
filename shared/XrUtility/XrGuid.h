@@ -30,6 +30,12 @@ namespace xr {
 #endif
     }
 
+    template <typename GUID1, typename GUID2>
+    const GUID1& CastGuid(const GUID2& src) {
+        static_assert(sizeof(GUID1) == sizeof(GUID2), "GUID sizes must be equal");
+        return *reinterpret_cast<const GUID1*>(&src);
+    }
+
     struct XrGuid {
         const uint8_t* Data() const {
             return m_data.data();
@@ -42,18 +48,6 @@ namespace xr {
     private:
         std::array<uint8_t, 16> m_data{};
     };
-
-    template <typename TGuid>
-    XrGuid ToXrGuid(const TGuid& guid) {
-        XrGuid dest;
-        static_assert(sizeof(guid) == sizeof(dest), "GUID sizes must be equal");
-#ifdef _MSC_VER
-        memcpy_s(&dest, sizeof(dest), &guid, sizeof(guid));
-#else
-        memcpy(&dest, &guid, sizeof(dest));
-#endif
-        return dest;
-    }
 
 } // namespace xr
 

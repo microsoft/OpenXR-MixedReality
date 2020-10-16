@@ -375,26 +375,31 @@ namespace xr::math {
             return c;
         }
 
-        constexpr bool IsPoseValid(const XrSpaceLocation& spaceLocation) {
+        constexpr bool IsPoseValid(XrSpaceLocationFlags locationFlags) {
             constexpr XrSpaceLocationFlags PoseValidFlags = XR_SPACE_LOCATION_POSITION_VALID_BIT | XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
-            return (spaceLocation.locationFlags & PoseValidFlags) == PoseValidFlags;
+            return (locationFlags & PoseValidFlags) == PoseValidFlags;
+        }
+
+        constexpr bool IsPoseTracked(XrSpaceLocationFlags locationFlags) {
+            constexpr XrSpaceLocationFlags PoseTrackedFlags =
+                XR_SPACE_LOCATION_POSITION_TRACKED_BIT | XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT;
+            return (locationFlags & PoseTrackedFlags) == PoseTrackedFlags;
+        }
+
+        constexpr bool IsPoseValid(const XrSpaceLocation& spaceLocation) {
+            return IsPoseValid(spaceLocation.locationFlags);
         }
 
         constexpr bool IsPoseTracked(const XrSpaceLocation& spaceLocation) {
-            constexpr XrSpaceLocationFlags PoseTrackedFlags =
-                XR_SPACE_LOCATION_POSITION_TRACKED_BIT | XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT;
-            return (spaceLocation.locationFlags & PoseTrackedFlags) == PoseTrackedFlags;
+            return IsPoseTracked(spaceLocation.locationFlags);
         }
 
         constexpr bool IsPoseValid(const XrHandJointLocationEXT& jointLocation) {
-            constexpr XrSpaceLocationFlags PoseValidFlags = XR_SPACE_LOCATION_POSITION_VALID_BIT | XR_SPACE_LOCATION_ORIENTATION_VALID_BIT;
-            return (jointLocation.locationFlags & PoseValidFlags) == PoseValidFlags;
+            return IsPoseValid(jointLocation.locationFlags);
         }
 
         constexpr bool IsPoseTracked(const XrHandJointLocationEXT& jointLocation) {
-            constexpr XrSpaceLocationFlags PoseTrackedFlags =
-                XR_SPACE_LOCATION_POSITION_TRACKED_BIT | XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT;
-            return (jointLocation.locationFlags & PoseTrackedFlags) == PoseTrackedFlags;
+            return IsPoseTracked(jointLocation.locationFlags);
         }
 
         constexpr bool IsPoseValid(const XrViewState& viewState) {

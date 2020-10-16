@@ -34,6 +34,7 @@ namespace engine {
         Scene(const Scene&) = delete;
 
         void Update(const FrameTime& frameTime);
+        void BeforeRender(const FrameTime& frameTime);
         void Render(const FrameTime& frameTime, uint32_t viewIndex);
 
         // Active is true when the scene participates update and render loop.
@@ -96,7 +97,7 @@ namespace engine {
 
         virtual void OnUpdate(const engine::FrameTime& frameTime [[maybe_unused]]) {
         }
-        virtual void OnRender(const engine::FrameTime& frameTime [[maybe_unused]]) const {
+        virtual void OnBeforeRender(const engine::FrameTime& frameTime [[maybe_unused]]) const {
         }
         virtual void OnEvent(const XrEventDataBuffer& eventData [[maybe_unused]]) {
         }

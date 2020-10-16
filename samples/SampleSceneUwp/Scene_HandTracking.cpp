@@ -58,9 +58,7 @@ namespace {
                 createInfo.hand = hand;
                 createInfo.handJointSet = XR_HAND_JOINT_SET_DEFAULT_EXT;
                 CHECK_XRCMD(m_context.Extensions.xrCreateHandTrackerEXT(
-                    m_context.Session.Handle,
-                    &createInfo,
-                    handData.TrackerHandle.Put(m_context.Extensions.xrDestroyHandTrackerEXT)));
+                    m_context.Session.Handle, &createInfo, handData.TrackerHandle.Put(m_context.Extensions.xrDestroyHandTrackerEXT)));
 
                 createJointObjects(handData);
 
@@ -106,24 +104,23 @@ namespace {
         void OnUpdate(const engine::FrameTime& frameTime) override {
             for (HandData& handData : {std::ref(m_leftHandData), std::ref(m_rightHandData)}) {
                 XrHandJointsLocateInfoEXT locateInfo{XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT};
-                locateInfo.baseSpace = m_context.SceneSpace;
+                locateInfo.baseSpace = m_context.AppSpace;
                 locateInfo.time = frameTime.PredictedDisplayTime;
 
                 XrHandJointLocationsEXT handJointLocations{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
                 handJointLocations.jointCount = (uint32_t)handData.JointLocations.size();
                 handJointLocations.jointLocations = handData.JointLocations.data();
-                CHECK_XRCMD(
-                    m_context.Extensions.xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &handJointLocations));
+                CHECK_XRCMD(m_context.Extensions.xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &handJointLocations));
 
                 bool jointsVisible = m_mode == HandDisplayMode::Joints;
                 bool meshVisible = m_mode == HandDisplayMode::Mesh;
 
                 if (jointsVisible) {
-                    jointsVisible = UpdateJoints(handData, m_context.SceneSpace, frameTime.PredictedDisplayTime);
+                    jointsVisible = UpdateJoints(handData, m_context.AppSpace, frameTime.PredictedDisplayTime);
                 }
 
                 if (meshVisible) {
-                    meshVisible = UpdateMesh(handData, m_context.SceneSpace, frameTime.PredictedDisplayTime);
+                    meshVisible = UpdateMesh(handData, m_context.AppSpace, frameTime.PredictedDisplayTime);
                 }
 
                 handData.JointModel->SetVisible(jointsVisible);
@@ -164,7 +161,7 @@ namespace {
             bool jointsVisible = false;
 
             XrHandJointsLocateInfoEXT locateInfo{XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT};
-            locateInfo.baseSpace = m_context.SceneSpace;
+            locateInfo.baseSpace = m_context.AppSpace;
             locateInfo.time = time;
 
             XrHandJointLocationsEXT locations{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
