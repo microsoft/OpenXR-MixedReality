@@ -93,6 +93,32 @@
 #define FOR_EACH_SPATIAL_GRAPH_BRIDGE_FUNCTION(_)
 #endif
 
+#if XR_MSFT_scene_understanding_preview
+#define FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_) \
+    _(xrCreateSceneObserverMSFT)                 \
+    _(xrDestroySceneObserverMSFT)                \
+    _(xrCreateSceneMSFT)                         \
+    _(xrDestroySceneMSFT)                        \
+    _(xrComputeNewSceneMSFT)                     \
+    _(xrGetSceneComputeStateMSFT)                \
+    _(xrLocateSceneObjectsMSFT)                  \
+    _(xrGetSceneObjectsMSFT)                     \
+    _(xrGetSceneObjectPropertiesMSFT)            \
+    _(xrGetSceneMeshMSFT)                        \
+    _(xrGetScenePlanePropertiesMSFT)
+#else
+#define FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_)
+#endif
+
+#if XR_MSFT_scene_understanding_serialization_preview
+#define FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_) \
+    _(xrDeserializeSceneMSFT)                                  \
+    _(xrGetSceneSerializedDataMSFT)
+
+#else
+#define FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_)
+#endif
+
 #define FOR_EACH_EXTENSION_FUNCTION(_)              \
     FOR_EACH_WIN32_EXTENSION_FUNCTION(_)            \
     FOR_EACH_D3D11_EXTENSION_FUNCTION(_)            \
@@ -103,7 +129,10 @@
     FOR_EACH_SPATIAL_ANCHOR_FUNCTION(_)             \
     FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_) \
     FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)  \
-    FOR_EACH_SPATIAL_ANCHOR_EXPORT_FUNCTION(_)
+    FOR_EACH_SPATIAL_ANCHOR_EXPORT_FUNCTION(_)      \
+    FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_)        \
+    FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_)
+
 
 #define GET_INSTANCE_PROC_ADDRESS(name) \
     (void)xrGetInstanceProcAddr(instance, #name, reinterpret_cast<PFN_xrVoidFunction*>(const_cast<PFN_##name*>(&name)));

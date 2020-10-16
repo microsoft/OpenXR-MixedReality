@@ -19,10 +19,10 @@
 namespace sample {
     struct Cube {
         xr::SpaceHandle Space{};
-        std::optional<XrPosef> PoseInSpace{}; // Cube pose in above Space. Default to identity.
+        std::optional<XrPosef> PoseInSpace{}; // Relative pose in cube Space. Default to identity.
         XrVector3f Scale{0.1f, 0.1f, 0.1f};
 
-        XrPosef PoseInScene = xr::math::Pose::Identity(); // Cube pose in the scene.  Got updated every frame
+        XrPosef PoseInAppSpace = xr::math::Pose::Identity(); // Cube pose in app space that gets updated every frame
     };
 
     struct IOpenXrProgram {

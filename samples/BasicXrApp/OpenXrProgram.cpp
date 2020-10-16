@@ -278,20 +278,20 @@ namespace {
         void CreateSpaces() {
             CHECK(m_session.Get() != XR_NULL_HANDLE);
 
-            // Create a scene space to bridge interactions and all holograms.
+            // Create a app space to bridge interactions and all holograms.
             {
                 if (m_optionalExtensions.UnboundedRefSpaceSupported) {
-                    // Unbounded reference space provides the best scene space for world-scale experiences.
-                    m_sceneSpaceType = XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT;
+                    // Unbounded reference space provides the best app space for world-scale experiences.
+                    m_appSpaceType = XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT;
                 } else {
                     // If running on a platform that does not support world-scale experiences, fall back to local space.
-                    m_sceneSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
+                    m_appSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
                 }
 
                 XrReferenceSpaceCreateInfo spaceCreateInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
-                spaceCreateInfo.referenceSpaceType = m_sceneSpaceType;
+                spaceCreateInfo.referenceSpaceType = m_appSpaceType;
                 spaceCreateInfo.poseInReferenceSpace = xr::math::Pose::Identity();
-                CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &spaceCreateInfo, m_sceneSpace.Put()));
+                CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &spaceCreateInfo, m_appSpace.Put()));
             }
 
             // Create a space for each hand pointer pose.
@@ -498,14 +498,14 @@ namespace {
         }
 
         struct Hologram;
-        Hologram CreateHologram(const XrPosef& poseInScene, XrTime placementTime) const {
+        Hologram CreateHologram(const XrPosef& poseInAppSpace, XrTime placementTime) const {
             Hologram hologram{};
             if (m_optionalExtensions.SpatialAnchorSupported) {
                 // Anchors provide the best stability when moving beyond 5 meters, so if the extension is enabled,
                 // create an anchor at given location and place the hologram at the resulting anchor space.
                 XrSpatialAnchorCreateInfoMSFT createInfo{XR_TYPE_SPATIAL_ANCHOR_CREATE_INFO_MSFT};
-                createInfo.space = m_sceneSpace.Get();
-                createInfo.pose = poseInScene;
+                createInfo.space = m_appSpace.Get();
+                createInfo.pose = poseInAppSpace;
                 createInfo.time = placementTime;
 
                 XrResult result = m_extensions.xrCreateSpatialAnchorMSFT(
@@ -521,11 +521,11 @@ namespace {
                     CHECK_XRRESULT(result, "xrCreateSpatialAnchorMSFT");
                 }
             } else {
-                // If the anchor extension is not available, place hologram in the scene space.
-                // This works fine as long as user doesn't move far away from scene space origin.
+                // If the anchor extension is not available, place hologram in the app space.
+                // This works fine as long as user doesn't move far away from app space origin.
                 XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
-                createInfo.referenceSpaceType = m_sceneSpaceType;
-                createInfo.poseInReferenceSpace = poseInScene;
+                createInfo.referenceSpaceType = m_appSpaceType;
+                createInfo.poseInReferenceSpace = poseInAppSpace;
                 CHECK_XRCMD(xrCreateReferenceSpace(m_session.Get(), &createInfo, hologram.Cube.Space.Put()));
             }
             return hologram;
@@ -571,7 +571,7 @@ namespace {
 
                     // Locate the hand in the scene.
                     XrSpaceLocation handLocation{XR_TYPE_SPACE_LOCATION};
-                    CHECK_XRCMD(xrLocateSpace(m_cubesInHand[side].Space.Get(), m_sceneSpace.Get(), placementTime, &handLocation));
+                    CHECK_XRCMD(xrLocateSpace(m_cubesInHand[side].Space.Get(), m_appSpace.Get(), placementTime, &handLocation));
 
                     // Ensure we have tracking before placing a cube in the scene, so that it stays reliably at a physical location.
                     if (!xr::math::Pose::IsPoseValid(handLocation)) {
@@ -628,7 +628,7 @@ namespace {
                     XrViewLocateInfo viewLocateInfo{XR_TYPE_VIEW_LOCATE_INFO};
                     viewLocateInfo.viewConfigurationType = m_primaryViewConfigType;
                     viewLocateInfo.displayTime = frameState.predictedDisplayTime;
-                    viewLocateInfo.space = m_sceneSpace.Get();
+                    viewLocateInfo.space = m_appSpace.Get();
 
                     // The output view count of xrLocateViews is always same as xrEnumerateViewConfigurationViews.
                     // Therefore, Views can be preallocated and avoid two call idiom here.
@@ -743,15 +743,15 @@ namespace {
 
             auto UpdateVisibleCube = [&](sample::Cube& cube) {
                 if (cube.Space.Get() != XR_NULL_HANDLE) {
-                    XrSpaceLocation cubeSpaceInScene{XR_TYPE_SPACE_LOCATION};
-                    CHECK_XRCMD(xrLocateSpace(cube.Space.Get(), m_sceneSpace.Get(), predictedDisplayTime, &cubeSpaceInScene));
+                    XrSpaceLocation cubeSpaceInAppSpace{XR_TYPE_SPACE_LOCATION};
+                    CHECK_XRCMD(xrLocateSpace(cube.Space.Get(), m_appSpace.Get(), predictedDisplayTime, &cubeSpaceInAppSpace));
 
                     // Update cube's location with latest space location
-                    if (xr::math::Pose::IsPoseValid(cubeSpaceInScene)) {
+                    if (xr::math::Pose::IsPoseValid(cubeSpaceInAppSpace)) {
                         if (cube.PoseInSpace.has_value()) {
-                            cube.PoseInScene = xr::math::Pose::Multiply(cube.PoseInSpace.value(), cubeSpaceInScene.pose);
+                            cube.PoseInAppSpace = xr::math::Pose::Multiply(cube.PoseInSpace.value(), cubeSpaceInAppSpace.pose);
                         } else {
-                            cube.PoseInScene = cubeSpaceInScene.pose;
+                            cube.PoseInAppSpace = cubeSpaceInAppSpace.pose;
                         }
                         visibleCubes.push_back(&cube);
                     }
@@ -830,7 +830,7 @@ namespace {
             CHECK_XRCMD(xrReleaseSwapchainImage(colorSwapchain.Handle.Get(), &releaseInfo));
             CHECK_XRCMD(xrReleaseSwapchainImage(depthSwapchain.Handle.Get(), &releaseInfo));
 
-            layer.space = m_sceneSpace.Get();
+            layer.space = m_appSpace.Get();
             layer.viewCount = (uint32_t)m_renderResources->ProjectionLayerViews.size();
             layer.views = m_renderResources->ProjectionLayerViews.data();
             return true;
@@ -871,8 +871,8 @@ namespace {
             bool SpatialAnchorSupported{false};
         } m_optionalExtensions;
 
-        xr::SpaceHandle m_sceneSpace;
-        XrReferenceSpaceType m_sceneSpaceType{};
+        xr::SpaceHandle m_appSpace;
+        XrReferenceSpaceType m_appSpaceType{};
 
         struct Hologram {
             sample::Cube Cube;

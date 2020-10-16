@@ -77,33 +77,33 @@ namespace {
 
             if (firstUpdate || isSelectPressed) {
                 const XrTime time = state.isActive ? state.lastChangeTime : frameTime.PredictedDisplayTime;
-                XrSpaceLocation viewInScene = {XR_TYPE_SPACE_LOCATION};
-                CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_context.SceneSpace, time, &viewInScene));
+                XrSpaceLocation viewInAppSpace = {XR_TYPE_SPACE_LOCATION};
+                CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_context.AppSpace, time, &viewInAppSpace));
 
-                if (Pose::IsPoseValid(viewInScene)) {
+                if (Pose::IsPoseValid(viewInAppSpace)) {
                     // Project the forward of the view to the scene's horizontal plane
-                    const XrPosef viewFrontInView = {{0, 0, 0, 1}, {0, 0, -1}};
-                    const XrPosef viewFrontInScene = viewFrontInView * viewInScene.pose;
-                    const XrVector3f viewForwardInScene = viewFrontInScene.position - viewInScene.pose.position;
-                    const XrVector3f viewForwardInGravity = Dot(viewForwardInScene, {0, -1, 0}) * XrVector3f{0, -1, 0};
-                    const XrVector3f userForwardInScene = Normalize(viewForwardInScene - viewForwardInGravity);
+                    const XrPosef oneMeterInFrontInView = {{0, 0, 0, 1}, {0, 0, -1}};
+                    const XrPosef oneMeterInFrontInAppSpace = oneMeterInFrontInView * viewInAppSpace.pose;
+                    const XrVector3f viewForwardInAppSpace = oneMeterInFrontInAppSpace.position - viewInAppSpace.pose.position;
+                    const XrVector3f viewForwardInGravity = Dot(viewForwardInAppSpace, {0, -1, 0}) * XrVector3f{0, -1, 0};
+                    const XrVector3f eyeLevelForwardInAppSpace = Normalize(viewForwardInAppSpace - viewForwardInGravity);
 
                     // Put the sun 2 meters in front of the user at eye level
-                    const XrVector3f sunInScene = viewInScene.pose.position + 2.f * userForwardInScene;
-                    m_targetPoseInScene = Pose::LookAt(sunInScene, userForwardInScene, {0, 1, 0});
+                    const XrVector3f sunInAppSpace = viewInAppSpace.pose.position + 2.f * eyeLevelForwardInAppSpace;
+                    m_targetPoseInAppSpace = Pose::LookAt(sunInAppSpace, eyeLevelForwardInAppSpace, {0, 1, 0});
 
                     if (firstUpdate) {
                         m_sun->SetVisible(true);
-                        m_sun->Pose() = m_targetPoseInScene;
+                        m_sun->Pose() = m_targetPoseInAppSpace;
                     }
                 }
             }
 
             // Slowly ease the sun to the target location
-            m_sun->Pose() = Pose::Slerp(m_sun->Pose(), m_targetPoseInScene, 0.05f);
+            m_sun->Pose() = Pose::Slerp(m_sun->Pose(), m_targetPoseInAppSpace, 0.05f);
 
             // Animate the earth orbiting the sun, and pause when app lost focus.
-            if (m_context.SessionState == XR_SESSION_STATE_FOCUSED) {
+            if (frameTime.IsSessionFocused) {
                 const float angle = frameTime.TotalElapsedSeconds * XM_PI; // half circle a second
 
                 XrVector3f earthPosition;
@@ -116,7 +116,7 @@ namespace {
 
     private:
         XrAction m_selectAction{XR_NULL_HANDLE};
-        XrPosef m_targetPoseInScene = Pose::Identity();
+        XrPosef m_targetPoseInAppSpace = Pose::Identity();
         std::shared_ptr<engine::PbrModelObject> m_sun;
         std::shared_ptr<engine::PbrModelObject> m_earth;
         xr::SpaceHandle m_viewSpace;

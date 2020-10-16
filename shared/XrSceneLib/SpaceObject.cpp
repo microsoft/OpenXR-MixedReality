@@ -24,7 +24,7 @@ engine::SpaceObject::SpaceObject(xr::SpaceHandle space, bool hideWhenPoseInvalid
 
 void engine::SpaceObject::Update(engine::Context& context, const engine::FrameTime& frameTime) {
     XrSpaceLocation location{XR_TYPE_SPACE_LOCATION};
-    CHECK_XRCMD(xrLocateSpace(m_space.Get(), context.SceneSpace, frameTime.PredictedDisplayTime, &location));
+    CHECK_XRCMD(xrLocateSpace(m_space.Get(), context.AppSpace, frameTime.PredictedDisplayTime, &location));
     const bool poseValid = xr::math::Pose::IsPoseValid(location);
     if (poseValid) {
         Pose() = location.pose;

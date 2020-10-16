@@ -22,6 +22,7 @@
 #include <SampleShared/FileUtility.h>
 #include <SampleShared/DxUtility.h>
 #include <SampleShared/Trace.h>
+#include <SampleShared/ScopeGuard.h>
 
 #include "XrApp.h"
 #include "CompositionLayers.h"
@@ -116,7 +117,7 @@ namespace {
 
         std::unique_ptr<engine::Context> m_context;
         xr::SpaceHandle m_viewSpace;
-        xr::SpaceHandle m_sceneSpace;
+        xr::SpaceHandle m_appSpace;
 
         engine::ProjectionLayers m_projectionLayers;
         std::unordered_map<XrViewConfigurationType, xr::ViewConfigurationState> m_viewConfigStates;
@@ -127,6 +128,7 @@ namespace {
         std::mutex m_sceneMutex;
         std::vector<std::unique_ptr<engine::Scene>> m_scenes;
 
+        std::atomic<XrSessionState> m_sessionState;
         std::atomic<bool> m_sessionRunning{false};
         std::atomic<bool> m_abortFrameLoop{false};
         bool m_actionBindingsFinalized{false};
@@ -137,7 +139,7 @@ namespace {
         std::mutex m_frameReadyToRenderMutex;
         std::condition_variable m_frameReadyToRenderNotify;
         bool m_frameReadyToRender{false};
-        engine::FrameTime m_currentFrameTime;
+        engine::FrameTime m_currentFrameTime{};
 
     private:
         bool ProcessEvents();
@@ -243,7 +245,7 @@ namespace {
         // Create main app space
         spaceCreateInfo.referenceSpaceType =
             extensions.SupportsUnboundedSpace ? XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT : XR_REFERENCE_SPACE_TYPE_LOCAL;
-        CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_sceneSpace.Put()));
+        CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_appSpace.Put()));
 
         Pbr::Resources pbrResources = sample::InitializePbrResources(device.get());
 
@@ -251,7 +253,7 @@ namespace {
                                                       std::move(extensions),
                                                       std::move(system),
                                                       std::move(session),
-                                                      m_sceneSpace.Get(),
+                                                      m_appSpace.Get(),
                                                       std::move(pbrResources),
                                                       device,
                                                       deviceContext);
@@ -331,7 +333,6 @@ namespace {
         for (const auto& scene : m_scenes) {
             actionContexts.push_back(&scene->ActionContext());
         }
-
         xr::AttachActionsToSession(Context().Instance.Handle, Context().Session.Handle, actionContexts);
     }
 
@@ -353,6 +354,15 @@ namespace {
                 try {
                     ::SetThreadDescription(::GetCurrentThread(), L"Render Thread");
 
+                    auto scopeGuard = MakeFailureGuard([&] {
+                        // Abort frame loop on error and ensure to balance begin/wait frame count, so as to
+                        // avoid deadlock in xrWaitFrame because there's no more xrBeginFrame after the exception.
+                        m_abortFrameLoop = true;
+                        XrFrameBeginInfo beginFrameDescription{XR_TYPE_FRAME_BEGIN_INFO};
+                        // Ignore errors here because exception in render thread already happened.
+                        (void)(xrBeginFrame(Context().Session.Handle, &beginFrameDescription));
+                    });
+
                     while (m_renderThreadRunning && m_sessionRunning) {
                         {
                             std::unique_lock lock(m_frameReadyToRenderMutex);
@@ -368,10 +378,8 @@ namespace {
                     }
                 } catch (const std::exception& ex) {
                     sample::Trace("Render thread exception: {}", ex.what());
-                    m_abortFrameLoop = true;
                 } catch (...) {
                     sample::Trace(L"Render thread exception");
-                    m_abortFrameLoop = true;
                 }
             });
         }
@@ -380,6 +388,7 @@ namespace {
     void ImplementXrApp::StopRenderThreadIfRunning() {
         bool alreadyRunning = true;
         if (m_renderThreadRunning.compare_exchange_strong(alreadyRunning, false)) {
+            sample::Trace(L"Stopping render thread...");
             {
                 // Notify "frameReadyToRender" with "renderThreadRunning = false" to exit render thread.
                 std::unique_lock lock(m_frameReadyToRenderMutex);
@@ -388,6 +397,7 @@ namespace {
             m_frameReadyToRenderNotify.notify_all();
             if (m_renderThread.joinable()) {
                 m_renderThread.join();
+                sample::Trace(L"Render thread joined.");
             }
         }
     }
@@ -414,8 +424,7 @@ namespace {
             if (eventData.type == XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED) {
                 auto* sessionStateChanged = xr::event_cast<XrEventDataSessionStateChanged>(&eventData);
                 if (sessionStateChanged->session == Context().Session.Handle) {
-                    Context().SessionState = sessionStateChanged->state;
-                    switch (Context().SessionState) {
+                    switch (m_sessionState = sessionStateChanged->state) {
                     case XR_SESSION_STATE_EXITING:
                         return false; // User's intended to quit
                     case XR_SESSION_STATE_LOSS_PENDING:
@@ -491,8 +500,7 @@ namespace {
 
             SyncActions(sceneLock);
 
-            m_currentFrameTime.Update(frameState);
-
+            m_currentFrameTime.Update(frameState, m_sessionState);
             for (auto& scene : m_scenes) {
                 if (scene->IsActive()) {
                     scene->Update(m_currentFrameTime);
@@ -579,6 +587,12 @@ namespace {
         if (renderFrameTime.ShouldRender) {
             std::scoped_lock sceneLock(m_sceneMutex);
 
+            for (const std::unique_ptr<engine::Scene>& scene : m_scenes) {
+                if (scene->IsActive()) {
+                    scene->BeforeRender(m_currentFrameTime);
+                }
+            }
+
             // Render for the primary view configuration.
             engine::CompositionLayers& primaryViewConfigLayers = layersForAllViewConfigs[0];
             RenderViewConfiguration(sceneLock, PrimaryViewConfigurationType, primaryViewConfigLayers);
@@ -621,9 +635,9 @@ namespace {
             }
         }
 
-        // Locate the VIEW space in the scene space to get the "camera" pose and combine the per-view offsets with the camera pose.
+        // Locate the VIEW space in the app space to get the "camera" pose and combine the per-view offsets with the camera pose.
         XrSpaceLocation viewLocation{XR_TYPE_SPACE_LOCATION};
-        CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_sceneSpace.Get(), m_currentFrameTime.PredictedDisplayTime, &viewLocation));
+        CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_appSpace.Get(), m_currentFrameTime.PredictedDisplayTime, &viewLocation));
         if (!xr::math::Pose::IsPoseValid(viewLocation)) {
             return;
         }
@@ -663,7 +677,7 @@ namespace {
                                    opaqueClearColor ? DirectX::XMColorSRGBToRGB(DirectX::Colors::CornflowerBlue)
                                                     : DirectX::Colors::Transparent);
             const bool shouldSubmitProjectionLayer =
-                projectionLayer.Render(Context(), m_currentFrameTime, Context().SceneSpace, views, m_scenes, viewConfigurationType);
+                projectionLayer.Render(Context(), m_currentFrameTime, Context().AppSpace, views, m_scenes, viewConfigurationType);
 
             // Create the multi projection layer
             if (shouldSubmitProjectionLayer) {

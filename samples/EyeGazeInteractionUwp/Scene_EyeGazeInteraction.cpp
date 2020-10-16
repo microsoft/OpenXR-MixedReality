@@ -31,9 +31,9 @@ namespace {
     constexpr float layoutRadius = 1.5f;   // In meters
     constexpr int numberOfObjects = 36;    // Number of objects for a full circle.
 
-    bool IsLookingAtObject(const XrPosef& gazeInScene, const XrPosef& objectInScene, float objectRadius) {
-        const XrPosef sceneInGaze = Pose::Invert(gazeInScene);
-        const XrPosef objectInGaze = objectInScene * sceneInGaze;
+    bool IsLookingAtObject(const XrPosef& gazeInAppSpace, const XrPosef& objectInAppSpace, float objectRadius) {
+        const XrPosef appSpaceInGaze = Pose::Invert(gazeInAppSpace);
+        const XrPosef objectInGaze = objectInAppSpace * appSpaceInGaze;
         const float projectionOnZ = Normalize(objectInGaze.position).z;
         const float distance = Length(objectInGaze.position);
         const float angleTolerance = std::atan2(objectRadius, distance);
@@ -43,8 +43,8 @@ namespace {
     struct EyeGazeInteractionScene : public engine::Scene {
         EyeGazeInteractionScene(engine::Context& context)
             : Scene(context) {
-            const bool supportsEyeGazeAction = context.Extensions.SupportsEyeGazeInteraction &&
-                                               context.System.EyeGazeInteractionProperties.supportsEyeGazeInteraction;
+            const bool supportsEyeGazeAction =
+                context.Extensions.SupportsEyeGazeInteraction && context.System.EyeGazeInteractionProperties.supportsEyeGazeInteraction;
             if (supportsEyeGazeAction) {
                 xr::ActionSet& actionSet =
                     ActionContext().CreateActionSet("eye_gaze_interaction_scene_actions", "Eye Gaze Interaction Scene Actions");
@@ -93,15 +93,15 @@ namespace {
 
         void OnUpdate(const engine::FrameTime& frameTime) override {
             XrSpaceLocation location{XR_TYPE_SPACE_LOCATION};
-            CHECK_XRCMD(xrLocateSpace(m_gazeSpace.Get(), m_context.SceneSpace, frameTime.PredictedDisplayTime, &location));
+            CHECK_XRCMD(xrLocateSpace(m_gazeSpace.Get(), m_context.AppSpace, frameTime.PredictedDisplayTime, &location));
 
             if (Pose::IsPoseValid(location)) {
                 m_gazeObject->SetVisible(true);
                 m_gazeObject->Pose() = location.pose;
                 for (auto& object : m_lookAtObjects) {
-                    XrPosef objectInScene;
-                    StoreXrPose(&objectInScene, object->WorldTransform());
-                    object->Motion.Enabled = IsLookingAtObject(location.pose, objectInScene, objectDiameter / 2);
+                    XrPosef objectInAppSpace;
+                    StoreXrPose(&objectInAppSpace, object->WorldTransform());
+                    object->Motion.Enabled = IsLookingAtObject(location.pose, objectInAppSpace, objectDiameter / 2);
                 }
             } else {
                 m_gazeObject->SetVisible(false);
