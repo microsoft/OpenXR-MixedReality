@@ -66,7 +66,9 @@ namespace engine {
 
         template <typename T>
         void RemoveObject(const std::shared_ptr<T>& object) {
-            object->State = ObjectState::RemovePending;
+            if (object) {
+                object->State = ObjectState::RemovePending;
+            }
         }
 
         const std::vector<std::shared_ptr<Object>>& GetObjects() const {

@@ -90,6 +90,11 @@ namespace xr {
     // and finalize the binding and attach to session together.
     //
     struct ActionContext {
+        struct ActionBinding {
+            XrAction action;
+            std::string binding;
+        };
+
         explicit ActionContext(XrInstance instance)
             : m_instance(instance) {
         }
@@ -98,18 +103,17 @@ namespace xr {
             return m_actionSets.emplace_back(ActionSet{m_instance, name, localizedName, priority});
         }
 
-        void SuggestInteractionProfileBindings(const char* interactionProfile,
-                                               const std::vector<std::pair<XrAction, std::string>>& suggestedBindings) {
+        void SuggestInteractionProfileBindings(const char* interactionProfile, const std::vector<ActionBinding>& suggestedBindings) {
             const XrPath profilePath = xr::StringToPath(m_instance, interactionProfile);
-            for (const auto& [actionPath, suggestedBinding] : suggestedBindings) {
-                m_actionBindings[profilePath].emplace_back(actionPath, suggestedBinding);
+            for (const auto& actionBinding : suggestedBindings) {
+                m_actionBindings[profilePath].emplace_back(actionBinding);
             }
         }
 
     private:
         XrInstance m_instance;
         std::list<ActionSet> m_actionSets;
-        std::unordered_map<XrPath, std::vector<std::pair<XrAction, std::string>>> m_actionBindings;
+        std::unordered_map<XrPath /*interaction profile*/, std::vector<ActionBinding>> m_actionBindings;
 
         friend void AttachActionsToSession(XrInstance instance,
                                            XrSession session,

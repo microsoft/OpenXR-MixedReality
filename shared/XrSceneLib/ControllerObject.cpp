@@ -42,8 +42,8 @@ namespace {
         uint32_t bufferSize = 0;
         CHECK_XRCMD(context.Extensions.xrLoadControllerModelMSFT(context.Session.Handle, modelKey, 0, &bufferSize, nullptr));
         auto modelBuffer = std::make_unique<byte[]>(bufferSize);
-        CHECK_XRCMD(context.Extensions.xrLoadControllerModelMSFT(
-            context.Session.Handle, modelKey, bufferSize, &bufferSize, modelBuffer.get()));
+        CHECK_XRCMD(
+            context.Extensions.xrLoadControllerModelMSFT(context.Session.Handle, modelKey, bufferSize, &bufferSize, modelBuffer.get()));
         model->PbrModel = Gltf::FromGltfBinary(context.PbrResources, modelBuffer.get(), bufferSize);
 
         // Read the controller model properties with two call idiom
@@ -100,6 +100,7 @@ namespace {
         void Update(engine::Context& context, const engine::FrameTime& frameTime) override;
 
     private:
+        const bool m_extensionSupported;
         const XrPath m_controllerUserPath;
 
         std::unique_ptr<ControllerModel> m_model;
@@ -107,7 +108,8 @@ namespace {
     };
 
     ControllerObject::ControllerObject(engine::Context& context, XrPath controllerUserPath)
-        : m_controllerUserPath(controllerUserPath) {
+        : m_extensionSupported(context.Extensions.SupportsControllerModel)
+        , m_controllerUserPath(controllerUserPath) {
     }
 
     ControllerObject::~ControllerObject() {
@@ -118,19 +120,21 @@ namespace {
     }
 
     void ControllerObject::Update(engine::Context& context, const engine::FrameTime& frameTime) {
+        if (!m_extensionSupported) {
+            return; // The current runtime doesn't support controller model extension.
+        }
+
         XrControllerModelKeyStateMSFT controllerModelKeyState{XR_TYPE_CONTROLLER_MODEL_KEY_STATE_MSFT};
-        CHECK_XRCMD(
-            context.Extensions.xrGetControllerModelKeyMSFT(context.Session.Handle, m_controllerUserPath, &controllerModelKeyState));
+        CHECK_XRCMD(context.Extensions.xrGetControllerModelKeyMSFT(context.Session.Handle, m_controllerUserPath, &controllerModelKeyState));
 
         // If a new valid model key is returned, reload the model into cache asynchronizely
         const bool modelKeyValid = controllerModelKeyState.modelKey != XR_NULL_CONTROLLER_MODEL_KEY_MSFT;
         if (modelKeyValid && (m_model == nullptr || m_model->Key != controllerModelKeyState.modelKey)) {
             // Avoid two background tasks running together. The new one will start in future update after the old one is finished.
             if (!m_modelLoadingTask.valid()) {
-                m_modelLoadingTask =
-                    std::async(std::launch::async, [&, modelKey = controllerModelKeyState.modelKey]() {
-                        return LoadControllerModel(context, modelKey);
-                    });
+                m_modelLoadingTask = std::async(std::launch::async, [&, modelKey = controllerModelKeyState.modelKey]() {
+                    return LoadControllerModel(context, modelKey);
+                });
             }
         }
 
@@ -154,7 +158,7 @@ namespace {
 } // namespace
 
 namespace engine {
-    std::shared_ptr<engine::Object> CreateControllerObject(Context& context, XrPath controllerUserPath) {
+    std::shared_ptr<engine::PbrModelObject> CreateControllerObject(Context& context, XrPath controllerUserPath) {
         return std::make_shared<ControllerObject>(context, controllerUserPath);
     }
 

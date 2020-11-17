@@ -43,7 +43,7 @@ namespace xr::math {
         constexpr bool IsPoseTracked(const XrViewState& viewState);
 
         template <typename Quaternion, typename Vector3>
-        constexpr XrPosef MakePose(const Quaternion& orientation, const Vector3& position);
+        inline XrPosef MakePose(const Quaternion& orientation, const Vector3& position);
     } // namespace Pose
 
     namespace Quaternion {
@@ -413,8 +413,8 @@ namespace xr::math {
         }
 
         template <typename Quaternion, typename Vector3>
-        constexpr XrPosef MakePose(const Quaternion& orientation, const Vector3& position) {
-            return XrPosef{orientation.x, orientation.y, orientation.z, orientation.w, position.x, position.y, position.z};
+        inline XrPosef MakePose(const Quaternion& orientation, const Vector3& position) {
+            return XrPosef{{orientation.x, orientation.y, orientation.z, orientation.w}, {position.x, position.y, position.z}};
         }
     } // namespace Pose
 

@@ -15,8 +15,12 @@
 //*********************************************************
 #pragma once
 
-#include "Object.h"
+namespace xr {
 
-namespace engine {
-    std::shared_ptr<engine::Object> CreateSpaceObject(xr::SpaceHandle space, bool hideWhenPoseInvalid = true);
-} // namespace engine
+    namespace Side {
+        constexpr uint32_t Left = 0;
+        constexpr uint32_t Right = 1;
+        constexpr uint32_t Count = 2;
+    } // namespace Side
+
+} // namespace xr
