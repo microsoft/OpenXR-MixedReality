@@ -32,6 +32,15 @@ namespace xr {
         return path;
     }
 
+    inline std::string PathToString(XrInstance instance, XrPath path) {
+        uint32_t count;
+        CHECK_XRCMD(xrPathToString(instance, path, 0, &count, nullptr));
+        std::string string;
+        string.resize(count);
+        CHECK_XRCMD(xrPathToString(instance, path, count, &count, string.data()));
+        return string;
+    }
+
     inline std::vector<XrPath> StringsToPaths(XrInstance instance, const std::vector<std::string>& strings) {
         std::vector<XrPath> paths;
 

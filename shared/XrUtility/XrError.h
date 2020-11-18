@@ -89,6 +89,7 @@ namespace xr::detail {
         return res;
     }
 
+#ifdef _WIN32
     [[noreturn]] inline void _ThrowHResult(HRESULT hr, const char* originator = nullptr, const char* sourceLocation = nullptr) {
         xr::detail::_Throw(xr::detail::_Fmt("HRESULT failure [%x]", hr), originator, sourceLocation);
     }
@@ -100,4 +101,5 @@ namespace xr::detail {
 
         return hr;
     }
+#endif
 } // namespace xr::detail

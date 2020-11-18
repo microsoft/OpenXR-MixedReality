@@ -15,8 +15,8 @@
 //*********************************************************
 #pragma once
 
-#include "Object.h"
+#include "PbrModelObject.h"
 
 namespace engine {
-    std::shared_ptr<engine::Object> CreateControllerObject(Context& context, XrPath controllerUserPath);
+    std::shared_ptr<engine::PbrModelObject> CreateControllerObject(Context& context, XrPath controllerUserPath);
 }

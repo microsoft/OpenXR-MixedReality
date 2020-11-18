@@ -75,6 +75,9 @@ namespace {
                 if (xr::math::Pose::IsPoseValid(location)) {
                     controller.Object->SetVisible(true);
                     controller.Object->Pose() = location.pose;
+
+                    controller.Object->SetFillMode(xr::math::Pose::IsPoseTracked(location) ? Pbr::FillMode::Solid
+                                                                                           : Pbr::FillMode::Wireframe);
                 } else {
                     controller.Object->SetVisible(false);
                 }
@@ -85,7 +88,7 @@ namespace {
         struct ControllerData {
             const XrPath UserPath;
             xr::SpaceHandle GripSpace{};
-            std::shared_ptr<engine::Object> Object;
+            std::shared_ptr<engine::PbrModelObject> Object;
 
             explicit ControllerData(XrPath userPath)
                 : UserPath(userPath) {
