@@ -88,8 +88,7 @@ namespace xr {
         extensions.SupportsHolographicWindowAttachment = isExtensionEnabled(XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME);
         extensions.SupportsSamsungOdysseyController = isExtensionEnabled(XR_EXT_SAMSUNG_ODYSSEY_CONTROLLER_EXTENSION_NAME);
         extensions.SupportsHPMixedRealityController = isExtensionEnabled(XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME);
-        extensions.SupportsSpatialAnchorExport = isExtensionEnabled(XR_MSFT_SPATIAL_ANCHOR_EXPORT_PREVIEW_EXTENSION_NAME);
-        extensions.SupportsPerceptionAnchorInterop = isExtensionEnabled(XR_MSFT_PERCEPTION_ANCHOR_INTEROP_PREVIEW_EXTENSION_NAME);
+        extensions.SupportsPerceptionAnchorInterop = isExtensionEnabled(XR_MSFT_PERCEPTION_ANCHOR_INTEROP_EXTENSION_NAME);
         extensions.SupportsColorScaleBias = isExtensionEnabled(XR_KHR_COMPOSITION_LAYER_COLOR_SCALE_BIAS_EXTENSION_NAME);
         extensions.SupportsSceneUnderstanding = isExtensionEnabled(XR_MSFT_SCENE_UNDERSTANDING_PREVIEW_EXTENSION_NAME);
         extensions.SupportsSceneUnderstandingSerialization = isExtensionEnabled(XR_MSFT_SCENE_UNDERSTANDING_SERIALIZATION_PREVIEW_EXTENSION_NAME);
