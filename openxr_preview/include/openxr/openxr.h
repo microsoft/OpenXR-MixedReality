@@ -2332,6 +2332,7 @@ typedef struct XrSceneObjectPropertiesGetInfoMSFT {
 typedef struct XrSceneObjectPropertiesMSFT {
     XrStructureType       type;
     void* XR_MAY_ALIAS    next;
+    XrPosef               poseInScene;
 } XrSceneObjectPropertiesMSFT;
 
 typedef struct XrSceneObjectKindMSFT {
