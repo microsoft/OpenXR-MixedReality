@@ -102,7 +102,7 @@ namespace {
             for (auto side : {xr::Side::Left, xr::Side::Right}) {
                 // Update the value and visual for each controller component
                 for (auto& component : m_controllerData[side].components) {
-                    UpdateComponentValueVisuals(m_context, component);
+                    UpdateComponentValueVisuals(m_context, side, component);
                 }
             }
         }
@@ -445,9 +445,10 @@ namespace {
             return engine::CreateQuad(context.PbrResources, {1, quadHeight}, material);
         }
 
-        static void UpdateComponentValueVisuals(engine::Context& context, ComponentData& component) {
+        static void UpdateComponentValueVisuals(engine::Context& context, uint32_t side, ComponentData& component) {
             XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
             getInfo.action = component.actionInfo.action;
+            getInfo.subactionPath = side == xr::Side::Left ? context.Instance.LeftHandPath : context.Instance.RightHandPath;
             if (component.actionInfo.actionType == XR_ACTION_TYPE_BOOLEAN_INPUT) {
                 XrActionStateBoolean state{XR_TYPE_ACTION_STATE_BOOLEAN};
                 CHECK_XRCMD(xrGetActionStateBoolean(context.Session.Handle, &getInfo, &state));

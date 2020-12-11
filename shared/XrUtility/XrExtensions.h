@@ -43,20 +43,10 @@
 #define FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_)
 #endif
 
-#if XR_MSFT_perception_anchor_interop_preview && defined(XR_USE_PLATFORM_WIN32)
+#if XR_MSFT_perception_anchor_interop && defined(XR_USE_PLATFORM_WIN32)
 #define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_) \
     _(xrCreateSpatialAnchorFromPerceptionAnchorMSFT)   \
     _(xrTryGetPerceptionAnchorFromSpatialAnchorMSFT)
-#else
-#define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)
-#endif
-
-#if XR_MSFT_spatial_anchor_export_preview
-#define FOR_EACH_SPATIAL_ANCHOR_EXPORT_FUNCTION(_)     \
-    _(xrCreateSpatialAnchorNeighborhoodDataStreamMSFT) \
-    _(xrReadSpatialAnchorNeighborhoodDataMSFT)         \
-    _(xrGetSpatialAnchorExportSufficiencyMSFT)         \
-    _(xrDestroySpatialAnchorNeighborhoodDataStreamMSFT)
 #else
 #define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)
 #endif
@@ -129,7 +119,6 @@
     FOR_EACH_SPATIAL_ANCHOR_FUNCTION(_)             \
     FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_) \
     FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)  \
-    FOR_EACH_SPATIAL_ANCHOR_EXPORT_FUNCTION(_)      \
     FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_)        \
     FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_)
 

@@ -475,9 +475,9 @@ typedef struct XrGraphicsBindingEGLMNDX {
 
 #ifdef XR_USE_PLATFORM_WIN32
 
-#define XR_MSFT_perception_anchor_interop_preview 1
-#define XR_MSFT_perception_anchor_interop_preview_SPEC_VERSION 1
-#define XR_MSFT_PERCEPTION_ANCHOR_INTEROP_PREVIEW_EXTENSION_NAME "XR_MSFT_perception_anchor_interop_preview"
+#define XR_MSFT_perception_anchor_interop 1
+#define XR_MSFT_perception_anchor_interop_SPEC_VERSION 1
+#define XR_MSFT_PERCEPTION_ANCHOR_INTEROP_EXTENSION_NAME "XR_MSFT_perception_anchor_interop"
 typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialAnchorFromPerceptionAnchorMSFT)(XrSession session, IUnknown* perceptionAnchor, XrSpatialAnchorMSFT* anchor);
 typedef XrResult (XRAPI_PTR *PFN_xrTryGetPerceptionAnchorFromSpatialAnchorMSFT)(XrSession session, XrSpatialAnchorMSFT anchor, IUnknown** perceptionAnchor);
 

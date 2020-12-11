@@ -28,10 +28,13 @@ namespace {
     // It also demos a simple procedural coloring of the hand mesh using the "open palm" reference hand input.
     //
     struct HandTrackingScene : public engine::Scene {
-        HandTrackingScene(engine::Context& context)
-            : Scene(context) {
+        HandTrackingScene(engine::Context& context, bool enableHandMesh)
+            : Scene(context)
+            , m_enableHandMesh(enableHandMesh) {
+            const std::tuple<XrHandEXT, HandData&> hands[] = {{XrHandEXT::XR_HAND_LEFT_EXT, m_leftHandData},
+                                                              {XrHandEXT::XR_HAND_RIGHT_EXT, m_rightHandData}};
+
             m_jointMaterial = Pbr::Material::CreateFlat(m_context.PbrResources, Pbr::RGBA::White, 0.85f, 0.01f);
-            m_meshMaterial = Pbr::Material::CreateFlat(m_context.PbrResources, Pbr::RGBA::White, 1, 0);
 
             auto createJointObjects = [&](HandData& handData) {
                 auto jointModel = std::make_shared<Pbr::Model>();
@@ -50,9 +53,7 @@ namespace {
                 handData.JointModel->SetVisible(false);
             };
 
-            // For each hand, initialize the joint objects, hand mesh buffers and corresponding spaces.
-            const std::tuple<XrHandEXT, HandData&> hands[] = {{XrHandEXT::XR_HAND_LEFT_EXT, m_leftHandData},
-                                                              {XrHandEXT::XR_HAND_RIGHT_EXT, m_rightHandData}};
+            // For each hand, initialize the joint objects and corresponding space.
             for (const auto& [hand, handData] : hands) {
                 XrHandTrackerCreateInfoEXT createInfo{XR_TYPE_HAND_TRACKER_CREATE_INFO_EXT};
                 createInfo.hand = hand;
@@ -61,26 +62,34 @@ namespace {
                     m_context.Session.Handle, &createInfo, handData.TrackerHandle.Put(m_context.Extensions.xrDestroyHandTrackerEXT)));
 
                 createJointObjects(handData);
+            }
 
-                // Initialize buffers to receive hand mesh indices and vertices
-                const XrSystemHandTrackingMeshPropertiesMSFT& handMeshSystemProperties = context.System.HandMeshProperties;
-                handData.IndexBuffer = std::make_unique<uint32_t[]>(handMeshSystemProperties.maxHandMeshIndexCount);
-                handData.VertexBuffer = std::make_unique<XrHandMeshVertexMSFT[]>(handMeshSystemProperties.maxHandMeshVertexCount);
+            if (enableHandMesh) {
+                m_mode = HandDisplayMode::Mesh;
+                m_meshMaterial = Pbr::Material::CreateFlat(m_context.PbrResources, Pbr::RGBA::White, 1, 0);
 
-                handData.meshState.indexBuffer.indexCapacityInput = handMeshSystemProperties.maxHandMeshIndexCount;
-                handData.meshState.indexBuffer.indices = handData.IndexBuffer.get();
-                handData.meshState.vertexBuffer.vertexCapacityInput = handMeshSystemProperties.maxHandMeshVertexCount;
-                handData.meshState.vertexBuffer.vertices = handData.VertexBuffer.get();
+                // For each hand, initialize hand mesh buffer and corresponding space.
+                for (const auto& [hand, handData] : hands) {
+                    // Initialize buffers to receive hand mesh indices and vertices
+                    const XrSystemHandTrackingMeshPropertiesMSFT& handMeshSystemProperties = context.System.HandMeshProperties;
+                    handData.IndexBuffer = std::make_unique<uint32_t[]>(handMeshSystemProperties.maxHandMeshIndexCount);
+                    handData.VertexBuffer = std::make_unique<XrHandMeshVertexMSFT[]>(handMeshSystemProperties.maxHandMeshVertexCount);
 
-                XrHandMeshSpaceCreateInfoMSFT meshSpaceCreateInfo{XR_TYPE_HAND_MESH_SPACE_CREATE_INFO_MSFT};
-                meshSpaceCreateInfo.poseInHandMeshSpace = xr::math::Pose::Identity();
-                meshSpaceCreateInfo.handPoseType = XR_HAND_POSE_TYPE_TRACKED_MSFT;
-                CHECK_XRCMD(m_context.Extensions.xrCreateHandMeshSpaceMSFT(
-                    handData.TrackerHandle.Get(), &meshSpaceCreateInfo, handData.MeshSpace.Put()));
+                    handData.meshState.indexBuffer.indexCapacityInput = handMeshSystemProperties.maxHandMeshIndexCount;
+                    handData.meshState.indexBuffer.indices = handData.IndexBuffer.get();
+                    handData.meshState.vertexBuffer.vertexCapacityInput = handMeshSystemProperties.maxHandMeshVertexCount;
+                    handData.meshState.vertexBuffer.vertices = handData.VertexBuffer.get();
 
-                meshSpaceCreateInfo.handPoseType = XR_HAND_POSE_TYPE_REFERENCE_OPEN_PALM_MSFT;
-                CHECK_XRCMD(m_context.Extensions.xrCreateHandMeshSpaceMSFT(
-                    handData.TrackerHandle.Get(), &meshSpaceCreateInfo, handData.ReferenceMeshSpace.Put()));
+                    XrHandMeshSpaceCreateInfoMSFT meshSpaceCreateInfo{XR_TYPE_HAND_MESH_SPACE_CREATE_INFO_MSFT};
+                    meshSpaceCreateInfo.poseInHandMeshSpace = xr::math::Pose::Identity();
+                    meshSpaceCreateInfo.handPoseType = XR_HAND_POSE_TYPE_TRACKED_MSFT;
+                    CHECK_XRCMD(m_context.Extensions.xrCreateHandMeshSpaceMSFT(
+                        handData.TrackerHandle.Get(), &meshSpaceCreateInfo, handData.MeshSpace.Put()));
+
+                    meshSpaceCreateInfo.handPoseType = XR_HAND_POSE_TYPE_REFERENCE_OPEN_PALM_MSFT;
+                    CHECK_XRCMD(m_context.Extensions.xrCreateHandMeshSpaceMSFT(
+                        handData.TrackerHandle.Get(), &meshSpaceCreateInfo, handData.ReferenceMeshSpace.Put()));
+                }
             }
 
             // Set a clap detector that will toggle the display mode.
@@ -93,12 +102,17 @@ namespace {
                         const XMVECTOR leftPalmPosition = xr::math::LoadXrVector3(leftPalmLocation.pose.position);
                         const XMVECTOR rightPalmPosition = xr::math::LoadXrVector3(rightPalmLocation.pose.position);
                         const float distance = XMVectorGetX(XMVector3Length(XMVectorSubtract(leftPalmPosition, rightPalmPosition)));
-                        return distance - leftPalmLocation.radius - rightPalmLocation.radius < 0.02 /*meter*/;
+                        return distance - leftPalmLocation.radius - rightPalmLocation.radius < 0.02f /*meter*/;
                     }
 
                     return false;
                 },
-                [this]() { m_mode = (HandDisplayMode)(((uint32_t)m_mode + 1) % (uint32_t)HandDisplayMode::Count); });
+                [this]() {
+                    // We can only change mode if Mesh is supported
+                    if (m_enableHandMesh) {
+                        m_mode = (HandDisplayMode)(((uint32_t)m_mode + 1) % (uint32_t)HandDisplayMode::Count);
+                    }
+                });
         }
 
         void OnUpdate(const engine::FrameTime& frameTime) override {
@@ -107,10 +121,10 @@ namespace {
                 locateInfo.baseSpace = m_context.AppSpace;
                 locateInfo.time = frameTime.PredictedDisplayTime;
 
-                XrHandJointLocationsEXT handJointLocations{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
-                handJointLocations.jointCount = (uint32_t)handData.JointLocations.size();
-                handJointLocations.jointLocations = handData.JointLocations.data();
-                CHECK_XRCMD(m_context.Extensions.xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &handJointLocations));
+                XrHandJointLocationsEXT locations{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
+                locations.jointCount = (uint32_t)handData.JointLocations.size();
+                locations.jointLocations = handData.JointLocations.data();
+                CHECK_XRCMD(m_context.Extensions.xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &locations));
 
                 bool jointsVisible = m_mode == HandDisplayMode::Joints;
                 bool meshVisible = m_mode == HandDisplayMode::Mesh;
@@ -336,8 +350,9 @@ namespace {
             std::optional<bool> m_lastState{};
         };
 
+        bool m_enableHandMesh{false};
         enum class HandDisplayMode { Mesh, Joints, Count };
-        HandDisplayMode m_mode{HandDisplayMode::Mesh};
+        HandDisplayMode m_mode{HandDisplayMode::Joints};
 
         std::shared_ptr<Pbr::Material> m_meshMaterial, m_jointMaterial;
 
@@ -352,9 +367,7 @@ std::unique_ptr<engine::Scene> TryCreateHandTrackingScene(engine::Context& conte
         return nullptr;
     }
 
-    if (!context.Extensions.SupportsHandMeshTracking || !context.System.HandMeshProperties.supportsHandTrackingMesh) {
-        return nullptr;
-    }
+    const bool enableHandMesh = context.Extensions.SupportsHandMeshTracking && context.System.HandMeshProperties.supportsHandTrackingMesh;
 
-    return std::make_unique<HandTrackingScene>(context);
+    return std::make_unique<HandTrackingScene>(context, enableHandMesh);
 }

@@ -69,29 +69,20 @@ void ExitVR() {
     }
 }
 
-void TrapCursorIfMouseLeave(HWND hwnd) {
+// https://docs.microsoft.com/en-us/windows/win32/menurc/using-cursors#confining-a-cursor
+// The effect of ClipCursor is restricted to this process.
+// When the focus is switched to another window, the cursor is free to full screen.
+// Therefore redo this operation when this window becomes active or being moved.
+void ConfineCursor(HWND hwnd) {
     RECT rc;
     ::GetWindowRect(hwnd, &rc);
-
-    POINT pt;
-    ::GetCursorPos(&pt);
-
-    if (!::PtInRect(&rc, pt)) {
-        ::SetCursorPos((rc.left + rc.right) / 2, (rc.top + rc.bottom) / 2);
-    }
+    ::ClipCursor(&rc);
 }
 
 INT_PTR CALLBACK DialogWinProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam) {
     UNREFERENCED_PARAMETER(lParam);
-    constexpr UINT_PTR IDT_MOUSETRAP = 1;
 
     switch (message) {
-    case WM_INITDIALOG:
-        // Setup a recurring timer to move mouse back when it moves out of this window.
-        // It's a simple way to keep WM_MOUSEMOVE event to remain sending to this window.
-        ::SetTimer(hwnd, IDT_MOUSETRAP, 100, NULL);
-        return (INT_PTR)TRUE;
-
     case WM_COMMAND:
         if (LOWORD(wParam) == IDOK) {
             ExitVR();
@@ -101,10 +92,14 @@ INT_PTR CALLBACK DialogWinProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lP
         }
         break;
 
-    case WM_TIMER:
-        if (wParam == IDT_MOUSETRAP && hwnd == ::GetForegroundWindow()) {
-            TrapCursorIfMouseLeave(hwnd);
+    case WM_ACTIVATE:
+        if (LOWORD(wParam) != WA_INACTIVE) {
+            ConfineCursor(hwnd);
         }
+        break;
+
+    case WM_EXITSIZEMOVE:
+        ConfineCursor(hwnd);
         break;
 
     case WM_MOUSEMOVE:
@@ -113,7 +108,6 @@ INT_PTR CALLBACK DialogWinProc(HWND hwnd, UINT message, WPARAM wParam, LPARAM lP
 
     case WM_DESTROY:
         ExitVR();
-        ::KillTimer(hwnd, IDT_MOUSETRAP);
         ::PostQuitMessage(0);
         break;
     }

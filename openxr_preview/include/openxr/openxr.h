@@ -25,7 +25,7 @@ extern "C" {
     ((((major) & 0xffffULL) << 48) | (((minor) & 0xffffULL) << 32) | ((patch) & 0xffffffffULL))
 
 // OpenXR current version number.
-#define XR_CURRENT_API_VERSION XR_MAKE_VERSION(1, 0, 12)
+#define XR_CURRENT_API_VERSION XR_MAKE_VERSION(1, 0, 13)
 
 #define XR_VERSION_MAJOR(version) (uint16_t)(((uint64_t)(version) >> 48)& 0xffffULL)
 #define XR_VERSION_MINOR(version) (uint16_t)(((uint64_t)(version) >> 32) & 0xffffULL)
@@ -186,9 +186,8 @@ typedef enum XrResult {
     XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT = -1000039001,
     XR_ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT = -1000053000,
     XR_ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT = -1000055000,
-    XR_SPATIAL_ANCHOR_EXPORT_DATA_UNAVAILABLE_MSFT = 1000062000,
-    XR_ERROR_SPATIAL_ANCHOR_EXPORT_FAILED_MSFT = -1000062000,
-    XR_ERROR_SPATIAL_ANCHOR_SUFFICIENCY_QUERY_FAILED_MSFT = -1000062001,
+    XR_ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB = -1000101000,
+    XR_ERROR_COLOR_SPACE_UNSUPPORTED_FB = -1000108000,
     XR_ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT = -1000097000,
     XR_ERROR_SCENE_OBJECT_KEY_INVALID_MSFT = -1000097001,
     XR_ERROR_SCENE_MESH_KEY_INVALID_MSFT = -1000097002,
@@ -318,8 +317,9 @@ typedef enum XrStructureType {
     XR_TYPE_VULKAN_DEVICE_CREATE_INFO_KHR = 1000090001,
     XR_TYPE_VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR = 1000090003,
     XR_TYPE_COMPOSITION_LAYER_EQUIRECT2_KHR = 1000091000,
-    XR_TYPE_SPATIAL_ANCHOR_EXPORT_PURPOSE_INFO_MSFT = 1000062000,
-    XR_TYPE_SPATIAL_ANCHOR_EXPORT_SUFFICIENCY_MSFT = 1000062001,
+    XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB = 1000101000,
+    XR_TYPE_SYSTEM_COLOR_SPACE_PROPERTIES_FB = 1000108000,
+    XR_TYPE_BINDING_MODIFICATIONS_KHR = 1000120000,
     XR_TYPE_SCENE_OBSERVER_CREATE_INFO_MSFT = 1000097000,
     XR_TYPE_SCENE_CREATE_INFO_MSFT = 1000097001,
     XR_TYPE_NEW_SCENE_COMPUTE_INFO_MSFT = 1000097002,
@@ -412,7 +412,6 @@ typedef enum XrObjectType {
     XR_OBJECT_TYPE_DEBUG_UTILS_MESSENGER_EXT = 1000019000,
     XR_OBJECT_TYPE_SPATIAL_ANCHOR_MSFT = 1000039000,
     XR_OBJECT_TYPE_HAND_TRACKER_EXT = 1000051000,
-    XR_OBJECT_TYPE_SPATIAL_ANCHOR_NEIGHBORHOOD_DATA_STREAM_MSFT = 1000062000,
     XR_OBJECT_TYPE_SCENE_OBSERVER_MSFT = 1000097000,
     XR_OBJECT_TYPE_SCENE_MSFT = 1000097001,
     XR_OBJECT_TYPE_MAX_ENUM = 0x7FFFFFFF
@@ -1478,6 +1477,23 @@ typedef struct XrCompositionLayerEquirect2KHR {
 
 
 
+#define XR_KHR_binding_modification 1
+#define XR_KHR_binding_modification_SPEC_VERSION 1
+#define XR_KHR_BINDING_MODIFICATION_EXTENSION_NAME "XR_KHR_binding_modification"
+typedef struct XrBindingModificationBaseHeaderKHR {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+} XrBindingModificationBaseHeaderKHR;
+
+typedef struct XrBindingModificationsKHR {
+    XrStructureType                                     type;
+    const void* XR_MAY_ALIAS                            next;
+    uint32_t                                            bindingModificationCount;
+    const XrBindingModificationBaseHeaderKHR* const*    bindingModifications;
+} XrBindingModificationsKHR;
+
+
+
 #define XR_EXT_performance_settings 1
 #define XR_EXT_performance_settings_SPEC_VERSION 1
 #define XR_EXT_PERFORMANCE_SETTINGS_EXTENSION_NAME "XR_EXT_performance_settings"
@@ -2179,59 +2195,6 @@ typedef struct XrViewConfigurationViewFovEPIC {
 
 
 
-#define XR_MSFT_spatial_anchor_export_preview 1
-
-            XR_DEFINE_HANDLE(XrSpatialAnchorNeighborhoodDataStreamMSFT)
-
-#define XR_MSFT_spatial_anchor_export_preview_SPEC_VERSION 1
-#define XR_MSFT_SPATIAL_ANCHOR_EXPORT_PREVIEW_EXTENSION_NAME "XR_MSFT_spatial_anchor_export_preview"
-
-typedef enum XrSpatialAnchorExportPurposeMSFT {
-    XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_RELOCALIZATION_MSFT = 0,
-    XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_SHARING_MSFT = 1,
-    XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_MAX_ENUM_MSFT = 0x7FFFFFFF
-} XrSpatialAnchorExportPurposeMSFT;
-typedef struct XrSpatialAnchorExportPurposeInfoMSFT {
-    XrStructureType                     type;
-    const void* XR_MAY_ALIAS            next;
-    XrSpatialAnchorExportPurposeMSFT    exportPurpose;
-} XrSpatialAnchorExportPurposeInfoMSFT;
-
-typedef struct XrSpatialAnchorExportSufficiencyMSFT {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    XrBool32                    isMinimallySufficient;
-    float                       recommendedSufficiencyLevel;
-    float                       sufficiencyLevel;
-} XrSpatialAnchorExportSufficiencyMSFT;
-
-typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialAnchorNeighborhoodDataStreamMSFT)(XrSpatialAnchorMSFT spatialAnchor, const XrSpatialAnchorExportPurposeInfoMSFT* exportPurposeInfo, XrSpatialAnchorNeighborhoodDataStreamMSFT* neighborhoodDataStream);
-typedef XrResult (XRAPI_PTR *PFN_xrDestroySpatialAnchorNeighborhoodDataStreamMSFT)(XrSpatialAnchorNeighborhoodDataStreamMSFT neighborhoodDataStream);
-typedef XrResult (XRAPI_PTR *PFN_xrReadSpatialAnchorNeighborhoodDataMSFT)(XrSpatialAnchorNeighborhoodDataStreamMSFT neighborhoodDataStream, uint32_t bytesToRead, uint32_t* bytesRead, void* buffer);
-typedef XrResult (XRAPI_PTR *PFN_xrGetSpatialAnchorExportSufficiencyMSFT)(XrSpatialAnchorMSFT spatialAnchor, const XrSpatialAnchorExportPurposeInfoMSFT* exportPurposeInfo, XrSpatialAnchorExportSufficiencyMSFT* exportSufficiency);
-
-#ifndef XR_NO_PROTOTYPES
-XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpatialAnchorNeighborhoodDataStreamMSFT(
-    XrSpatialAnchorMSFT                         spatialAnchor,
-    const XrSpatialAnchorExportPurposeInfoMSFT* exportPurposeInfo,
-    XrSpatialAnchorNeighborhoodDataStreamMSFT*  neighborhoodDataStream);
-
-XRAPI_ATTR XrResult XRAPI_CALL xrDestroySpatialAnchorNeighborhoodDataStreamMSFT(
-    XrSpatialAnchorNeighborhoodDataStreamMSFT   neighborhoodDataStream);
-
-XRAPI_ATTR XrResult XRAPI_CALL xrReadSpatialAnchorNeighborhoodDataMSFT(
-    XrSpatialAnchorNeighborhoodDataStreamMSFT   neighborhoodDataStream,
-    uint32_t                                    bytesToRead,
-    uint32_t*                                   bytesRead,
-    void* XR_MAY_ALIAS                          buffer);
-
-XRAPI_ATTR XrResult XRAPI_CALL xrGetSpatialAnchorExportSufficiencyMSFT(
-    XrSpatialAnchorMSFT                         spatialAnchor,
-    const XrSpatialAnchorExportPurposeInfoMSFT* exportPurposeInfo,
-    XrSpatialAnchorExportSufficiencyMSFT*       exportSufficiency);
-#endif
-
-
 #define XR_HUAWEI_controller_interaction 1
 #define XR_HUAWEI_controller_interaction_SPEC_VERSION 1
 #define XR_HUAWEI_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_HUAWEI_controller_interaction"
@@ -2543,6 +2506,79 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSceneSerializedDataMSFT(
     uint32_t                                    countInput,
     uint32_t*                                   readOutput,
     uint8_t*                                    buffer);
+#endif
+
+
+#define XR_FB_display_refresh_rate 1
+#define XR_FB_display_refresh_rate_SPEC_VERSION 1
+#define XR_FB_DISPLAY_REFRESH_RATE_EXTENSION_NAME "XR_FB_display_refresh_rate"
+typedef struct XrEventDataDisplayRefreshRateChangedFB {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    float                       fromDisplayRefreshRate;
+    float                       toDisplayRefreshRate;
+} XrEventDataDisplayRefreshRateChangedFB;
+
+typedef XrResult (XRAPI_PTR *PFN_xrEnumerateDisplayRefreshRatesFB)(XrSession session, uint32_t displayRefreshRateCapacityInput, uint32_t* displayRefreshRateCountOutput, float* displayRefreshRates);
+typedef XrResult (XRAPI_PTR *PFN_xrGetDisplayRefreshRateFB)(XrSession session, float* displayRefreshRate);
+typedef XrResult (XRAPI_PTR *PFN_xrRequestDisplayRefreshRateFB)(XrSession session, float displayRefreshRate);
+
+#ifndef XR_NO_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateDisplayRefreshRatesFB(
+    XrSession                                   session,
+    uint32_t                                    displayRefreshRateCapacityInput,
+    uint32_t*                                   displayRefreshRateCountOutput,
+    float*                                      displayRefreshRates);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrGetDisplayRefreshRateFB(
+    XrSession                                   session,
+    float*                                      displayRefreshRate);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrRequestDisplayRefreshRateFB(
+    XrSession                                   session,
+    float                                       displayRefreshRate);
+#endif
+
+
+#define XR_HTC_vive_cosmos_controller_interaction 1
+#define XR_HTC_vive_cosmos_controller_interaction_SPEC_VERSION 1
+#define XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME "XR_HTC_vive_cosmos_controller_interaction"
+
+
+#define XR_FB_color_space 1
+#define XR_FB_color_space_SPEC_VERSION    1
+#define XR_FB_COLOR_SPACE_EXTENSION_NAME  "XR_FB_color_space"
+
+typedef enum XrColorSpaceFB {
+    XR_COLOR_SPACE_UNMANAGED_FB = 0,
+    XR_COLOR_SPACE_REC2020_FB = 1,
+    XR_COLOR_SPACE_REC709_FB = 2,
+    XR_COLOR_SPACE_RIFT_CV1_FB = 3,
+    XR_COLOR_SPACE_RIFT_S_FB = 4,
+    XR_COLOR_SPACE_QUEST_FB = 5,
+    XR_COLOR_SPACE_P3_FB = 6,
+    XR_COLOR_SPACE_ADOBE_RGB_FB = 7,
+    XR_COLOR_SPACE_MAX_ENUM_FB = 0x7FFFFFFF
+} XrColorSpaceFB;
+typedef struct XrSystemColorSpacePropertiesFB {
+    XrStructureType       type;
+    void* XR_MAY_ALIAS    next;
+    XrColorSpaceFB        colorSpace;
+} XrSystemColorSpacePropertiesFB;
+
+typedef XrResult (XRAPI_PTR *PFN_xrEnumerateColorSpacesFB)(XrSession session, uint32_t colorSpaceCapacityInput, uint32_t* colorSpaceCountOutput, XrColorSpaceFB* colorSpaces);
+typedef XrResult (XRAPI_PTR *PFN_xrSetColorSpaceFB)(XrSession session, const XrColorSpaceFB colorspace);
+
+#ifndef XR_NO_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrEnumerateColorSpacesFB(
+    XrSession                                   session,
+    uint32_t                                    colorSpaceCapacityInput,
+    uint32_t*                                   colorSpaceCountOutput,
+    XrColorSpaceFB*                             colorSpaces);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrSetColorSpaceFB(
+    XrSession                                   session,
+    const XrColorSpaceFB                        colorspace);
 #endif
 
 #ifdef __cplusplus

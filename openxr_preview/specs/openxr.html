@@ -443,9 +443,9 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <h1>The OpenXR Specification</h1>
 <div class="details">
 <span id="author" class="author">Copyright (c) 2017-2020 The Khronos Group Inc.</span><br>
-<span id="revnumber">version 1.0.12,</span>
-<span id="revdate">Thu, 15 Oct 2020 18:45:23 +0000</span>
-<br><span id="revremark">from git branch: master commit: 6b66bbaabdca7479852cf50fa1149452b7cbe299</span>
+<span id="revnumber">version 1.0.13,</span>
+<span id="revdate">Thu, 26 Nov 2020 00:49:32 +0000</span>
+<br><span id="revremark">from git branch: master commit: 81ad2c7a925fe04b68f48e618278747bdcb8074d</span>
 </div>
 <div id="toc" class="toc2">
 <div id="toctitle">Table of Contents</div>
@@ -475,13 +475,14 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#buffer-size-parameters">2.11. Buffer Size Parameters</a></li>
 <li><a href="#time">2.12. Time</a></li>
 <li><a href="#duration">2.13. Duration</a></li>
-<li><a href="#colors">2.14. Colors</a></li>
-<li><a href="#coordinate-system">2.15. Coordinate System</a></li>
-<li><a href="#common-object-types">2.16. Common Object Types</a></li>
-<li><a href="#angles">2.17. Angles</a></li>
-<li><a href="#prediction-time-limits">2.18. Prediction Time Limits</a></li>
+<li><a href="#prediction-time-limits">2.14. Prediction Time Limits</a></li>
+<li><a href="#colors">2.15. Colors</a></li>
+<li><a href="#coordinate-system">2.16. Coordinate System</a></li>
+<li><a href="#common-object-types">2.17. Common Object Types</a></li>
+<li><a href="#angles">2.18. Angles</a></li>
 <li><a href="#_boolean_values">2.19. Boolean Values</a></li>
 <li><a href="#events">2.20. Events</a></li>
+<li><a href="#resource-lifetime">2.21. System resource lifetime</a></li>
 </ul>
 </li>
 <li><a href="#api-initialization">3. API Initialization</a>
@@ -561,54 +562,57 @@ body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-b
 <li><a href="#XR_KHR_android_create_instance">12.1. XR_KHR_android_create_instance</a></li>
 <li><a href="#XR_KHR_android_surface_swapchain">12.2. XR_KHR_android_surface_swapchain</a></li>
 <li><a href="#XR_KHR_android_thread_settings">12.3. XR_KHR_android_thread_settings</a></li>
-<li><a href="#XR_KHR_composition_layer_color_scale_bias">12.4. XR_KHR_composition_layer_color_scale_bias</a></li>
-<li><a href="#XR_KHR_composition_layer_cube">12.5. XR_KHR_composition_layer_cube</a></li>
-<li><a href="#XR_KHR_composition_layer_cylinder">12.6. XR_KHR_composition_layer_cylinder</a></li>
-<li><a href="#XR_KHR_composition_layer_depth">12.7. XR_KHR_composition_layer_depth</a></li>
-<li><a href="#XR_KHR_composition_layer_equirect">12.8. XR_KHR_composition_layer_equirect</a></li>
-<li><a href="#XR_KHR_composition_layer_equirect2">12.9. XR_KHR_composition_layer_equirect2</a></li>
-<li><a href="#XR_KHR_convert_timespec_time">12.10. XR_KHR_convert_timespec_time</a></li>
-<li><a href="#XR_KHR_D3D11_enable">12.11. XR_KHR_D3D11_enable</a></li>
-<li><a href="#XR_KHR_D3D12_enable">12.12. XR_KHR_D3D12_enable</a></li>
-<li><a href="#XR_KHR_loader_init">12.13. XR_KHR_loader_init</a></li>
-<li><a href="#XR_KHR_loader_init_android">12.14. XR_KHR_loader_init_android</a></li>
-<li><a href="#XR_KHR_opengl_enable">12.15. XR_KHR_opengl_enable</a></li>
-<li><a href="#XR_KHR_opengl_es_enable">12.16. XR_KHR_opengl_es_enable</a></li>
-<li><a href="#XR_KHR_visibility_mask">12.17. XR_KHR_visibility_mask</a></li>
-<li><a href="#XR_KHR_vulkan_enable">12.18. XR_KHR_vulkan_enable</a></li>
-<li><a href="#XR_KHR_vulkan_enable2">12.19. XR_KHR_vulkan_enable2</a></li>
-<li><a href="#XR_KHR_vulkan_swapchain_format_list">12.20. XR_KHR_vulkan_swapchain_format_list</a></li>
-<li><a href="#XR_KHR_win32_convert_performance_counter_time">12.21. XR_KHR_win32_convert_performance_counter_time</a></li>
-<li><a href="#XR_EXT_conformance_automation">12.22. XR_EXT_conformance_automation</a></li>
-<li><a href="#XR_EXT_debug_utils">12.23. XR_EXT_debug_utils</a></li>
-<li><a href="#XR_EXT_eye_gaze_interaction">12.24. XR_EXT_eye_gaze_interaction</a></li>
-<li><a href="#XR_EXT_hand_tracking">12.25. XR_EXT_hand_tracking</a></li>
-<li><a href="#XR_EXT_hp_mixed_reality_controller">12.26. XR_EXT_hp_mixed_reality_controller</a></li>
-<li><a href="#XR_EXT_performance_settings">12.27. XR_EXT_performance_settings</a></li>
-<li><a href="#XR_EXT_samsung_odyssey_controller">12.28. XR_EXT_samsung_odyssey_controller</a></li>
-<li><a href="#XR_EXT_thermal_query">12.29. XR_EXT_thermal_query</a></li>
-<li><a href="#XR_EXT_view_configuration_depth_range">12.30. XR_EXT_view_configuration_depth_range</a></li>
-<li><a href="#XR_EXT_win32_appcontainer_compatible">12.31. XR_EXT_win32_appcontainer_compatible</a></li>
-<li><a href="#XR_EPIC_view_configuration_fov">12.32. XR_EPIC_view_configuration_fov</a></li>
-<li><a href="#XR_HUAWEI_controller_interaction">12.33. XR_HUAWEI_controller_interaction</a></li>
-<li><a href="#XR_MND_headless">12.34. XR_MND_headless</a></li>
-<li><a href="#XR_MND_swapchain_usage_input_attachment_bit">12.35. XR_MND_swapchain_usage_input_attachment_bit</a></li>
-<li><a href="#XR_MSFT_controller_model">12.36. XR_MSFT_controller_model</a></li>
-<li><a href="#XR_MSFT_first_person_observer">12.37. XR_MSFT_first_person_observer</a></li>
-<li><a href="#XR_MSFT_hand_interaction">12.38. XR_MSFT_hand_interaction</a></li>
-<li><a href="#XR_MSFT_hand_tracking_mesh">12.39. XR_MSFT_hand_tracking_mesh</a></li>
-<li><a href="#XR_MSFT_holographic_window_attachment">12.40. XR_MSFT_holographic_window_attachment</a></li>
-<li><a href="#XR_MSFT_perception_anchor_interop_preview">12.41. XR_MSFT_perception_anchor_interop_preview</a></li>
-<li><a href="#XR_MSFT_scene_understanding_preview">12.42. XR_MSFT_scene_understanding_preview</a></li>
-<li><a href="#XR_MSFT_scene_understanding_serialization_preview">12.43. XR_MSFT_scene_understanding_serialization_preview</a></li>
-<li><a href="#XR_MSFT_secondary_view_configuration">12.44. XR_MSFT_secondary_view_configuration</a></li>
-<li><a href="#XR_MSFT_spatial_anchor">12.45. XR_MSFT_spatial_anchor</a></li>
-<li><a href="#XR_MSFT_spatial_anchor_export_preview">12.46. XR_MSFT_spatial_anchor_export_preview</a></li>
-<li><a href="#XR_MSFT_spatial_graph_bridge">12.47. XR_MSFT_spatial_graph_bridge</a></li>
-<li><a href="#XR_MSFT_unbounded_reference_space">12.48. XR_MSFT_unbounded_reference_space</a></li>
-<li><a href="#XR_OCULUS_android_session_state_enable">12.49. XR_OCULUS_android_session_state_enable</a></li>
-<li><a href="#XR_VALVE_analog_threshold">12.50. XR_VALVE_analog_threshold</a></li>
-<li><a href="#XR_VARJO_quad_views">12.51. XR_VARJO_quad_views</a></li>
+<li><a href="#XR_KHR_binding_modification">12.4. XR_KHR_binding_modification</a></li>
+<li><a href="#XR_KHR_composition_layer_color_scale_bias">12.5. XR_KHR_composition_layer_color_scale_bias</a></li>
+<li><a href="#XR_KHR_composition_layer_cube">12.6. XR_KHR_composition_layer_cube</a></li>
+<li><a href="#XR_KHR_composition_layer_cylinder">12.7. XR_KHR_composition_layer_cylinder</a></li>
+<li><a href="#XR_KHR_composition_layer_depth">12.8. XR_KHR_composition_layer_depth</a></li>
+<li><a href="#XR_KHR_composition_layer_equirect">12.9. XR_KHR_composition_layer_equirect</a></li>
+<li><a href="#XR_KHR_composition_layer_equirect2">12.10. XR_KHR_composition_layer_equirect2</a></li>
+<li><a href="#XR_KHR_convert_timespec_time">12.11. XR_KHR_convert_timespec_time</a></li>
+<li><a href="#XR_KHR_D3D11_enable">12.12. XR_KHR_D3D11_enable</a></li>
+<li><a href="#XR_KHR_D3D12_enable">12.13. XR_KHR_D3D12_enable</a></li>
+<li><a href="#XR_KHR_loader_init">12.14. XR_KHR_loader_init</a></li>
+<li><a href="#XR_KHR_loader_init_android">12.15. XR_KHR_loader_init_android</a></li>
+<li><a href="#XR_KHR_opengl_enable">12.16. XR_KHR_opengl_enable</a></li>
+<li><a href="#XR_KHR_opengl_es_enable">12.17. XR_KHR_opengl_es_enable</a></li>
+<li><a href="#XR_KHR_visibility_mask">12.18. XR_KHR_visibility_mask</a></li>
+<li><a href="#XR_KHR_vulkan_enable">12.19. XR_KHR_vulkan_enable</a></li>
+<li><a href="#XR_KHR_vulkan_enable2">12.20. XR_KHR_vulkan_enable2</a></li>
+<li><a href="#XR_KHR_vulkan_swapchain_format_list">12.21. XR_KHR_vulkan_swapchain_format_list</a></li>
+<li><a href="#XR_KHR_win32_convert_performance_counter_time">12.22. XR_KHR_win32_convert_performance_counter_time</a></li>
+<li><a href="#XR_EXT_conformance_automation">12.23. XR_EXT_conformance_automation</a></li>
+<li><a href="#XR_EXT_debug_utils">12.24. XR_EXT_debug_utils</a></li>
+<li><a href="#XR_EXT_eye_gaze_interaction">12.25. XR_EXT_eye_gaze_interaction</a></li>
+<li><a href="#XR_EXT_hand_tracking">12.26. XR_EXT_hand_tracking</a></li>
+<li><a href="#XR_EXT_hp_mixed_reality_controller">12.27. XR_EXT_hp_mixed_reality_controller</a></li>
+<li><a href="#XR_EXT_performance_settings">12.28. XR_EXT_performance_settings</a></li>
+<li><a href="#XR_EXT_samsung_odyssey_controller">12.29. XR_EXT_samsung_odyssey_controller</a></li>
+<li><a href="#XR_EXT_thermal_query">12.30. XR_EXT_thermal_query</a></li>
+<li><a href="#XR_EXT_view_configuration_depth_range">12.31. XR_EXT_view_configuration_depth_range</a></li>
+<li><a href="#XR_EXT_win32_appcontainer_compatible">12.32. XR_EXT_win32_appcontainer_compatible</a></li>
+<li><a href="#XR_EPIC_view_configuration_fov">12.33. XR_EPIC_view_configuration_fov</a></li>
+<li><a href="#XR_FB_color_space">12.34. XR_FB_color_space</a></li>
+<li><a href="#XR_FB_display_refresh_rate">12.35. XR_FB_display_refresh_rate</a></li>
+<li><a href="#XR_HTC_vive_cosmos_controller_interaction">12.36. XR_HTC_vive_cosmos_controller_interaction</a></li>
+<li><a href="#XR_HUAWEI_controller_interaction">12.37. XR_HUAWEI_controller_interaction</a></li>
+<li><a href="#XR_MND_headless">12.38. XR_MND_headless</a></li>
+<li><a href="#XR_MND_swapchain_usage_input_attachment_bit">12.39. XR_MND_swapchain_usage_input_attachment_bit</a></li>
+<li><a href="#XR_MSFT_controller_model">12.40. XR_MSFT_controller_model</a></li>
+<li><a href="#XR_MSFT_first_person_observer">12.41. XR_MSFT_first_person_observer</a></li>
+<li><a href="#XR_MSFT_hand_interaction">12.42. XR_MSFT_hand_interaction</a></li>
+<li><a href="#XR_MSFT_hand_tracking_mesh">12.43. XR_MSFT_hand_tracking_mesh</a></li>
+<li><a href="#XR_MSFT_holographic_window_attachment">12.44. XR_MSFT_holographic_window_attachment</a></li>
+<li><a href="#XR_MSFT_perception_anchor_interop">12.45. XR_MSFT_perception_anchor_interop</a></li>
+<li><a href="#XR_MSFT_scene_understanding_preview">12.46. XR_MSFT_scene_understanding_preview</a></li>
+<li><a href="#XR_MSFT_scene_understanding_serialization_preview">12.47. XR_MSFT_scene_understanding_serialization_preview</a></li>
+<li><a href="#XR_MSFT_secondary_view_configuration">12.48. XR_MSFT_secondary_view_configuration</a></li>
+<li><a href="#XR_MSFT_spatial_anchor">12.49. XR_MSFT_spatial_anchor</a></li>
+<li><a href="#XR_MSFT_spatial_graph_bridge">12.50. XR_MSFT_spatial_graph_bridge</a></li>
+<li><a href="#XR_MSFT_unbounded_reference_space">12.51. XR_MSFT_unbounded_reference_space</a></li>
+<li><a href="#XR_OCULUS_android_session_state_enable">12.52. XR_OCULUS_android_session_state_enable</a></li>
+<li><a href="#XR_VALVE_analog_threshold">12.53. XR_VALVE_analog_threshold</a></li>
+<li><a href="#XR_VARJO_quad_views">12.54. XR_VARJO_quad_views</a></li>
 </ul>
 </li>
 <li><a href="#provisional-extension-appendices-list">13. List of Provisional Extensions</a>
@@ -1960,9 +1964,8 @@ All run time error codes are negative values.</p>
     XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT = -1000039001,
     XR_ERROR_SECONDARY_VIEW_CONFIGURATION_TYPE_NOT_ENABLED_MSFT = -1000053000,
     XR_ERROR_CONTROLLER_MODEL_KEY_INVALID_MSFT = -1000055000,
-    XR_SPATIAL_ANCHOR_EXPORT_DATA_UNAVAILABLE_MSFT = 1000062000,
-    XR_ERROR_SPATIAL_ANCHOR_EXPORT_FAILED_MSFT = -1000062000,
-    XR_ERROR_SPATIAL_ANCHOR_SUFFICIENCY_QUERY_FAILED_MSFT = -1000062001,
+    XR_ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB = -1000101000,
+    XR_ERROR_COLOR_SPACE_UNSUPPORTED_FB = -1000108000,
     XR_ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT = -1000097000,
     XR_ERROR_SCENE_OBJECT_KEY_INVALID_MSFT = -1000097001,
     XR_ERROR_SCENE_MESH_KEY_INVALID_MSFT = -1000097002,
@@ -2040,10 +2043,6 @@ supported by this function&#8217;s parent handle but not at this moment.</p>
 <tr>
 <td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock"><code>XR_FRAME_DISCARDED</code></p></td>
 <td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock">A frame has been discarded from composition.</p></td>
-</tr>
-<tr>
-<td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock"><code>XR_SPATIAL_ANCHOR_EXPORT_DATA_UNAVAILABLE_MSFT</code></p></td>
-<td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock">All the current contents of the output stream have been read successfully (Added by the <code><a href="#XR_MSFT_spatial_anchor_export_preview">XR_MSFT_spatial_anchor_export_preview</a></code> extension)</p></td>
 </tr>
 </tbody>
 </table>
@@ -2271,12 +2270,12 @@ supported by this function&#8217;s parent handle but not at this moment.</p>
 <td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock">The controller model key is invalid. (Added by the <code><a href="#XR_MSFT_controller_model">XR_MSFT_controller_model</a></code> extension)</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock"><code>XR_ERROR_SPATIAL_ANCHOR_EXPORT_FAILED_MSFT</code></p></td>
-<td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock">Unable to export the spatial anchor (Added by the <code><a href="#XR_MSFT_spatial_anchor_export_preview">XR_MSFT_spatial_anchor_export_preview</a></code> extension)</p></td>
+<td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock"><code>XR_ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB</code></p></td>
+<td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock">The display refresh rate is not supported by the platform. (Added by the <code><a href="#XR_FB_display_refresh_rate">XR_FB_display_refresh_rate</a></code> extension)</p></td>
 </tr>
 <tr>
-<td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock"><code>XR_ERROR_SPATIAL_ANCHOR_SUFFICIENCY_QUERY_FAILED_MSFT</code></p></td>
-<td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock">Unable to query the export sufficiency of the spatial anchor (Added by the <code><a href="#XR_MSFT_spatial_anchor_export_preview">XR_MSFT_spatial_anchor_export_preview</a></code> extension)</p></td>
+<td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock"><code>XR_ERROR_COLOR_SPACE_UNSUPPORTED_FB</code></p></td>
+<td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock">The color space is not supported by the runtime. (Added by the <code><a href="#XR_FB_color_space">XR_FB_color_space</a></code> extension)</p></td>
 </tr>
 <tr>
 <td class="tableblock halign-left valign-top" style="background-color: white;"><p class="tableblock"><code>XR_ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT</code></p></td>
@@ -2473,7 +2472,6 @@ object handle type <strong class="purple">may</strong> be provided to indicate i
     XR_OBJECT_TYPE_DEBUG_UTILS_MESSENGER_EXT = 1000019000,
     XR_OBJECT_TYPE_SPATIAL_ANCHOR_MSFT = 1000039000,
     XR_OBJECT_TYPE_HAND_TRACKER_EXT = 1000051000,
-    XR_OBJECT_TYPE_SPATIAL_ANCHOR_NEIGHBORHOOD_DATA_STREAM_MSFT = 1000062000,
     XR_OBJECT_TYPE_SCENE_OBSERVER_MSFT = 1000097000,
     XR_OBJECT_TYPE_SCENE_MSFT = 1000097001,
     XR_OBJECT_TYPE_MAX_ENUM = 0x7FFFFFFF
@@ -2799,7 +2797,30 @@ timeout of <a href="#XR_NO_DURATION">XR_NO_DURATION</a>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="colors"><a class="anchor" href="#colors"></a>2.14. Colors</h3>
+<h3 id="prediction-time-limits"><a class="anchor" href="#prediction-time-limits"></a>2.14. Prediction Time Limits</h3>
+<div class="paragraph">
+<p>Some functions involve prediction.
+For example, <a href="#xrLocateViews">xrLocateViews</a> accepts a display time for which to return
+the resulting data.
+Prediction times provided by applications may refer to time in the past or
+the future.
+Times in the past <strong class="purple">may</strong> be interpolated historical data.
+Runtimes have different practical limits with respect to how far forward or
+backward prediction times can be accurate.
+There is no prescribed forward limit the application can successfully
+request predictions for, though predictions may become less accurate as they
+get farther into the future.
+With respect to backward prediction, the application can pass a prediction
+time equivalent to the timestamp of the most recently received pose plus as
+much as <code>50</code> milliseconds in the past to retrieve accurate historical
+data.
+Requested times predating this time window, or requested times predating the
+earliest received pose, <strong class="purple">may</strong> result in a best effort data whose accuracy
+reduced or unspecified.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="colors"><a class="anchor" href="#colors"></a>2.15. Colors</h3>
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
@@ -2849,7 +2870,7 @@ by the alpha component.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="coordinate-system"><a class="anchor" href="#coordinate-system"></a>2.15. Coordinate System</h3>
+<h3 id="coordinate-system"><a class="anchor" href="#coordinate-system"></a>2.16. Coordinate System</h3>
 <div class="paragraph">
 <p>This API uses a Cartesian right-handed coordinate system.</p>
 </div>
@@ -2866,9 +2887,7 @@ the space.</p>
 </div>
 <div class="paragraph">
 <p>The API uses 2D, 3D, and 4D floating-point vectors to describe points and
-directions in a space.
-When using <a href="#XrPosef">XrPosef</a> the rotation described by <code>orientation</code> is
-always applied before the translation described by <code>position</code>.</p>
+directions in a space.</p>
 </div>
 <div class="openblock">
 <div class="content">
@@ -3072,7 +3091,9 @@ space.</p>
 <div class="paragraph">
 <p>A construct representing a position and orientation within a space, with
 position expressed in meters, and orientation represented as a unit
-quaternion.</p>
+quaternion.
+When using <a href="#XrPosef">XrPosef</a> the rotation described by <code>orientation</code> is
+always applied before the translation described by <code>position</code>.</p>
 </div>
 <div class="paragraph">
 <p>A runtime <strong class="purple">must</strong> return <code>XR_ERROR_POSE_INVALID</code> if the <code>orientation</code>
@@ -3082,7 +3103,7 @@ norm deviates by more than 1% from unit length.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="common-object-types"><a class="anchor" href="#common-object-types"></a>2.16. Common Object Types</h3>
+<h3 id="common-object-types"><a class="anchor" href="#common-object-types"></a>2.17. Common Object Types</h3>
 <div class="paragraph">
 <p>Some types of OpenXR objects are used in multiple structures.
 Those include the <code>XrVector*f</code> and types specified above but also the
@@ -3340,7 +3361,7 @@ used instead.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="angles"><a class="anchor" href="#angles"></a>2.17. Angles</h3>
+<h3 id="angles"><a class="anchor" href="#angles"></a>2.18. Angles</h3>
 <div class="paragraph">
 <p>Where a value is provided as a function parameter or as a structure member
 and will be interpreted as an angle, the value is defined to be in radians.</p>
@@ -3407,29 +3428,6 @@ When <code>angleDown</code> &gt; <code>angleUp</code>, the content of the view <
 flipped vertically.</p>
 </div>
 </div>
-</div>
-</div>
-<div class="sect2">
-<h3 id="prediction-time-limits"><a class="anchor" href="#prediction-time-limits"></a>2.18. Prediction Time Limits</h3>
-<div class="paragraph">
-<p>Some functions involve prediction.
-For example, <a href="#xrLocateViews">xrLocateViews</a> accepts a display time for which to return
-the resulting data.
-Prediction times provided by applications may refer to time in the past or
-the future.
-Times in the past <strong class="purple">may</strong> be interpolated historical data.
-Runtimes have different practical limits with respect to how far forward or
-backward prediction times can be accurate.
-There is no prescribed forward limit the application can successfully
-request predictions for, though predictions may become less accurate as they
-get farther into the future.
-With respect to backward prediction, the application can pass a prediction
-time equivalent to the timestamp of the most recently received pose plus as
-much as <code>50</code> milliseconds in the past to retrieve accurate historical
-data.
-Requested times predating this time window, or requested times predating the
-earliest received pose, <strong class="purple">may</strong> result in a best effort data whose accuracy
-reduced or unspecified.</p>
 </div>
 </div>
 <div class="sect2">
@@ -3702,7 +3700,7 @@ a pointer of the appropriate event data based on the <code>type</code> parameter
 <div class="ulist">
 <ul>
 <li>
-<p><a id="VUID-XrEventDataBaseHeader-type-type" href="#VUID-XrEventDataBaseHeader-type-type"></a> <code>type</code> <strong class="purple">must</strong> be one of the following XrStructureType values: <code>XR_TYPE_EVENT_DATA_EVENTS_LOST</code>, <code>XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING</code>, <code>XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED</code>, <code>XR_TYPE_EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX</code>, <code>XR_TYPE_EVENT_DATA_PERF_SETTINGS_EXT</code>, <code>XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING</code>, <code>XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED</code>, <code>XR_TYPE_EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR</code></p>
+<p><a id="VUID-XrEventDataBaseHeader-type-type" href="#VUID-XrEventDataBaseHeader-type-type"></a> <code>type</code> <strong class="purple">must</strong> be one of the following XrStructureType values: <code>XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB</code>, <code>XR_TYPE_EVENT_DATA_EVENTS_LOST</code>, <code>XR_TYPE_EVENT_DATA_INSTANCE_LOSS_PENDING</code>, <code>XR_TYPE_EVENT_DATA_INTERACTION_PROFILE_CHANGED</code>, <code>XR_TYPE_EVENT_DATA_MAIN_SESSION_VISIBILITY_CHANGED_EXTX</code>, <code>XR_TYPE_EVENT_DATA_PERF_SETTINGS_EXT</code>, <code>XR_TYPE_EVENT_DATA_REFERENCE_SPACE_CHANGE_PENDING</code>, <code>XR_TYPE_EVENT_DATA_SESSION_STATE_CHANGED</code>, <code>XR_TYPE_EVENT_DATA_VISIBILITY_MASK_CHANGED_KHR</code></p>
 </li>
 <li>
 <p><a id="VUID-XrEventDataBaseHeader-next-next" href="#VUID-XrEventDataBaseHeader-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
@@ -3863,6 +3861,35 @@ the queue at which this event was found.</p>
 their definition is most relevant.</p>
 </div>
 </div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="resource-lifetime"><a class="anchor" href="#resource-lifetime"></a>2.21. System resource lifetime</h3>
+<div class="paragraph">
+<p>The creator of an underlying system resource is responsible for ensuring the
+resource&#8217;s lifetime matches the lifetime of the associated OpenXR handle.</p>
+</div>
+<div class="paragraph">
+<p>Resources passed as inputs from the application to the runtime when creating
+an OpenXR handle <strong class="purple">should</strong> not be freed while that handle is valid.
+A runtime <strong class="purple">must</strong> not free resources passed as inputs or decrease their
+reference counts (if applicable) from the initial value.
+For example, the graphics device handle (or pointer) passed in to
+<a href="#xrCreateSession">xrCreateSession</a> in <code>XrGraphicsBinding*</code> structure <strong class="purple">should</strong> be kept
+alive when the corresponding <a href="#XrSession">XrSession</a> handle is valid, and <strong class="purple">should</strong> be
+freed by the application after the <a href="#XrSession">XrSession</a> handle is destroyed.</p>
+</div>
+<div class="paragraph">
+<p>Resources created by the runtime should not be freed by the application, and
+the application <strong class="purple">should</strong> maintain the same reference count (if applicable) at
+the destruction of the OpenXR handle as it had at its creation.
+For example, the <code>ID3D*Texture2D</code> objects in the <code>XrSwapchainImageD3D*</code> are
+created by the runtime and associated with the lifetime of the
+<a href="#XrSwapchain">XrSwapchain</a> handle.
+The application <strong class="purple">should</strong> not keep additional reference counts on any
+<code>ID3D*Texture2D</code> objects past the lifetime of the <a href="#XrSwapchain">XrSwapchain</a> handle,
+or make extra reference count decrease after destroying the
+<a href="#XrSwapchain">XrSwapchain</a> handle.</p>
 </div>
 </div>
 </div>
@@ -9332,7 +9359,9 @@ static const XrSpaceLocationFlags XR_SPACE_LOCATION_POSITION_TRACKED_BIT = 0x000
 <code>pose</code> field&#8217;s <code>orientation</code> field contains valid data.
 For a space location tracking a device with its own inertial tracking,
 <code>XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT</code> <strong class="purple">should</strong> remain set when
-this bit is set.</p>
+this bit is set.
+Applications <strong class="purple">must</strong> not read the <code>pose</code> field&#8217;s <code>orientation</code> if
+this flag is unset.</p>
 </li>
 <li>
 <p><code>XR_SPACE_LOCATION_POSITION_VALID_BIT</code> indicates that the <code>pose</code>
@@ -9341,7 +9370,9 @@ When a space location loses tracking, runtimes <strong class="purple">should</st
 valid but untracked <code>position</code> values that are inferred or last-known,
 so long as it&#8217;s still meaningful for the application to use that position,
 clearing <code>XR_SPACE_LOCATION_POSITION_TRACKED_BIT</code> until positional
-tracking is recovered.</p>
+tracking is recovered.
+Applications <strong class="purple">must</strong> not read the <code>pose</code> field&#8217;s <code>position</code> if this
+flag is unset.</p>
 </li>
 <li>
 <p><code>XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT</code> indicates that the
@@ -10731,6 +10762,11 @@ The application should check whether <a href="#xrWaitFrame">xrWaitFrame</a> retu
 given frame to determine whether that frame will be visible to the user.</p>
 </div>
 <div class="paragraph">
+<p>Runtime session frame state <strong class="purple">must</strong> start in a reset state when a session
+transitions to <a href="#session_running">running</a> so that no state is carried over
+from when the same session was previously running.</p>
+</div>
+<div class="paragraph">
 <p>If <code>primaryViewConfigurationType</code> in <code>beginInfo</code> is not supported by
 the <a href="#XrSystemId"><code>XrSystemId</code></a> used to create the <code>session</code>, the runtime <strong class="purple">must</strong>
 return <code>XR_ERROR_VIEW_CONFIGURATION_TYPE_UNSUPPORTED</code>.</p>
@@ -10898,7 +10934,8 @@ its frame loop and then call <a href="#xrEndSession">xrEndSession</a> to end the
 <a href="#session_running">running</a> session.
 This function signals to the runtime that the application will no longer
 call <a href="#xrWaitFrame">xrWaitFrame</a>, <a href="#xrBeginFrame">xrBeginFrame</a> or <a href="#xrEndFrame">xrEndFrame</a> from any
-thread.
+thread allowing the runtime to safely transition the session to
+<code>XR_SESSION_STATE_IDLE</code>.
 The application <strong class="purple">must</strong> also avoid reading input state or sending haptic
 output after calling <a href="#xrEndSession">xrEndSession</a>.</p>
 </div>
@@ -10912,14 +10949,9 @@ calls <a href="#xrEndSession">xrEndSession</a>, but the session is not yet in th
 <code>XR_ERROR_SESSION_NOT_STOPPING</code>.</p>
 </div>
 <div class="paragraph">
-<p>If the application wishes to exit a session that is running but not in the
-<code>XR_SESSION_STATE_STOPPING</code> state, the application should call
-<a href="#xrRequestExitSession">xrRequestExitSession</a>.
-This requests that the runtime transition to the
-<code>XR_SESSION_STATE_STOPPING</code> state, so that the application can call
-<a href="#xrEndSession">xrEndSession</a>, after which the session will transition through
-<code>XR_SESSION_STATE_IDLE</code> to the <code>XR_SESSION_STATE_EXITING</code> state and
-quit the XR experience seamlessly.</p>
+<p>If the application wishes to exit a running session, the application can
+call <a href="#xrRequestExitSession">xrRequestExitSession</a> so that the session transitions from
+<code>XR_SESSION_STATE_IDLE</code> to <code>XR_SESSION_STATE_EXITING</code>.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -11017,12 +11049,8 @@ quit the XR experience seamlessly.</p>
 transition from one application&#8217;s session to another.
 When an application wishes to exit a <a href="#session_running">running</a> session,
 the application can call <a href="#xrRequestExitSession">xrRequestExitSession</a>, requesting that the
-runtime transition the session to the <code>XR_SESSION_STATE_STOPPING</code> state.
-When the application receives an <a href="#XrEventDataSessionStateChanged">XrEventDataSessionStateChanged</a> event
-indicating that the session has reached the <code>XR_SESSION_STATE_STOPPING</code>
-state, the application can then call <a href="#xrEndSession">xrEndSession</a> to quit the XR
-experience seamlessly, transitioning the session through
-<code>XR_SESSION_STATE_IDLE</code> to the <code>XR_SESSION_STATE_EXITING</code> state.</p>
+runtime transition through the various intermediate session states including
+<code>XR_SESSION_STATE_STOPPING</code> to <code>XR_SESSION_STATE_EXITING</code>.</p>
 </div>
 <div class="paragraph">
 <p>If <code>session</code> <a href="#session_not_running">is not running</a> when
@@ -12628,7 +12656,8 @@ for the image to become available for writing.</p>
 </div>
 </div>
 <div class="paragraph">
-<p>Once an application is done writing to a swapchain image, it is released.
+<p>Once an application is done submitting commands that reference the swapchain
+image, the application <strong class="purple">must</strong> release the swapchain image.
 <a href="#xrReleaseSwapchainImage">xrReleaseSwapchainImage</a> will implicitly release the oldest swapchain
 image which has been acquired.
 The swapchain image <strong class="purple">must</strong> have been successfully waited on before it is
@@ -13190,6 +13219,8 @@ static const XrViewStateFlags XR_VIEW_STATE_POSITION_TRACKED_BIT = 0x00000008;</
 <li>
 <p><code>XR_VIEW_STATE_ORIENTATION_VALID_BIT</code> indicates whether all
 <a href="#XrView">XrView</a> orientations contain valid data.
+Applications <strong class="purple">must</strong> not read any of the <a href="#XrView">XrView</a> <code>pose</code>
+<code>orientation</code> fields if this flag is unset.
 <code>XR_VIEW_STATE_ORIENTATION_TRACKED_BIT</code> <strong class="purple">should</strong> generally remain set
 when this bit is set for views on a tracked headset or handheld device.</p>
 </li>
@@ -13200,7 +13231,9 @@ When a view loses tracking, runtimes <strong class="purple">should</strong> cont
 untracked view <code>position</code> values that are inferred or last-known, so
 long as it&#8217;s still meaningful for the application to render content using
 that position, clearing <code>XR_VIEW_STATE_POSITION_TRACKED_BIT</code> until
-tracking is recovered.</p>
+tracking is recovered.
+Applications <strong class="purple">must</strong> not read any of the <a href="#XrView">XrView</a> <code>pose</code>
+<code>position</code> fields if this flag is unset.</p>
 </li>
 <li>
 <p><code>XR_VIEW_STATE_ORIENTATION_TRACKED_BIT</code> indicates whether all
@@ -16278,7 +16311,7 @@ application&#8217;s suggested bindings for the specified interaction profile.</p
 <p><a id="VUID-XrInteractionProfileSuggestedBinding-type-type" href="#VUID-XrInteractionProfileSuggestedBinding-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING</code></p>
 </li>
 <li>
-<p><a id="VUID-XrInteractionProfileSuggestedBinding-next-next" href="#VUID-XrInteractionProfileSuggestedBinding-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrInteractionProfileAnalogThresholdVALVE">XrInteractionProfileAnalogThresholdVALVE</a></p>
+<p><a id="VUID-XrInteractionProfileSuggestedBinding-next-next" href="#VUID-XrInteractionProfileSuggestedBinding-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a>. See also: <a href="#XrBindingModificationsKHR">XrBindingModificationsKHR</a>, <a href="#XrInteractionProfileAnalogThresholdVALVE">XrInteractionProfileAnalogThresholdVALVE</a></p>
 </li>
 <li>
 <p><a id="VUID-XrInteractionProfileSuggestedBinding-suggestedBindings-parameter" href="#VUID-XrInteractionProfileSuggestedBinding-suggestedBindings-parameter"></a> <code>suggestedBindings</code> <strong class="purple">must</strong> be a pointer to an array of <code>countSuggestedBindings</code> valid <a href="#XrActionSuggestedBinding">XrActionSuggestedBinding</a> structures</p>
@@ -18893,6 +18926,9 @@ E.g. <code>Trigger</code>.</p>
 <p><code><a href="#XR_KHR_android_thread_settings">XR_KHR_android_thread_settings</a></code></p>
 </li>
 <li>
+<p><code><a href="#XR_KHR_binding_modification">XR_KHR_binding_modification</a></code></p>
+</li>
+<li>
 <p><code><a href="#XR_KHR_composition_layer_color_scale_bias">XR_KHR_composition_layer_color_scale_bias</a></code></p>
 </li>
 <li>
@@ -18980,6 +19016,15 @@ E.g. <code>Trigger</code>.</p>
 <p><code><a href="#XR_EPIC_view_configuration_fov">XR_EPIC_view_configuration_fov</a></code></p>
 </li>
 <li>
+<p><code><a href="#XR_FB_color_space">XR_FB_color_space</a></code></p>
+</li>
+<li>
+<p><code><a href="#XR_FB_display_refresh_rate">XR_FB_display_refresh_rate</a></code></p>
+</li>
+<li>
+<p><code><a href="#XR_HTC_vive_cosmos_controller_interaction">XR_HTC_vive_cosmos_controller_interaction</a></code></p>
+</li>
+<li>
 <p><code><a href="#XR_HUAWEI_controller_interaction">XR_HUAWEI_controller_interaction</a></code></p>
 </li>
 <li>
@@ -19004,7 +19049,7 @@ E.g. <code>Trigger</code>.</p>
 <p><code><a href="#XR_MSFT_holographic_window_attachment">XR_MSFT_holographic_window_attachment</a></code></p>
 </li>
 <li>
-<p><code><a href="#XR_MSFT_perception_anchor_interop_preview">XR_MSFT_perception_anchor_interop_preview</a></code></p>
+<p><code><a href="#XR_MSFT_perception_anchor_interop">XR_MSFT_perception_anchor_interop</a></code></p>
 </li>
 <li>
 <p><code><a href="#XR_MSFT_scene_understanding_preview">XR_MSFT_scene_understanding_preview</a></code></p>
@@ -19017,9 +19062,6 @@ E.g. <code>Trigger</code>.</p>
 </li>
 <li>
 <p><code><a href="#XR_MSFT_spatial_anchor">XR_MSFT_spatial_anchor</a></code></p>
-</li>
-<li>
-<p><code><a href="#XR_MSFT_spatial_anchor_export_preview">XR_MSFT_spatial_anchor_export_preview</a></code></p>
 </li>
 <li>
 <p><code><a href="#XR_MSFT_spatial_graph_bridge">XR_MSFT_spatial_graph_bridge</a></code></p>
@@ -19860,7 +19902,240 @@ xrSetApplicationThreadKHR &#8594; <a href="#xrSetAndroidApplicationThreadKHR">xr
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_composition_layer_color_scale_bias"><a class="anchor" href="#XR_KHR_composition_layer_color_scale_bias"></a>12.4. XR_KHR_composition_layer_color_scale_bias</h3>
+<h3 id="XR_KHR_binding_modification"><a class="anchor" href="#XR_KHR_binding_modification"></a>12.4. XR_KHR_binding_modification</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Name String</strong></dt>
+<dd>
+<p><code>XR_KHR_binding_modification</code></p>
+</dd>
+<dt class="hdlist1"><strong>Extension Type</strong></dt>
+<dd>
+<p>Instance extension</p>
+</dd>
+<dt class="hdlist1"><strong>Registered Extension Number</strong></dt>
+<dd>
+<p>121</p>
+</dd>
+<dt class="hdlist1"><strong>Revision</strong></dt>
+<dd>
+<p>1</p>
+</dd>
+<dt class="hdlist1"><strong>Extension and Version Dependencies</strong></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>Requires OpenXR 1.0</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1"><strong>Last Modified Date</strong></dt>
+<dd>
+<p>2020-07-29</p>
+</dd>
+<dt class="hdlist1"><strong>IP Status</strong></dt>
+<dd>
+<p>No known IP claims.</p>
+</dd>
+<dt class="hdlist1"><strong>Contributors</strong></dt>
+<dd>
+<p>Joe Ludwig, Valve</p>
+</dd>
+<dt class="hdlist1"><strong>Contacts</strong></dt>
+<dd>
+<p>Joe Ludwig, Valve</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p><strong>Overview</strong></p>
+</div>
+<div class="paragraph">
+<p>This extension adds an optional structure that can be included on the
+<a href="#XrInteractionProfileSuggestedBinding">XrInteractionProfileSuggestedBinding</a>::<code>next</code> chain passed to
+<a href="#xrSuggestInteractionProfileBindings">xrSuggestInteractionProfileBindings</a> to specify additional information
+to modify default binding behavior.</p>
+</div>
+<div class="paragraph">
+<p>This extension does not define any actual modification structs, but includes
+the list of modifications and the <a href="#XrBindingModificationBaseHeaderKHR">XrBindingModificationBaseHeaderKHR</a>
+structure to allow other extensions to provide specific modifications.</p>
+</div>
+<div class="paragraph">
+<p><strong>New Object Types</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>New Flag Types</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>New Enum Constants</strong></p>
+</div>
+<div class="paragraph">
+<p><a href="#XrStructureType">XrStructureType</a> enumeration is extended with:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_TYPE_BINDING_MODIFICATIONS_KHR</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>New Enums</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>New Structures</strong></p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>The <a href="#XrBindingModificationsKHR">XrBindingModificationsKHR</a> structure is defined as:</p>
+</div>
+<div id="XrBindingModificationsKHR" class="paragraph">
+<p></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrBindingModificationsKHR {
+    XrStructureType                                     type;
+    const void*                                         next;
+    uint32_t                                            bindingModificationCount;
+    const XrBindingModificationBaseHeaderKHR* const*    bindingModifications;
+} XrBindingModificationsKHR;</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Member Descriptions</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>type</code> is the <a href="#XrStructureType">XrStructureType</a> of this structure.</p>
+</li>
+<li>
+<p><code>next</code> is <code>NULL</code> or a pointer to the next structure in a structure
+chain.</p>
+</li>
+<li>
+<p><code>bindingModificationCount</code> is the number of binding modifications in
+the array pointed to by <code>bindingModifications</code>.</p>
+</li>
+<li>
+<p><code>bindingModifications</code> is a pointer to an array of pointers to binding
+modification structures based on <a href="#XrBindingModificationBaseHeaderKHR">XrBindingModificationBaseHeaderKHR</a>,
+that define all of the application&#8217;s suggested binding modifications for
+the specified interaction profile.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Valid Usage (Implicit)</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a id="VUID-XrBindingModificationsKHR-extension-notenabled" href="#VUID-XrBindingModificationsKHR-extension-notenabled"></a> The <code><a href="#XR_KHR_binding_modification">XR_KHR_binding_modification</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrBindingModificationsKHR">XrBindingModificationsKHR</a></p>
+</li>
+<li>
+<p><a id="VUID-XrBindingModificationsKHR-type-type" href="#VUID-XrBindingModificationsKHR-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_BINDING_MODIFICATIONS_KHR</code></p>
+</li>
+<li>
+<p><a id="VUID-XrBindingModificationsKHR-next-next" href="#VUID-XrBindingModificationsKHR-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
+</li>
+<li>
+<p><a id="VUID-XrBindingModificationsKHR-bindingModifications-parameter" href="#VUID-XrBindingModificationsKHR-bindingModifications-parameter"></a> If <code>bindingModificationCount</code> is not <code>0</code>, <code>bindingModifications</code> <strong class="purple">must</strong> be a pointer to an array of <code>bindingModificationCount</code> valid <a href="#XrBindingModificationBaseHeaderKHR">XrBindingModificationBaseHeaderKHR</a>-based structures</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>The <a href="#XrBindingModificationBaseHeaderKHR">XrBindingModificationBaseHeaderKHR</a> structure is defined as:</p>
+</div>
+<div id="XrBindingModificationBaseHeaderKHR" class="paragraph">
+<p></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrBindingModificationBaseHeaderKHR {
+    XrStructureType    type;
+    const void*        next;
+} XrBindingModificationBaseHeaderKHR;</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Member Descriptions</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>type</code> is the <a href="#XrStructureType">XrStructureType</a> of this structure.
+This base structure itself has no associated <a href="#XrStructureType">XrStructureType</a> value.</p>
+</li>
+<li>
+<p><code>next</code> is <code>NULL</code> or a pointer to the next structure in a structure
+chain.
+No such structures are defined in core OpenXR or in this extension.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>The <a href="#XrBindingModificationBaseHeaderKHR">XrBindingModificationBaseHeaderKHR</a> is a base structure is
+overridden by <code>XrBindingModification*</code> child structures.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Valid Usage (Implicit)</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a id="VUID-XrBindingModificationBaseHeaderKHR-extension-notenabled" href="#VUID-XrBindingModificationBaseHeaderKHR-extension-notenabled"></a> The <code><a href="#XR_KHR_binding_modification">XR_KHR_binding_modification</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrBindingModificationBaseHeaderKHR">XrBindingModificationBaseHeaderKHR</a></p>
+</li>
+<li>
+<p><a id="VUID-XrBindingModificationBaseHeaderKHR-next-next" href="#VUID-XrBindingModificationBaseHeaderKHR-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>New Functions</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Issues</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Version History</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Revision 1, 2020-08-06 (Joe Ludwig)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Initial draft.</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="XR_KHR_composition_layer_color_scale_bias"><a class="anchor" href="#XR_KHR_composition_layer_color_scale_bias"></a>12.5. XR_KHR_composition_layer_color_scale_bias</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -20107,7 +20382,7 @@ and offset, then restoring.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_composition_layer_cube"><a class="anchor" href="#XR_KHR_composition_layer_cube"></a>12.5. XR_KHR_composition_layer_cube</h3>
+<h3 id="XR_KHR_composition_layer_cube"><a class="anchor" href="#XR_KHR_composition_layer_cube"></a>12.6. XR_KHR_composition_layer_cube</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -20409,7 +20684,7 @@ language changes, eye parameter description update</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_composition_layer_cylinder"><a class="anchor" href="#XR_KHR_composition_layer_cylinder"></a>12.6. XR_KHR_composition_layer_cylinder</h3>
+<h3 id="XR_KHR_composition_layer_cylinder"><a class="anchor" href="#XR_KHR_composition_layer_cylinder"></a>12.7. XR_KHR_composition_layer_cylinder</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -20709,7 +20984,7 @@ the existing core spec.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_composition_layer_depth"><a class="anchor" href="#XR_KHR_composition_layer_depth"></a>12.7. XR_KHR_composition_layer_depth</h3>
+<h3 id="XR_KHR_composition_layer_depth"><a class="anchor" href="#XR_KHR_composition_layer_depth"></a>12.8. XR_KHR_composition_layer_depth</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -20968,7 +21243,7 @@ to <a href="#XrSwapchainSubImage">XrSwapchainSubImage</a></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_composition_layer_equirect"><a class="anchor" href="#XR_KHR_composition_layer_equirect"></a>12.8. XR_KHR_composition_layer_equirect</h3>
+<h3 id="XR_KHR_composition_layer_equirect"><a class="anchor" href="#XR_KHR_composition_layer_equirect"></a>12.9. XR_KHR_composition_layer_equirect</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -21224,7 +21499,7 @@ such extension layer types.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_composition_layer_equirect2"><a class="anchor" href="#XR_KHR_composition_layer_equirect2"></a>12.9. XR_KHR_composition_layer_equirect2</h3>
+<h3 id="XR_KHR_composition_layer_equirect2"><a class="anchor" href="#XR_KHR_composition_layer_equirect2"></a>12.10. XR_KHR_composition_layer_equirect2</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -21471,7 +21746,7 @@ render an equirectangular image onto a sphere when calling <a href="#xrEndFrame"
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_convert_timespec_time"><a class="anchor" href="#XR_KHR_convert_timespec_time"></a>12.10. XR_KHR_convert_timespec_time</h3>
+<h3 id="XR_KHR_convert_timespec_time"><a class="anchor" href="#XR_KHR_convert_timespec_time"></a>12.11. XR_KHR_convert_timespec_time</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -21786,7 +22061,7 @@ runtime <strong class="purple">must</strong> return <code>XR_ERROR_TIME_INVALID<
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_D3D11_enable"><a class="anchor" href="#XR_KHR_D3D11_enable"></a>12.11. XR_KHR_D3D11_enable</h3>
+<h3 id="XR_KHR_D3D11_enable"><a class="anchor" href="#XR_KHR_D3D11_enable"></a>12.12. XR_KHR_D3D11_enable</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -22310,7 +22585,7 @@ passes to <a href="#xrCreateSession">xrCreateSession</a> in the <a href="#XrGrap
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_D3D12_enable"><a class="anchor" href="#XR_KHR_D3D12_enable"></a>12.12. XR_KHR_D3D12_enable</h3>
+<h3 id="XR_KHR_D3D12_enable"><a class="anchor" href="#XR_KHR_D3D12_enable"></a>12.13. XR_KHR_D3D12_enable</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -22915,7 +23190,7 @@ passes to <a href="#xrCreateSession">xrCreateSession</a> in the <a href="#XrGrap
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_loader_init"><a class="anchor" href="#XR_KHR_loader_init"></a>12.13. XR_KHR_loader_init</h3>
+<h3 id="XR_KHR_loader_init"><a class="anchor" href="#XR_KHR_loader_init"></a>12.14. XR_KHR_loader_init</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -23098,7 +23373,7 @@ defined by other platform- or implementation-specific extensions.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_loader_init_android"><a class="anchor" href="#XR_KHR_loader_init_android"></a>12.14. XR_KHR_loader_init_android</h3>
+<h3 id="XR_KHR_loader_init_android"><a class="anchor" href="#XR_KHR_loader_init_android"></a>12.15. XR_KHR_loader_init_android</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -23287,7 +23562,7 @@ pointer.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_opengl_enable"><a class="anchor" href="#XR_KHR_opengl_enable"></a>12.15. XR_KHR_opengl_enable</h3>
+<h3 id="XR_KHR_opengl_enable"><a class="anchor" href="#XR_KHR_opengl_enable"></a>12.16. XR_KHR_opengl_enable</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -24173,7 +24448,7 @@ on calls to <a href="#xrCreateSession">xrCreateSession</a> if
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_opengl_es_enable"><a class="anchor" href="#XR_KHR_opengl_es_enable"></a>12.16. XR_KHR_opengl_es_enable</h3>
+<h3 id="XR_KHR_opengl_es_enable"><a class="anchor" href="#XR_KHR_opengl_es_enable"></a>12.17. XR_KHR_opengl_es_enable</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -24743,7 +25018,7 @@ on calls to <a href="#xrCreateSession">xrCreateSession</a> if
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_visibility_mask"><a class="anchor" href="#XR_KHR_visibility_mask"></a>12.17. XR_KHR_visibility_mask</h3>
+<h3 id="XR_KHR_visibility_mask"><a class="anchor" href="#XR_KHR_visibility_mask"></a>12.18. XR_KHR_visibility_mask</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -24933,7 +25208,11 @@ vertices written or the required capacity in the case that
 </li>
 <li>
 <p><code>vertices</code> is an array of vertices filled in by the runtime that
-specifies mask coordinates in the z=-1 plane of the view.</p>
+specifies mask coordinates in the z=-1 plane of the rendered view&#8212;&#8203;i.e.,
+one meter in front of the view.
+When rendering the mask for use in a projection layer, these vertices must
+be transformed by the application&#8217;s projection matrix used for the
+respective <a href="#XrCompositionLayerProjectionView">XrCompositionLayerProjectionView</a>.</p>
 </li>
 <li>
 <p><code>indexCapacityInput</code> is the capacity of the <code>indices</code> array, or
@@ -25228,7 +25507,7 @@ and index counts <strong class="purple">must</strong> be <code>0</code>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_vulkan_enable"><a class="anchor" href="#XR_KHR_vulkan_enable"></a>12.18. XR_KHR_vulkan_enable</h3>
+<h3 id="XR_KHR_vulkan_enable"><a class="anchor" href="#XR_KHR_vulkan_enable"></a>12.19. XR_KHR_vulkan_enable</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -25274,7 +25553,8 @@ Andres Rodriguez, Valve<br>
 Dan Ginsburg, Valve<br>
 Bryce Hutchings, Microsoft<br>
 Minmin Gong, Microsoft<br>
-Robert Menzel, NVIDIA</p>
+Robert Menzel, NVIDIA<br>
+Paulo F. Gomes, Samsung Electronics</p>
 </dd>
 </dl>
 </div>
@@ -25381,14 +25661,15 @@ is not listed above or in an extension definition.</p>
 </div>
 <div class="paragraph">
 <p>When an application acquires a swapchain image by calling
-<a href="#xrAcquireSwapchainImage">xrAcquireSwapchainImage</a> in a session create using
+<a href="#xrAcquireSwapchainImage">xrAcquireSwapchainImage</a> in a session created using
 <a href="#XrGraphicsBindingVulkanKHR">XrGraphicsBindingVulkanKHR</a>, the OpenXR runtime <strong class="purple">must</strong> guarantee that:</p>
 </div>
 <div class="ulist">
 <ul>
 <li>
 <p>The image has a memory layout compatible with
-<code>VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL</code></p>
+<code>VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL</code> for color images, or
+<code>VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL</code> for depth images.</p>
 </li>
 <li>
 <p>The <code>VkQueue</code> specified in <a href="#XrGraphicsBindingVulkanKHR">XrGraphicsBindingVulkanKHR</a> has
@@ -25398,7 +25679,7 @@ ownership of the image.</p>
 </div>
 <div class="paragraph">
 <p>When an application releases a swapchain image by calling
-<a href="#xrReleaseSwapchainImage">xrReleaseSwapchainImage</a>, in a session create using
+<a href="#xrReleaseSwapchainImage">xrReleaseSwapchainImage</a>, in a session created using
 <a href="#XrGraphicsBindingVulkanKHR">XrGraphicsBindingVulkanKHR</a>, the OpenXR runtime <strong class="purple">must</strong> interpret the
 image as:</p>
 </div>
@@ -25406,7 +25687,8 @@ image as:</p>
 <ul>
 <li>
 <p>Having a memory layout compatible with
-<code>VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL</code>,</p>
+<code>VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL</code> for color images, or
+<code>VK_IMAGE_LAYOUT_DEPTH_STENCIAL_ATTACHMENT_OPTIMAL</code> for depth images.</p>
 </li>
 <li>
 <p>Being owned by the <code>VkQueue</code> specified in
@@ -25533,7 +25815,7 @@ specified by <a href="#XrGraphicsBindingVulkanKHR">XrGraphicsBindingVulkanKHR</a
 specified by <a href="#xrGetVulkanGraphicsDeviceKHR">xrGetVulkanGraphicsDeviceKHR</a></p>
 </li>
 <li>
-<p><code>device</code> <strong class="purple">must</strong> have enabled all the instance extensions specified by
+<p><code>device</code> <strong class="purple">must</strong> have enabled all the device extensions specified by
 <a href="#xrGetVulkanDeviceExtensionsKHR">xrGetVulkanDeviceExtensionsKHR</a></p>
 </li>
 </ul>
@@ -25688,15 +25970,15 @@ chain.
 No such structures are defined in core OpenXR or this extension.</p>
 </li>
 <li>
-<p><code>minApiVersionSupported</code> is the minimum version of Vulkan that the
-runtime supports.
+<p><code>minApiVersionSupported</code> is the minimum Vulkan Instance API version
+that the runtime supports.
 Uses <a href="#XR_MAKE_VERSION">XR_MAKE_VERSION</a> on major and minor API version, ignoring any
 patch version component.</p>
 </li>
 <li>
-<p><code>maxApiVersionSupported</code> is the maximum version of Vulkan that the
-runtime has been tested on and is known to support.
-Newer Vulkan versions might work if they are compatible.
+<p><code>maxApiVersionSupported</code> is the maximum Vulkan Instance API version
+that the runtime has been tested on and is known to support.
+Newer Vulkan Instance API versions might work if they are compatible.
 Uses <a href="#XR_MAKE_VERSION">XR_MAKE_VERSION</a> on major and minor API version, ignoring any
 patch version component.</p>
 </li>
@@ -26300,7 +26582,7 @@ instead of the app</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_vulkan_enable2"><a class="anchor" href="#XR_KHR_vulkan_enable2"></a>12.19. XR_KHR_vulkan_enable2</h3>
+<h3 id="XR_KHR_vulkan_enable2"><a class="anchor" href="#XR_KHR_vulkan_enable2"></a>12.20. XR_KHR_vulkan_enable2</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -26355,7 +26637,7 @@ Robert Menzel, NVIDIA</p>
 </dl>
 </div>
 <div class="sect3">
-<h4 id="_overview"><a class="anchor" href="#_overview"></a>12.19.1. Overview</h4>
+<h4 id="_overview"><a class="anchor" href="#_overview"></a>12.20.1. Overview</h4>
 <div class="paragraph">
 <p>This extension enables the use of the Vulkan graphics API in an OpenXR
 runtime.
@@ -26395,7 +26677,7 @@ and does not depend on it.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_initialization"><a class="anchor" href="#_initialization"></a>12.19.2. Initialization</h4>
+<h4 id="_initialization"><a class="anchor" href="#_initialization"></a>12.20.2. Initialization</h4>
 <div class="paragraph">
 <p>When operating in Vulkan mode, the OpenXR runtime and the application will
 share the Vulkan queue described in the <a href="#XrGraphicsBindingVulkan2KHR">XrGraphicsBindingVulkan2KHR</a>
@@ -27369,7 +27651,7 @@ objects which the application wishes to associate with an
 </div>
 </div>
 <div class="sect3">
-<h4 id="_concurrency"><a class="anchor" href="#_concurrency"></a>12.19.3. Concurrency</h4>
+<h4 id="_concurrency"><a class="anchor" href="#_concurrency"></a>12.20.3. Concurrency</h4>
 <div class="paragraph">
 <p>Vulkan requires that concurrent access to a <code>VkQueue</code> from multiple
 threads be externally synchronized.
@@ -27407,7 +27689,7 @@ result in undefined behaviour in the OpenXR runtime.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_swapchain_interactions"><a class="anchor" href="#_swapchain_interactions"></a>12.19.4. Swapchain Interactions</h4>
+<h4 id="_swapchain_interactions"><a class="anchor" href="#_swapchain_interactions"></a>12.20.4. Swapchain Interactions</h4>
 <div class="sect4">
 <h5 id="_swapchain_images"><a class="anchor" href="#_swapchain_images"></a>Swapchain Images</h5>
 <div class="paragraph">
@@ -27560,7 +27842,7 @@ runtime <strong class="purple">may</strong> exhibit undefined behaviour.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_appendix"><a class="anchor" href="#_appendix"></a>12.19.5. Appendix</h4>
+<h4 id="_appendix"><a class="anchor" href="#_appendix"></a>12.20.5. Appendix</h4>
 <div class="sect4">
 <h5 id="_questions"><a class="anchor" href="#_questions"></a>Questions</h5>
 <div class="olist arabic">
@@ -27676,7 +27958,7 @@ captures the relevant information.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_vulkan_swapchain_format_list"><a class="anchor" href="#XR_KHR_vulkan_swapchain_format_list"></a>12.20. XR_KHR_vulkan_swapchain_format_list</h3>
+<h3 id="XR_KHR_vulkan_swapchain_format_list"><a class="anchor" href="#XR_KHR_vulkan_swapchain_format_list"></a>12.21. XR_KHR_vulkan_swapchain_format_list</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -27881,7 +28163,7 @@ No such structures are defined in core OpenXR or this extension.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_KHR_win32_convert_performance_counter_time"><a class="anchor" href="#XR_KHR_win32_convert_performance_counter_time"></a>12.21. XR_KHR_win32_convert_performance_counter_time</h3>
+<h3 id="XR_KHR_win32_convert_performance_counter_time"><a class="anchor" href="#XR_KHR_win32_convert_performance_counter_time"></a>12.22. XR_KHR_win32_convert_performance_counter_time</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -28203,7 +28485,7 @@ Windows function.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_conformance_automation"><a class="anchor" href="#XR_EXT_conformance_automation"></a>12.22. XR_EXT_conformance_automation</h3>
+<h3 id="XR_EXT_conformance_automation"><a class="anchor" href="#XR_EXT_conformance_automation"></a>12.23. XR_EXT_conformance_automation</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -28952,7 +29234,7 @@ wish to set the pose for (e.g. <em>/user/hand/left/input/grip/pose</em>).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_debug_utils"><a class="anchor" href="#XR_EXT_debug_utils"></a>12.23. XR_EXT_debug_utils</h3>
+<h3 id="XR_EXT_debug_utils"><a class="anchor" href="#XR_EXT_debug_utils"></a>12.24. XR_EXT_debug_utils</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -29027,7 +29309,7 @@ tracking.</p>
 </ul>
 </div>
 <div class="sect3">
-<h4 id="object-debug-annotation"><a class="anchor" href="#object-debug-annotation"></a>12.23.1. Object Debug Annotation</h4>
+<h4 id="object-debug-annotation"><a class="anchor" href="#object-debug-annotation"></a>12.24.1. Object Debug Annotation</h4>
 <div class="paragraph">
 <p>It can be useful for an application to provide its own content relative to a
 specific OpenXR handle.</p>
@@ -29053,7 +29335,7 @@ structure is an empty string, then any previously set name is removed.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="debug-messengers"><a class="anchor" href="#debug-messengers"></a>12.23.2. Debug Messengers</h4>
+<h4 id="debug-messengers"><a class="anchor" href="#debug-messengers"></a>12.24.2. Debug Messengers</h4>
 <div class="paragraph">
 <p>OpenXR allows an application to register arbitrary number of callbacks with
 all the OpenXR components wishing to report debug information.
@@ -29076,7 +29358,7 @@ debug messages.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="debug-message-categorization"><a class="anchor" href="#debug-message-categorization"></a>12.23.3. Debug Message Categorization</h4>
+<h4 id="debug-message-categorization"><a class="anchor" href="#debug-message-categorization"></a>12.24.3. Debug Message Categorization</h4>
 <div class="paragraph">
 <p>Messages that are triggered by the debug messenger are categorized by their
 message type and severity.
@@ -29227,7 +29509,7 @@ this can be done.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="session-labels"><a class="anchor" href="#session-labels"></a>12.23.4. Session Labels</h4>
+<h4 id="session-labels"><a class="anchor" href="#session-labels"></a>12.24.4. Session Labels</h4>
 <div class="paragraph">
 <p>All OpenXR work is performed inside of an <a href="#XrSession">XrSession</a>.
 There are times that it helps to label areas in your OpenXR session to allow
@@ -31015,7 +31297,7 @@ VK_EXT_debug_utils extension by Peter Kraus (aka @krOoze).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_eye_gaze_interaction"><a class="anchor" href="#XR_EXT_eye_gaze_interaction"></a>12.24. XR_EXT_eye_gaze_interaction</h3>
+<h3 id="XR_EXT_eye_gaze_interaction"><a class="anchor" href="#XR_EXT_eye_gaze_interaction"></a>12.25. XR_EXT_eye_gaze_interaction</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -31102,7 +31384,7 @@ determine if the eye tracker is actively tracking the users eye gaze, and
 use the eye gaze pose as an input signal to build eye gaze interactions.</p>
 </div>
 <div class="sect3">
-<h4 id="_eye_tracker"><a class="anchor" href="#_eye_tracker"></a>12.24.1. Eye tracker</h4>
+<h4 id="_eye_tracker"><a class="anchor" href="#_eye_tracker"></a>12.25.1. Eye tracker</h4>
 <div class="paragraph">
 <p>An eye tracker is a sensory device that tracks eyes and accurately maps what
 the user is looking at.
@@ -31136,7 +31418,7 @@ tracked space.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_device_enumeration"><a class="anchor" href="#_device_enumeration"></a>12.24.2. Device enumeration</h4>
+<h4 id="_device_enumeration"><a class="anchor" href="#_device_enumeration"></a>12.25.2. Device enumeration</h4>
 <div class="paragraph">
 <p>When the eye gaze input extension is enabled an application <strong class="purple">may</strong> pass in a
 <a href="#XrSystemEyeGazeInteractionPropertiesEXT">XrSystemEyeGazeInteractionPropertiesEXT</a> structure in next chain
@@ -31207,7 +31489,7 @@ set this to <code>XR_FALSE</code>.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_eye_gaze_input"><a class="anchor" href="#_eye_gaze_input"></a>12.24.3. Eye gaze input</h4>
+<h4 id="_eye_gaze_input"><a class="anchor" href="#_eye_gaze_input"></a>12.25.3. Eye gaze input</h4>
 <div class="paragraph">
 <p>This extension exposes a new interaction profile path
 <em>/interaction_profiles/ext/eye_gaze_interaction</em> that is valid for
@@ -31344,7 +31626,7 @@ No such structures are defined in core OpenXR or this extension.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_sample_code"><a class="anchor" href="#_sample_code"></a>12.24.4. Sample code</h4>
+<h4 id="_sample_code"><a class="anchor" href="#_sample_code"></a>12.25.4. Sample code</h4>
 <div class="paragraph">
 <p>The following example code shows how to bind the eye pose to the action
 system.</p>
@@ -31450,7 +31732,7 @@ while(true)
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_hand_tracking"><a class="anchor" href="#XR_EXT_hand_tracking"></a>12.25. XR_EXT_hand_tracking</h3>
+<h3 id="XR_EXT_hand_tracking"><a class="anchor" href="#XR_EXT_hand_tracking"></a>12.26. XR_EXT_hand_tracking</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -32858,7 +33140,7 @@ defined in <a href="#XrHandJointEXT">XrHandJointEXT</a></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_hp_mixed_reality_controller"><a class="anchor" href="#XR_EXT_hp_mixed_reality_controller"></a>12.26. XR_EXT_hp_mixed_reality_controller</h3>
+<h3 id="XR_EXT_hp_mixed_reality_controller"><a class="anchor" href="#XR_EXT_hp_mixed_reality_controller"></a>12.27. XR_EXT_hp_mixed_reality_controller</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -33018,7 +33300,7 @@ Controllers:</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_performance_settings"><a class="anchor" href="#XR_EXT_performance_settings"></a>12.27. XR_EXT_performance_settings</h3>
+<h3 id="XR_EXT_performance_settings"><a class="anchor" href="#XR_EXT_performance_settings"></a>12.28. XR_EXT_performance_settings</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -33063,7 +33345,7 @@ Innovation Center, Inc</p>
 </dl>
 </div>
 <div class="sect3">
-<h4 id="_overview_2"><a class="anchor" href="#_overview_2"></a>12.27.1. Overview</h4>
+<h4 id="_overview_2"><a class="anchor" href="#_overview_2"></a>12.28.1. Overview</h4>
 <div class="paragraph">
 <p>This extension defines an API for the application to give performance hints
 to the runtime and for the runtime to send performance related notifications
@@ -33091,7 +33373,7 @@ load without consuming more energy than necessary.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_setting_performance_levels_hints"><a class="anchor" href="#_setting_performance_levels_hints"></a>12.27.2. Setting Performance Levels Hints</h4>
+<h4 id="_setting_performance_levels_hints"><a class="anchor" href="#_setting_performance_levels_hints"></a>12.28.2. Setting Performance Levels Hints</h4>
 <div class="sect4">
 <h5 id="EXT_performance_settings-level-definition"><a class="anchor" href="#EXT_performance_settings-level-definition"></a>Performance level hint definition</h5>
 <div class="paragraph">
@@ -33272,7 +33554,7 @@ sustainable <code>XR_PERF_SETTINGS_LEVEL_SUSTAINED_HIGH_EXT</code> for CPU</td>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_receiving_performance_related_notifications"><a class="anchor" href="#_receiving_performance_related_notifications"></a>12.27.3. Receiving Performance Related Notifications</h4>
+<h4 id="_receiving_performance_related_notifications"><a class="anchor" href="#_receiving_performance_related_notifications"></a>12.28.3. Receiving Performance Related Notifications</h4>
 <div class="paragraph">
 <p>The XR runtime shall provide performance related notifications to the
 application in the following situations:</p>
@@ -33771,7 +34053,7 @@ No such structures are defined in core OpenXR or this extension.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_samsung_odyssey_controller"><a class="anchor" href="#XR_EXT_samsung_odyssey_controller"></a>12.28. XR_EXT_samsung_odyssey_controller</h3>
+<h3 id="XR_EXT_samsung_odyssey_controller"><a class="anchor" href="#XR_EXT_samsung_odyssey_controller"></a>12.29. XR_EXT_samsung_odyssey_controller</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -33876,7 +34158,7 @@ for the form factor of <em>&#8230;/samsung/odyssey_controller.</em></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_thermal_query"><a class="anchor" href="#XR_EXT_thermal_query"></a>12.29. XR_EXT_thermal_query</h3>
+<h3 id="XR_EXT_thermal_query"><a class="anchor" href="#XR_EXT_thermal_query"></a>12.30. XR_EXT_thermal_query</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -33921,14 +34203,14 @@ Innovation Center, Inc</p>
 </dl>
 </div>
 <div class="sect3">
-<h4 id="_overview_3"><a class="anchor" href="#_overview_3"></a>12.29.1. Overview</h4>
+<h4 id="_overview_3"><a class="anchor" href="#_overview_3"></a>12.30.1. Overview</h4>
 <div class="paragraph">
 <p>This extension provides an API to query a domain&#8217;s current thermal warning
 level and current thermal trend.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_querying_the_current_thermal_level_and_trend"><a class="anchor" href="#_querying_the_current_thermal_level_and_trend"></a>12.29.2. Querying the current thermal level and trend</h4>
+<h4 id="_querying_the_current_thermal_level_and_trend"><a class="anchor" href="#_querying_the_current_thermal_level_and_trend"></a>12.30.2. Querying the current thermal level and trend</h4>
 <div class="paragraph">
 <p>This query allows to determine the extent and urgency of the needed workload
 reduction and to verify that the mitigation measures efficiently reduce the
@@ -34135,7 +34417,7 @@ most critical temperature of the domain.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_view_configuration_depth_range"><a class="anchor" href="#XR_EXT_view_configuration_depth_range"></a>12.30. XR_EXT_view_configuration_depth_range</h3>
+<h3 id="XR_EXT_view_configuration_depth_range"><a class="anchor" href="#XR_EXT_view_configuration_depth_range"></a>12.31. XR_EXT_view_configuration_depth_range</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -34343,7 +34625,7 @@ of <a href="#XrViewConfigurationView">XrViewConfigurationView</a>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EXT_win32_appcontainer_compatible"><a class="anchor" href="#XR_EXT_win32_appcontainer_compatible"></a>12.31. XR_EXT_win32_appcontainer_compatible</h3>
+<h3 id="XR_EXT_win32_appcontainer_compatible"><a class="anchor" href="#XR_EXT_win32_appcontainer_compatible"></a>12.32. XR_EXT_win32_appcontainer_compatible</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -34462,7 +34744,7 @@ properly in the AppContainer execution environment.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_EPIC_view_configuration_fov"><a class="anchor" href="#XR_EPIC_view_configuration_fov"></a>12.32. XR_EPIC_view_configuration_fov</h3>
+<h3 id="XR_EPIC_view_configuration_fov"><a class="anchor" href="#XR_EPIC_view_configuration_fov"></a>12.33. XR_EPIC_view_configuration_fov</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -34639,7 +34921,1347 @@ display.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_HUAWEI_controller_interaction"><a class="anchor" href="#XR_HUAWEI_controller_interaction"></a>12.33. XR_HUAWEI_controller_interaction</h3>
+<h3 id="XR_FB_color_space"><a class="anchor" href="#XR_FB_color_space"></a>12.34. XR_FB_color_space</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Name String</strong></dt>
+<dd>
+<p><code>XR_FB_color_space</code></p>
+</dd>
+<dt class="hdlist1"><strong>Extension Type</strong></dt>
+<dd>
+<p>Instance extension</p>
+</dd>
+<dt class="hdlist1"><strong>Registered Extension Number</strong></dt>
+<dd>
+<p>109</p>
+</dd>
+<dt class="hdlist1"><strong>Revision</strong></dt>
+<dd>
+<p>1</p>
+</dd>
+<dt class="hdlist1"><strong>Extension and Version Dependencies</strong></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>Requires OpenXR 1.0</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1"><strong>Contributors</strong></dt>
+<dd>
+<p>Volga Aksoy, Facebook<br>
+Cass Everitt, Facebook<br>
+Gloria Kennickell, Facebook</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p><strong>Overview</strong></p>
+</div>
+<div class="paragraph">
+<p>XR devices may use a color space that is different from many monitors used
+in development.
+Application developers may desire to specify the color space in which they
+have authored their application so appropriate colors are shown when the
+application is running on the XR device.</p>
+</div>
+<div class="paragraph">
+<p>This extension allows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>An application to get the native color space of the XR device.</p>
+</li>
+<li>
+<p>An application to enumerate the supported color spaces for the session.</p>
+</li>
+<li>
+<p>An application to set the color space for the session.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In order to enable the functionality of this extension, you <strong class="purple">must</strong> pass the
+name of the extension into <a href="#xrCreateInstance">xrCreateInstance</a> via the
+<a href="#XrInstanceCreateInfo">XrInstanceCreateInfo</a> <code>enabledExtensionNames</code> parameter as
+indicated in the <a href="#extensions">Extensions</a> section.</p>
+</div>
+<div class="paragraph">
+<p><strong>New Object Types</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>New Flag Types</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>New Enum Constants</strong></p>
+</div>
+<div class="paragraph">
+<p><a href="#XrStructureType">XrStructureType</a> enumeration is extended with:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_TYPE_SYSTEM_COLOR_SPACE_PROPERTIES_FB</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><a href="#XrResult">XrResult</a> enumeration is extended with:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_ERROR_COLOR_SPACE_UNSUPPORTED_FB</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>New Enums</strong></p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>The possible color spaces are specified by the <a href="#XrColorSpaceFB">XrColorSpaceFB</a>
+enumeration.</p>
+</div>
+<div id="XrColorSpaceFB" class="paragraph">
+<p></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="c++">typedef enum XrColorSpaceFB {
+    XR_COLOR_SPACE_UNMANAGED_FB = 0,
+    XR_COLOR_SPACE_REC2020_FB = 1,
+    XR_COLOR_SPACE_REC709_FB = 2,
+    XR_COLOR_SPACE_RIFT_CV1_FB = 3,
+    XR_COLOR_SPACE_RIFT_S_FB = 4,
+    XR_COLOR_SPACE_QUEST_FB = 5,
+    XR_COLOR_SPACE_P3_FB = 6,
+    XR_COLOR_SPACE_ADOBE_RGB_FB = 7,
+    XR_COLOR_SPACE_MAX_ENUM_FB = 0x7FFFFFFF
+} XrColorSpaceFB;</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Enumerant Descriptions</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_COLOR_SPACE_UNMANAGED_FB</code>.
+No color correction, not recommended for production use.</p>
+</li>
+<li>
+<p><code>XR_COLOR_SPACE_REC2020_FB</code>.
+Standard Rec.
+2020 chromacities.
+This is the preferred color space for standardized color across all Oculus
+HMDs with D65 white point.</p>
+</li>
+<li>
+<p><code>XR_COLOR_SPACE_REC709_FB</code>.
+Standard Rec.
+709 chromaticities, similar to sRGB.</p>
+</li>
+<li>
+<p><code>XR_COLOR_SPACE_RIFT_CV1_FB</code>.
+Unique color space, between P3 and Adobe RGB using D75 white point.</p>
+<div class="paragraph">
+<p>Color Space Details with Chromacity Primaries in CIE 1931 xy:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Red: (0.666, 0.334)</p>
+</li>
+<li>
+<p>Green: (0.238, 0.714)</p>
+</li>
+<li>
+<p>Blue: (0.139, 0.053)</p>
+</li>
+<li>
+<p>White: (0.298, 0.318)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>XR_COLOR_SPACE_RIFT_S_FB</code>.
+Unique color space.
+Similar to Rec 709 using D75.</p>
+<div class="paragraph">
+<p>Color Space Details with Chromacity Primaries in CIE 1931 xy:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Red: (0.640, 0.330)</p>
+</li>
+<li>
+<p>Green: (0.292, 0.586)</p>
+</li>
+<li>
+<p>Blue: (0.156, 0.058)</p>
+</li>
+<li>
+<p>White: (0.298, 0.318)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>XR_COLOR_SPACE_QUEST_FB</code>.
+Unique color space.
+Similar to Rift CV1 using D75 white point</p>
+<div class="paragraph">
+<p>Color Space Details with Chromacity Primaries in CIE 1931 xy:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Red: (0.661, 0.338)</p>
+</li>
+<li>
+<p>Green: (0.228, 0.718)</p>
+</li>
+<li>
+<p>Blue: (0.142, 0.042)</p>
+</li>
+<li>
+<p>White: (0.298, 0.318)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>XR_COLOR_SPACE_P3_FB</code>.
+Similar to DCI-P3, but uses D65 white point instead.</p>
+<div class="paragraph">
+<p>Color Space Details with Chromacity Primaries in CIE 1931 xy:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Red: (0.680, 0.320)</p>
+</li>
+<li>
+<p>Green: (0.265, 0.690)</p>
+</li>
+<li>
+<p>Blue: (0.150, 0.060)</p>
+</li>
+<li>
+<p>White: (0.313, 0.329)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><code>XR_COLOR_SPACE_ADOBE_RGB_FB</code>.
+Standard Adobe chromacities.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>New Structures</strong></p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>An application may inspect the native color space of the system by chaining
+an <a href="#XrSystemColorSpacePropertiesFB">XrSystemColorSpacePropertiesFB</a> structure to the
+<a href="#XrSystemProperties">XrSystemProperties</a> when calling <a href="#xrGetSystemProperties">xrGetSystemProperties</a>.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#XrSystemColorSpacePropertiesFB">XrSystemColorSpacePropertiesFB</a> structure is defined as:</p>
+</div>
+<div id="XrSystemColorSpacePropertiesFB" class="paragraph">
+<p></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrSystemColorSpacePropertiesFB {
+    XrStructureType    type;
+    void*              next;
+    XrColorSpaceFB     colorSpace;
+} XrSystemColorSpacePropertiesFB;</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Member Descriptions</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>type</code> is the <a href="#XrStructureType">XrStructureType</a> of this structure.</p>
+</li>
+<li>
+<p><code>next</code> is <code>NULL</code> or a pointer to the next structure in a structure
+chain.
+No such structures are defined in core OpenXR or this extension.</p>
+</li>
+<li>
+<p><code>colorSpace</code> is the native color space of the XR device.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Valid Usage (Implicit)</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a id="VUID-XrSystemColorSpacePropertiesFB-extension-notenabled" href="#VUID-XrSystemColorSpacePropertiesFB-extension-notenabled"></a> The <code><a href="#XR_FB_color_space">XR_FB_color_space</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrSystemColorSpacePropertiesFB">XrSystemColorSpacePropertiesFB</a></p>
+</li>
+<li>
+<p><a id="VUID-XrSystemColorSpacePropertiesFB-type-type" href="#VUID-XrSystemColorSpacePropertiesFB-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SYSTEM_COLOR_SPACE_PROPERTIES_FB</code></p>
+</li>
+<li>
+<p><a id="VUID-XrSystemColorSpacePropertiesFB-next-next" href="#VUID-XrSystemColorSpacePropertiesFB-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
+</li>
+<li>
+<p><a id="VUID-XrSystemColorSpacePropertiesFB-colorSpace-parameter" href="#VUID-XrSystemColorSpacePropertiesFB-colorSpace-parameter"></a> <code>colorSpace</code> <strong class="purple">must</strong> be a valid <a href="#XrColorSpaceFB">XrColorSpaceFB</a> value</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>New Functions</strong></p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>The <a href="#xrEnumerateColorSpacesFB">xrEnumerateColorSpacesFB</a> function is defined as:</p>
+</div>
+<div id="xrEnumerateColorSpacesFB" class="paragraph">
+<p></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="c++">XrResult xrEnumerateColorSpacesFB(
+    XrSession                                   session,
+    uint32_t                                    colorSpaceCapacityInput,
+    uint32_t*                                   colorSpaceCountOutput,
+    XrColorSpaceFB*                             colorSpaces);</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Parameter Descriptions</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>session</code> is the session that enumerates the supported color spaces.</p>
+</li>
+<li>
+<p><code>colorSpaceCapacityInput</code> is the capacity of the <code>colorSpaces</code>
+array, or 0 to retrieve the required capacity.</p>
+</li>
+<li>
+<p><code>colorSpaceCountOutput</code> is a pointer to the count of
+<a href="#XrColorSpaceFB">XrColorSpaceFB</a> <code>colorSpaces</code> written, or a pointer to the
+required capacity in the case that <code>colorSpaceCapacityInput</code> is <code>0</code>.</p>
+</li>
+<li>
+<p><code>colorSpaces</code> is a pointer to an array of <a href="#XrColorSpaceFB">XrColorSpaceFB</a> color
+spaces, but <strong class="purple">can</strong> be <code>NULL</code> if <code>colorSpaceCapacityInput</code> is <code>0</code>.</p>
+</li>
+<li>
+<p>See <a href="#buffer-size-parameters">Buffer Size Parameters</a> chapter for a
+detailed description of retrieving the required <code>colorSpaces</code> size.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="#xrEnumerateColorSpacesFB">xrEnumerateColorSpacesFB</a> enumerates the color spaces supported by the
+current session.
+Runtimes <strong class="purple">must</strong> always return identical buffer contents from this enumeration
+for the lifetime of the session.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Valid Usage (Implicit)</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a id="VUID-xrEnumerateColorSpacesFB-extension-notenabled" href="#VUID-xrEnumerateColorSpacesFB-extension-notenabled"></a> The <code><a href="#XR_FB_color_space">XR_FB_color_space</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrEnumerateColorSpacesFB">xrEnumerateColorSpacesFB</a></p>
+</li>
+<li>
+<p><a id="VUID-xrEnumerateColorSpacesFB-session-parameter" href="#VUID-xrEnumerateColorSpacesFB-session-parameter"></a> <code>session</code> <strong class="purple">must</strong> be a valid <a href="#XrSession">XrSession</a> handle</p>
+</li>
+<li>
+<p><a id="VUID-xrEnumerateColorSpacesFB-colorSpaceCountOutput-parameter" href="#VUID-xrEnumerateColorSpacesFB-colorSpaceCountOutput-parameter"></a> <code>colorSpaceCountOutput</code> <strong class="purple">must</strong> be a pointer to a <code>uint32_t</code> value</p>
+</li>
+<li>
+<p><a id="VUID-xrEnumerateColorSpacesFB-colorSpaces-parameter" href="#VUID-xrEnumerateColorSpacesFB-colorSpaces-parameter"></a> If <code>colorSpaceCapacityInput</code> is not <code>0</code>, <code>colorSpaces</code> <strong class="purple">must</strong> be a pointer to an array of <code>colorSpaceCapacityInput</code> <a href="#XrColorSpaceFB">XrColorSpaceFB</a> values</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Return Codes</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><a href="#fundamentals-successcodes">Success</a></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_SUCCESS</code></p>
+</li>
+<li>
+<p><code>XR_SESSION_LOSS_PENDING</code></p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1"><a href="#fundamentals-errorcodes">Failure</a></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_ERROR_INSTANCE_LOST</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_SESSION_LOST</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_RUNTIME_FAILURE</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_HANDLE_INVALID</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_SIZE_INSUFFICIENT</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_FUNCTION_UNSUPPORTED</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_VALIDATION_FAILURE</code></p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>The <a href="#xrSetColorSpaceFB">xrSetColorSpaceFB</a> function is defined as:</p>
+</div>
+<div id="xrSetColorSpaceFB" class="paragraph">
+<p></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="c++">XrResult xrSetColorSpaceFB(
+    XrSession                                   session,
+    const XrColorSpaceFB                        colorspace);</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Parameter Descriptions</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>session</code> is a valid <a href="#XrSession">XrSession</a> handle.</p>
+</li>
+<li>
+<p><code>colorSpace</code> is a supported color space.
+Supported color spaces are indicated by <a href="#xrEnumerateColorSpacesFB">xrEnumerateColorSpacesFB</a>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="#xrSetColorSpaceFB">xrSetColorSpaceFB</a> provides a mechanism for an application to specify
+the color space used in the final rendered frame.
+If this function is not called, the session will use the color space deemed
+appropriate by the runtime.
+Facebook HMDs for both PC and Mobile product lines default to
+<code>XR_COLOR_SPACE_RIFT_CV1_FB</code>.
+The runtime <strong class="purple">must</strong> return <code>XR_ERROR_COLOR_SPACE_UNSUPPORTED_FB</code> if
+<code>colorSpace</code> is not one of the values enumerated by
+<a href="#xrEnumerateColorSpacesFB">xrEnumerateColorSpacesFB</a>.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Valid Usage (Implicit)</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a id="VUID-xrSetColorSpaceFB-extension-notenabled" href="#VUID-xrSetColorSpaceFB-extension-notenabled"></a> The <code><a href="#XR_FB_color_space">XR_FB_color_space</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrSetColorSpaceFB">xrSetColorSpaceFB</a></p>
+</li>
+<li>
+<p><a id="VUID-xrSetColorSpaceFB-session-parameter" href="#VUID-xrSetColorSpaceFB-session-parameter"></a> <code>session</code> <strong class="purple">must</strong> be a valid <a href="#XrSession">XrSession</a> handle</p>
+</li>
+<li>
+<p><a id="VUID-xrSetColorSpaceFB-colorspace-parameter" href="#VUID-xrSetColorSpaceFB-colorspace-parameter"></a> <code>colorspace</code> <strong class="purple">must</strong> be a valid <a href="#XrColorSpaceFB">XrColorSpaceFB</a> value</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Return Codes</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><a href="#fundamentals-successcodes">Success</a></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_SUCCESS</code></p>
+</li>
+<li>
+<p><code>XR_SESSION_LOSS_PENDING</code></p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1"><a href="#fundamentals-errorcodes">Failure</a></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_ERROR_INSTANCE_LOST</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_SESSION_LOST</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_RUNTIME_FAILURE</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_HANDLE_INVALID</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_COLOR_SPACE_UNSUPPORTED_FB</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_FEATURE_UNSUPPORTED</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_FUNCTION_UNSUPPORTED</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_VALIDATION_FAILURE</code></p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Issues</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Version History</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Revision 1, 2020-11-09 (Gloria Kennickell)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Initial extension description</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="XR_FB_display_refresh_rate"><a class="anchor" href="#XR_FB_display_refresh_rate"></a>12.35. XR_FB_display_refresh_rate</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Name String</strong></dt>
+<dd>
+<p><code>XR_FB_display_refresh_rate</code></p>
+</dd>
+<dt class="hdlist1"><strong>Extension Type</strong></dt>
+<dd>
+<p>Instance extension</p>
+</dd>
+<dt class="hdlist1"><strong>Registered Extension Number</strong></dt>
+<dd>
+<p>102</p>
+</dd>
+<dt class="hdlist1"><strong>Revision</strong></dt>
+<dd>
+<p>1</p>
+</dd>
+<dt class="hdlist1"><strong>Extension and Version Dependencies</strong></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>Requires OpenXR 1.0</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1"><strong>Contributors</strong></dt>
+<dd>
+<p>Cass Everitt, Facebook<br>
+Gloria Kennickell, Facebook</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p><strong>Overview</strong></p>
+</div>
+<div class="paragraph">
+<p>On platforms which support dynamically adjusting the display refresh rate,
+application developers may request a specific display refresh rate in order
+to improve the overall user experience, examples include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A video application may choose a display refresh rate which better matches
+the video content playback rate in order to achieve smoother video frames.</p>
+</li>
+<li>
+<p>An application which can support a higher frame rate may choose to render
+at the higher rate to improve the overall perceptual quality, for example,
+lower latency and less flicker.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This extension allows:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>An application to identify what display refresh rates the session
+supports and the current display refresh rate.</p>
+</li>
+<li>
+<p>An application to request a display refresh rate to indicate its
+preference to the runtime.</p>
+</li>
+<li>
+<p>An application to receive notification of changes to the display refresh
+rate which are delivered via events.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In order to enable the functionality of this extension, you <strong class="purple">must</strong> pass the
+name of the extension into <a href="#xrCreateInstance">xrCreateInstance</a> via the
+<a href="#XrInstanceCreateInfo">XrInstanceCreateInfo</a> <code>enabledExtensionNames</code> parameter as
+indicated in the <a href="#extensions">Extensions</a> section.</p>
+</div>
+<div class="paragraph">
+<p><strong>New Object Types</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>New Flag Types</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>New Enum Constants</strong></p>
+</div>
+<div class="paragraph">
+<p><a href="#XrStructureType">XrStructureType</a> enumeration is extended with:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><a href="#XrResult">XrResult</a> enumeration is extended with:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB</code></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>New Enums</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>New Structures</strong></p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>Receiving the <a href="#XrEventDataDisplayRefreshRateChangedFB">XrEventDataDisplayRefreshRateChangedFB</a> event structure
+indicates that the display refresh rate has changed.</p>
+</div>
+<div class="paragraph">
+<p>The <a href="#XrEventDataDisplayRefreshRateChangedFB">XrEventDataDisplayRefreshRateChangedFB</a> structure is defined as:</p>
+</div>
+<div id="XrEventDataDisplayRefreshRateChangedFB" class="paragraph">
+<p></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrEventDataDisplayRefreshRateChangedFB {
+    XrStructureType    type;
+    const void*        next;
+    float              fromDisplayRefreshRate;
+    float              toDisplayRefreshRate;
+} XrEventDataDisplayRefreshRateChangedFB;</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Member Descriptions</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>type</code> is the <a href="#XrStructureType">XrStructureType</a> of this structure.</p>
+</li>
+<li>
+<p><code>next</code> is <code>NULL</code> or a pointer to the next structure in a structure
+chain.
+No such structures are defined in core OpenXR or this extension.</p>
+</li>
+<li>
+<p><code>fromDisplayRefreshRate</code> is the previous display refresh rate.</p>
+</li>
+<li>
+<p><code>toDisplayRefreshRate</code> is the new display refresh rate.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Valid Usage (Implicit)</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a id="VUID-XrEventDataDisplayRefreshRateChangedFB-extension-notenabled" href="#VUID-XrEventDataDisplayRefreshRateChangedFB-extension-notenabled"></a> The <code><a href="#XR_FB_display_refresh_rate">XR_FB_display_refresh_rate</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrEventDataDisplayRefreshRateChangedFB">XrEventDataDisplayRefreshRateChangedFB</a></p>
+</li>
+<li>
+<p><a id="VUID-XrEventDataDisplayRefreshRateChangedFB-type-type" href="#VUID-XrEventDataDisplayRefreshRateChangedFB-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB</code></p>
+</li>
+<li>
+<p><a id="VUID-XrEventDataDisplayRefreshRateChangedFB-next-next" href="#VUID-XrEventDataDisplayRefreshRateChangedFB-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>New Functions</strong></p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>The <a href="#xrEnumerateDisplayRefreshRatesFB">xrEnumerateDisplayRefreshRatesFB</a> function is defined as:</p>
+</div>
+<div id="xrEnumerateDisplayRefreshRatesFB" class="paragraph">
+<p></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="c++">XrResult xrEnumerateDisplayRefreshRatesFB(
+    XrSession                                   session,
+    uint32_t                                    displayRefreshRateCapacityInput,
+    uint32_t*                                   displayRefreshRateCountOutput,
+    float*                                      displayRefreshRates);</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Parameter Descriptions</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>session</code> is the session that enumerates the supported display refresh
+rates.</p>
+</li>
+<li>
+<p><code>displayRefreshRateCapacityInput</code> is the capacity of the
+<code>displayRefreshRates</code>, or 0 to retrieve the required capacity.</p>
+</li>
+<li>
+<p><code>displayRefreshRateCountOutput</code> is a pointer to the count of
+<code>float</code> <code>displayRefreshRates</code> written, or a pointer to the required
+capacity in the case that <code>displayRefreshRateCapacityInput</code> is <code>0</code>.</p>
+</li>
+<li>
+<p><code>displayRefreshRates</code> is a pointer to an array of <code>float</code> display
+refresh rates, but <strong class="purple">can</strong> be <code>NULL</code> if
+<code>displayRefreshRateCapacityInput</code> is <code>0</code>.</p>
+</li>
+<li>
+<p>See <a href="#buffer-size-parameters">Buffer Size Parameters</a> chapter for a
+detailed description of retrieving the required <code>displayRefreshRates</code>
+size.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="#xrEnumerateDisplayRefreshRatesFB">xrEnumerateDisplayRefreshRatesFB</a> enumerates the display refresh rates
+supported by the current session.
+Display refresh rates <strong class="purple">must</strong> be in order from lowest to highest supported
+display refresh rates.
+Runtimes <strong class="purple">must</strong> always return identical buffer contents from this enumeration
+for the lifetime of the session.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Valid Usage (Implicit)</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a id="VUID-xrEnumerateDisplayRefreshRatesFB-extension-notenabled" href="#VUID-xrEnumerateDisplayRefreshRatesFB-extension-notenabled"></a> The <code><a href="#XR_FB_display_refresh_rate">XR_FB_display_refresh_rate</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrEnumerateDisplayRefreshRatesFB">xrEnumerateDisplayRefreshRatesFB</a></p>
+</li>
+<li>
+<p><a id="VUID-xrEnumerateDisplayRefreshRatesFB-session-parameter" href="#VUID-xrEnumerateDisplayRefreshRatesFB-session-parameter"></a> <code>session</code> <strong class="purple">must</strong> be a valid <a href="#XrSession">XrSession</a> handle</p>
+</li>
+<li>
+<p><a id="VUID-xrEnumerateDisplayRefreshRatesFB-displayRefreshRateCountOutput-parameter" href="#VUID-xrEnumerateDisplayRefreshRatesFB-displayRefreshRateCountOutput-parameter"></a> <code>displayRefreshRateCountOutput</code> <strong class="purple">must</strong> be a pointer to a <code>uint32_t</code> value</p>
+</li>
+<li>
+<p><a id="VUID-xrEnumerateDisplayRefreshRatesFB-displayRefreshRates-parameter" href="#VUID-xrEnumerateDisplayRefreshRatesFB-displayRefreshRates-parameter"></a> If <code>displayRefreshRateCapacityInput</code> is not <code>0</code>, <code>displayRefreshRates</code> <strong class="purple">must</strong> be a pointer to an array of <code>displayRefreshRateCapacityInput</code> <code>float</code> values</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Return Codes</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><a href="#fundamentals-successcodes">Success</a></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_SUCCESS</code></p>
+</li>
+<li>
+<p><code>XR_SESSION_LOSS_PENDING</code></p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1"><a href="#fundamentals-errorcodes">Failure</a></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_ERROR_INSTANCE_LOST</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_SESSION_LOST</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_RUNTIME_FAILURE</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_HANDLE_INVALID</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_SIZE_INSUFFICIENT</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_FUNCTION_UNSUPPORTED</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_VALIDATION_FAILURE</code></p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>The <a href="#xrGetDisplayRefreshRateFB">xrGetDisplayRefreshRateFB</a> function is defined as:</p>
+</div>
+<div id="xrGetDisplayRefreshRateFB" class="paragraph">
+<p></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="c++">XrResult xrGetDisplayRefreshRateFB(
+    XrSession                                   session,
+    float*                                      displayRefreshRate);</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Parameter Descriptions</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>session</code> is the <a href="#XrSession">XrSession</a> to query.</p>
+</li>
+<li>
+<p><code>displayRefreshRate</code> is a pointer to a float into which the current
+display refresh rate will be placed.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="#xrGetDisplayRefreshRateFB">xrGetDisplayRefreshRateFB</a> retrieves the current display refresh rate.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Valid Usage (Implicit)</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a id="VUID-xrGetDisplayRefreshRateFB-extension-notenabled" href="#VUID-xrGetDisplayRefreshRateFB-extension-notenabled"></a> The <code><a href="#XR_FB_display_refresh_rate">XR_FB_display_refresh_rate</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrGetDisplayRefreshRateFB">xrGetDisplayRefreshRateFB</a></p>
+</li>
+<li>
+<p><a id="VUID-xrGetDisplayRefreshRateFB-session-parameter" href="#VUID-xrGetDisplayRefreshRateFB-session-parameter"></a> <code>session</code> <strong class="purple">must</strong> be a valid <a href="#XrSession">XrSession</a> handle</p>
+</li>
+<li>
+<p><a id="VUID-xrGetDisplayRefreshRateFB-displayRefreshRate-parameter" href="#VUID-xrGetDisplayRefreshRateFB-displayRefreshRate-parameter"></a> <code>displayRefreshRate</code> <strong class="purple">must</strong> be a pointer to a <code>float</code> value</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Return Codes</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><a href="#fundamentals-successcodes">Success</a></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_SUCCESS</code></p>
+</li>
+<li>
+<p><code>XR_SESSION_LOSS_PENDING</code></p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1"><a href="#fundamentals-errorcodes">Failure</a></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_ERROR_INSTANCE_LOST</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_SESSION_LOST</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_RUNTIME_FAILURE</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_HANDLE_INVALID</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_FUNCTION_UNSUPPORTED</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_VALIDATION_FAILURE</code></p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>The <a href="#xrRequestDisplayRefreshRateFB">xrRequestDisplayRefreshRateFB</a> function is defined as:</p>
+</div>
+<div id="xrRequestDisplayRefreshRateFB" class="paragraph">
+<p></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="prettyprint highlight"><code data-lang="c++">XrResult xrRequestDisplayRefreshRateFB(
+    XrSession                                   session,
+    float                                       displayRefreshRate);</code></pre>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Parameter Descriptions</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>session</code> is a valid <a href="#XrSession">XrSession</a> handle.</p>
+</li>
+<li>
+<p><code>displayRefreshRate</code> is <code>0.0f</code> or a supported display refresh rate.
+Supported display refresh rates are indicated by
+<a href="#xrEnumerateDisplayRefreshRatesFB">xrEnumerateDisplayRefreshRatesFB</a>.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><a href="#xrRequestDisplayRefreshRateFB">xrRequestDisplayRefreshRateFB</a> provides a mechanism for an application
+to request the system to dynamically change the display refresh rate to the
+application preferred value.
+The runtime <strong class="purple">must</strong> return <code>XR_ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB</code>
+if <code>displayRefreshRate</code> is not either <code>0.0f</code> or one of the values
+enumerated by <a href="#xrEnumerateDisplayRefreshRatesFB">xrEnumerateDisplayRefreshRatesFB</a>.
+A display refresh rate of <code>0.0f</code> indicates the application has no
+preference.</p>
+</div>
+<div class="paragraph">
+<p>Note that this is only a request and does not guarantee the system will
+switch to the requested display refresh rate.</p>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Valid Usage (Implicit)</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a id="VUID-xrRequestDisplayRefreshRateFB-extension-notenabled" href="#VUID-xrRequestDisplayRefreshRateFB-extension-notenabled"></a> The <code><a href="#XR_FB_display_refresh_rate">XR_FB_display_refresh_rate</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrRequestDisplayRefreshRateFB">xrRequestDisplayRefreshRateFB</a></p>
+</li>
+<li>
+<p><a id="VUID-xrRequestDisplayRefreshRateFB-session-parameter" href="#VUID-xrRequestDisplayRefreshRateFB-session-parameter"></a> <code>session</code> <strong class="purple">must</strong> be a valid <a href="#XrSession">XrSession</a> handle</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sidebarblock">
+<div class="content">
+<div class="title">Return Codes</div>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><a href="#fundamentals-successcodes">Success</a></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_SUCCESS</code></p>
+</li>
+<li>
+<p><code>XR_SESSION_LOSS_PENDING</code></p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1"><a href="#fundamentals-errorcodes">Failure</a></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p><code>XR_ERROR_INSTANCE_LOST</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_SESSION_LOST</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_RUNTIME_FAILURE</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_HANDLE_INVALID</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_FEATURE_UNSUPPORTED</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_FUNCTION_UNSUPPORTED</code></p>
+</li>
+<li>
+<p><code>XR_ERROR_VALIDATION_FAILURE</code></p>
+</li>
+</ul>
+</div>
+</dd>
+</dl>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p><strong>Issues</strong></p>
+</div>
+<div class="paragraph">
+<p>Changing the display refresh rate from its system default does not come
+without trade-offs.
+Increasing the display refresh rate puts more load on the entire system and
+can lead to thermal degradation.
+Conversely, lowering the display refresh rate can provide better thermal
+sustainability but at the cost of more perceptual issues, like higher
+latency and flickering.</p>
+</div>
+<div class="paragraph">
+<p><strong>Version History</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Revision 1, 2020-10-05 (Gloria Kennickell)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Initial extension description</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="XR_HTC_vive_cosmos_controller_interaction"><a class="anchor" href="#XR_HTC_vive_cosmos_controller_interaction"></a>12.36. XR_HTC_vive_cosmos_controller_interaction</h3>
+<div class="dlist">
+<dl>
+<dt class="hdlist1"><strong>Name String</strong></dt>
+<dd>
+<p><code>XR_HTC_vive_cosmos_controller_interaction</code></p>
+</dd>
+<dt class="hdlist1"><strong>Extension Type</strong></dt>
+<dd>
+<p>Instance extension</p>
+</dd>
+<dt class="hdlist1"><strong>Registered Extension Number</strong></dt>
+<dd>
+<p>103</p>
+</dd>
+<dt class="hdlist1"><strong>Revision</strong></dt>
+<dd>
+<p>1</p>
+</dd>
+<dt class="hdlist1"><strong>Extension and Version Dependencies</strong></dt>
+<dd>
+<div class="ulist">
+<ul>
+<li>
+<p>Requires OpenXR 1.0</p>
+</li>
+</ul>
+</div>
+</dd>
+<dt class="hdlist1"><strong>Last Modified Date</strong></dt>
+<dd>
+<p>2020-09-28</p>
+</dd>
+<dt class="hdlist1"><strong>IP Status</strong></dt>
+<dd>
+<p>No known IP claims.</p>
+</dd>
+<dt class="hdlist1"><strong>Contributors</strong></dt>
+<dd>
+<p>Chris Kuo, HTC<br>
+Kyle Chen, HTC</p>
+</dd>
+</dl>
+</div>
+<div class="paragraph">
+<p><strong>Overview</strong></p>
+</div>
+<div class="paragraph">
+<p>This extension defines a new interaction profile for the VIVE Cosmos
+Controller.</p>
+</div>
+<div class="paragraph">
+<p><strong>VIVE Cosmos Controller interaction profile</strong></p>
+</div>
+<div class="paragraph">
+<p>Interaction profile path:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>/interaction_profiles/htc/vive_cosmos_controller</em></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Valid for user paths:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><em>/user/hand/left</em></p>
+</li>
+<li>
+<p><em>/user/hand/right</em></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This interaction profile represents the input sources and haptics on the
+VIVE Cosmos Controller.</p>
+</div>
+<div class="paragraph">
+<p>Supported component paths:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>On <em>/user/hand/left</em> only:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><em>&#8230;/input/x/click</em></p>
+</li>
+<li>
+<p><em>&#8230;/input/y/click</em></p>
+</li>
+<li>
+<p><em>&#8230;/input/menu/click</em></p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>On <em>/user/hand/right</em> only:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><em>&#8230;/input/a/click</em></p>
+</li>
+<li>
+<p><em>&#8230;/input/b/click</em></p>
+</li>
+<li>
+<p><em>&#8230;/input/system/click</em> (<strong class="purple">may</strong> not be available for application
+use)</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p><em>&#8230;/input/shoulder/click</em></p>
+</li>
+<li>
+<p><em>&#8230;/input/squeeze/click</em></p>
+</li>
+<li>
+<p><em>&#8230;/input/trigger/click</em></p>
+</li>
+<li>
+<p><em>&#8230;/input/trigger/value</em></p>
+</li>
+<li>
+<p><em>&#8230;/input/thumbstick/x</em></p>
+</li>
+<li>
+<p><em>&#8230;/input/thumbstick/y</em></p>
+</li>
+<li>
+<p><em>&#8230;/input/thumbstick/click</em></p>
+</li>
+<li>
+<p><em>&#8230;/input/thumbstick/touch</em></p>
+</li>
+<li>
+<p><em>&#8230;/input/grip/pose</em></p>
+</li>
+<li>
+<p><em>&#8230;/input/aim/pose</em></p>
+</li>
+<li>
+<p><em>&#8230;/output/haptic</em></p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>New Object Types</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>New Flag Types</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>New Enum Constants</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>New Enums</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>New Structures</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>New Functions</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Issues</strong></p>
+</div>
+<div class="paragraph">
+<p><strong>Version History</strong></p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Revision 1, 2020-09-28 (Chris Kuo)</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Initial extension description</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="XR_HUAWEI_controller_interaction"><a class="anchor" href="#XR_HUAWEI_controller_interaction"></a>12.37. XR_HUAWEI_controller_interaction</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -34809,7 +36431,7 @@ Huawei Controller.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MND_headless"><a class="anchor" href="#XR_MND_headless"></a>12.34. XR_MND_headless</h3>
+<h3 id="XR_MND_headless"><a class="anchor" href="#XR_MND_headless"></a>12.38. XR_MND_headless</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -34968,7 +36590,7 @@ false.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MND_swapchain_usage_input_attachment_bit"><a class="anchor" href="#XR_MND_swapchain_usage_input_attachment_bit"></a>12.35. XR_MND_swapchain_usage_input_attachment_bit</h3>
+<h3 id="XR_MND_swapchain_usage_input_attachment_bit"><a class="anchor" href="#XR_MND_swapchain_usage_input_attachment_bit"></a>12.39. XR_MND_swapchain_usage_input_attachment_bit</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -35082,7 +36704,7 @@ At the time of writing this bit only affects Vulkan swapchains.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_controller_model"><a class="anchor" href="#XR_MSFT_controller_model"></a>12.36. XR_MSFT_controller_model</h3>
+<h3 id="XR_MSFT_controller_model"><a class="anchor" href="#XR_MSFT_controller_model"></a>12.40. XR_MSFT_controller_model</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -36185,7 +37807,7 @@ in it&#8217;s parent node space.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_first_person_observer"><a class="anchor" href="#XR_MSFT_first_person_observer"></a>12.37. XR_MSFT_first_person_observer</h3>
+<h3 id="XR_MSFT_first_person_observer"><a class="anchor" href="#XR_MSFT_first_person_observer"></a>12.41. XR_MSFT_first_person_observer</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -36238,7 +37860,7 @@ Alex Turner, Microsoft<br></p>
 </dl>
 </div>
 <div class="sect3">
-<h4 id="_overview_4"><a class="anchor" href="#_overview_4"></a>12.37.1. Overview</h4>
+<h4 id="_overview_4"><a class="anchor" href="#_overview_4"></a>12.41.1. Overview</h4>
 <div class="paragraph">
 <p>This first-person observer view configuration enables the runtime to request
 the application to render an additional first-person view of the scene to be
@@ -36342,7 +37964,7 @@ blend modes when sharing render passes across both view configurations.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_hand_interaction"><a class="anchor" href="#XR_MSFT_hand_interaction"></a>12.38. XR_MSFT_hand_interaction</h3>
+<h3 id="XR_MSFT_hand_interaction"><a class="anchor" href="#XR_MSFT_hand_interaction"></a>12.42. XR_MSFT_hand_interaction</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -36498,7 +38120,7 @@ a controller.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_hand_tracking_mesh"><a class="anchor" href="#XR_MSFT_hand_tracking_mesh"></a>12.39. XR_MSFT_hand_tracking_mesh</h3>
+<h3 id="XR_MSFT_hand_tracking_mesh"><a class="anchor" href="#XR_MSFT_hand_tracking_mesh"></a>12.43. XR_MSFT_hand_tracking_mesh</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -37919,7 +39541,7 @@ while(1){
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_holographic_window_attachment"><a class="anchor" href="#XR_MSFT_holographic_window_attachment"></a>12.40. XR_MSFT_holographic_window_attachment</h3>
+<h3 id="XR_MSFT_holographic_window_attachment"><a class="anchor" href="#XR_MSFT_holographic_window_attachment"></a>12.44. XR_MSFT_holographic_window_attachment</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -38059,7 +39681,7 @@ thread is blocked, otherwise the call <strong class="purple">may</strong> deadlo
 </div>
 </div>
 <div class="sect3">
-<h4 id="_sample_code_2"><a class="anchor" href="#_sample_code_2"></a>12.40.1. Sample code</h4>
+<h4 id="_sample_code_2"><a class="anchor" href="#_sample_code_2"></a>12.44.1. Sample code</h4>
 <div class="paragraph">
 <p>Following example demos the usage of holographic window attachment and use
 the attached CoreWindow to receive keyboard input, use
@@ -38175,12 +39797,12 @@ int __stdcall wWinMain(HINSTANCE, HINSTANCE, PWSTR, int) {
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_perception_anchor_interop_preview"><a class="anchor" href="#XR_MSFT_perception_anchor_interop_preview"></a>12.41. XR_MSFT_perception_anchor_interop_preview</h3>
+<h3 id="XR_MSFT_perception_anchor_interop"><a class="anchor" href="#XR_MSFT_perception_anchor_interop"></a>12.45. XR_MSFT_perception_anchor_interop</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
 <dd>
-<p><code>XR_MSFT_perception_anchor_interop_preview</code></p>
+<p><code>XR_MSFT_perception_anchor_interop</code></p>
 </dd>
 <dt class="hdlist1"><strong>Extension Type</strong></dt>
 <dd>
@@ -38228,18 +39850,19 @@ Yin Li, Microsoft<br></p>
 </div>
 <div class="paragraph">
 <p>This extension supports conversion between <a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a> and
-[Windows.Perception.Spatial.SpatialAnchor](<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor" class="bare">https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor</a>).
-An application can use this extension to persist spatial anchors on the Windows device
-through [SpatialAnchorStore](<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchorStore" class="bare">https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchorStore</a>)
-or transfer spatial anchors between devices
-through [SpatialAnchorTransferManager](<a href="https://docs.microsoft.com/uwp/api/windows.perception.spatial.spatialanchortransfermanager" class="bare">https://docs.microsoft.com/uwp/api/windows.perception.spatial.spatialanchortransfermanager</a>)</p>
+<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor">Windows.Perception.Spatial.SpatialAnchor</a>.
+An application <strong class="purple">can</strong> use this extension to persist spatial anchors on the
+Windows device through
+<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchorStore">SpatialAnchorStore</a>
+or transfer spatial anchors between devices through
+<a href="https://docs.microsoft.com/uwp/api/windows.perception.spatial.spatialanchortransfermanager">SpatialAnchorTransferManager</a>.</p>
 </div>
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
-<p>The <a href="#xrCreateSpatialAnchorFromPerceptionAnchorMSFT">xrCreateSpatialAnchorFromPerceptionAnchorMSFT</a> function
-creates a <a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a> handle from a <code>IUnknown</code> pointer
-to [Windows.Perception.Spatial.SpatialAnchor](<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor" class="bare">https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor</a>).</p>
+<p>The <a href="#xrCreateSpatialAnchorFromPerceptionAnchorMSFT">xrCreateSpatialAnchorFromPerceptionAnchorMSFT</a> function creates a
+<a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a> handle from an <code>IUnknown</code> pointer to
+<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor">Windows.Perception.Spatial.SpatialAnchor</a>.</p>
 </div>
 <div id="xrCreateSpatialAnchorFromPerceptionAnchorMSFT" class="paragraph">
 <p></p>
@@ -38261,28 +39884,34 @@ to [Windows.Perception.Spatial.SpatialAnchor](<a href="https://docs.microsoft.co
 <p><code>session</code> is the specified <a href="#XrSession">XrSession</a>.</p>
 </li>
 <li>
-<p><code>perceptionAnchor</code> is an`IUnknown` pointer to a [Windows.Perception.Spatial.SpatialAnchor](<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor" class="bare">https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor</a>) object.</p>
+<p><code>perceptionAnchor</code> is an IUnknown pointer to a
+<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor">Windows.Perception.Spatial.SpatialAnchor</a>
+object.</p>
 </li>
 <li>
-<p><code>anchor</code> is a pointer to <a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a> to receive the returned anchor handle.</p>
+<p><code>anchor</code> is a pointer to <a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a> to receive the
+returned anchor handle.</p>
 </li>
 </ul>
 </div>
 </div>
 </div>
 <div class="paragraph">
-<p>If the input <code>perceptionAnchor</code> is not pointing to a valid
-[Windows.Perception.Spatial.SpatialAnchor](<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor" class="bare">https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor</a>)
-object, the runtime <strong class="purple">must</strong> return <code>XR_ERROR_VALIDATION_FAILURE</code>.</p>
+<p>The input <code>perceptionAnchor</code> <strong class="purple">must</strong> support successful <code>QueryInterface</code>
+to
+<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor">Windows.Perception.Spatial.SpatialAnchor</a>
+, otherwise the runtime <strong class="purple">must</strong> return <code>XR_ERROR_VALIDATION_FAILURE</code>.</p>
 </div>
 <div class="paragraph">
-<p>If the function successfully returned, the output <code>anchor</code> <strong class="purple">must</strong> be a valid handle.
+<p>If the function successfully returned, the output <code>anchor</code> <strong class="purple">must</strong> be a
+valid handle.
 This also increments the refcount of the <code>perceptionAnchor</code> object.</p>
 </div>
 <div class="paragraph">
-<p>When application is done with the <code>anchor</code> handle,
-it <strong class="purple">can</strong> be destroyed using <a href="#xrDestroySpatialAnchorMSFT">xrDestroySpatialAnchorMSFT</a> function.
-This also decrements the refcount of underlying windows perception anchor object.</p>
+<p>When application is done with the <code>anchor</code> handle, it <strong class="purple">can</strong> be destroyed
+using <a href="#xrDestroySpatialAnchorMSFT">xrDestroySpatialAnchorMSFT</a> function.
+This also decrements the refcount of underlying windows perception anchor
+object.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -38290,7 +39919,7 @@ This also decrements the refcount of underlying windows perception anchor object
 <div class="ulist">
 <ul>
 <li>
-<p><a id="VUID-xrCreateSpatialAnchorFromPerceptionAnchorMSFT-extension-notenabled" href="#VUID-xrCreateSpatialAnchorFromPerceptionAnchorMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_perception_anchor_interop_preview">XR_MSFT_perception_anchor_interop_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrCreateSpatialAnchorFromPerceptionAnchorMSFT">xrCreateSpatialAnchorFromPerceptionAnchorMSFT</a></p>
+<p><a id="VUID-xrCreateSpatialAnchorFromPerceptionAnchorMSFT-extension-notenabled" href="#VUID-xrCreateSpatialAnchorFromPerceptionAnchorMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_perception_anchor_interop">XR_MSFT_perception_anchor_interop</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrCreateSpatialAnchorFromPerceptionAnchorMSFT">xrCreateSpatialAnchorFromPerceptionAnchorMSFT</a></p>
 </li>
 <li>
 <p><a id="VUID-xrCreateSpatialAnchorFromPerceptionAnchorMSFT-session-parameter" href="#VUID-xrCreateSpatialAnchorFromPerceptionAnchorMSFT-session-parameter"></a> <code>session</code> <strong class="purple">must</strong> be a valid <a href="#XrSession">XrSession</a> handle</p>
@@ -38357,9 +39986,9 @@ This also decrements the refcount of underlying windows perception anchor object
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
-<p>The <a href="#xrTryGetPerceptionAnchorFromSpatialAnchorMSFT">xrTryGetPerceptionAnchorFromSpatialAnchorMSFT</a> function
-converts a <a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a> handle into a <code>IUnknown</code> pointer
-to [Windows.Perception.Spatial.SpatialAnchor](<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor" class="bare">https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor</a>).</p>
+<p>The <a href="#xrTryGetPerceptionAnchorFromSpatialAnchorMSFT">xrTryGetPerceptionAnchorFromSpatialAnchorMSFT</a> function converts a
+<a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a> handle into an <code>IUnknown</code> pointer to
+<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor">Windows.Perception.Spatial.SpatialAnchor</a>.</p>
 </div>
 <div id="xrTryGetPerceptionAnchorFromSpatialAnchorMSFT" class="paragraph">
 <p></p>
@@ -38384,8 +40013,10 @@ to [Windows.Perception.Spatial.SpatialAnchor](<a href="https://docs.microsoft.co
 <p><code>anchor</code> is a valid <a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a> handle.</p>
 </li>
 <li>
-<p><code>perceptionAnchor</code> is a valid pointer to <code>IUnknown</code> pointer to receive the output
-[Windows.Perception.Spatial.SpatialAnchor](<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor" class="bare">https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor</a>) object.</p>
+<p><code>perceptionAnchor</code> is a valid pointer to IUnknown pointer to receive
+the output
+<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor">Windows.Perception.Spatial.SpatialAnchor</a>
+object.</p>
 </li>
 </ul>
 </div>
@@ -38393,20 +40024,21 @@ to [Windows.Perception.Spatial.SpatialAnchor](<a href="https://docs.microsoft.co
 </div>
 <div class="paragraph">
 <p>If the runtime can convert the <code>anchor</code> to a
-[Windows.Perception.Spatial.SpatialAnchor](<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor" class="bare">https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor</a>) object,
-this function <strong class="purple">must</strong> return <code>XR_SUCCESS</code>, and the output <code>IUnknown</code>
-in the pointer of <code>perceptionAnchor</code> <strong class="purple">must</strong> be not <code>NULL</code>.
+<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor">Windows.Perception.Spatial.SpatialAnchor</a>
+object, this function <strong class="purple">must</strong> return <code>XR_SUCCESS</code>, and the output
+<code>IUnknown</code> in the pointer of <code>perceptionAnchor</code> <strong class="purple">must</strong> be not <code>NULL</code>.
 This also increments the refcount of the object.
-The application can then use <code>QueryInterface</code> to get the pointer for
-[Windows.Perception.Spatial.SpatialAnchor](<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor" class="bare">https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor</a>)
+The application <strong class="purple">can</strong> then use <code>QueryInterface</code> to get the pointer for
+<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor">Windows.Perception.Spatial.SpatialAnchor</a>
 object.
-The application <strong class="purple">should</strong> release the COM pointer after done with the object, or attach it to a smart COM pointer such as <code>winrt::com_ptr</code>.</p>
+The application <strong class="purple">should</strong> release the COM pointer after done with the object,
+or attach it to a smart COM pointer such as <code>winrt::com_ptr</code>.</p>
 </div>
 <div class="paragraph">
 <p>If the runtime cannot convert the <code>anchor</code> to a
-[Windows.Perception.Spatial.SpatialAnchor](<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor" class="bare">https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor</a>) object,
-the function <strong class="purple">must</strong> return <code>XR_SUCCESS</code>, and the ouptut <code>IUnknown</code>
-in the pointer of <code>perceptionAnchor</code> <strong class="purple">must</strong> be <code>NULL</code>.</p>
+<a href="https://docs.microsoft.com/uwp/api/Windows.Perception.Spatial.SpatialAnchor">Windows.Perception.Spatial.SpatialAnchor</a>
+object, the function <strong class="purple">must</strong> return <code>XR_SUCCESS</code>, and the output
+<code>IUnknown</code> in the pointer of <code>perceptionAnchor</code> <strong class="purple">must</strong> be <code>NULL</code>.</p>
 </div>
 <div class="sidebarblock">
 <div class="content">
@@ -38414,7 +40046,7 @@ in the pointer of <code>perceptionAnchor</code> <strong class="purple">must</str
 <div class="ulist">
 <ul>
 <li>
-<p><a id="VUID-xrTryGetPerceptionAnchorFromSpatialAnchorMSFT-extension-notenabled" href="#VUID-xrTryGetPerceptionAnchorFromSpatialAnchorMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_perception_anchor_interop_preview">XR_MSFT_perception_anchor_interop_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrTryGetPerceptionAnchorFromSpatialAnchorMSFT">xrTryGetPerceptionAnchorFromSpatialAnchorMSFT</a></p>
+<p><a id="VUID-xrTryGetPerceptionAnchorFromSpatialAnchorMSFT-extension-notenabled" href="#VUID-xrTryGetPerceptionAnchorFromSpatialAnchorMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_perception_anchor_interop">XR_MSFT_perception_anchor_interop</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrTryGetPerceptionAnchorFromSpatialAnchorMSFT">xrTryGetPerceptionAnchorFromSpatialAnchorMSFT</a></p>
 </li>
 <li>
 <p><a id="VUID-xrTryGetPerceptionAnchorFromSpatialAnchorMSFT-session-parameter" href="#VUID-xrTryGetPerceptionAnchorFromSpatialAnchorMSFT-session-parameter"></a> <code>session</code> <strong class="purple">must</strong> be a valid <a href="#XrSession">XrSession</a> handle</p>
@@ -38527,7 +40159,7 @@ in the pointer of <code>perceptionAnchor</code> <strong class="purple">must</str
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_scene_understanding_preview"><a class="anchor" href="#XR_MSFT_scene_understanding_preview"></a>12.42. XR_MSFT_scene_understanding_preview</h3>
+<h3 id="XR_MSFT_scene_understanding_preview"><a class="anchor" href="#XR_MSFT_scene_understanding_preview"></a>12.46. XR_MSFT_scene_understanding_preview</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -38691,7 +40323,7 @@ scene computations.</p>
 active.</p>
 </li>
 <li>
-<p><code>createInfo</code> is a pointer to a <a href="#XrSceneObserverCreateInfoMSFT">XrSceneObserverCreateInfoMSFT</a> structure.</p>
+<p><code>createInfo</code> exists for extensibility purposes, it is NULL or a pointer to a valid <a href="#XrSceneObserverCreateInfoMSFT">XrSceneObserverCreateInfoMSFT</a> structure.</p>
 </li>
 <li>
 <p><code>sceneObserver</code> is the returned <a href="#XrSceneObserverMSFT">XrSceneObserverMSFT</a> handle.</p>
@@ -38712,7 +40344,7 @@ active.</p>
 <p><a id="VUID-xrCreateSceneObserverMSFT-session-parameter" href="#VUID-xrCreateSceneObserverMSFT-session-parameter"></a> <code>session</code> <strong class="purple">must</strong> be a valid <a href="#XrSession">XrSession</a> handle</p>
 </li>
 <li>
-<p><a id="VUID-xrCreateSceneObserverMSFT-createInfo-parameter" href="#VUID-xrCreateSceneObserverMSFT-createInfo-parameter"></a> <code>createInfo</code> <strong class="purple">must</strong> be a pointer to a valid <a href="#XrSceneObserverCreateInfoMSFT">XrSceneObserverCreateInfoMSFT</a> structure</p>
+<p><a id="VUID-xrCreateSceneObserverMSFT-createInfo-parameter" href="#VUID-xrCreateSceneObserverMSFT-createInfo-parameter"></a> If <code>createInfo</code> is not <code>NULL</code>, <code>createInfo</code> <strong class="purple">must</strong> be a pointer to a valid <a href="#XrSceneObserverCreateInfoMSFT">XrSceneObserverCreateInfoMSFT</a> structure</p>
 </li>
 <li>
 <p><a id="VUID-xrCreateSceneObserverMSFT-sceneObserver-parameter" href="#VUID-xrCreateSceneObserverMSFT-sceneObserver-parameter"></a> <code>sceneObserver</code> <strong class="purple">must</strong> be a pointer to an <a href="#XrSceneObserverMSFT">XrSceneObserverMSFT</a> handle</p>
@@ -39517,7 +41149,7 @@ The <a href="#XrSceneMSFT">XrSceneMSFT</a> handle manages the collection of scen
 <p><code>sceneObserver</code> is a handle to an <a href="#XrSceneObserverMSFT">XrSceneObserverMSFT</a>.</p>
 </li>
 <li>
-<p><code>createInfo</code> is a pointer to a <a href="#XrSceneCreateInfoMSFT">XrSceneCreateInfoMSFT</a> structure.</p>
+<p><code>createInfo</code> exists for extensibility purposes, it is NULL or a pointer to a valid <a href="#XrSceneCreateInfoMSFT">XrSceneCreateInfoMSFT</a> structure.</p>
 </li>
 <li>
 <p><code>scene</code> is the returned <a href="#XrSceneMSFT">XrSceneMSFT</a> handle.</p>
@@ -39538,7 +41170,7 @@ The <a href="#XrSceneMSFT">XrSceneMSFT</a> handle manages the collection of scen
 <p><a id="VUID-xrCreateSceneMSFT-sceneObserver-parameter" href="#VUID-xrCreateSceneMSFT-sceneObserver-parameter"></a> <code>sceneObserver</code> <strong class="purple">must</strong> be a valid <a href="#XrSceneObserverMSFT">XrSceneObserverMSFT</a> handle</p>
 </li>
 <li>
-<p><a id="VUID-xrCreateSceneMSFT-createInfo-parameter" href="#VUID-xrCreateSceneMSFT-createInfo-parameter"></a> <code>createInfo</code> <strong class="purple">must</strong> be a pointer to a valid <a href="#XrSceneCreateInfoMSFT">XrSceneCreateInfoMSFT</a> structure</p>
+<p><a id="VUID-xrCreateSceneMSFT-createInfo-parameter" href="#VUID-xrCreateSceneMSFT-createInfo-parameter"></a> If <code>createInfo</code> is not <code>NULL</code>, <code>createInfo</code> <strong class="purple">must</strong> be a pointer to a valid <a href="#XrSceneCreateInfoMSFT">XrSceneCreateInfoMSFT</a> structure</p>
 </li>
 <li>
 <p><a id="VUID-xrCreateSceneMSFT-scene-parameter" href="#VUID-xrCreateSceneMSFT-scene-parameter"></a> <code>scene</code> <strong class="purple">must</strong> be a pointer to an <a href="#XrSceneMSFT">XrSceneMSFT</a> handle</p>
@@ -41475,7 +43107,7 @@ the scene object within the reference frame of the corresponding
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_scene_understanding_serialization_preview"><a class="anchor" href="#XR_MSFT_scene_understanding_serialization_preview"></a>12.43. XR_MSFT_scene_understanding_serialization_preview</h3>
+<h3 id="XR_MSFT_scene_understanding_serialization_preview"><a class="anchor" href="#XR_MSFT_scene_understanding_serialization_preview"></a>12.47. XR_MSFT_scene_understanding_serialization_preview</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -41572,7 +43204,7 @@ David Field, Microsoft<br></p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_secondary_view_configuration"><a class="anchor" href="#XR_MSFT_secondary_view_configuration"></a>12.44. XR_MSFT_secondary_view_configuration</h3>
+<h3 id="XR_MSFT_secondary_view_configuration"><a class="anchor" href="#XR_MSFT_secondary_view_configuration"></a>12.48. XR_MSFT_secondary_view_configuration</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -41622,7 +43254,7 @@ Alex Turner, Microsoft<br></p>
 </dl>
 </div>
 <div class="sect3">
-<h4 id="_overview_5"><a class="anchor" href="#_overview_5"></a>12.44.1. Overview</h4>
+<h4 id="_overview_5"><a class="anchor" href="#_overview_5"></a>12.48.1. Overview</h4>
 <div class="paragraph">
 <p>This extension allows an application to enable support for one or more
 <strong>secondary view configurations</strong>.
@@ -41690,7 +43322,7 @@ structure.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_enumerate_supported_secondary_view_configurations"><a class="anchor" href="#_enumerate_supported_secondary_view_configurations"></a>12.44.2. Enumerate supported secondary view configurations</h4>
+<h4 id="_enumerate_supported_secondary_view_configurations"><a class="anchor" href="#_enumerate_supported_secondary_view_configurations"></a>12.48.2. Enumerate supported secondary view configurations</h4>
 <div class="paragraph">
 <p>The first step is for the application to inspect if a runtime supports
 certain secondary view configurations.
@@ -41704,7 +43336,7 @@ and can use this secondary view configuration type in later functions.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_secondary_view_configuration_properties"><a class="anchor" href="#_secondary_view_configuration_properties"></a>12.44.3. Secondary view configuration properties</h4>
+<h4 id="_secondary_view_configuration_properties"><a class="anchor" href="#_secondary_view_configuration_properties"></a>12.48.3. Secondary view configuration properties</h4>
 <div class="paragraph">
 <p>The application can inspect the properties of a secondary view configuration
 through the existing <a href="#xrGetViewConfigurationProperties">xrGetViewConfigurationProperties</a>,
@@ -41800,7 +43432,7 @@ configuration type was hinted when swapchain image was created.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_enable_secondary_view_configuration"><a class="anchor" href="#_enable_secondary_view_configuration"></a>12.44.4. Enable secondary view configuration</h4>
+<h4 id="_enable_secondary_view_configuration"><a class="anchor" href="#_enable_secondary_view_configuration"></a>12.48.4. Enable secondary view configuration</h4>
 <div class="paragraph">
 <p>The application indicates to the runtime which secondary view configurations
 it can support by chaining an
@@ -41900,7 +43532,7 @@ configuration types that application supports.</p>
 </div>
 </div>
 <div class="sect3">
-<h4 id="_per_frame_active_view_configurations"><a class="anchor" href="#_per_frame_active_view_configurations"></a>12.44.5. Per-frame active view configurations</h4>
+<h4 id="_per_frame_active_view_configurations"><a class="anchor" href="#_per_frame_active_view_configurations"></a>12.48.5. Per-frame active view configurations</h4>
 <div class="paragraph">
 <p>The runtime then tells the application at each <a href="#xrWaitFrame">xrWaitFrame</a> function
 call which of the enabled secondary view configurations are active for that
@@ -42093,7 +43725,7 @@ configuration inactive by setting the corresponding <code>active</code> in the
 </div>
 </div>
 <div class="sect3">
-<h4 id="_locate_and_inspect_view_states_of_secondary_view_configurations"><a class="anchor" href="#_locate_and_inspect_view_states_of_secondary_view_configurations"></a>12.44.6. Locate and inspect view states of secondary view configurations</h4>
+<h4 id="_locate_and_inspect_view_states_of_secondary_view_configurations"><a class="anchor" href="#_locate_and_inspect_view_states_of_secondary_view_configurations"></a>12.48.6. Locate and inspect view states of secondary view configurations</h4>
 <div class="paragraph">
 <p>When the application calls <a href="#xrLocateViews">xrLocateViews</a>, it <strong class="purple">can</strong> use
 <a href="#XrViewLocateInfo">XrViewLocateInfo</a>::viewConfigurationType field to query the view
@@ -42116,7 +43748,7 @@ successfully return, but the resulting <code>XrViewState</code> <strong class="p
 </div>
 </div>
 <div class="sect3">
-<h4 id="_submit_composition_layers_to_secondary_view_configurations"><a class="anchor" href="#_submit_composition_layers_to_secondary_view_configurations"></a>12.44.7. Submit composition layers to secondary view configurations</h4>
+<h4 id="_submit_composition_layers_to_secondary_view_configurations"><a class="anchor" href="#_submit_composition_layers_to_secondary_view_configurations"></a>12.48.7. Submit composition layers to secondary view configurations</h4>
 <div class="openblock">
 <div class="content">
 <div class="paragraph">
@@ -42428,7 +44060,7 @@ configuration.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_spatial_anchor"><a class="anchor" href="#XR_MSFT_spatial_anchor"></a>12.45. XR_MSFT_spatial_anchor</h3>
+<h3 id="XR_MSFT_spatial_anchor"><a class="anchor" href="#XR_MSFT_spatial_anchor"></a>12.49. XR_MSFT_spatial_anchor</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -43059,772 +44691,7 @@ maintain tracking for that anchor&#8217;s origin.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_spatial_anchor_export_preview"><a class="anchor" href="#XR_MSFT_spatial_anchor_export_preview"></a>12.46. XR_MSFT_spatial_anchor_export_preview</h3>
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><strong>Name String</strong></dt>
-<dd>
-<p><code>XR_MSFT_spatial_anchor_export_preview</code></p>
-</dd>
-<dt class="hdlist1"><strong>Extension Type</strong></dt>
-<dd>
-<p>Instance extension</p>
-</dd>
-<dt class="hdlist1"><strong>Registered Extension Number</strong></dt>
-<dd>
-<p>63</p>
-</dd>
-<dt class="hdlist1"><strong>Revision</strong></dt>
-<dd>
-<p>1</p>
-</dd>
-<dt class="hdlist1"><strong>Extension and Version Dependencies</strong></dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p>Requires OpenXR 1.0</p>
-</li>
-<li>
-<p>Requires <code><a href="#XR_MSFT_spatial_anchor">XR_MSFT_spatial_anchor</a></code></p>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1"><strong>Last Modified Date</strong></dt>
-<dd>
-<p>2020-05-05</p>
-</dd>
-<dt class="hdlist1"><strong>IP Status</strong></dt>
-<dd>
-<p>No known IP claims.</p>
-</dd>
-<dt class="hdlist1"><strong>Contributors</strong></dt>
-<dd>
-<p>Lachlan Ford, Microsoft<br>
-Alex Turner, Microsoft<br>
-David Field, Microsoft<br>
-Vicente Rivera, Microsoft<br>
-Yin Li, Microsoft<br></p>
-</dd>
-</dl>
-</div>
-<div class="paragraph">
-<p><strong>Overview</strong></p>
-</div>
-<div class="paragraph">
-<p>This extension allows querying and exporting of spatial anchor data suitable for sharing and relocalization across devices, so that both devices can reason about the same locations in their users' surroundings. This extension requires <a href="#XR_MSFT_spatial_anchor">XR_MSFT_spatial_anchor</a> to also be active.</p>
-</div>
-<div class="paragraph">
-<p><strong>Output Stream</strong></p>
-</div>
-<div class="openblock">
-<div class="content">
-<div class="paragraph">
-<p>Anchor data is accessed through an <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a> handle. This handle represents a stream of data which <strong class="purple">can</strong> be written to a buffer to be used by the application.</p>
-</div>
-<div id="XrSpatialAnchorNeighborhoodDataStreamMSFT" class="paragraph">
-<p></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">            XR_DEFINE_HANDLE(XrSpatialAnchorNeighborhoodDataStreamMSFT)</code></pre>
-</div>
-</div>
-</div>
-</div>
-<div class="openblock">
-<div class="content">
-<div class="paragraph">
-<p>The application <strong class="purple">can</strong> use the <a href="#xrCreateSpatialAnchorNeighborhoodDataStreamMSFT">xrCreateSpatialAnchorNeighborhoodDataStreamMSFT</a> function
-to create the <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a> object for the corresponding anchor export data.
-If the <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a> cannot be created for the <a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a>,
-either due to it being insufficient for export, or another reason, the function <strong class="purple">must</strong> return <code>XR_ERROR_SPATIAL_ANCHOR_EXPORT_FAILED_MSFT</code>.</p>
-</div>
-<div class="paragraph">
-<p>Calls to this function <strong class="purple">may</strong> block and thus <strong class="purple">should</strong> be called asynchronously.</p>
-</div>
-<div id="xrCreateSpatialAnchorNeighborhoodDataStreamMSFT" class="paragraph">
-<p></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">XrResult xrCreateSpatialAnchorNeighborhoodDataStreamMSFT(
-    XrSpatialAnchorMSFT                         spatialAnchor,
-    const XrSpatialAnchorExportPurposeInfoMSFT* exportPurposeInfo,
-    XrSpatialAnchorNeighborhoodDataStreamMSFT*  neighborhoodDataStream);</code></pre>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Parameter Descriptions</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>spatialAnchor</code> is <a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a> for which to create the output stream for.</p>
-</li>
-<li>
-<p><code>exportPurposeInfo</code> is the <a href="#XrSpatialAnchorExportPurposeMSFT">XrSpatialAnchorExportPurposeMSFT</a> that the anchor data will be exported for.</p>
-</li>
-<li>
-<p><code>neighborhoodDataStream</code> is a pointer to the <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a> handle.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Valid Usage (Implicit)</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a id="VUID-xrCreateSpatialAnchorNeighborhoodDataStreamMSFT-extension-notenabled" href="#VUID-xrCreateSpatialAnchorNeighborhoodDataStreamMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_spatial_anchor_export_preview">XR_MSFT_spatial_anchor_export_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrCreateSpatialAnchorNeighborhoodDataStreamMSFT">xrCreateSpatialAnchorNeighborhoodDataStreamMSFT</a></p>
-</li>
-<li>
-<p><a id="VUID-xrCreateSpatialAnchorNeighborhoodDataStreamMSFT-spatialAnchor-parameter" href="#VUID-xrCreateSpatialAnchorNeighborhoodDataStreamMSFT-spatialAnchor-parameter"></a> <code>spatialAnchor</code> <strong class="purple">must</strong> be a valid <a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a> handle</p>
-</li>
-<li>
-<p><a id="VUID-xrCreateSpatialAnchorNeighborhoodDataStreamMSFT-exportPurposeInfo-parameter" href="#VUID-xrCreateSpatialAnchorNeighborhoodDataStreamMSFT-exportPurposeInfo-parameter"></a> <code>exportPurposeInfo</code> <strong class="purple">must</strong> be a pointer to a valid <a href="#XrSpatialAnchorExportPurposeInfoMSFT">XrSpatialAnchorExportPurposeInfoMSFT</a> structure</p>
-</li>
-<li>
-<p><a id="VUID-xrCreateSpatialAnchorNeighborhoodDataStreamMSFT-neighborhoodDataStream-parameter" href="#VUID-xrCreateSpatialAnchorNeighborhoodDataStreamMSFT-neighborhoodDataStream-parameter"></a> <code>neighborhoodDataStream</code> <strong class="purple">must</strong> be a pointer to an <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a> handle</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Return Codes</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><a href="#fundamentals-successcodes">Success</a></dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p><code>XR_SUCCESS</code></p>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1"><a href="#fundamentals-errorcodes">Failure</a></dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p><code>XR_ERROR_INSTANCE_LOST</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_OUT_OF_MEMORY</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_FUNCTION_UNSUPPORTED</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_VALIDATION_FAILURE</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_HANDLE_INVALID</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_SESSION_LOST</code></p>
-</li>
-<li>
-<p><code>XR_SESSION_LOSS_PENDING</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_SPATIAL_ANCHOR_EXPORT_FAILED_MSFT</code></p>
-</li>
-</ul>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="openblock">
-<div class="content">
-<div class="paragraph">
-<p>The application <strong class="purple">can</strong> use the <a href="#xrReadSpatialAnchorNeighborhoodDataMSFT">xrReadSpatialAnchorNeighborhoodDataMSFT</a> function
-to read the current contents of the <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a> to an application defined buffer.</p>
-</div>
-<div class="paragraph">
-<p><code>XR_SUCCESS</code> will be returned from this function as long as there is more data to read (even if 0 bytes were read).
-<code>XR_SPATIAL_ANCHOR_EXPORT_DATA_UNAVAILABLE_MSFT</code> will be returned from this function if all data has been successfully read.
-If <code>XR_SPATIAL_ANCHOR_EXPORT_DATA_UNAVAILABLE_MSFT</code> has been returned, the runtime <strong class="purple">must</strong> continue to return <code>XR_SPATIAL_ANCHOR_EXPORT_DATA_UNAVAILABLE_MSFT</code> and not write any more data to the buffer.
-If the operation has failed, the runtime <strong class="purple">must</strong> continue to return <code>XR_ERROR_SPATIAL_ANCHOR_EXPORT_FAILED_MSFT</code> from all subsequent calls to this function with the same <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a>.</p>
-</div>
-<div class="paragraph">
-<p>This function will return <code>XR_SUCCESS</code> if there is more data to read as of the latest call to the function.
-This function will return <code>XR_SPATIAL_ANCHOR_EXPORT_DATA_UNAVAILABLE_MSFT</code> if all data has been read as of the latest call to the function.</p>
-</div>
-<div class="paragraph">
-<p>Calls to this function <strong class="purple">may</strong> block and thus <strong class="purple">should</strong> be called asynchronously.</p>
-</div>
-<div id="xrReadSpatialAnchorNeighborhoodDataMSFT" class="paragraph">
-<p></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">XrResult xrReadSpatialAnchorNeighborhoodDataMSFT(
-    XrSpatialAnchorNeighborhoodDataStreamMSFT   neighborhoodDataStream,
-    uint32_t                                    bytesToRead,
-    uint32_t*                                   bytesRead,
-    void*                                       buffer);</code></pre>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Parameter Descriptions</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>neighborhoodDataStream</code> is the <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a> to read from.</p>
-</li>
-<li>
-<p><code>bytesToRead</code> is size of the application defined buffer in bytes.</p>
-</li>
-<li>
-<p><code>bytesRead</code> is the amount of bytes written by this call to the application defined buffer.</p>
-</li>
-<li>
-<p><code>buffer</code> is a pointer to the application defined buffer.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Valid Usage (Implicit)</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a id="VUID-xrReadSpatialAnchorNeighborhoodDataMSFT-extension-notenabled" href="#VUID-xrReadSpatialAnchorNeighborhoodDataMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_spatial_anchor_export_preview">XR_MSFT_spatial_anchor_export_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrReadSpatialAnchorNeighborhoodDataMSFT">xrReadSpatialAnchorNeighborhoodDataMSFT</a></p>
-</li>
-<li>
-<p><a id="VUID-xrReadSpatialAnchorNeighborhoodDataMSFT-neighborhoodDataStream-parameter" href="#VUID-xrReadSpatialAnchorNeighborhoodDataMSFT-neighborhoodDataStream-parameter"></a> <code>neighborhoodDataStream</code> <strong class="purple">must</strong> be a valid <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a> handle</p>
-</li>
-<li>
-<p><a id="VUID-xrReadSpatialAnchorNeighborhoodDataMSFT-bytesRead-parameter" href="#VUID-xrReadSpatialAnchorNeighborhoodDataMSFT-bytesRead-parameter"></a> <code>bytesRead</code> <strong class="purple">must</strong> be a pointer to a <code>uint32_t</code> value</p>
-</li>
-<li>
-<p><a id="VUID-xrReadSpatialAnchorNeighborhoodDataMSFT-buffer-parameter" href="#VUID-xrReadSpatialAnchorNeighborhoodDataMSFT-buffer-parameter"></a> If <code>bytesToRead</code> is not <code>0</code>, <code>buffer</code> <strong class="purple">must</strong> be a pointer to an array of <code>bytesToRead</code> bytes</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Return Codes</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><a href="#fundamentals-successcodes">Success</a></dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p><code>XR_SUCCESS</code></p>
-</li>
-<li>
-<p><code>XR_SPATIAL_ANCHOR_EXPORT_DATA_UNAVAILABLE_MSFT</code></p>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1"><a href="#fundamentals-errorcodes">Failure</a></dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p><code>XR_ERROR_INSTANCE_LOST</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_OUT_OF_MEMORY</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_FUNCTION_UNSUPPORTED</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_VALIDATION_FAILURE</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_HANDLE_INVALID</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_SESSION_LOST</code></p>
-</li>
-<li>
-<p><code>XR_SESSION_LOSS_PENDING</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_SPATIAL_ANCHOR_EXPORT_FAILED_MSFT</code></p>
-</li>
-</ul>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="openblock">
-<div class="content">
-<div class="paragraph">
-<p>The application <strong class="purple">can</strong> use the <a href="#xrDestroySpatialAnchorNeighborhoodDataStreamMSFT">xrDestroySpatialAnchorNeighborhoodDataStreamMSFT</a> function
-to destroy an <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a> handle. The runtime <strong class="purple">may</strong> free the underlying resources represented by the <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a>.</p>
-</div>
-<div id="xrDestroySpatialAnchorNeighborhoodDataStreamMSFT" class="paragraph">
-<p></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">XrResult xrDestroySpatialAnchorNeighborhoodDataStreamMSFT(
-    XrSpatialAnchorNeighborhoodDataStreamMSFT   neighborhoodDataStream);</code></pre>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Parameter Descriptions</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>neighborhoodDataStream</code> is the <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a> to destroy.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Valid Usage (Implicit)</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a id="VUID-xrDestroySpatialAnchorNeighborhoodDataStreamMSFT-extension-notenabled" href="#VUID-xrDestroySpatialAnchorNeighborhoodDataStreamMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_spatial_anchor_export_preview">XR_MSFT_spatial_anchor_export_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrDestroySpatialAnchorNeighborhoodDataStreamMSFT">xrDestroySpatialAnchorNeighborhoodDataStreamMSFT</a></p>
-</li>
-<li>
-<p><a id="VUID-xrDestroySpatialAnchorNeighborhoodDataStreamMSFT-neighborhoodDataStream-parameter" href="#VUID-xrDestroySpatialAnchorNeighborhoodDataStreamMSFT-neighborhoodDataStream-parameter"></a> <code>neighborhoodDataStream</code> <strong class="purple">must</strong> be a valid <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a> handle</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Return Codes</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><a href="#fundamentals-successcodes">Success</a></dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p><code>XR_SUCCESS</code></p>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1"><a href="#fundamentals-errorcodes">Failure</a></dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p><code>XR_ERROR_INSTANCE_LOST</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_OUT_OF_MEMORY</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_FUNCTION_UNSUPPORTED</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_VALIDATION_FAILURE</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_HANDLE_INVALID</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_SESSION_LOST</code></p>
-</li>
-<li>
-<p><code>XR_SESSION_LOSS_PENDING</code></p>
-</li>
-</ul>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p><strong>Exporting Anchor Data</strong></p>
-</div>
-<div class="paragraph">
-<p>The <a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a> for the anchor export data may be generated from an <a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a>.</p>
-</div>
-<div class="openblock">
-<div class="content">
-<div class="paragraph">
-<p>The application <strong class="purple">can</strong> use the <a href="#xrGetSpatialAnchorExportSufficiencyMSFT">xrGetSpatialAnchorExportSufficiencyMSFT</a> function to inspect the export sufficiency of an anchor.
-If the system has gathered enough data to export the anchor, the runtime <strong class="purple">must</strong> set <code>isMinimallySufficient</code> on
-<a href="#XrSpatialAnchorExportSufficiencyMSFT">XrSpatialAnchorExportSufficiencyMSFT</a> will be set to <code>XR_TRUE</code>, otherwise it <strong class="purple">must</strong> be set to <code>XR_FALSE</code>.
-<code>XR_ERROR_SPATIAL_ANCHOR_SUFFICIENCY_QUERY_FAILED_MSFT</code> <strong class="purple">may</strong> be returned from this function if the operation has failed for any reason.</p>
-</div>
-<div class="paragraph">
-<p>Calls to this function <strong class="purple">may</strong> block and thus <strong class="purple">should</strong> be called asynchronously.</p>
-</div>
-<div id="xrGetSpatialAnchorExportSufficiencyMSFT" class="paragraph">
-<p></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">XrResult xrGetSpatialAnchorExportSufficiencyMSFT(
-    XrSpatialAnchorMSFT                         spatialAnchor,
-    const XrSpatialAnchorExportPurposeInfoMSFT* exportPurposeInfo,
-    XrSpatialAnchorExportSufficiencyMSFT*       exportSufficiency);</code></pre>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Parameter Descriptions</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>spatialAnchor</code> is <a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a> for which to compute the export sufficiency.</p>
-</li>
-<li>
-<p><code>exportPurposeInfo</code> is the <a href="#XrSpatialAnchorExportPurposeInfoMSFT">XrSpatialAnchorExportPurposeInfoMSFT</a> that the anchor data will be exported for.</p>
-</li>
-<li>
-<p><code>exportSufficiency</code> is a pointer to the <a href="#XrSpatialAnchorExportSufficiencyMSFT">XrSpatialAnchorExportSufficiencyMSFT</a> where the export sufficiency result will be stored.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Valid Usage (Implicit)</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a id="VUID-xrGetSpatialAnchorExportSufficiencyMSFT-extension-notenabled" href="#VUID-xrGetSpatialAnchorExportSufficiencyMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_spatial_anchor_export_preview">XR_MSFT_spatial_anchor_export_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to calling <a href="#xrGetSpatialAnchorExportSufficiencyMSFT">xrGetSpatialAnchorExportSufficiencyMSFT</a></p>
-</li>
-<li>
-<p><a id="VUID-xrGetSpatialAnchorExportSufficiencyMSFT-spatialAnchor-parameter" href="#VUID-xrGetSpatialAnchorExportSufficiencyMSFT-spatialAnchor-parameter"></a> <code>spatialAnchor</code> <strong class="purple">must</strong> be a valid <a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a> handle</p>
-</li>
-<li>
-<p><a id="VUID-xrGetSpatialAnchorExportSufficiencyMSFT-exportPurposeInfo-parameter" href="#VUID-xrGetSpatialAnchorExportSufficiencyMSFT-exportPurposeInfo-parameter"></a> <code>exportPurposeInfo</code> <strong class="purple">must</strong> be a pointer to a valid <a href="#XrSpatialAnchorExportPurposeInfoMSFT">XrSpatialAnchorExportPurposeInfoMSFT</a> structure</p>
-</li>
-<li>
-<p><a id="VUID-xrGetSpatialAnchorExportSufficiencyMSFT-exportSufficiency-parameter" href="#VUID-xrGetSpatialAnchorExportSufficiencyMSFT-exportSufficiency-parameter"></a> <code>exportSufficiency</code> <strong class="purple">must</strong> be a pointer to an <a href="#XrSpatialAnchorExportSufficiencyMSFT">XrSpatialAnchorExportSufficiencyMSFT</a> structure</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Return Codes</div>
-<div class="dlist">
-<dl>
-<dt class="hdlist1"><a href="#fundamentals-successcodes">Success</a></dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p><code>XR_SUCCESS</code></p>
-</li>
-</ul>
-</div>
-</dd>
-<dt class="hdlist1"><a href="#fundamentals-errorcodes">Failure</a></dt>
-<dd>
-<div class="ulist">
-<ul>
-<li>
-<p><code>XR_ERROR_INSTANCE_LOST</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_OUT_OF_MEMORY</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_FUNCTION_UNSUPPORTED</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_VALIDATION_FAILURE</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_HANDLE_INVALID</code></p>
-</li>
-<li>
-<p><code>XR_ERROR_SESSION_LOST</code></p>
-</li>
-<li>
-<p><code>XR_SESSION_LOSS_PENDING</code></p>
-</li>
-</ul>
-</div>
-</dd>
-</dl>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="openblock">
-<div class="content">
-<div class="paragraph">
-<p>The <a href="#XrSpatialAnchorExportPurposeInfoMSFT">XrSpatialAnchorExportPurposeInfoMSFT</a> structure is defined as:</p>
-</div>
-<div id="XrSpatialAnchorExportPurposeInfoMSFT" class="paragraph">
-<p></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrSpatialAnchorExportPurposeInfoMSFT {
-    XrStructureType                     type;
-    const void*                         next;
-    XrSpatialAnchorExportPurposeMSFT    exportPurpose;
-} XrSpatialAnchorExportPurposeInfoMSFT;</code></pre>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Member Descriptions</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>type</code> is the <a href="#XrStructureType">XrStructureType</a> of this structure.</p>
-</li>
-<li>
-<p><code>next</code> is <code>NULL</code> or a pointer to the next structure in a structure chain.</p>
-</li>
-<li>
-<p><code>exportPurpose</code> is the <a href="#XrSpatialAnchorExportPurposeMSFT">XrSpatialAnchorExportPurposeMSFT</a> requested by the application.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Valid Usage (Implicit)</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a id="VUID-XrSpatialAnchorExportPurposeInfoMSFT-extension-notenabled" href="#VUID-XrSpatialAnchorExportPurposeInfoMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_spatial_anchor_export_preview">XR_MSFT_spatial_anchor_export_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrSpatialAnchorExportPurposeInfoMSFT">XrSpatialAnchorExportPurposeInfoMSFT</a></p>
-</li>
-<li>
-<p><a id="VUID-XrSpatialAnchorExportPurposeInfoMSFT-type-type" href="#VUID-XrSpatialAnchorExportPurposeInfoMSFT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SPATIAL_ANCHOR_EXPORT_PURPOSE_INFO_MSFT</code></p>
-</li>
-<li>
-<p><a id="VUID-XrSpatialAnchorExportPurposeInfoMSFT-next-next" href="#VUID-XrSpatialAnchorExportPurposeInfoMSFT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
-</li>
-<li>
-<p><a id="VUID-XrSpatialAnchorExportPurposeInfoMSFT-exportPurpose-parameter" href="#VUID-XrSpatialAnchorExportPurposeInfoMSFT-exportPurpose-parameter"></a> <code>exportPurpose</code> <strong class="purple">must</strong> be a valid <a href="#XrSpatialAnchorExportPurposeMSFT">XrSpatialAnchorExportPurposeMSFT</a> value</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="openblock">
-<div class="content">
-<div class="paragraph">
-<p>The flags of <a href="#XrSpatialAnchorExportPurposeMSFT">XrSpatialAnchorExportPurposeMSFT</a> are defined as:</p>
-</div>
-<div id="XrSpatialAnchorExportPurposeMSFT" class="paragraph">
-<p></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">typedef enum XrSpatialAnchorExportPurposeMSFT {
-    XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_RELOCALIZATION_MSFT = 0,
-    XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_SHARING_MSFT = 1,
-    XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_MAX_ENUM_MSFT = 0x7FFFFFFF
-} XrSpatialAnchorExportPurposeMSFT;</code></pre>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="ulist">
-<ul>
-<li>
-<p><code>XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_RELOCALIZATION_MSFT</code> indicates that the
-exported data is to be used for relocalization.</p>
-</li>
-<li>
-<p><code>XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_SHARING_MSFT</code> indicates that the
-export is to be used for sharing.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="openblock">
-<div class="content">
-<div class="paragraph">
-<p>The <a href="#XrSpatialAnchorExportSufficiencyMSFT">XrSpatialAnchorExportSufficiencyMSFT</a> structure is defined as:</p>
-</div>
-<div id="XrSpatialAnchorExportSufficiencyMSFT" class="paragraph">
-<p></p>
-</div>
-<div class="listingblock">
-<div class="content">
-<pre class="prettyprint highlight"><code data-lang="c++">typedef struct XrSpatialAnchorExportSufficiencyMSFT {
-    XrStructureType    type;
-    const void*        next;
-    XrBool32           isMinimallySufficient;
-    float              recommendedSufficiencyLevel;
-    float              sufficiencyLevel;
-} XrSpatialAnchorExportSufficiencyMSFT;</code></pre>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Member Descriptions</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>type</code> is the <a href="#XrStructureType">XrStructureType</a> of this structure.</p>
-</li>
-<li>
-<p><code>next</code> is <code>NULL</code> or a pointer to the next structure in a structure chain.</p>
-</li>
-<li>
-<p><code>isMinimallySufficient</code> is <code>XR_TRUE</code> if there is sufficient data to export for the anchor and <code>XR_FALSE</code> otherwise.</p>
-</li>
-<li>
-<p><code>recommendedSufficiencyLevel</code> is the sufficiency level that is ideal for the export of this anchor&#8217;s data.</p>
-</li>
-<li>
-<p><code>sufficiencyLevel</code> is the curernt sufficiency level of the anchor.</p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-<div class="sidebarblock">
-<div class="content">
-<div class="title">Valid Usage (Implicit)</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a id="VUID-XrSpatialAnchorExportSufficiencyMSFT-extension-notenabled" href="#VUID-XrSpatialAnchorExportSufficiencyMSFT-extension-notenabled"></a> The <code><a href="#XR_MSFT_spatial_anchor_export_preview">XR_MSFT_spatial_anchor_export_preview</a></code> extension <strong class="purple">must</strong> be enabled prior to using <a href="#XrSpatialAnchorExportSufficiencyMSFT">XrSpatialAnchorExportSufficiencyMSFT</a></p>
-</li>
-<li>
-<p><a id="VUID-XrSpatialAnchorExportSufficiencyMSFT-type-type" href="#VUID-XrSpatialAnchorExportSufficiencyMSFT-type-type"></a> <code>type</code> <strong class="purple">must</strong> be <code>XR_TYPE_SPATIAL_ANCHOR_EXPORT_SUFFICIENCY_MSFT</code></p>
-</li>
-<li>
-<p><a id="VUID-XrSpatialAnchorExportSufficiencyMSFT-next-next" href="#VUID-XrSpatialAnchorExportSufficiencyMSFT-next-next"></a> <code>next</code> <strong class="purple">must</strong> be <code>NULL</code> or a valid pointer to the <a href="#valid-usage-for-structure-pointer-chains">next structure in a structure chain</a></p>
-</li>
-</ul>
-</div>
-</div>
-</div>
-</div>
-</div>
-<div class="paragraph">
-<p><strong>New Object Types</strong></p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><strong>New Flag Types</strong></p>
-</div>
-<div class="paragraph">
-<p><strong>New Enum Constants</strong></p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><code>XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_RELOCALIZATION_MSFT</code></p>
-</li>
-<li>
-<p><code>XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_SHARING_MSFT</code></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><strong>New Enums</strong></p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="#XrSpatialAnchorExportPurposeMSFT">XrSpatialAnchorExportPurposeMSFT</a></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><strong>New Structures</strong></p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="#XrSpatialAnchorExportPurposeInfoMSFT">XrSpatialAnchorExportPurposeInfoMSFT</a></p>
-</li>
-<li>
-<p><a href="#XrSpatialAnchorExportSufficiencyMSFT">XrSpatialAnchorExportSufficiencyMSFT</a></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><strong>New Functions</strong></p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p><a href="#xrDestroySpatialAnchorNeighborhoodDataStreamMSFT">xrDestroySpatialAnchorNeighborhoodDataStreamMSFT</a></p>
-</li>
-<li>
-<p><a href="#xrReadSpatialAnchorNeighborhoodDataMSFT">xrReadSpatialAnchorNeighborhoodDataMSFT</a></p>
-</li>
-<li>
-<p><a href="#xrGetSpatialAnchorExportSufficiencyMSFT">xrGetSpatialAnchorExportSufficiencyMSFT</a></p>
-</li>
-<li>
-<p><a href="#xrCreateSpatialAnchorNeighborhoodDataStreamMSFT">xrCreateSpatialAnchorNeighborhoodDataStreamMSFT</a></p>
-</li>
-</ul>
-</div>
-<div class="paragraph">
-<p><strong>Version History</strong></p>
-</div>
-<div class="ulist">
-<ul>
-<li>
-<p>Revision 1, 2020-05-05 (Lachlan Ford)</p>
-<div class="ulist">
-<ul>
-<li>
-<p>Initial extension proposal</p>
-</li>
-</ul>
-</div>
-</li>
-</ul>
-</div>
-</div>
-<div class="sect2">
-<h3 id="XR_MSFT_spatial_graph_bridge"><a class="anchor" href="#XR_MSFT_spatial_graph_bridge"></a>12.47. XR_MSFT_spatial_graph_bridge</h3>
+<h3 id="XR_MSFT_spatial_graph_bridge"><a class="anchor" href="#XR_MSFT_spatial_graph_bridge"></a>12.50. XR_MSFT_spatial_graph_bridge</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -44162,7 +45029,7 @@ Dynamic spatial nodes are represented by
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_MSFT_unbounded_reference_space"><a class="anchor" href="#XR_MSFT_unbounded_reference_space"></a>12.48. XR_MSFT_unbounded_reference_space</h3>
+<h3 id="XR_MSFT_unbounded_reference_space"><a class="anchor" href="#XR_MSFT_unbounded_reference_space"></a>12.51. XR_MSFT_unbounded_reference_space</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -44326,7 +45193,7 @@ extension is enabled.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_OCULUS_android_session_state_enable"><a class="anchor" href="#XR_OCULUS_android_session_state_enable"></a>12.49. XR_OCULUS_android_session_state_enable</h3>
+<h3 id="XR_OCULUS_android_session_state_enable"><a class="anchor" href="#XR_OCULUS_android_session_state_enable"></a>12.52. XR_OCULUS_android_session_state_enable</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -44505,7 +45372,7 @@ from surfaceDestroyed() or onPause(), whichever comes first.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_VALVE_analog_threshold"><a class="anchor" href="#XR_VALVE_analog_threshold"></a>12.50. XR_VALVE_analog_threshold</h3>
+<h3 id="XR_VALVE_analog_threshold"><a class="anchor" href="#XR_VALVE_analog_threshold"></a>12.53. XR_VALVE_analog_threshold</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -44729,7 +45596,7 @@ binding list for this interaction profile, the runtime <strong class="purple">mu
 </div>
 </div>
 <div class="sect2">
-<h3 id="XR_VARJO_quad_views"><a class="anchor" href="#XR_VARJO_quad_views"></a>12.51. XR_VARJO_quad_views</h3>
+<h3 id="XR_VARJO_quad_views"><a class="anchor" href="#XR_VARJO_quad_views"></a>12.54. XR_VARJO_quad_views</h3>
 <div class="dlist">
 <dl>
 <dt class="hdlist1"><strong>Name String</strong></dt>
@@ -44775,7 +45642,7 @@ Robert Menzel, NVIDIA</p>
 </dl>
 </div>
 <div class="sect3">
-<h4 id="_overview_6"><a class="anchor" href="#_overview_6"></a>12.51.1. Overview</h4>
+<h4 id="_overview_6"><a class="anchor" href="#_overview_6"></a>12.54.1. Overview</h4>
 <div class="paragraph">
 <p>This extension adds a new view configuration type -
 <code>XR_VIEW_CONFIGURATION_TYPE_PRIMARY_QUAD_VARJO</code> to
@@ -45804,6 +46671,9 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 <p><a href="#XrAndroidThreadTypeKHR">XrAndroidThreadTypeKHR</a></p>
 </li>
 <li>
+<p><a href="#XrColorSpaceFB">XrColorSpaceFB</a></p>
+</li>
+<li>
 <p><a href="#XrCompositionLayerFlagBits">XrCompositionLayerFlagBits</a></p>
 </li>
 <li>
@@ -45886,9 +46756,6 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 </li>
 <li>
 <p><a href="#XrSpaceVelocityFlagBits">XrSpaceVelocityFlagBits</a></p>
-</li>
-<li>
-<p><a href="#XrSpatialAnchorExportPurposeMSFT">XrSpatialAnchorExportPurposeMSFT</a></p>
 </li>
 <li>
 <p><a href="#XrSpatialGraphNodeTypeMSFT">XrSpatialGraphNodeTypeMSFT</a></p>
@@ -46059,9 +46926,6 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 <p><a href="#xrCreateSpatialAnchorMSFT">xrCreateSpatialAnchorMSFT</a></p>
 </li>
 <li>
-<p><a href="#xrCreateSpatialAnchorNeighborhoodDataStreamMSFT">xrCreateSpatialAnchorNeighborhoodDataStreamMSFT</a></p>
-</li>
-<li>
 <p><a href="#xrCreateSpatialAnchorSpaceMSFT">xrCreateSpatialAnchorSpaceMSFT</a></p>
 </li>
 <li>
@@ -46113,9 +46977,6 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 <p><a href="#xrDestroySpatialAnchorMSFT">xrDestroySpatialAnchorMSFT</a></p>
 </li>
 <li>
-<p><a href="#xrDestroySpatialAnchorNeighborhoodDataStreamMSFT">xrDestroySpatialAnchorNeighborhoodDataStreamMSFT</a></p>
-</li>
-<li>
 <p><a href="#xrDestroySwapchain">xrDestroySwapchain</a></p>
 </li>
 <li>
@@ -46129,6 +46990,12 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 </li>
 <li>
 <p><a href="#xrEnumerateBoundSourcesForAction">xrEnumerateBoundSourcesForAction</a></p>
+</li>
+<li>
+<p><a href="#xrEnumerateColorSpacesFB">xrEnumerateColorSpacesFB</a></p>
+</li>
+<li>
+<p><a href="#xrEnumerateDisplayRefreshRatesFB">xrEnumerateDisplayRefreshRatesFB</a></p>
 </li>
 <li>
 <p><a href="#xrEnumerateEnvironmentBlendModes">xrEnumerateEnvironmentBlendModes</a></p>
@@ -46182,6 +47049,9 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 <p><a href="#xrGetD3D12GraphicsRequirementsKHR">xrGetD3D12GraphicsRequirementsKHR</a></p>
 </li>
 <li>
+<p><a href="#xrGetDisplayRefreshRateFB">xrGetDisplayRefreshRateFB</a></p>
+</li>
+<li>
 <p><a href="#xrGetInputSourceLocalizedName">xrGetInputSourceLocalizedName</a></p>
 </li>
 <li>
@@ -46216,9 +47086,6 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 </li>
 <li>
 <p><a href="#xrGetSceneSerializedDataMSFT">xrGetSceneSerializedDataMSFT</a></p>
-</li>
-<li>
-<p><a href="#xrGetSpatialAnchorExportSufficiencyMSFT">xrGetSpatialAnchorExportSufficiencyMSFT</a></p>
 </li>
 <li>
 <p><a href="#xrGetSystem">xrGetSystem</a></p>
@@ -46275,10 +47142,10 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 <p><a href="#xrPollEvent">xrPollEvent</a></p>
 </li>
 <li>
-<p><a href="#xrReadSpatialAnchorNeighborhoodDataMSFT">xrReadSpatialAnchorNeighborhoodDataMSFT</a></p>
+<p><a href="#xrReleaseSwapchainImage">xrReleaseSwapchainImage</a></p>
 </li>
 <li>
-<p><a href="#xrReleaseSwapchainImage">xrReleaseSwapchainImage</a></p>
+<p><a href="#xrRequestDisplayRefreshRateFB">xrRequestDisplayRefreshRateFB</a></p>
 </li>
 <li>
 <p><a href="#xrRequestExitSession">xrRequestExitSession</a></p>
@@ -46297,6 +47164,9 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 </li>
 <li>
 <p><a href="#xrSetAndroidApplicationThreadKHR">xrSetAndroidApplicationThreadKHR</a></p>
+</li>
+<li>
+<p><a href="#xrSetColorSpaceFB">xrSetColorSpaceFB</a></p>
 </li>
 <li>
 <p><a href="#xrSetDebugUtilsObjectNameEXT">xrSetDebugUtilsObjectNameEXT</a></p>
@@ -46387,9 +47257,6 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 <p><a href="#XrSpatialAnchorMSFT">XrSpatialAnchorMSFT</a></p>
 </li>
 <li>
-<p><a href="#XrSpatialAnchorNeighborhoodDataStreamMSFT">XrSpatialAnchorNeighborhoodDataStreamMSFT</a></p>
-</li>
-<li>
 <p><a href="#XrSwapchain">XrSwapchain</a></p>
 </li>
 </ul>
@@ -46443,6 +47310,12 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 </li>
 <li>
 <p><a href="#XrBaseOutStructure">XrBaseOutStructure</a></p>
+</li>
+<li>
+<p><a href="#XrBindingModificationBaseHeaderKHR">XrBindingModificationBaseHeaderKHR</a></p>
+</li>
+<li>
+<p><a href="#XrBindingModificationsKHR">XrBindingModificationsKHR</a></p>
 </li>
 <li>
 <p><a href="#XrBoundSourcesForActionEnumerateInfo">XrBoundSourcesForActionEnumerateInfo</a></p>
@@ -46518,6 +47391,9 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 </li>
 <li>
 <p><a href="#XrEventDataBuffer">XrEventDataBuffer</a></p>
+</li>
+<li>
+<p><a href="#XrEventDataDisplayRefreshRateChangedFB">XrEventDataDisplayRefreshRateChangedFB</a></p>
 </li>
 <li>
 <p><a href="#XrEventDataEventsLost">XrEventDataEventsLost</a></p>
@@ -46820,12 +47696,6 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 <p><a href="#XrSpatialAnchorCreateInfoMSFT">XrSpatialAnchorCreateInfoMSFT</a></p>
 </li>
 <li>
-<p><a href="#XrSpatialAnchorExportPurposeInfoMSFT">XrSpatialAnchorExportPurposeInfoMSFT</a></p>
-</li>
-<li>
-<p><a href="#XrSpatialAnchorExportSufficiencyMSFT">XrSpatialAnchorExportSufficiencyMSFT</a></p>
-</li>
-<li>
 <p><a href="#XrSpatialAnchorSpaceCreateInfoMSFT">XrSpatialAnchorSpaceCreateInfoMSFT</a></p>
 </li>
 <li>
@@ -46866,6 +47736,9 @@ type is <a href="#XR_USE_PLATFORM_EGL">XR_USE_PLATFORM_EGL</a>.</p>
 </li>
 <li>
 <p><a href="#XrSwapchainSubImage">XrSwapchainSubImage</a></p>
+</li>
+<li>
+<p><a href="#XrSystemColorSpacePropertiesFB">XrSystemColorSpacePropertiesFB</a></p>
 </li>
 <li>
 <p><a href="#XrSystemEyeGazeInteractionPropertiesEXT">XrSystemEyeGazeInteractionPropertiesEXT</a></p>
@@ -47154,8 +48027,9 @@ the application binary interface.</p>
     XR_TYPE_VULKAN_DEVICE_CREATE_INFO_KHR = 1000090001,
     XR_TYPE_VULKAN_GRAPHICS_DEVICE_GET_INFO_KHR = 1000090003,
     XR_TYPE_COMPOSITION_LAYER_EQUIRECT2_KHR = 1000091000,
-    XR_TYPE_SPATIAL_ANCHOR_EXPORT_PURPOSE_INFO_MSFT = 1000062000,
-    XR_TYPE_SPATIAL_ANCHOR_EXPORT_SUFFICIENCY_MSFT = 1000062001,
+    XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB = 1000101000,
+    XR_TYPE_SYSTEM_COLOR_SPACE_PROPERTIES_FB = 1000108000,
+    XR_TYPE_BINDING_MODIFICATIONS_KHR = 1000120000,
     XR_TYPE_SCENE_OBSERVER_CREATE_INFO_MSFT = 1000097000,
     XR_TYPE_SCENE_CREATE_INFO_MSFT = 1000097001,
     XR_TYPE_NEW_SCENE_COMPUTE_INFO_MSFT = 1000097002,
@@ -47326,7 +48200,7 @@ Macros</a>.</p>
 <div class="listingblock">
 <div class="content">
 <pre class="prettyprint highlight"><code data-lang="c++">// OpenXR current version number.
-#define XR_CURRENT_API_VERSION XR_MAKE_VERSION(1, 0, 12)</code></pre>
+#define XR_CURRENT_API_VERSION XR_MAKE_VERSION(1, 0, 13)</code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -48256,8 +49130,8 @@ the time of their most recent contribution, are listed below.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Version 1.0.12<br>
-Last updated 2020-09-25 15:47:18 -0700
+Version 1.0.13<br>
+Last updated 2020-11-17 13:55:35 -0800
 </div>
 </div>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/prettify/r298/prettify.min.css">
