@@ -5,7 +5,7 @@
 #include <winrt/Windows.Storage.h>
 #include <winrt/Windows.Security.Cryptography.h>
 #include <XrUtility/XrString.h>
-#include <XrUtility/XrSu.hpp>
+#include <XrUtility/XrSceneUnderstanding.hpp>
 #include <pbr/GltfLoader.h>
 #include <SampleShared/FileUtility.h>
 #include <SampleShared/TextureUtility.h>
