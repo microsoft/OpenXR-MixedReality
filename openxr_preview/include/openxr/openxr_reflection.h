@@ -93,10 +93,11 @@ XR_ENUM_STR(XrResult);
     _(XR_ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB, -1000101000) \
     _(XR_ERROR_COLOR_SPACE_UNSUPPORTED_FB, -1000108000) \
     _(XR_ERROR_COMPUTE_NEW_SCENE_NOT_COMPLETED_MSFT, -1000097000) \
-    _(XR_ERROR_SCENE_OBJECT_KEY_INVALID_MSFT, -1000097001) \
-    _(XR_ERROR_SCENE_MESH_KEY_INVALID_MSFT, -1000097002) \
-    _(XR_ERROR_SCENE_PLANE_KEY_INVALID_MSFT, -1000097003) \
+    _(XR_ERROR_SCENE_COMPONENT_ID_INVALID_MSFT, -1000097001) \
+    _(XR_ERROR_SCENE_COMPONENT_TYPE_MISMATCH_MSFT, -1000097002) \
+    _(XR_ERROR_SCENE_MESH_BUFFER_ID_INVALID_MSFT, -1000097003) \
     _(XR_ERROR_SERIALIZATION_NOT_REQUESTED_MSFT, -1000098000) \
+    _(XR_ERROR_REPROJECTION_MODE_UNSUPPORTED_MSFT, -1000066000) \
     _(XR_RESULT_MAX_ENUM, 0x7FFFFFFF)
 
 #define XR_LIST_ENUM_XrStructureType(_) \
@@ -226,20 +227,23 @@ XR_ENUM_STR(XrResult);
     _(XR_TYPE_SCENE_OBSERVER_CREATE_INFO_MSFT, 1000097000) \
     _(XR_TYPE_SCENE_CREATE_INFO_MSFT, 1000097001) \
     _(XR_TYPE_NEW_SCENE_COMPUTE_INFO_MSFT, 1000097002) \
-    _(XR_TYPE_SCENE_OBJECT_MSFT, 1000097003) \
-    _(XR_TYPE_SCENE_OBJECT_PROPERTIES_GET_INFO_MSFT, 1000097004) \
-    _(XR_TYPE_SCENE_OBJECT_PROPERTIES_MSFT, 1000097005) \
-    _(XR_TYPE_SCENE_OBJECT_KIND_MSFT, 1000097006) \
-    _(XR_TYPE_SCENE_MESH_KEYS_MSFT, 1000097007) \
-    _(XR_TYPE_SCENE_PLANE_KEYS_MSFT, 1000097008) \
-    _(XR_TYPE_SCENE_MESH_GET_INFO_MSFT, 1000097009) \
-    _(XR_TYPE_SCENE_MESH_MSFT, 1000097010) \
-    _(XR_TYPE_SCENE_PLANE_PROPERTIES_GET_INFO_MSFT, 1000097011) \
-    _(XR_TYPE_SCENE_PLANE_PROPERTIES_MSFT, 1000097012) \
-    _(XR_TYPE_SCENE_OBJECTS_LOCATE_INFO_MSFT, 1000097013) \
-    _(XR_TYPE_SCENE_OBJECT_LOCATIONS_MSFT, 1000097014) \
+    _(XR_TYPE_WORLD_MESH_COMPUTE_INFO_MSFT, 1000097003) \
+    _(XR_TYPE_SCENE_COMPONENTS_GET_INFO_MSFT, 1000097004) \
+    _(XR_TYPE_SCENE_COMPONENT_LOCATIONS_MSFT, 1000097005) \
+    _(XR_TYPE_SCENE_COMPONENTS_LOCATE_INFO_MSFT, 1000097006) \
+    _(XR_TYPE_SCENE_COMPONENT_STATES_MSFT, 1000097007) \
+    _(XR_TYPE_SCENE_OBJECT_STATES_MSFT, 1000097008) \
+    _(XR_TYPE_SCENE_PLANE_STATES_MSFT, 1000097009) \
+    _(XR_TYPE_SCENE_MESH_STATES_MSFT, 1000097010) \
+    _(XR_TYPE_SCENE_MESH_BUFFERS_GET_INFO_MSFT, 1000097011) \
+    _(XR_TYPE_SCENE_MESH_BUFFERS_MSFT, 1000097012) \
+    _(XR_TYPE_SCENE_COMPONENT_PARENT_FILTER_INFO_MSFT, 1000097013) \
+    _(XR_TYPE_SCENE_OBJECT_KINDS_FILTER_INFO_MSFT, 1000097014) \
+    _(XR_TYPE_SCENE_PLANE_ALIGNMENT_FILTER_INFO_MSFT, 1000097015) \
     _(XR_TYPE_DESERIALIZE_SCENE_INFO_MSFT, 1000098000) \
     _(XR_TYPE_SERIALIZE_SCENE_MSFT, 1000098001) \
+    _(XR_TYPE_COMPOSITION_LAYER_REPROJECTION_INFO_MSFT, 1000066000) \
+    _(XR_TYPE_COMPOSITION_LAYER_REPROJECTION_PLANE_OVERRIDE_MSFT, 1000066001) \
     _(XR_STRUCTURE_TYPE_MAX_ENUM, 0x7FFFFFFF)
 
 #define XR_LIST_ENUM_XrFormFactor(_) \
@@ -393,14 +397,37 @@ XR_ENUM_STR(XrResult);
     _(XR_HAND_POSE_TYPE_REFERENCE_OPEN_PALM_MSFT, 1) \
     _(XR_HAND_POSE_TYPE_MAX_ENUM_MSFT, 0x7FFFFFFF)
 
-#define XR_LIST_ENUM_XrSceneObjectKindTypeMSFT(_) \
-    _(XR_SCENE_OBJECT_KIND_TYPE_UNKNOWN_MSFT, 0) \
-    _(XR_SCENE_OBJECT_KIND_TYPE_BACKGROUND_MSFT, 1) \
-    _(XR_SCENE_OBJECT_KIND_TYPE_WALL_MSFT, 2) \
-    _(XR_SCENE_OBJECT_KIND_TYPE_FLOOR_MSFT, 3) \
-    _(XR_SCENE_OBJECT_KIND_TYPE_CEILING_MSFT, 4) \
-    _(XR_SCENE_OBJECT_KIND_TYPE_PLATFORM_MSFT, 5) \
-    _(XR_SCENE_OBJECT_KIND_TYPE_MAX_ENUM_MSFT, 0x7FFFFFFF)
+#define XR_LIST_ENUM_XrReprojectionModeMSFT(_) \
+    _(XR_REPROJECTION_MODE_DEPTH_MSFT, 1) \
+    _(XR_REPROJECTION_MODE_PLANAR_FROM_DEPTH_MSFT, 2) \
+    _(XR_REPROJECTION_MODE_PLANAR_MANUAL_MSFT, 3) \
+    _(XR_REPROJECTION_MODE_ORIENTATION_ONLY_MSFT, 4) \
+    _(XR_REPROJECTION_MODE_MAX_ENUM_MSFT, 0x7FFFFFFF)
+
+#define XR_LIST_ENUM_XrWorldMeshLodMSFT(_) \
+    _(XR_WORLD_MESH_LOD_COARSE_MSFT, 1) \
+    _(XR_WORLD_MESH_LOD_MEDIUM_MSFT, 2) \
+    _(XR_WORLD_MESH_LOD_FINE_MSFT, 3) \
+    _(XR_WORLD_MESH_LOD_MAX_ENUM_MSFT, 0x7FFFFFFF)
+
+#define XR_LIST_ENUM_XrSceneComponentTypeMSFT(_) \
+    _(XR_SCENE_COMPONENT_TYPE_INVALID_MSFT, -1) \
+    _(XR_SCENE_COMPONENT_TYPE_OBJECT_MSFT, 1) \
+    _(XR_SCENE_COMPONENT_TYPE_PLANE_MSFT, 2) \
+    _(XR_SCENE_COMPONENT_TYPE_OBJECT_MESH_MSFT, 3) \
+    _(XR_SCENE_COMPONENT_TYPE_COLLIDER_MESH_MSFT, 4) \
+    _(XR_SCENE_COMPONENT_TYPE_MAX_ENUM_MSFT, 0x7FFFFFFF)
+
+#define XR_LIST_ENUM_XrSceneObjectKindMSFT(_) \
+    _(XR_SCENE_OBJECT_KIND_UNCATEGORIZED_MSFT, -1) \
+    _(XR_SCENE_OBJECT_KIND_BACKGROUND_MSFT, 1) \
+    _(XR_SCENE_OBJECT_KIND_WALL_MSFT, 2) \
+    _(XR_SCENE_OBJECT_KIND_FLOOR_MSFT, 3) \
+    _(XR_SCENE_OBJECT_KIND_CEILING_MSFT, 4) \
+    _(XR_SCENE_OBJECT_KIND_PLATFORM_MSFT, 5) \
+    _(XR_SCENE_OBJECT_KIND_INFERRED_MSFT, 6) \
+    _(XR_SCENE_OBJECT_KIND_WORLD_MSFT, 7) \
+    _(XR_SCENE_OBJECT_KIND_MAX_ENUM_MSFT, 0x7FFFFFFF)
 
 #define XR_LIST_ENUM_XrScenePlaneAlignmentTypeMSFT(_) \
     _(XR_SCENE_PLANE_ALIGNMENT_TYPE_NON_ORTHOGONAL_MSFT, 0) \
@@ -1444,6 +1471,18 @@ XR_ENUM_STR(XrResult);
     _(holographicSpace) \
     _(coreWindow) \
 
+#define XR_LIST_STRUCT_XrCompositionLayerReprojectionInfoMSFT(_) \
+    _(type) \
+    _(next) \
+    _(reprojectionMode) \
+
+#define XR_LIST_STRUCT_XrCompositionLayerReprojectionPlaneOverrideMSFT(_) \
+    _(type) \
+    _(next) \
+    _(position) \
+    _(normal) \
+    _(velocity) \
+
 #define XR_LIST_STRUCT_XrInteractionProfileAnalogThresholdVALVE(_) \
     _(type) \
     _(next) \
@@ -1453,6 +1492,9 @@ XR_ENUM_STR(XrResult);
     _(offThreshold) \
     _(onHaptic) \
     _(offHaptic) \
+
+#define XR_LIST_STRUCT_XrUuidMSFT(_) \
+    _(bytes[16]) \
 
 #define XR_LIST_STRUCT_XrSceneObserverCreateInfoMSFT(_) \
     _(type) \
@@ -1491,45 +1533,98 @@ XR_ENUM_STR(XrResult);
     _(disableInferredSceneObjects) \
     _(bounds) \
 
-#define XR_LIST_STRUCT_XrSceneObjectMSFT(_) \
+#define XR_LIST_STRUCT_XrWorldMeshComputeInfoMSFT(_) \
     _(type) \
     _(next) \
-    _(sceneObjectKey) \
+    _(lod) \
 
-#define XR_LIST_STRUCT_XrSceneObjectPropertiesGetInfoMSFT(_) \
+#define XR_LIST_STRUCT_XrSceneComponentStateMSFT(_) \
+    _(componentType) \
+    _(componentId) \
+
+#define XR_LIST_STRUCT_XrSceneComponentStatesMSFT(_) \
     _(type) \
     _(next) \
-    _(sceneObjectKey) \
+    _(componentCapacityInput) \
+    _(componentCountOutput) \
+    _(components) \
 
-#define XR_LIST_STRUCT_XrSceneObjectPropertiesMSFT(_) \
+#define XR_LIST_STRUCT_XrSceneComponentsGetInfoMSFT(_) \
     _(type) \
     _(next) \
+    _(componentType) \
 
-#define XR_LIST_STRUCT_XrSceneObjectKindMSFT(_) \
+#define XR_LIST_STRUCT_XrSceneComponentLocationMSFT(_) \
+    _(flags) \
+    _(pose) \
+
+#define XR_LIST_STRUCT_XrSceneComponentLocationsMSFT(_) \
     _(type) \
     _(next) \
-    _(kind) \
+    _(locationCount) \
+    _(locations) \
 
-#define XR_LIST_STRUCT_XrSceneMeshKeysMSFT(_) \
+#define XR_LIST_STRUCT_XrSceneComponentsLocateInfoMSFT(_) \
     _(type) \
     _(next) \
-    _(meshKeyCapacityInput) \
-    _(meshKeyCountOutput) \
-    _(meshKeys) \
+    _(baseSpace) \
+    _(time) \
+    _(idCount) \
+    _(ids) \
 
-#define XR_LIST_STRUCT_XrScenePlaneKeysMSFT(_) \
+#define XR_LIST_STRUCT_XrSceneObjectStateMSFT(_) \
+    _(objectKind) \
+
+#define XR_LIST_STRUCT_XrSceneObjectStatesMSFT(_) \
     _(type) \
     _(next) \
-    _(planeKeyCapacityInput) \
-    _(planeKeyCountOutput) \
-    _(planeKeys) \
+    _(sceneObjectCount) \
+    _(sceneObjects) \
 
-#define XR_LIST_STRUCT_XrSceneMeshGetInfoMSFT(_) \
+#define XR_LIST_STRUCT_XrSceneComponentParentFilterInfoMSFT(_) \
     _(type) \
     _(next) \
-    _(sceneMeshKey) \
+    _(parentObjectId) \
 
-#define XR_LIST_STRUCT_XrSceneMeshMSFT(_) \
+#define XR_LIST_STRUCT_XrSceneObjectKindsFilterInfoMSFT(_) \
+    _(type) \
+    _(next) \
+    _(objectKindCount) \
+    _(objectKinds) \
+
+#define XR_LIST_STRUCT_XrScenePlaneStateMSFT(_) \
+    _(alignment) \
+    _(size) \
+    _(parentObjectId) \
+
+#define XR_LIST_STRUCT_XrScenePlaneStatesMSFT(_) \
+    _(type) \
+    _(next) \
+    _(scenePlaneCount) \
+    _(scenePlanes) \
+
+#define XR_LIST_STRUCT_XrScenePlaneAlignmentFilterInfoMSFT(_) \
+    _(type) \
+    _(next) \
+    _(alignmentCount) \
+    _(alignments) \
+
+#define XR_LIST_STRUCT_XrSceneMeshStateMSFT(_) \
+    _(parentObjectId) \
+    _(meshBufferId) \
+
+#define XR_LIST_STRUCT_XrSceneMeshStatesMSFT(_) \
+    _(type) \
+    _(next) \
+    _(sceneMeshCount) \
+    _(sceneMeshes) \
+
+#define XR_LIST_STRUCT_XrSceneMeshBuffersGetInfoMSFT(_) \
+    _(type) \
+    _(next) \
+    _(meshBufferId) \
+
+#define XR_LIST_STRUCT_XrSceneMeshBuffersMSFT(_) \
     _(type) \
     _(next) \
     _(vertexCapacityInput) \
@@ -1538,35 +1633,6 @@ XR_ENUM_STR(XrResult);
     _(indexCapacityInput) \
     _(indexCountOutput) \
     _(indices) \
-
-#define XR_LIST_STRUCT_XrScenePlanePropertiesGetInfoMSFT(_) \
-    _(type) \
-    _(next) \
-    _(scenePlaneKey) \
-
-#define XR_LIST_STRUCT_XrScenePlanePropertiesMSFT(_) \
-    _(type) \
-    _(next) \
-    _(extents) \
-    _(alignment) \
-
-#define XR_LIST_STRUCT_XrSceneObjectsLocateInfoMSFT(_) \
-    _(type) \
-    _(next) \
-    _(baseSpace) \
-    _(time) \
-    _(sceneObjectCount) \
-    _(sceneObjectKeys) \
-
-#define XR_LIST_STRUCT_XrSceneObjectLocationMSFT(_) \
-    _(locationFlags) \
-    _(pose) \
-
-#define XR_LIST_STRUCT_XrSceneObjectLocationsMSFT(_) \
-    _(type) \
-    _(next) \
-    _(sceneObjectCount) \
-    _(sceneObjectLocations) \
 
 #define XR_LIST_STRUCT_XrDeserializeSceneFragmentMSFT(_) \
     _(size) \
@@ -1689,22 +1755,25 @@ XR_ENUM_STR(XrResult);
     _(XrControllerModelNodeStateMSFT, XR_TYPE_CONTROLLER_MODEL_NODE_STATE_MSFT) \
     _(XrControllerModelStateMSFT, XR_TYPE_CONTROLLER_MODEL_STATE_MSFT) \
     _(XrViewConfigurationViewFovEPIC, XR_TYPE_VIEW_CONFIGURATION_VIEW_FOV_EPIC) \
+    _(XrCompositionLayerReprojectionInfoMSFT, XR_TYPE_COMPOSITION_LAYER_REPROJECTION_INFO_MSFT) \
+    _(XrCompositionLayerReprojectionPlaneOverrideMSFT, XR_TYPE_COMPOSITION_LAYER_REPROJECTION_PLANE_OVERRIDE_MSFT) \
     _(XrInteractionProfileAnalogThresholdVALVE, XR_TYPE_INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE) \
     _(XrSceneObserverCreateInfoMSFT, XR_TYPE_SCENE_OBSERVER_CREATE_INFO_MSFT) \
     _(XrSceneCreateInfoMSFT, XR_TYPE_SCENE_CREATE_INFO_MSFT) \
     _(XrNewSceneComputeInfoMSFT, XR_TYPE_NEW_SCENE_COMPUTE_INFO_MSFT) \
-    _(XrSceneObjectMSFT, XR_TYPE_SCENE_OBJECT_MSFT) \
-    _(XrSceneObjectPropertiesGetInfoMSFT, XR_TYPE_SCENE_OBJECT_PROPERTIES_GET_INFO_MSFT) \
-    _(XrSceneObjectPropertiesMSFT, XR_TYPE_SCENE_OBJECT_PROPERTIES_MSFT) \
-    _(XrSceneObjectKindMSFT, XR_TYPE_SCENE_OBJECT_KIND_MSFT) \
-    _(XrSceneMeshKeysMSFT, XR_TYPE_SCENE_MESH_KEYS_MSFT) \
-    _(XrScenePlaneKeysMSFT, XR_TYPE_SCENE_PLANE_KEYS_MSFT) \
-    _(XrSceneMeshGetInfoMSFT, XR_TYPE_SCENE_MESH_GET_INFO_MSFT) \
-    _(XrSceneMeshMSFT, XR_TYPE_SCENE_MESH_MSFT) \
-    _(XrScenePlanePropertiesGetInfoMSFT, XR_TYPE_SCENE_PLANE_PROPERTIES_GET_INFO_MSFT) \
-    _(XrScenePlanePropertiesMSFT, XR_TYPE_SCENE_PLANE_PROPERTIES_MSFT) \
-    _(XrSceneObjectsLocateInfoMSFT, XR_TYPE_SCENE_OBJECTS_LOCATE_INFO_MSFT) \
-    _(XrSceneObjectLocationsMSFT, XR_TYPE_SCENE_OBJECT_LOCATIONS_MSFT) \
+    _(XrWorldMeshComputeInfoMSFT, XR_TYPE_WORLD_MESH_COMPUTE_INFO_MSFT) \
+    _(XrSceneComponentStatesMSFT, XR_TYPE_SCENE_COMPONENT_STATES_MSFT) \
+    _(XrSceneComponentsGetInfoMSFT, XR_TYPE_SCENE_COMPONENTS_GET_INFO_MSFT) \
+    _(XrSceneComponentLocationsMSFT, XR_TYPE_SCENE_COMPONENT_LOCATIONS_MSFT) \
+    _(XrSceneComponentsLocateInfoMSFT, XR_TYPE_SCENE_COMPONENTS_LOCATE_INFO_MSFT) \
+    _(XrSceneObjectStatesMSFT, XR_TYPE_SCENE_OBJECT_STATES_MSFT) \
+    _(XrSceneComponentParentFilterInfoMSFT, XR_TYPE_SCENE_COMPONENT_PARENT_FILTER_INFO_MSFT) \
+    _(XrSceneObjectKindsFilterInfoMSFT, XR_TYPE_SCENE_OBJECT_KINDS_FILTER_INFO_MSFT) \
+    _(XrScenePlaneStatesMSFT, XR_TYPE_SCENE_PLANE_STATES_MSFT) \
+    _(XrScenePlaneAlignmentFilterInfoMSFT, XR_TYPE_SCENE_PLANE_ALIGNMENT_FILTER_INFO_MSFT) \
+    _(XrSceneMeshStatesMSFT, XR_TYPE_SCENE_MESH_STATES_MSFT) \
+    _(XrSceneMeshBuffersGetInfoMSFT, XR_TYPE_SCENE_MESH_BUFFERS_GET_INFO_MSFT) \
+    _(XrSceneMeshBuffersMSFT, XR_TYPE_SCENE_MESH_BUFFERS_MSFT) \
     _(XrDeserializeSceneInfoMSFT, XR_TYPE_DESERIALIZE_SCENE_INFO_MSFT) \
     _(XrSerializeSceneMSFT, XR_TYPE_SERIALIZE_SCENE_MSFT) \
     _(XrEventDataDisplayRefreshRateChangedFB, XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB) \
@@ -1745,15 +1814,6 @@ XR_ENUM_STR(XrResult);
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL(_)
 #endif
 
-#if defined(XR_USE_GRAPHICS_API_OPENGL) && defined(XR_USE_PLATFORM_WAYLAND)
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WAYLAND(_) \
-    _(XrGraphicsBindingOpenGLWaylandKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_WAYLAND_KHR) \
-
-
-#else
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WAYLAND(_)
-#endif
-
 #if defined(XR_USE_GRAPHICS_API_OPENGL) && defined(XR_USE_PLATFORM_WIN32)
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WIN32(_) \
     _(XrGraphicsBindingOpenGLWin32KHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_WIN32_KHR) \
@@ -1772,6 +1832,15 @@ XR_ENUM_STR(XrResult);
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XCB(_)
 #endif
 
+#if defined(XR_USE_GRAPHICS_API_OPENGL) && defined(XR_USE_PLATFORM_XLIB)
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XLIB(_) \
+    _(XrGraphicsBindingOpenGLXlibKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR) \
+
+
+#else
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XLIB(_)
+#endif
+
 #if defined(XR_USE_GRAPHICS_API_OPENGL_ES)
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES(_) \
     _(XrSwapchainImageOpenGLESKHR, XR_TYPE_SWAPCHAIN_IMAGE_OPENGL_ES_KHR) \
@@ -1780,15 +1849,6 @@ XR_ENUM_STR(XrResult);
 
 #else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES(_)
-#endif
-
-#if defined(XR_USE_GRAPHICS_API_OPENGL_ES) && defined(XR_USE_PLATFORM_ANDROID)
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES_XR_USE_PLATFORM_ANDROID(_) \
-    _(XrGraphicsBindingOpenGLESAndroidKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR) \
-
-
-#else
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES_XR_USE_PLATFORM_ANDROID(_)
 #endif
 
 #if defined(XR_USE_GRAPHICS_API_VULKAN)
@@ -1816,6 +1876,15 @@ XR_ENUM_STR(XrResult);
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ANDROID(_)
 #endif
 
+#if defined(XR_USE_PLATFORM_ANDROID) && defined(XR_USE_GRAPHICS_API_OPENGL_ES)
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ANDROID_XR_USE_GRAPHICS_API_OPENGL_ES(_) \
+    _(XrGraphicsBindingOpenGLESAndroidKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_ES_ANDROID_KHR) \
+
+
+#else
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ANDROID_XR_USE_GRAPHICS_API_OPENGL_ES(_)
+#endif
+
 #if defined(XR_USE_PLATFORM_EGL)
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_EGL(_) \
     _(XrGraphicsBindingEGLMNDX, XR_TYPE_GRAPHICS_BINDING_EGL_MNDX) \
@@ -1823,6 +1892,15 @@ XR_ENUM_STR(XrResult);
 
 #else
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_EGL(_)
+#endif
+
+#if defined(XR_USE_PLATFORM_WAYLAND) && defined(XR_USE_GRAPHICS_API_OPENGL)
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WAYLAND_XR_USE_GRAPHICS_API_OPENGL(_) \
+    _(XrGraphicsBindingOpenGLWaylandKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_WAYLAND_KHR) \
+
+
+#else
+#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WAYLAND_XR_USE_GRAPHICS_API_OPENGL(_)
 #endif
 
 #if defined(XR_USE_PLATFORM_WIN32)
@@ -1834,30 +1912,21 @@ XR_ENUM_STR(XrResult);
 #define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WIN32(_)
 #endif
 
-#if defined(XR_USE_PLATFORM_XLIB) && defined(XR_USE_GRAPHICS_API_OPENGL)
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_XLIB_XR_USE_GRAPHICS_API_OPENGL(_) \
-    _(XrGraphicsBindingOpenGLXlibKHR, XR_TYPE_GRAPHICS_BINDING_OPENGL_XLIB_KHR) \
-
-
-#else
-#define XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_XLIB_XR_USE_GRAPHICS_API_OPENGL(_)
-#endif
-
 #define XR_LIST_STRUCTURE_TYPES(_) \
     XR_LIST_STRUCTURE_TYPES_CORE(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_D3D11(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_D3D12(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL(_) \
-    XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WAYLAND(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_WIN32(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XCB(_) \
+    XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_XR_USE_PLATFORM_XLIB(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES(_) \
-    XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_OPENGL_ES_XR_USE_PLATFORM_ANDROID(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_GRAPHICS_API_VULKAN(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ANDROID(_) \
+    XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_ANDROID_XR_USE_GRAPHICS_API_OPENGL_ES(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_EGL(_) \
+    XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WAYLAND_XR_USE_GRAPHICS_API_OPENGL(_) \
     XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_WIN32(_) \
-    XR_LIST_STRUCTURE_TYPES_XR_USE_PLATFORM_XLIB_XR_USE_GRAPHICS_API_OPENGL(_) \
 
 
 #define XR_LIST_EXTENSIONS(_) \
@@ -1902,6 +1971,7 @@ XR_ENUM_STR(XrResult);
     _(XR_EXT_win32_appcontainer_compatible, 58) \
     _(XR_EPIC_view_configuration_fov, 60) \
     _(XR_MSFT_holographic_window_attachment, 64) \
+    _(XR_MSFT_composition_layer_reprojection_preview, 67) \
     _(XR_HUAWEI_controller_interaction, 70) \
     _(XR_VALVE_analog_threshold, 80) \
     _(XR_KHR_loader_init, 89) \
@@ -1911,7 +1981,7 @@ XR_ENUM_STR(XrResult);
     _(XR_EXT_samsung_odyssey_controller, 95) \
     _(XR_EXT_hp_mixed_reality_controller, 96) \
     _(XR_MND_swapchain_usage_input_attachment_bit, 97) \
-    _(XR_MSFT_scene_understanding_preview, 98) \
+    _(XR_MSFT_scene_understanding_preview2, 98) \
     _(XR_MSFT_scene_understanding_serialization_preview, 99) \
     _(XR_FB_display_refresh_rate, 102) \
     _(XR_HTC_vive_cosmos_controller_interaction, 103) \

@@ -297,6 +297,7 @@ bool engine::ProjectionLayer::Render(Context& context,
                 // PBR library expects traditional view transform (world to view).
                 DirectX::XMMATRIX worldToViewMatrix = xr::math::LoadInvertedXrPose(projectionViews[viewIndex].pose);
 
+
                 context.PbrResources.SetViewProjection(worldToViewMatrix, projectionMatrix);
                 context.PbrResources.Bind(context.DeviceContext.get());
                 context.PbrResources.SetDepthFuncReversed(reversedZ);
@@ -328,6 +329,14 @@ void engine::AppendProjectionLayer(CompositionLayers& layers, ProjectionLayer* l
     projectionLayer.space = layer->LayerSpace(viewConfig);
     projectionLayer.viewCount = (uint32_t)layer->ProjectionViews(viewConfig).size();
     projectionLayer.views = layer->ProjectionViews(viewConfig).data();
+
+    if (auto& reprojConfig = layer->Config(viewConfig).ReprojectionConfig) {
+        xr::InsertExtensionStruct(projectionLayer, reprojConfig.value());
+    }
+
+    if (auto& reprojPlaneOverride = layer->Config(viewConfig).ReprojectionPlaneOverride) {
+        xr::InsertExtensionStruct(projectionLayer, reprojPlaneOverride.value());
+    }
 
 }
 

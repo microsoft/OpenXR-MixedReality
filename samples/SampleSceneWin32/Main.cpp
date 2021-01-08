@@ -22,6 +22,7 @@
 std::unique_ptr<engine::Scene> TryCreateTitleScene(engine::Context& context);
 std::unique_ptr<engine::Scene> TryCreateControllerModelScene(engine::Context& context);
 std::unique_ptr<engine::Scene> TryCreateControllerActionsScene(engine::Context& context);
+std::unique_ptr<engine::Scene> TryCreateHandTrackingScene(engine::Context& context);
 
 // Global Variables:
 std::thread sceneThread;
@@ -50,11 +51,14 @@ void EnterVR() {
         appConfig.RequestedExtensions.push_back(XR_MSFT_CONTROLLER_MODEL_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_MSFT_HAND_TRACKING_MESH_EXTENSION_NAME);
 
         app = engine::CreateXrApp(appConfig);
         app->AddScene(TryCreateTitleScene(app->Context()));
         app->AddScene(TryCreateControllerModelScene(app->Context()));
         app->AddScene(TryCreateControllerActionsScene(app->Context()));
+        app->AddScene(TryCreateHandTrackingScene(app->Context()));
         app->Run();
         app = nullptr;
     });

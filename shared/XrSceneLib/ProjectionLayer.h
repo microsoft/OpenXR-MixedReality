@@ -40,6 +40,8 @@ namespace engine {
         bool ContentProtected = false;
         bool ForceReset = false;
         DirectX::XMFLOAT4 ClearColor = {0, 0, 0, 0}; // Transparent
+        std::optional<XrCompositionLayerReprojectionInfoMSFT> ReprojectionConfig;
+        std::optional<XrCompositionLayerReprojectionPlaneOverrideMSFT> ReprojectionPlaneOverride;
     };
 
     struct Scene;

@@ -17,7 +17,7 @@
 #include <XrSceneLib/XrApp.h>
 
 std::unique_ptr<engine::Scene> TryCreateTitleScene(engine::Context& context);
-std::unique_ptr<engine::Scene> TryCreatePlaneFindingScene(engine::Context& context);
+std::unique_ptr<engine::Scene> TryCreatePlacementScene(engine::Context& context);
 
 int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance, _In_ LPWSTR lpCmdLine, _In_ int nCmdShow) {
     try {
@@ -26,12 +26,12 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
 
         engine::XrAppConfiguration appConfig({"SceneUnderstandingUwp", 1});
         appConfig.RequestedExtensions.push_back(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
-        appConfig.RequestedExtensions.push_back(XR_MSFT_SCENE_UNDERSTANDING_PREVIEW_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_MSFT_SCENE_UNDERSTANDING_PREVIEW2_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_MSFT_SCENE_UNDERSTANDING_SERIALIZATION_PREVIEW_EXTENSION_NAME);
 
         auto app = CreateXrApp(appConfig);
         app->AddScene(TryCreateTitleScene(app->Context()));
-        app->AddScene(TryCreatePlaneFindingScene(app->Context()));
+        app->AddScene(TryCreatePlacementScene(app->Context()));
         app->Run();
     } catch (const std::exception& ex) {
         sample::Trace("Unhandled Exception: {}", ex.what());

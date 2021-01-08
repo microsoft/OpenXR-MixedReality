@@ -83,7 +83,7 @@
 #define FOR_EACH_SPATIAL_GRAPH_BRIDGE_FUNCTION(_)
 #endif
 
-#if XR_MSFT_scene_understanding_preview
+#if XR_MSFT_scene_understanding_preview2
 #define FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_) \
     _(xrCreateSceneObserverMSFT)                 \
     _(xrDestroySceneObserverMSFT)                \
@@ -91,11 +91,9 @@
     _(xrDestroySceneMSFT)                        \
     _(xrComputeNewSceneMSFT)                     \
     _(xrGetSceneComputeStateMSFT)                \
-    _(xrLocateSceneObjectsMSFT)                  \
-    _(xrGetSceneObjectsMSFT)                     \
-    _(xrGetSceneObjectPropertiesMSFT)            \
-    _(xrGetSceneMeshMSFT)                        \
-    _(xrGetScenePlanePropertiesMSFT)
+    _(xrGetSceneComponentsMSFT)                  \
+    _(xrLocateSceneComponentsMSFT)               \
+    _(xrGetSceneMeshBuffersMSFT)
 #else
 #define FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_)
 #endif
@@ -125,7 +123,7 @@
 
 #define GET_INSTANCE_PROC_ADDRESS(name) \
     (void)xrGetInstanceProcAddr(instance, #name, reinterpret_cast<PFN_xrVoidFunction*>(const_cast<PFN_##name*>(&name)));
-#define DEFINE_PROC_MEMBER(name) const PFN_##name name{nullptr};
+#define DEFINE_PROC_MEMBER(name) PFN_##name name{nullptr};
 
 namespace xr {
     struct ExtensionDispatchTable {

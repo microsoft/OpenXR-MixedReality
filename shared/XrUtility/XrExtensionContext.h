@@ -43,6 +43,7 @@ namespace xr {
         bool SupportsColorScaleBias;
         bool SupportsSceneUnderstanding;
         bool SupportsSceneUnderstandingSerialization;
+        bool SupportsReprojectionConfiguration;
 
         std::vector<const char*> EnabledExtensions;
     };
@@ -90,8 +91,9 @@ namespace xr {
         extensions.SupportsHPMixedRealityController = isExtensionEnabled(XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME);
         extensions.SupportsPerceptionAnchorInterop = isExtensionEnabled(XR_MSFT_PERCEPTION_ANCHOR_INTEROP_EXTENSION_NAME);
         extensions.SupportsColorScaleBias = isExtensionEnabled(XR_KHR_COMPOSITION_LAYER_COLOR_SCALE_BIAS_EXTENSION_NAME);
-        extensions.SupportsSceneUnderstanding = isExtensionEnabled(XR_MSFT_SCENE_UNDERSTANDING_PREVIEW_EXTENSION_NAME);
+        extensions.SupportsSceneUnderstanding = isExtensionEnabled(XR_MSFT_SCENE_UNDERSTANDING_PREVIEW2_EXTENSION_NAME);
         extensions.SupportsSceneUnderstandingSerialization = isExtensionEnabled(XR_MSFT_SCENE_UNDERSTANDING_SERIALIZATION_PREVIEW_EXTENSION_NAME);
+        extensions.SupportsReprojectionConfiguration = isExtensionEnabled(XR_MSFT_COMPOSITION_LAYER_REPROJECTION_PREVIEW_EXTENSION_NAME);
 
         return extensions;
     }

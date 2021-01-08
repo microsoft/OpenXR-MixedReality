@@ -62,9 +62,13 @@ namespace {
             }
 
             XrReferenceSpaceCreateInfo referenceSpaceCreateInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
-            referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
             referenceSpaceCreateInfo.poseInReferenceSpace = Pose::Identity();
+
+            referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
             CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &referenceSpaceCreateInfo, m_localSpace.Put()));
+
+            referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
+            CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &referenceSpaceCreateInfo, m_viewSpace.Put()));
 
             // Create an axis at the origin of the LOCAL space
             m_holograms.emplace_back(m_localSpace.Get(),
@@ -142,11 +146,13 @@ namespace {
                 } else {
                     hologram.Object->Pose() = spaceLocation.pose;
                 }
-
-                hologram.Object->SetFillMode(Pose::IsPoseTracked(spaceLocation) ? Pbr::FillMode::Solid : Pbr::FillMode::Wireframe);
             } else {
                 hologram.Object->SetVisible(false);
             }
+
+            // When locating to VIEW space doesn't have tracked bits, render as wireframe indicating it lost positional tracking.
+            CHECK_XRCMD(xrLocateSpace(hologram.Space, m_viewSpace.Get(), time, &spaceLocation));
+            hologram.Object->SetFillMode(Pose::IsPoseTracked(spaceLocation) ? Pbr::FillMode::Solid : Pbr::FillMode::Wireframe);
         }
 
         void PlaceThreeSpaces(XrSpace space, XrTime time) {
@@ -239,6 +245,7 @@ namespace {
 
         xr::SpaceHandle m_unboundedSpace;
         xr::SpaceHandle m_localSpace;
+        xr::SpaceHandle m_viewSpace;
 
         struct AnchorSpace {
             xr::SpatialAnchorHandle Anchor;

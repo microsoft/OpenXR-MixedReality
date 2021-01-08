@@ -62,5 +62,7 @@ namespace xr {
     MAKE_TO_STRING_FUNCS(XrHandPoseTypeMSFT);
     MAKE_TO_CSTRING_FUNC(XrHandJointEXT);
     MAKE_TO_STRING_FUNCS(XrVisibilityMaskTypeKHR);
+    MAKE_TO_STRING_FUNCS(XrReprojectionModeMSFT);
+    MAKE_TO_STRING_FUNCS(XrSceneComponentTypeMSFT);
 } // namespace xr
 
