@@ -331,6 +331,7 @@
     <ClInclude Include="DxUtility.h" />
     <ClInclude Include="FileUtility.h" />
     <ClInclude Include="ScopeGuard.h" />
+    <ClInclude Include="TextureUtility.h" />
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="Trace.h" />
     <ClInclude Include="pch.h" />
@@ -342,6 +343,7 @@
     <ClCompile Include="DxUtility.cpp" />
     <ClCompile Include="DirectXTK\DDSTextureLoader.cpp" />
     <ClCompile Include="FileUtility.cpp" />
+    <ClCompile Include="TextureUtility.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,18 +1,6 @@
-//*********************************************************
-//    Copyright (c) Microsoft. All rights reserved.
-//
-//    Apache 2.0 License
-//
-//    You may obtain a copy of the License at
-//    http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-//    implied. See the License for the specific language governing
-//    permissions and limitations under the License.
-//
-//*********************************************************
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 #include "pch.h"
 
 #include <XrUtility/XrMath.h>
@@ -297,6 +285,7 @@ bool engine::ProjectionLayer::Render(Context& context,
                 // PBR library expects traditional view transform (world to view).
                 DirectX::XMMATRIX worldToViewMatrix = xr::math::LoadInvertedXrPose(projectionViews[viewIndex].pose);
 
+
                 context.PbrResources.SetViewProjection(worldToViewMatrix, projectionMatrix);
                 context.PbrResources.Bind(context.DeviceContext.get());
                 context.PbrResources.SetDepthFuncReversed(reversedZ);
@@ -328,6 +317,14 @@ void engine::AppendProjectionLayer(CompositionLayers& layers, ProjectionLayer* l
     projectionLayer.space = layer->LayerSpace(viewConfig);
     projectionLayer.viewCount = (uint32_t)layer->ProjectionViews(viewConfig).size();
     projectionLayer.views = layer->ProjectionViews(viewConfig).data();
+
+    if (auto& reprojConfig = layer->Config(viewConfig).ReprojectionConfig) {
+        xr::InsertExtensionStruct(projectionLayer, reprojConfig.value());
+    }
+
+    if (auto& reprojPlaneOverride = layer->Config(viewConfig).ReprojectionPlaneOverride) {
+        xr::InsertExtensionStruct(projectionLayer, reprojPlaneOverride.value());
+    }
 
 }
 

@@ -1,18 +1,6 @@
-//*********************************************************
-//    Copyright (c) Microsoft. All rights reserved.
-//
-//    Apache 2.0 License
-//
-//    You may obtain a copy of the License at
-//    http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-//    implied. See the License for the specific language governing
-//    permissions and limitations under the License.
-//
-//*********************************************************
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 #pragma once
 
 #include "XrError.h"
@@ -43,6 +31,7 @@ namespace xr {
         bool SupportsColorScaleBias;
         bool SupportsSceneUnderstanding;
         bool SupportsSceneUnderstandingSerialization;
+        bool SupportsReprojectionConfiguration;
 
         std::vector<const char*> EnabledExtensions;
     };
@@ -90,8 +79,9 @@ namespace xr {
         extensions.SupportsHPMixedRealityController = isExtensionEnabled(XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME);
         extensions.SupportsPerceptionAnchorInterop = isExtensionEnabled(XR_MSFT_PERCEPTION_ANCHOR_INTEROP_EXTENSION_NAME);
         extensions.SupportsColorScaleBias = isExtensionEnabled(XR_KHR_COMPOSITION_LAYER_COLOR_SCALE_BIAS_EXTENSION_NAME);
-        extensions.SupportsSceneUnderstanding = isExtensionEnabled(XR_MSFT_SCENE_UNDERSTANDING_PREVIEW_EXTENSION_NAME);
+        extensions.SupportsSceneUnderstanding = isExtensionEnabled(XR_MSFT_SCENE_UNDERSTANDING_PREVIEW2_EXTENSION_NAME);
         extensions.SupportsSceneUnderstandingSerialization = isExtensionEnabled(XR_MSFT_SCENE_UNDERSTANDING_SERIALIZATION_PREVIEW_EXTENSION_NAME);
+        extensions.SupportsReprojectionConfiguration = isExtensionEnabled(XR_MSFT_COMPOSITION_LAYER_REPROJECTION_PREVIEW_EXTENSION_NAME);
 
         return extensions;
     }

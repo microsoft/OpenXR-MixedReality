@@ -134,10 +134,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Main.cpp" />
-    <ClCompile Include="Scene_PlaneFinding.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader>Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="Scene_Placement.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

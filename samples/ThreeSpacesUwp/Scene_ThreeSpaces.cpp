@@ -1,18 +1,6 @@
-//*********************************************************
-//    Copyright (c) Microsoft. All rights reserved.
-//
-//    Apache 2.0 License
-//
-//    You may obtain a copy of the License at
-//    http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-//    implied. See the License for the specific language governing
-//    permissions and limitations under the License.
-//
-//*********************************************************
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include <XrUtility/XrToString.h>
 #include <XrSceneLib/PbrModelObject.h>
@@ -62,9 +50,13 @@ namespace {
             }
 
             XrReferenceSpaceCreateInfo referenceSpaceCreateInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
-            referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
             referenceSpaceCreateInfo.poseInReferenceSpace = Pose::Identity();
+
+            referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_LOCAL;
             CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &referenceSpaceCreateInfo, m_localSpace.Put()));
+
+            referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
+            CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &referenceSpaceCreateInfo, m_viewSpace.Put()));
 
             // Create an axis at the origin of the LOCAL space
             m_holograms.emplace_back(m_localSpace.Get(),
@@ -142,11 +134,13 @@ namespace {
                 } else {
                     hologram.Object->Pose() = spaceLocation.pose;
                 }
-
-                hologram.Object->SetFillMode(Pose::IsPoseTracked(spaceLocation) ? Pbr::FillMode::Solid : Pbr::FillMode::Wireframe);
             } else {
                 hologram.Object->SetVisible(false);
             }
+
+            // When locating to VIEW space doesn't have tracked bits, render as wireframe indicating it lost positional tracking.
+            CHECK_XRCMD(xrLocateSpace(hologram.Space, m_viewSpace.Get(), time, &spaceLocation));
+            hologram.Object->SetFillMode(Pose::IsPoseTracked(spaceLocation) ? Pbr::FillMode::Solid : Pbr::FillMode::Wireframe);
         }
 
         void PlaceThreeSpaces(XrSpace space, XrTime time) {
@@ -239,6 +233,7 @@ namespace {
 
         xr::SpaceHandle m_unboundedSpace;
         xr::SpaceHandle m_localSpace;
+        xr::SpaceHandle m_viewSpace;
 
         struct AnchorSpace {
             xr::SpatialAnchorHandle Anchor;

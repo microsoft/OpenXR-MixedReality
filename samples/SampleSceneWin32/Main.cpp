@@ -1,18 +1,6 @@
-//*********************************************************
-//    Copyright (c) Microsoft. All rights reserved.
-//
-//    Apache 2.0 License
-//
-//    You may obtain a copy of the License at
-//    http://www.apache.org/licenses/LICENSE-2.0
-//
-//    Unless required by applicable law or agreed to in writing, software
-//    distributed under the License is distributed on an "AS IS" BASIS,
-//    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or
-//    implied. See the License for the specific language governing
-//    permissions and limitations under the License.
-//
-//*********************************************************
+// Copyright (c) Microsoft Corporation.
+// Licensed under the MIT License.
+
 #include "pch.h"
 #include <windowsx.h>
 #include <shellapi.h>
@@ -22,6 +10,7 @@
 std::unique_ptr<engine::Scene> TryCreateTitleScene(engine::Context& context);
 std::unique_ptr<engine::Scene> TryCreateControllerModelScene(engine::Context& context);
 std::unique_ptr<engine::Scene> TryCreateControllerActionsScene(engine::Context& context);
+std::unique_ptr<engine::Scene> TryCreateHandTrackingScene(engine::Context& context);
 
 // Global Variables:
 std::thread sceneThread;
@@ -50,11 +39,14 @@ void EnterVR() {
         appConfig.RequestedExtensions.push_back(XR_MSFT_CONTROLLER_MODEL_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_MSFT_HAND_TRACKING_MESH_EXTENSION_NAME);
 
         app = engine::CreateXrApp(appConfig);
         app->AddScene(TryCreateTitleScene(app->Context()));
         app->AddScene(TryCreateControllerModelScene(app->Context()));
         app->AddScene(TryCreateControllerActionsScene(app->Context()));
+        app->AddScene(TryCreateHandTrackingScene(app->Context()));
         app->Run();
         app = nullptr;
     });
