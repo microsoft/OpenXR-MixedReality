@@ -210,10 +210,9 @@ namespace {
             spaceCreateInfo.poseInReferenceSpace = xr::math::Pose::Identity();
             CHECK_XRCMD(xrCreateReferenceSpace(context.Session.Handle, &spaceCreateInfo, m_viewSpace.Put()));
 
-            m_previewCubes[LeftHand] =
-                engine::CreateCube(m_context.PbrResources, {CubeSideLength, CubeSideLength, CubeSideLength}, Pbr::FromSRGB(Colors::Gray));
-            m_previewCubes[RightHand] =
-                engine::CreateCube(m_context.PbrResources, {CubeSideLength, CubeSideLength, CubeSideLength}, Pbr::FromSRGB(Colors::Gray));
+            constexpr float AxisLength = 0.2f;
+            m_previewCubes[LeftHand] = engine::CreateAxis(m_context.PbrResources, AxisLength);
+            m_previewCubes[RightHand] = engine::CreateAxis(m_context.PbrResources, AxisLength);
             for (const auto& object : m_previewCubes) {
                 object->SetVisible(false);
                 AddObject(object);

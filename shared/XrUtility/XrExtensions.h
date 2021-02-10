@@ -31,14 +31,6 @@
 #define FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_)
 #endif
 
-#if XR_MSFT_perception_anchor_interop && defined(XR_USE_PLATFORM_WIN32)
-#define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_) \
-    _(xrCreateSpatialAnchorFromPerceptionAnchorMSFT)   \
-    _(xrTryGetPerceptionAnchorFromSpatialAnchorMSFT)
-#else
-#define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)
-#endif
-
 #if XR_MSFT_spatial_anchor
 #define FOR_EACH_SPATIAL_ANCHOR_FUNCTION(_) \
     _(xrCreateSpatialAnchorMSFT)            \
@@ -71,6 +63,14 @@
 #define FOR_EACH_SPATIAL_GRAPH_BRIDGE_FUNCTION(_)
 #endif
 
+#if XR_MSFT_perception_anchor_interop && defined(XR_USE_PLATFORM_WIN32)
+#define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_) \
+    _(xrCreateSpatialAnchorFromPerceptionAnchorMSFT)   \
+    _(xrTryGetPerceptionAnchorFromSpatialAnchorMSFT)
+#else
+#define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)
+#endif
+
 #if XR_MSFT_scene_understanding_preview2
 #define FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_) \
     _(xrCreateSceneObserverMSFT)                 \
@@ -95,18 +95,32 @@
 #define FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_)
 #endif
 
-#define FOR_EACH_EXTENSION_FUNCTION(_)              \
-    FOR_EACH_WIN32_EXTENSION_FUNCTION(_)            \
-    FOR_EACH_D3D11_EXTENSION_FUNCTION(_)            \
-    FOR_EACH_VISIBILITY_MASK_FUNCTION(_)            \
-    FOR_EACH_HAND_TRACKING_FUNCTION(_)              \
-    FOR_EACH_HAND_TRACKING_MESH_FUNCTION(_)         \
-    FOR_EACH_SPATIAL_GRAPH_BRIDGE_FUNCTION(_)       \
-    FOR_EACH_SPATIAL_ANCHOR_FUNCTION(_)             \
-    FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_) \
-    FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)  \
-    FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_)        \
-    FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_)
+#if XR_MSFT_spatial_anchor_export_preview
+#define FOR_EACH_SPATIAL_ANCHOR_EXPORT_FUNCTION(_)     \
+    _(xrCreateSpatialAnchorNeighborhoodDataStreamMSFT) \
+    _(xrReadSpatialAnchorNeighborhoodDataMSFT)         \
+    _(xrGetSpatialAnchorExportSufficiencyMSFT)         \
+    _(xrDestroySpatialAnchorNeighborhoodDataStreamMSFT)
+#else
+#define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)
+#endif
+
+#define FOR_EACH_COMPOSITION_LAYER_REPROJECTION_FUNCTION(_) _(xrEnumerateReprojectionModesMSFT)
+
+#define FOR_EACH_EXTENSION_FUNCTION(_)                     \
+    FOR_EACH_WIN32_EXTENSION_FUNCTION(_)                   \
+    FOR_EACH_D3D11_EXTENSION_FUNCTION(_)                   \
+    FOR_EACH_VISIBILITY_MASK_FUNCTION(_)                   \
+    FOR_EACH_HAND_TRACKING_FUNCTION(_)                     \
+    FOR_EACH_HAND_TRACKING_MESH_FUNCTION(_)                \
+    FOR_EACH_SPATIAL_GRAPH_BRIDGE_FUNCTION(_)              \
+    FOR_EACH_SPATIAL_ANCHOR_FUNCTION(_)                    \
+    FOR_EACH_CONTROLLER_MODEL_EXTENSION_FUNCTION(_)        \
+    FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)         \
+    FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_)               \
+    FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_) \
+    FOR_EACH_SPATIAL_ANCHOR_EXPORT_FUNCTION(_)             \
+    FOR_EACH_COMPOSITION_LAYER_REPROJECTION_FUNCTION(_)
 
 
 #define GET_INSTANCE_PROC_ADDRESS(name) \

@@ -92,7 +92,7 @@ namespace xr {
             throw std::runtime_error("No swapchain format supported");
         }
 
-        return (DXGI_FORMAT)*swapchainFormatIt;
+        return (TAppPixelFormat)*swapchainFormatIt;
     }
 
     inline std::vector<XrReferenceSpaceType> EnumerateReferenceSpaceTypes(XrSession session) {
