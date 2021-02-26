@@ -192,8 +192,10 @@ typedef enum XrResult {
     XR_ERROR_SCENE_COMPONENT_ID_INVALID_MSFT = -1000097001,
     XR_ERROR_SCENE_COMPONENT_TYPE_MISMATCH_MSFT = -1000097002,
     XR_ERROR_SCENE_MESH_BUFFER_ID_INVALID_MSFT = -1000097003,
-    XR_ERROR_SERIALIZATION_NOT_REQUESTED_MSFT = -1000098000,
     XR_ERROR_REPROJECTION_MODE_UNSUPPORTED_MSFT = -1000066000,
+    XR_SPATIAL_ANCHOR_EXPORT_DATA_UNAVAILABLE_MSFT = 1000062000,
+    XR_ERROR_SPATIAL_ANCHOR_EXPORT_FAILED_MSFT = -1000062000,
+    XR_ERROR_SPATIAL_ANCHOR_SUFFICIENCY_QUERY_FAILED_MSFT = -1000062001,
     XR_RESULT_MAX_ENUM = 0x7FFFFFFF
 } XrResult;
 
@@ -312,6 +314,7 @@ typedef enum XrStructureType {
     XR_TYPE_CONTROLLER_MODEL_STATE_MSFT = 1000055004,
     XR_TYPE_VIEW_CONFIGURATION_VIEW_FOV_EPIC = 1000059000,
     XR_TYPE_HOLOGRAPHIC_WINDOW_ATTACHMENT_MSFT = 1000063000,
+    XR_TYPE_ANDROID_SURFACE_SWAPCHAIN_CREATE_INFO_FB = 1000070000,
     XR_TYPE_INTERACTION_PROFILE_ANALOG_THRESHOLD_VALVE = 1000079000,
     XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR = 1000089000,
     XR_TYPE_VULKAN_INSTANCE_CREATE_INFO_KHR = 1000090000,
@@ -341,6 +344,8 @@ typedef enum XrStructureType {
     XR_TYPE_SERIALIZE_SCENE_MSFT = 1000098001,
     XR_TYPE_COMPOSITION_LAYER_REPROJECTION_INFO_MSFT = 1000066000,
     XR_TYPE_COMPOSITION_LAYER_REPROJECTION_PLANE_OVERRIDE_MSFT = 1000066001,
+    XR_TYPE_SPATIAL_ANCHOR_EXPORT_PURPOSE_INFO_MSFT = 1000062000,
+    XR_TYPE_SPATIAL_ANCHOR_EXPORT_SUFFICIENCY_MSFT = 1000062001,
     XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR = XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR,
     XR_TYPE_SWAPCHAIN_IMAGE_VULKAN2_KHR = XR_TYPE_SWAPCHAIN_IMAGE_VULKAN_KHR,
     XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN2_KHR = XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN_KHR,
@@ -418,6 +423,7 @@ typedef enum XrObjectType {
     XR_OBJECT_TYPE_HAND_TRACKER_EXT = 1000051000,
     XR_OBJECT_TYPE_SCENE_OBSERVER_MSFT = 1000097000,
     XR_OBJECT_TYPE_SCENE_MSFT = 1000097001,
+    XR_OBJECT_TYPE_SPATIAL_ANCHOR_NEIGHBORHOOD_DATA_STREAM_MSFT = 1000062000,
     XR_OBJECT_TYPE_MAX_ENUM = 0x7FFFFFFF
 } XrObjectType;
 typedef XrFlags64 XrInstanceCreateFlags;
@@ -2199,6 +2205,59 @@ typedef struct XrViewConfigurationViewFovEPIC {
 
 
 
+#define XR_MSFT_spatial_anchor_export_preview 1
+
+            XR_DEFINE_HANDLE(XrSpatialAnchorNeighborhoodDataStreamMSFT)
+
+#define XR_MSFT_spatial_anchor_export_preview_SPEC_VERSION 1
+#define XR_MSFT_SPATIAL_ANCHOR_EXPORT_PREVIEW_EXTENSION_NAME "XR_MSFT_spatial_anchor_export_preview"
+
+typedef enum XrSpatialAnchorExportPurposeMSFT {
+    XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_RELOCALIZATION_MSFT = 0,
+    XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_SHARING_MSFT = 1,
+    XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_MAX_ENUM_MSFT = 0x7FFFFFFF
+} XrSpatialAnchorExportPurposeMSFT;
+typedef struct XrSpatialAnchorExportPurposeInfoMSFT {
+    XrStructureType                     type;
+    const void* XR_MAY_ALIAS            next;
+    XrSpatialAnchorExportPurposeMSFT    exportPurpose;
+} XrSpatialAnchorExportPurposeInfoMSFT;
+
+typedef struct XrSpatialAnchorExportSufficiencyMSFT {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    XrBool32                    isMinimallySufficient;
+    float                       recommendedSufficiencyLevel;
+    float                       sufficiencyLevel;
+} XrSpatialAnchorExportSufficiencyMSFT;
+
+typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialAnchorNeighborhoodDataStreamMSFT)(XrSpatialAnchorMSFT spatialAnchor, const XrSpatialAnchorExportPurposeInfoMSFT* exportPurposeInfo, XrSpatialAnchorNeighborhoodDataStreamMSFT* neighborhoodDataStream);
+typedef XrResult (XRAPI_PTR *PFN_xrDestroySpatialAnchorNeighborhoodDataStreamMSFT)(XrSpatialAnchorNeighborhoodDataStreamMSFT neighborhoodDataStream);
+typedef XrResult (XRAPI_PTR *PFN_xrReadSpatialAnchorNeighborhoodDataMSFT)(XrSpatialAnchorNeighborhoodDataStreamMSFT neighborhoodDataStream, uint32_t bytesToRead, uint32_t* bytesRead, void* buffer);
+typedef XrResult (XRAPI_PTR *PFN_xrGetSpatialAnchorExportSufficiencyMSFT)(XrSpatialAnchorMSFT spatialAnchor, const XrSpatialAnchorExportPurposeInfoMSFT* exportPurposeInfo, XrSpatialAnchorExportSufficiencyMSFT* exportSufficiency);
+
+#ifndef XR_NO_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpatialAnchorNeighborhoodDataStreamMSFT(
+    XrSpatialAnchorMSFT                         spatialAnchor,
+    const XrSpatialAnchorExportPurposeInfoMSFT* exportPurposeInfo,
+    XrSpatialAnchorNeighborhoodDataStreamMSFT*  neighborhoodDataStream);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrDestroySpatialAnchorNeighborhoodDataStreamMSFT(
+    XrSpatialAnchorNeighborhoodDataStreamMSFT   neighborhoodDataStream);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrReadSpatialAnchorNeighborhoodDataMSFT(
+    XrSpatialAnchorNeighborhoodDataStreamMSFT   neighborhoodDataStream,
+    uint32_t                                    bytesToRead,
+    uint32_t*                                   bytesRead,
+    void* XR_MAY_ALIAS                          buffer);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrGetSpatialAnchorExportSufficiencyMSFT(
+    XrSpatialAnchorMSFT                         spatialAnchor,
+    const XrSpatialAnchorExportPurposeInfoMSFT* exportPurposeInfo,
+    XrSpatialAnchorExportSufficiencyMSFT*       exportSufficiency);
+#endif
+
+
 #define XR_MSFT_composition_layer_reprojection_preview 1
 #define XR_MSFT_composition_layer_reprojection_preview_SPEC_VERSION 1
 #define XR_MSFT_COMPOSITION_LAYER_REPROJECTION_PREVIEW_EXTENSION_NAME "XR_MSFT_composition_layer_reprojection_preview"
@@ -2287,6 +2346,7 @@ typedef enum XrWorldMeshLodMSFT {
     XR_WORLD_MESH_LOD_COARSE_MSFT = 1,
     XR_WORLD_MESH_LOD_MEDIUM_MSFT = 2,
     XR_WORLD_MESH_LOD_FINE_MSFT = 3,
+    XR_WORLD_MESH_LOD_UNLIMITED_MSFT = 4,
     XR_WORLD_MESH_LOD_MAX_ENUM_MSFT = 0x7FFFFFFF
 } XrWorldMeshLodMSFT;
 
@@ -2322,6 +2382,7 @@ typedef enum XrSceneComputeStateMSFT {
     XR_SCENE_COMPUTE_STATE_NONE_MSFT = 0,
     XR_SCENE_COMPUTE_STATE_UPDATING_MSFT = 1,
     XR_SCENE_COMPUTE_STATE_COMPLETED_MSFT = 2,
+    XR_SCENE_COMPUTE_STATE_COMPLETED_WITH_ERROR_MSFT = 3,
     XR_SCENE_COMPUTE_STATE_MAX_ENUM_MSFT = 0x7FFFFFFF
 } XrSceneComputeStateMSFT;
 typedef struct XrUuidMSFT {
