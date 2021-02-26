@@ -4,10 +4,10 @@
 # https://aka.ms/yaml
 
 trigger:
-  - master
+  - main
 
 pr:
-  - master
+  - main
 
 pool:
   vmImage: "windows-latest"
