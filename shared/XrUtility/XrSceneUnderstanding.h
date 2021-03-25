@@ -45,7 +45,7 @@ namespace xr {
         computeInfo.bounds.frustums = bounds.frustumBounds.data();
         computeInfo.bounds.sphereCount = static_cast<uint32_t>(bounds.sphereBounds.size());
         computeInfo.bounds.spheres = bounds.sphereBounds.data();
-        computeInfo.disableInferredSceneObjects = false;
+        computeInfo.disableInferredSceneObjects = disableInferredSceneObjects;
         CHECK_XRCMD(extensions.xrComputeNewSceneMSFT(sceneObserver, &computeInfo));
     }
 
