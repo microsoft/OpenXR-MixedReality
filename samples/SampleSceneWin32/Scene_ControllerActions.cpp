@@ -392,7 +392,7 @@ namespace {
             // Print interaction profile information in text
             {
                 fmt::memory_buffer buffer;
-                const char* whichHand = controllerData.side == xr::Side::Left ? "Left" : "Right";
+                const char* whichHand = xr::Side::Name[side];
                 fmt::format_to(buffer, "{} hand ： {}\n", whichHand, UserHandPath[controllerData.side]);
                 fmt::format_to(buffer, "{}\n", controllerData.interactionProfileName.c_str());
                 if (hasInteractionProfile) {
@@ -436,7 +436,7 @@ namespace {
         static void UpdateComponentValueVisuals(engine::Context& context, uint32_t side, ComponentData& component) {
             XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
             getInfo.action = component.actionInfo.action;
-            getInfo.subactionPath = side == xr::Side::Left ? context.Instance.LeftHandPath : context.Instance.RightHandPath;
+            getInfo.subactionPath = xr::StringToPath(context.Instance.Handle, xr::Side::UserPath[side]);
             if (component.actionInfo.actionType == XR_ACTION_TYPE_BOOLEAN_INPUT) {
                 XrActionStateBoolean state{XR_TYPE_ACTION_STATE_BOOLEAN};
                 CHECK_XRCMD(xrGetActionStateBoolean(context.Session.Handle, &getInfo, &state));

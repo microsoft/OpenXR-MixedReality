@@ -6,9 +6,14 @@
 namespace xr {
 
     namespace Side {
-        constexpr uint32_t Left = 0;
-        constexpr uint32_t Right = 1;
-        constexpr uint32_t Count = 2;
+        using side_t = uint32_t;
+
+        constexpr side_t Left = 0;
+        constexpr side_t Right = 1;
+        constexpr side_t Count = 2;
+
+        constexpr const char* Name[Count] = { "Left", "Right"};
+        constexpr const char* UserPath[Count] = {"/user/hand/left", "/user/hand/right"};
     } // namespace Side
 
 } // namespace xr
