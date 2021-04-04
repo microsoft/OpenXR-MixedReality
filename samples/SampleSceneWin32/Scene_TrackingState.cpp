@@ -51,13 +51,12 @@ namespace {
             XrActionSpaceCreateInfo spaceCreateInfo{XR_TYPE_ACTION_SPACE_CREATE_INFO};
             spaceCreateInfo.poseInActionSpace = Pose::Identity();
             spaceCreateInfo.action = m_gripSpaceAction;
-            spaceCreateInfo.poseInActionSpace = Pose::Identity();
 
             for (auto side : {xr::Side::Left, xr::Side::Right}) {
                 spaceCreateInfo.subactionPath = xr::StringToPath(m_context.Instance.Handle, xr::Side::UserPath[side]);
                 CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &spaceCreateInfo, m_gripSpace[side].Put()));
 
-                const float offset = side == xr::Side::Left ? -0.5f : 0.5f;
+                const float offset = xr::Side::Select(side, -0.5f, 0.5f);
                 AddTextBlock(m_handTextBlock[side], Pose::Translation({offset, 0, -1.0f}), {0.4f, 0.3f}, {256, 256});
             }
 
@@ -73,36 +72,58 @@ namespace {
         }
 
         void OnUpdate(const engine::FrameTime& frameTime) override {
+            XrSpaceLocation location = {XR_TYPE_SPACE_LOCATION};
+            XrSpaceVelocity velocity = {XR_TYPE_SPACE_VELOCITY};
+            location.next = &velocity;
+
             // Update each hand's grip pose and tracking state
             for (auto side : {xr::Side::Left, xr::Side::Right}) {
-                XrSpaceLocation gripInAppSpace = {XR_TYPE_SPACE_LOCATION};
-                CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_context.AppSpace, frameTime.PredictedDisplayTime, &gripInAppSpace));
+                CHECK_XRCMD(xrLocateSpace(m_gripSpace[side].Get(), m_context.AppSpace, frameTime.PredictedDisplayTime, &location));
+
+                fmt::memory_buffer buffer;
+                fmt::format_to(buffer, "{} hand tracking\n{}/input/grip/pose\n\n", xr::Side::Name[side], xr::Side::UserPath[side]);
+                FormatTrackingState(buffer, location.locationFlags, velocity.velocityFlags);
 
                 XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
                 getInfo.action = m_gripSpaceAction;
                 getInfo.subactionPath = xr::StringToPath(m_context.Instance.Handle, xr::Side::UserPath[side]);
-                XrActionStatePose state{XR_TYPE_ACTION_STATE_POSE};
-                CHECK_XRCMD(xrGetActionStatePose(m_context.Session.Handle, &getInfo, &state));
+                XrActionStatePose poseState{XR_TYPE_ACTION_STATE_POSE};
+                CHECK_XRCMD(xrGetActionStatePose(m_context.Session.Handle, &getInfo, &poseState));
 
-                fmt::memory_buffer buffer;
-                fmt::format_to(buffer, "{} hand tracking\n{}/input/grip/pose\n\n", xr::Side::Name[side], xr::Side::UserPath[side]);
-                fmt::format_to(buffer, "IsValid={}\n", Pose::IsPoseValid(gripInAppSpace));
-                fmt::format_to(buffer, "IsTracked={}\n", Pose::IsPoseTracked(gripInAppSpace));
-                fmt::format_to(buffer, "IsActive={}\n", state.isActive);
+                fmt::format_to(buffer, "poseState.IsActive={}\n", poseState.isActive);
                 UpdateTextBlock(m_handTextBlock[side], buffer.data());
             }
 
             // Update VIEW reference space and inspect if head tracking state
             {
-                XrSpaceLocation viewInAppSpace = {XR_TYPE_SPACE_LOCATION};
-                CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_context.AppSpace, frameTime.PredictedDisplayTime, &viewInAppSpace));
+                CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_context.AppSpace, frameTime.PredictedDisplayTime, &location));
 
                 fmt::memory_buffer buffer;
                 fmt::format_to(buffer, "Head tracking\na.k.a VIEW reference space\n\n");
-                fmt::format_to(buffer, "IsValid={}\n", Pose::IsPoseValid(viewInAppSpace));
-                fmt::format_to(buffer, "IsTracked={}\n", Pose::IsPoseTracked(viewInAppSpace));
+                FormatTrackingState(buffer, location.locationFlags, velocity.velocityFlags);
                 UpdateTextBlock(m_headTextBlock, buffer.data());
             }
+        }
+
+        // return 0 and 1 to print shorter string inline
+        template <typename FlagsT>
+        uint32_t TestBit(FlagsT flags, FlagsT bit) {
+            return (flags & bit) == bit ? 1 : 0;
+        }
+
+        void FormatTrackingState(fmt::memory_buffer& buffer, XrSpaceLocationFlags locationFlags, XrSpaceVelocityFlags velocityFlags) {
+            fmt::format_to(buffer,
+                           "Pose Tracked: p={}, o={}\n",
+                           TestBit(locationFlags, XR_SPACE_LOCATION_POSITION_TRACKED_BIT),
+                           TestBit(locationFlags, XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT));
+            fmt::format_to(buffer,
+                           "Pose Valid : p={}, o={}\n",
+                           TestBit(locationFlags, XR_SPACE_LOCATION_POSITION_VALID_BIT),
+                           TestBit(locationFlags, XR_SPACE_LOCATION_ORIENTATION_VALID_BIT));
+            fmt::format_to(buffer,
+                           "Velocity Valid: lv={}, av={}\n",
+                           TestBit(velocityFlags, XR_SPACE_VELOCITY_LINEAR_VALID_BIT),
+                           TestBit(velocityFlags, XR_SPACE_VELOCITY_ANGULAR_VALID_BIT));
         }
 
     private:
