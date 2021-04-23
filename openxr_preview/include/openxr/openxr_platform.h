@@ -2,7 +2,7 @@
 #define OPENXR_PLATFORM_H_ 1
 
 /*
-** Copyright (c) 2017-2020 The Khronos Group Inc.
+** Copyright (c) 2017-2021, The Khronos Group Inc.
 **
 ** SPDX-License-Identifier: Apache-2.0 OR MIT
 */
@@ -63,6 +63,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateSwapchainAndroidSurfaceKHR(
 #define XR_KHR_android_create_instance 1
 #define XR_KHR_android_create_instance_SPEC_VERSION 3
 #define XR_KHR_ANDROID_CREATE_INSTANCE_EXTENSION_NAME "XR_KHR_android_create_instance"
+// XrInstanceCreateInfoAndroidKHR extends XrInstanceCreateInfo
 typedef struct XrInstanceCreateInfoAndroidKHR {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
@@ -92,6 +93,7 @@ typedef struct XrVulkanSwapchainFormatListCreateInfoKHR {
 #define XR_KHR_opengl_enable_SPEC_VERSION 9
 #define XR_KHR_OPENGL_ENABLE_EXTENSION_NAME "XR_KHR_opengl_enable"
 #ifdef XR_USE_PLATFORM_WIN32
+// XrGraphicsBindingOpenGLWin32KHR extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingOpenGLWin32KHR {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
@@ -101,6 +103,7 @@ typedef struct XrGraphicsBindingOpenGLWin32KHR {
 #endif // XR_USE_PLATFORM_WIN32
 
 #ifdef XR_USE_PLATFORM_XLIB
+// XrGraphicsBindingOpenGLXlibKHR extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingOpenGLXlibKHR {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
@@ -113,6 +116,7 @@ typedef struct XrGraphicsBindingOpenGLXlibKHR {
 #endif // XR_USE_PLATFORM_XLIB
 
 #ifdef XR_USE_PLATFORM_XCB
+// XrGraphicsBindingOpenGLXcbKHR extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingOpenGLXcbKHR {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
@@ -126,6 +130,7 @@ typedef struct XrGraphicsBindingOpenGLXcbKHR {
 #endif // XR_USE_PLATFORM_XCB
 
 #ifdef XR_USE_PLATFORM_WAYLAND
+// XrGraphicsBindingOpenGLWaylandKHR extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingOpenGLWaylandKHR {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
@@ -162,6 +167,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetOpenGLGraphicsRequirementsKHR(
 #define XR_KHR_opengl_es_enable_SPEC_VERSION 7
 #define XR_KHR_OPENGL_ES_ENABLE_EXTENSION_NAME "XR_KHR_opengl_es_enable"
 #ifdef XR_USE_PLATFORM_ANDROID
+// XrGraphicsBindingOpenGLESAndroidKHR extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingOpenGLESAndroidKHR {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
@@ -199,6 +205,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetOpenGLESGraphicsRequirementsKHR(
 #define XR_KHR_vulkan_enable 1
 #define XR_KHR_vulkan_enable_SPEC_VERSION 7
 #define XR_KHR_VULKAN_ENABLE_EXTENSION_NAME "XR_KHR_vulkan_enable"
+// XrGraphicsBindingVulkanKHR extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingVulkanKHR {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
@@ -260,6 +267,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsRequirementsKHR(
 #define XR_KHR_D3D11_enable 1
 #define XR_KHR_D3D11_enable_SPEC_VERSION  5
 #define XR_KHR_D3D11_ENABLE_EXTENSION_NAME "XR_KHR_D3D11_enable"
+// XrGraphicsBindingD3D11KHR extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingD3D11KHR {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
@@ -294,6 +302,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetD3D11GraphicsRequirementsKHR(
 #define XR_KHR_D3D12_enable 1
 #define XR_KHR_D3D12_enable_SPEC_VERSION  7
 #define XR_KHR_D3D12_ENABLE_EXTENSION_NAME "XR_KHR_D3D12_enable"
+// XrGraphicsBindingD3D12KHR extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingD3D12KHR {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
@@ -462,6 +471,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsRequirements2KHR(
 #define XR_MNDX_egl_enable 1
 #define XR_MNDX_egl_enable_SPEC_VERSION   1
 #define XR_MNDX_EGL_ENABLE_EXTENSION_NAME "XR_MNDX_egl_enable"
+// XrGraphicsBindingEGLMNDX extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingEGLMNDX {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
@@ -500,6 +510,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrTryGetPerceptionAnchorFromSpatialAnchorMSFT(
 #define XR_MSFT_holographic_window_attachment_SPEC_VERSION 1
 #define XR_MSFT_HOLOGRAPHIC_WINDOW_ATTACHMENT_EXTENSION_NAME "XR_MSFT_holographic_window_attachment"
 #ifdef XR_USE_PLATFORM_WIN32
+// XrHolographicWindowAttachmentMSFT extends XrSessionCreateInfo
 typedef struct XrHolographicWindowAttachmentMSFT {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
@@ -522,6 +533,7 @@ static const XrAndroidSurfaceSwapchainFlagsFB XR_ANDROID_SURFACE_SWAPCHAIN_SYNCH
 static const XrAndroidSurfaceSwapchainFlagsFB XR_ANDROID_SURFACE_SWAPCHAIN_USE_TIMESTAMPS_BIT_FB = 0x00000002;
 
 #ifdef XR_USE_PLATFORM_ANDROID
+// XrAndroidSurfaceSwapchainCreateInfoFB extends XrSwapchainCreateInfo
 typedef struct XrAndroidSurfaceSwapchainCreateInfoFB {
     XrStructureType                     type;
     const void* XR_MAY_ALIAS            next;

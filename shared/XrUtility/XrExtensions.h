@@ -71,8 +71,9 @@
 #define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)
 #endif
 
-#if XR_MSFT_scene_understanding_preview2
+#if XR_MSFT_scene_understanding_preview3
 #define FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_) \
+    _(xrEnumerateSceneComputeFeaturesMSFT)       \
     _(xrCreateSceneObserverMSFT)                 \
     _(xrDestroySceneObserverMSFT)                \
     _(xrCreateSceneMSFT)                         \
@@ -89,7 +90,7 @@
 #if XR_MSFT_scene_understanding_serialization_preview
 #define FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_) \
     _(xrDeserializeSceneMSFT)                                  \
-    _(xrGetSceneSerializedDataMSFT)
+    _(xrGetSerializedSceneFragmentDataMSFT)
 
 #else
 #define FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_)
@@ -103,6 +104,19 @@
     _(xrDestroySpatialAnchorNeighborhoodDataStreamMSFT)
 #else
 #define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)
+#endif
+
+#if XR_MSFT_spatial_anchor_persistence_preview
+#define FOR_EACH_SPATIAL_ANCHOR_PERSISTENCE_FUNCTION(_) \
+    _(xrCreateSpatialAnchorStoreConnectionMSFT)         \
+    _(xrDestroySpatialAnchorStoreConnectionMSFT)        \
+    _(xrPersistSpatialAnchorMSFT)                       \
+    _(xrEnumeratePersistedSpatialAnchorNamesMSFT)       \
+    _(xrCreateSpatialAnchorFromPersistedNameMSFT)       \
+    _(xrUnpersistSpatialAnchorMSFT)                     \
+    _(xrClearSpatialAnchorStoreMSFT)
+#else
+#define FOR_EACH_SPATIAL_ANCHOR_PERSISTENCE_FUNCTION(_)
 #endif
 
 #define FOR_EACH_COMPOSITION_LAYER_REPROJECTION_FUNCTION(_) _(xrEnumerateReprojectionModesMSFT)
@@ -120,6 +134,7 @@
     FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_)               \
     FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_) \
     FOR_EACH_SPATIAL_ANCHOR_EXPORT_FUNCTION(_)             \
+    FOR_EACH_SPATIAL_ANCHOR_PERSISTENCE_FUNCTION(_)        \
     FOR_EACH_COMPOSITION_LAYER_REPROJECTION_FUNCTION(_)
 
 

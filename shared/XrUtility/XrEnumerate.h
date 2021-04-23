@@ -5,6 +5,7 @@
 
 #include <openxr/openxr.h>
 #include <vector>
+#include <set>
 #include "XrError.h"
 
 namespace xr {
@@ -104,5 +105,38 @@ namespace xr {
             session, (uint32_t)runtimeSupportedReferenceSpaces.size(), &spaceCountOutput, runtimeSupportedReferenceSpaces.data()));
         return runtimeSupportedReferenceSpaces;
     }
+
+    inline std::set<std::string> QueryActionLocalizedName(XrSession session, XrAction action, XrInputSourceLocalizedNameFlags flags) {
+        std::set<std::string> names;
+        uint32_t nameCapacityOutput = 0;
+        uint32_t sourcesCount;
+
+        XrBoundSourcesForActionEnumerateInfo enumerateBoundSourcesInfo{XR_TYPE_BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO};
+        enumerateBoundSourcesInfo.action = action;
+        CHECK_XRCMD(xrEnumerateBoundSourcesForAction(session, &enumerateBoundSourcesInfo, 0, &sourcesCount, nullptr));
+
+        std::vector<XrPath> sourcesBuffer;
+        sourcesBuffer.resize(sourcesCount);
+        CHECK_XRCMD(
+            xrEnumerateBoundSourcesForAction(session, &enumerateBoundSourcesInfo, sourcesCount, &sourcesCount, sourcesBuffer.data()));
+
+        std::string nameBuffer;
+        for (uint32_t i = 0; i < sourcesCount; i++) {
+            XrInputSourceLocalizedNameGetInfo getLocalizedNameInfo{XR_TYPE_INPUT_SOURCE_LOCALIZED_NAME_GET_INFO};
+            getLocalizedNameInfo.sourcePath = sourcesBuffer[i];
+            getLocalizedNameInfo.whichComponents = flags;
+
+            CHECK_XRCMD(xrGetInputSourceLocalizedName(session, &getLocalizedNameInfo, 0, &nameCapacityOutput, nullptr));
+
+            nameBuffer.resize(nameCapacityOutput);
+            CHECK_XRCMD(
+                xrGetInputSourceLocalizedName(session, &getLocalizedNameInfo, nameCapacityOutput, &nameCapacityOutput, nameBuffer.data()));
+
+            // Some names are duplicated due to binding to the same input component and the left and right controllers
+            names.emplace(nameBuffer.data());
+        }
+
+        return names;
+    };
 
 } // namespace xr

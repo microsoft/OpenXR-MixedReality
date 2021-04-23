@@ -12,6 +12,18 @@ namespace xr {
     class SceneObserverHandle : public xr::UniqueExtHandle<XrSceneObserverMSFT> {};
     class SceneHandle : public xr::UniqueExtHandle<XrSceneMSFT> {};
 
+    inline std::vector<XrSceneComputeFeatureMSFT> EnumerateSceneComputeFeatures(const xr::ExtensionDispatchTable& extensions,
+                                                                                XrInstance instance,
+                                                                                XrSystemId systemId) {
+        uint32_t count = 0;
+        CHECK_XRCMD(extensions.xrEnumerateSceneComputeFeaturesMSFT(instance, systemId, 0, &count, nullptr));
+
+        std::vector<XrSceneComputeFeatureMSFT> features(count);
+        CHECK_XRCMD(extensions.xrEnumerateSceneComputeFeaturesMSFT(instance, systemId, count, &count, features.data()));
+        features.resize(count);
+        return features;
+    }
+
     inline xr::SceneObserverHandle CreateSceneObserver(const xr::ExtensionDispatchTable& extensions, XrSession session) {
         xr::SceneObserverHandle sceneObserverHandle;
         XrSceneObserverCreateInfoMSFT createInfo{XR_TYPE_SCENE_OBSERVER_CREATE_INFO_MSFT};
@@ -35,8 +47,17 @@ namespace xr {
         std::vector<XrSceneOrientedBoxBoundMSFT> boxBounds;
     };
 
-    inline void ComputeNewScene(XrSceneObserverMSFT sceneObserver, const xr::ExtensionDispatchTable& extensions, const SceneBounds& bounds, bool disableInferredSceneObjects = false) {
+    // Begins computing a new scene asynchronously.
+    // - visualMeshLevelOfDetail only applies to visual meshes
+    inline void ComputeNewScene(XrSceneObserverMSFT sceneObserver,
+                                const xr::ExtensionDispatchTable& extensions,
+                                const std::vector<XrSceneComputeFeatureMSFT>& requestedFeatures,
+                                const SceneBounds& bounds,
+                                bool disableInferredSceneObjects = false,
+                                std::optional<XrMeshComputeLodMSFT> visualMeshLevelOfDetail = {}) {
         XrNewSceneComputeInfoMSFT computeInfo{XR_TYPE_NEW_SCENE_COMPUTE_INFO_MSFT};
+        computeInfo.requestedFeatureCount = static_cast<uint32_t>(requestedFeatures.size());
+        computeInfo.requestedFeatures = requestedFeatures.data();
         computeInfo.bounds.space = bounds.space;
         computeInfo.bounds.time = bounds.time;
         computeInfo.bounds.boxCount = static_cast<uint32_t>(bounds.boxBounds.size());
@@ -46,31 +67,66 @@ namespace xr {
         computeInfo.bounds.sphereCount = static_cast<uint32_t>(bounds.sphereBounds.size());
         computeInfo.bounds.spheres = bounds.sphereBounds.data();
         computeInfo.disableInferredSceneObjects = disableInferredSceneObjects;
+
+        XrVisualMeshComputeLodInfoMSFT computeLod{XR_TYPE_VISUAL_MESH_COMPUTE_LOD_INFO_MSFT};
+        if (visualMeshLevelOfDetail.has_value()) {
+            computeLod.lod = visualMeshLevelOfDetail.value();
+            xr::InsertExtensionStruct(computeInfo, computeLod);
+        }
         CHECK_XRCMD(extensions.xrComputeNewSceneMSFT(sceneObserver, &computeInfo));
     }
 
-    // Read mesh vertex/index buffers
-    struct SceneMeshBuffers {
-        std::vector<XrVector3f> vertexBuffer;
-        std::vector<uint32_t> indexBuffer;
-    };
-
-    inline void
-    ReadMeshBuffers(XrSceneMSFT scene, const xr::ExtensionDispatchTable& extensions, uint64_t meshBufferId, SceneMeshBuffers& buffers) {
+    // Reads mesh vertices and 32-bit indices.
+    inline void ReadMeshBuffers(XrSceneMSFT scene,
+                                const xr::ExtensionDispatchTable& extensions,
+                                uint64_t meshBufferId,
+                                std::vector<XrVector3f>& vertexBuffer,
+                                std::vector<uint32_t>& indexBuffer) {
         XrSceneMeshBuffersGetInfoMSFT meshGetInfo{XR_TYPE_SCENE_MESH_BUFFERS_GET_INFO_MSFT};
         meshGetInfo.meshBufferId = meshBufferId;
 
         XrSceneMeshBuffersMSFT meshBuffers{XR_TYPE_SCENE_MESH_BUFFERS_MSFT};
+        XrSceneMeshVertexBufferMSFT vertices{XR_TYPE_SCENE_MESH_VERTEX_BUFFER_MSFT};
+        XrSceneMeshIndicesUint32MSFT indices{XR_TYPE_SCENE_MESH_INDICES_UINT32_MSFT};
+        xr::InsertExtensionStruct(meshBuffers, vertices);
+        xr::InsertExtensionStruct(meshBuffers, indices);
         CHECK_XRCMD(extensions.xrGetSceneMeshBuffersMSFT(scene, &meshGetInfo, &meshBuffers));
 
-        buffers.vertexBuffer.resize(meshBuffers.vertexCountOutput);
-        buffers.indexBuffer.resize(meshBuffers.indexCountOutput);
-        meshBuffers.vertexCapacityInput = static_cast<uint32_t>(buffers.vertexBuffer.size());
-        meshBuffers.indexCapacityInput = static_cast<uint32_t>(buffers.indexBuffer.size());
-        meshBuffers.vertices = buffers.vertexBuffer.data();
-        meshBuffers.indices = buffers.indexBuffer.data();
+        vertexBuffer.resize(vertices.vertexCountOutput);
+        indexBuffer.resize(indices.indexCountOutput);
+        vertices.vertexCapacityInput = vertices.vertexCountOutput;
+        indices.indexCapacityInput = indices.indexCountOutput;
+        vertices.vertices = vertexBuffer.data();
+        indices.indices = indexBuffer.data();
         CHECK_XRCMD(extensions.xrGetSceneMeshBuffersMSFT(scene, &meshGetInfo, &meshBuffers));
-        buffers.vertexBuffer.resize(meshBuffers.vertexCountOutput);
-        buffers.indexBuffer.resize(meshBuffers.indexCountOutput);
+        vertexBuffer.resize(vertices.vertexCountOutput);
+        indexBuffer.resize(indices.indexCountOutput);
+    }
+
+    // Reads mesh vertices and 16-bit indices.
+    inline void ReadMeshBuffers(XrSceneMSFT scene,
+                                const xr::ExtensionDispatchTable& extensions,
+                                uint64_t meshBufferId,
+                                std::vector<XrVector3f>& vertexBuffer,
+                                std::vector<uint16_t>& indexBuffer) {
+        XrSceneMeshBuffersGetInfoMSFT meshGetInfo{XR_TYPE_SCENE_MESH_BUFFERS_GET_INFO_MSFT};
+        meshGetInfo.meshBufferId = meshBufferId;
+
+        XrSceneMeshBuffersMSFT meshBuffers{XR_TYPE_SCENE_MESH_BUFFERS_MSFT};
+        XrSceneMeshVertexBufferMSFT vertices{XR_TYPE_SCENE_MESH_VERTEX_BUFFER_MSFT};
+        XrSceneMeshIndicesUint16MSFT indices{XR_TYPE_SCENE_MESH_INDICES_UINT16_MSFT};
+        xr::InsertExtensionStruct(meshBuffers, vertices);
+        xr::InsertExtensionStruct(meshBuffers, indices);
+        CHECK_XRCMD(extensions.xrGetSceneMeshBuffersMSFT(scene, &meshGetInfo, &meshBuffers));
+
+        vertexBuffer.resize(vertices.vertexCountOutput);
+        indexBuffer.resize(indices.indexCountOutput);
+        vertices.vertexCapacityInput = vertices.vertexCountOutput;
+        indices.indexCapacityInput = indices.indexCountOutput;
+        vertices.vertices = vertexBuffer.data();
+        indices.indices = indexBuffer.data();
+        CHECK_XRCMD(extensions.xrGetSceneMeshBuffersMSFT(scene, &meshGetInfo, &meshBuffers));
+        vertexBuffer.resize(vertices.vertexCountOutput);
+        indexBuffer.resize(indices.indexCountOutput);
     }
 } // namespace xr
