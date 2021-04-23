@@ -107,6 +107,7 @@
     <ClCompile Include="Scene_ControllerActions.cpp" />
     <ClCompile Include="Scene_ControllerModel.cpp" />
     <ClCompile Include="..\SampleSceneUwp\Scene_HandTracking.cpp" />
+    <ClCompile Include="Scene_TrackingState.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="$(SharedPath)\XrSceneLib\XrSceneLib_win32.vcxproj">

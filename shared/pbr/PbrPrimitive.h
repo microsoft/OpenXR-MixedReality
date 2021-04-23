@@ -34,6 +34,11 @@ namespace Pbr {
             return m_material;
         }
 
+        // Replace the material for the primitive
+        void SetMaterial(std::shared_ptr<Material> material) {
+            m_material = std::move(material);
+        }
+
     protected:
         friend struct Model;
         void Render(_In_ ID3D11DeviceContext* context) const;

@@ -88,7 +88,7 @@ namespace {
                                       DirectX::FXMVECTOR v3,
                                       XrPosef* hitPose,
                                       float& distance);
-    Pbr::RGBAColor GetColor(XrSceneObjectKindMSFT kind);
+    Pbr::RGBAColor GetColor(XrSceneObjectTypeMSFT type);
     std::shared_ptr<Pbr::Material> CreateTextureMaterial(Pbr::Resources& pbr);
     SceneVisuals CreateSceneVisuals(const xr::ExtensionDispatchTable& extensions,
                                     const Pbr::Resources& pbrResources,
@@ -223,7 +223,7 @@ namespace {
         ~PlacementScene() override {
             // Stop the worker thread first before destroying this class
             if (m_future.valid()) {
-                m_future.get();
+                m_future.wait();
             }
         }
 
@@ -277,7 +277,8 @@ namespace {
 
             if (m_scanState == ScanState::Waiting) {
                 // Check if the results are available
-                if (m_sceneObserver->IsSceneComputeCompleted()) {
+                const XrSceneComputeStateMSFT state = m_sceneObserver->GetSceneComputeState();
+                if (state == XR_SCENE_COMPUTE_STATE_COMPLETED_MSFT) {
                     // Send the scene compute result to the background thread for processing
                     m_future = std::async(std::launch::async,
                                           &CreateSceneVisuals,
@@ -286,6 +287,9 @@ namespace {
                                           m_planeMaterial,
                                           m_sceneObserver->CreateScene());
                     m_scanState = ScanState::Processing;
+                } else if (state == XR_SCENE_COMPUTE_STATE_COMPLETED_WITH_ERROR_MSFT) {
+                    sample::Trace(L"Compute completed with error");
+                    m_scanState = ScanState::Idle;
                 }
             } else if (m_scanState == ScanState::Idle) {
                 // no active query, start one if enough time has passed
@@ -293,7 +297,9 @@ namespace {
                     // Start the async query
                     m_sceneBounds.space = m_context.AppSpace;
                     m_sceneBounds.time = m_lastTimeOfUpdate;
-                    m_sceneObserver->ComputeNewScene(m_sceneBounds);
+                    static const std::vector<XrSceneComputeFeatureMSFT> Features{XR_SCENE_COMPUTE_FEATURE_PLANE_MSFT,
+                                                                                 XR_SCENE_COMPUTE_FEATURE_PLANE_MESH_MSFT};
+                    m_sceneObserver->ComputeNewScene(Features, m_sceneBounds);
 
                     m_nextUpdate = frameTime.Now + UpdateInterval;
                     m_scanState = ScanState::Waiting;
@@ -310,8 +316,6 @@ namespace {
         }
 
         void RayUpdated(int hand, const XrPosef& handPose, XrTime time, RaycastAction raycastAction) override {
-            using namespace DirectX;
-
             if (!m_sceneVisuals.scene) {
                 return;
             }
@@ -463,6 +467,8 @@ namespace {
         }
 
         const xr::ExtensionDispatchTable& m_extensions;
+        // The XrSceneObserver needs to be destroyed after SceneVisuals because SceneVisuals contains an XrScene.
+        std::unique_ptr<xr::su::SceneObserver> m_sceneObserver;
         std::shared_ptr<Pbr::Material> m_planeMaterial;
         SceneVisuals m_sceneVisuals;
         std::future<SceneVisuals> m_future;
@@ -471,7 +477,6 @@ namespace {
         std::array<std::optional<xr::su::ScenePlane::Id>, HandCount> m_highlightedPlanes;
         // The planes that should remain visible because an object was placed on it
         std::unordered_set<xr::su::ScenePlane::Id> m_visiblePlanes;
-        std::unique_ptr<xr::su::SceneObserver> m_sceneObserver;
         xr::SpaceHandle m_viewSpace;
         XrTime m_lastTimeOfUpdate{};
         xr::SceneBounds m_sceneBounds;
@@ -489,7 +494,6 @@ namespace {
                                       DirectX::FXMVECTOR v3,
                                       XrPosef* hitPose,
                                       float& distance) {
-        using namespace DirectX;
         // Not optimal. Should be possible to determine which triangle to test.
         bool hit = TriangleTests::Intersects(rayPosition, rayDirection, v0, v1, v2, distance);
         if (!hit) {
@@ -512,26 +516,25 @@ namespace {
         return hit;
     }
 
-    Pbr::RGBAColor GetColor(XrSceneObjectKindMSFT kind) {
-        using namespace DirectX;
+    Pbr::RGBAColor GetColor(XrSceneObjectTypeMSFT type) {
         // The lighting system makes a lot of the colors too bright so multiply them to tone them down
         constexpr auto scaleColor = [](const XMVECTORF32& color, float scale) {
             return Pbr::FromSRGB(color * XMVECTORF32{scale, scale, scale, 1});
         };
-        switch (kind) {
-        case XR_SCENE_OBJECT_KIND_CEILING_MSFT:
+        switch (type) {
+        case XR_SCENE_OBJECT_TYPE_CEILING_MSFT:
             return Pbr::FromSRGB(Colors::Green);
-        case XR_SCENE_OBJECT_KIND_FLOOR_MSFT:
+        case XR_SCENE_OBJECT_TYPE_FLOOR_MSFT:
             return scaleColor(Colors::Blue, 0.5f);
-        case XR_SCENE_OBJECT_KIND_PLATFORM_MSFT:
+        case XR_SCENE_OBJECT_TYPE_PLATFORM_MSFT:
             return scaleColor(Colors::Orange, 0.6f);
-        case XR_SCENE_OBJECT_KIND_WALL_MSFT:
+        case XR_SCENE_OBJECT_TYPE_WALL_MSFT:
             return scaleColor(Colors::Tomato, 0.5f);
-        case XR_SCENE_OBJECT_KIND_BACKGROUND_MSFT:
+        case XR_SCENE_OBJECT_TYPE_BACKGROUND_MSFT:
             return scaleColor(Colors::Cyan, 0.8f);
-        case XR_SCENE_OBJECT_KIND_UNCATEGORIZED_MSFT:
+        case XR_SCENE_OBJECT_TYPE_UNCATEGORIZED_MSFT:
             return scaleColor(Colors::Purple, 0.8f);
-        case XR_SCENE_OBJECT_KIND_INFERRED_MSFT:
+        case XR_SCENE_OBJECT_TYPE_INFERRED_MSFT:
             return scaleColor(Colors::Yellow, 0.7f);
         default:
             return scaleColor(Colors::White, 0.7f);
@@ -542,7 +545,6 @@ namespace {
                                   const std::vector<uint32_t>& indices,
                                   const Pbr::RGBAColor& color,
                                   Pbr::PrimitiveBuilder& builder) {
-        using namespace DirectX;
         const size_t indexCount = indices.size();
         builder.Vertices.clear();
         builder.Indices.clear();
@@ -580,12 +582,13 @@ namespace {
                                                              uint64_t meshBufferId,
                                                              Pbr::PrimitiveBuilder& builder,
                                                              const Pbr::RGBAColor& color) {
-        xr::SceneMeshBuffers meshBuffers;
-        xr::ReadMeshBuffers(scene, extensions, meshBufferId, meshBuffers);
-        if (meshBuffers.indexBuffer.empty() || meshBuffers.vertexBuffer.empty()) {
+        std::vector<XrVector3f> vertexBuffer;
+        std::vector<uint32_t> indexBuffer;
+        xr::ReadMeshBuffers(scene, extensions, meshBufferId, vertexBuffer, indexBuffer);
+        if (indexBuffer.empty() || vertexBuffer.empty()) {
             return nullptr;
         }
-        FillMeshPrimitiveBuilder(meshBuffers.vertexBuffer, meshBuffers.indexBuffer, color, builder);
+        FillMeshPrimitiveBuilder(vertexBuffer, indexBuffer, color, builder);
         auto model = std::make_shared<Pbr::Model>();
         model->AddPrimitive(Pbr::Primitive(pbrResources, builder, material));
         return std::make_shared<engine::PbrModelObject>(std::move(model));
@@ -605,11 +608,11 @@ namespace {
         return std::make_shared<engine::PbrModelObject>(std::move(model));
     }
 
-    std::unordered_map<xr::su::SceneObject::Id, XrSceneObjectKindMSFT> CreateKindMap(const std::vector<xr::su::SceneObject>& sceneObjects) {
-        std::unordered_map<xr::su::SceneObject::Id, XrSceneObjectKindMSFT> map;
+    std::unordered_map<xr::su::SceneObject::Id, XrSceneObjectTypeMSFT> CreateTypeMap(const std::vector<xr::su::SceneObject>& sceneObjects) {
+        std::unordered_map<xr::su::SceneObject::Id, XrSceneObjectTypeMSFT> map;
         map.reserve(sceneObjects.size());
         for (const xr::su::SceneObject& sceneObject : sceneObjects) {
-            map.emplace(sceneObject.id, sceneObject.kind);
+            map.emplace(sceneObject.id, sceneObject.type);
         }
         return map;
     }
@@ -618,26 +621,28 @@ namespace {
                                     const Pbr::Resources& pbrResources,
                                     const std::shared_ptr<Pbr::Material>& material,
                                     std::unique_ptr<xr::su::Scene> scene) {
-        static const std::vector<xr::su::SceneObject::Kind> kindFilter{XR_SCENE_OBJECT_KIND_BACKGROUND_MSFT,
-                                                                       XR_SCENE_OBJECT_KIND_WALL_MSFT,
-                                                                       XR_SCENE_OBJECT_KIND_FLOOR_MSFT,
-                                                                       XR_SCENE_OBJECT_KIND_CEILING_MSFT,
-                                                                       XR_SCENE_OBJECT_KIND_PLATFORM_MSFT,
-                                                                       XR_SCENE_OBJECT_KIND_INFERRED_MSFT};
+        static const std::vector<xr::su::SceneObject::Type> typeFilter{XR_SCENE_OBJECT_TYPE_BACKGROUND_MSFT,
+                                                                       XR_SCENE_OBJECT_TYPE_WALL_MSFT,
+                                                                       XR_SCENE_OBJECT_TYPE_FLOOR_MSFT,
+                                                                       XR_SCENE_OBJECT_TYPE_CEILING_MSFT,
+                                                                       XR_SCENE_OBJECT_TYPE_PLATFORM_MSFT,
+                                                                       XR_SCENE_OBJECT_TYPE_INFERRED_MSFT};
         std::vector<std::shared_ptr<engine::Object>> visuals;
         std::vector<XrUuidMSFT> ids;
         Pbr::PrimitiveBuilder builder;
 
-        const std::unordered_map<xr::su::SceneObject::Id, XrSceneObjectKindMSFT> sceneObjectIdToKind =
-            CreateKindMap(scene->GetObjects(kindFilter));
+        const std::unordered_map<xr::su::SceneObject::Id, XrSceneObjectTypeMSFT> sceneObjectIdToType =
+            CreateTypeMap(scene->GetObjects(typeFilter));
 
-        auto planes = scene->GetPlanes(kindFilter);
+        auto planes = scene->GetPlanes(typeFilter);
         for (const xr::su::ScenePlane& scenePlane : planes) {
-            const XrSceneObjectKindMSFT kind = sceneObjectIdToKind.at(scenePlane.parentObjectId);
-            std::shared_ptr<engine::PbrModelObject> obj = CreatePlaneVisual(extensions, pbrResources, material, scenePlane, GetColor(kind));
-            obj->SetVisible(false);
-            visuals.push_back(std::move(obj));
-            ids.push_back(static_cast<XrUuidMSFT>(scenePlane.id));
+            const XrSceneObjectTypeMSFT type = sceneObjectIdToType.at(scenePlane.parentObjectId);
+            std::shared_ptr<engine::PbrModelObject> obj = CreatePlaneVisual(extensions, pbrResources, material, scenePlane, GetColor(type));
+            if (obj != nullptr) {
+                obj->SetVisible(false);
+                visuals.push_back(std::move(obj));
+                ids.push_back(static_cast<XrUuidMSFT>(scenePlane.id));
+            }
         }
         return SceneVisuals(std::move(scene), std::move(ids), std::move(planes), std::move(visuals));
     }

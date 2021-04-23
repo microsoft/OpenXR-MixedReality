@@ -90,7 +90,7 @@ namespace {
             for (auto side : {xr::Side::Left, xr::Side::Right}) {
                 // Update the value and visual for each controller component
                 for (auto& component : m_controllerData[side].components) {
-                    UpdateComponentValueVisuals(m_context, side, component);
+                    UpdateComponentValueVisuals(m_context, xr::StringToPath(m_context.Instance.Handle, UserHandPath[side]), component);
                 }
             }
         }
@@ -380,7 +380,7 @@ namespace {
                     component.placementObject->SetParent(controllerData.gripRoot);
                     const float x = side == xr::Side::Left ? -0.1f : 0.1f;
                     const float y = 0.0f;
-                    const float z = -0.042f + controllerData.components.size() * 0.0096f;
+                    const float z = -0.073f + controllerData.components.size() * (0.0096f * 1.47f);
                     component.placementObject->Pose() = xr::math::Pose::Translation({x, y, z});
 
                     component.valueObject = engine::CreateCube(context.PbrResources, {1, 1, 1}, Pbr::RGBA::White);
@@ -389,33 +389,61 @@ namespace {
                 }
             }
 
-            // Print interaction profile information in text
-            {
-                fmt::memory_buffer buffer;
-                const char* whichHand = controllerData.side == xr::Side::Left ? "Left" : "Right";
-                fmt::format_to(buffer, "{} hand ： {}\n", whichHand, UserHandPath[controllerData.side]);
-                fmt::format_to(buffer, "{}\n", controllerData.interactionProfileName.c_str());
-                if (hasInteractionProfile) {
-                    for (const auto& component : controllerData.components) {
-                        fmt::format_to(buffer, "\n{}/input/{}\n", UserHandPath[controllerData.side], component.text.c_str());
-                        sample::Trace(fmt::to_string(buffer));
-                        scene.AddObject(component.placementObject);
-                        scene.AddObject(component.valueObject);
-                    }
+            auto ConcatNames = [](const std::set<std::string>& names) -> std::string {
+                if (names.size() == 0) {
+                    return "ERROR: No localized name";
                 }
 
-                // Draw text object for the new interaction profile and components
-                controllerData.text = fmt::to_string(buffer);
-                controllerData.textObject = scene.AddObject(CreateTextObject(context, controllerData.side, controllerData.text));
-                controllerData.textObject->SetParent(controllerData.gripRoot);
-                const float offset = controllerData.side == xr::Side::Left ? -0.05f : 0.05f;
-                controllerData.textObject->Pose() = {{-0.707f, 0, 0, 0.707f}, {offset, -0.01f, 0}};
-                controllerData.textObject->Scale() = {0.1f, 0.1f, 0.1f};
+                std::string finalNames;
+                uint32_t i = 0;
+                for (auto& name : names) {
+                    finalNames += name;
+                    if (i < names.size() - 1) {
+                        finalNames += "\n";
+                    }
+                    i++;
+                }
+
+                return finalNames;
+            };
+
+            // Print interaction profile information in text
+            {
+                if (controllerData.components.size() > 0) {
+                    fmt::memory_buffer buffer;
+                    std::string interactionProfileString =
+                        ConcatNames(xr::QueryActionLocalizedName(context.Session.Handle,
+                                                                 controllerData.components[0].actionInfo.action,
+                                                                 XR_INPUT_SOURCE_LOCALIZED_NAME_INTERACTION_PROFILE_BIT));
+                    std::string handString = ConcatNames(xr::QueryActionLocalizedName(context.Session.Handle,
+                                                                                      controllerData.components[0].actionInfo.action,
+                                                                                      XR_INPUT_SOURCE_LOCALIZED_NAME_USER_PATH_BIT));
+                    fmt::format_to(buffer, "Device: {}\n", handString);
+                    fmt::format_to(buffer, "Interaction Profile: {}\n", interactionProfileString);
+                    if (hasInteractionProfile) {
+                        for (const auto& component : controllerData.components) {
+                            std::string componentString = ConcatNames(xr::QueryActionLocalizedName(
+                                context.Session.Handle, component.actionInfo.action, XR_INPUT_SOURCE_LOCALIZED_NAME_COMPONENT_BIT));
+                            fmt::format_to(buffer, "\n{}:\n{}\n", component.text.c_str(), componentString);
+                            scene.AddObject(component.placementObject);
+                            scene.AddObject(component.valueObject);
+                        }
+                    }
+                    sample::Trace(fmt::to_string(buffer));
+
+                    // Draw text object for the new interaction profile and components
+                    controllerData.text = fmt::to_string(buffer);
+                    controllerData.textObject = scene.AddObject(CreateTextObject(context, controllerData.side, controllerData.text));
+                    controllerData.textObject->SetParent(controllerData.gripRoot);
+                    const float offset = controllerData.side == xr::Side::Left ? -0.05f : 0.05f;
+                    controllerData.textObject->Pose() = {{-0.707f, 0, 0, 0.707f}, {offset, -0.01f, 0}};
+                    controllerData.textObject->Scale() = {0.1f, 0.1f, 0.1f};
+                }
             }
         }
 
         static std::shared_ptr<engine::Object> CreateTextObject(engine::Context& context, uint32_t side, std::string_view text) {
-            constexpr uint32_t width = 480, height = 640;
+            constexpr uint32_t width = 480, height = 960;
             engine::TextTextureInfo textInfo{width, height}; // pixels
             textInfo.FontSize = 18;
             textInfo.Foreground = Pbr::RGBA::White;
@@ -433,10 +461,10 @@ namespace {
             return engine::CreateQuad(context.PbrResources, {1, quadHeight}, material);
         }
 
-        static void UpdateComponentValueVisuals(engine::Context& context, uint32_t side, ComponentData& component) {
+        static void UpdateComponentValueVisuals(engine::Context& context, XrPath subactionPath, ComponentData& component) {
             XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
             getInfo.action = component.actionInfo.action;
-            getInfo.subactionPath = side == xr::Side::Left ? context.Instance.LeftHandPath : context.Instance.RightHandPath;
+            getInfo.subactionPath = subactionPath;
             if (component.actionInfo.actionType == XR_ACTION_TYPE_BOOLEAN_INPUT) {
                 XrActionStateBoolean state{XR_TYPE_ACTION_STATE_BOOLEAN};
                 CHECK_XRCMD(xrGetActionStateBoolean(context.Session.Handle, &getInfo, &state));
