@@ -71,7 +71,7 @@
 #define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)
 #endif
 
-#if XR_MSFT_scene_understanding_preview3
+#if XR_MSFT_scene_understanding
 #define FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_) \
     _(xrEnumerateSceneComputeFeaturesMSFT)       \
     _(xrCreateSceneObserverMSFT)                 \
@@ -87,7 +87,7 @@
 #define FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_)
 #endif
 
-#if XR_MSFT_scene_understanding_serialization_preview
+#if XR_MSFT_scene_understanding_serialization
 #define FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_) \
     _(xrDeserializeSceneMSFT)                                  \
     _(xrGetSerializedSceneFragmentDataMSFT)

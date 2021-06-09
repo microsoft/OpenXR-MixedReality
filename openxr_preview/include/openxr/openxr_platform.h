@@ -35,11 +35,13 @@ typedef enum XrAndroidThreadTypeKHR {
 typedef XrResult (XRAPI_PTR *PFN_xrSetAndroidApplicationThreadKHR)(XrSession session, XrAndroidThreadTypeKHR threadType, uint32_t threadId);
 
 #ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrSetAndroidApplicationThreadKHR(
     XrSession                                   session,
     XrAndroidThreadTypeKHR                      threadType,
     uint32_t                                    threadId);
-#endif
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_PLATFORM_ANDROID */
 
 #ifdef XR_USE_PLATFORM_ANDROID
@@ -50,12 +52,14 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetAndroidApplicationThreadKHR(
 typedef XrResult (XRAPI_PTR *PFN_xrCreateSwapchainAndroidSurfaceKHR)(XrSession session, const XrSwapchainCreateInfo* info, XrSwapchain* swapchain, jobject* surface);
 
 #ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrCreateSwapchainAndroidSurfaceKHR(
     XrSession                                   session,
     const XrSwapchainCreateInfo*                info,
     XrSwapchain*                                swapchain,
     jobject*                                    surface);
-#endif
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_PLATFORM_ANDROID */
 
 #ifdef XR_USE_PLATFORM_ANDROID
@@ -76,7 +80,7 @@ typedef struct XrInstanceCreateInfoAndroidKHR {
 #ifdef XR_USE_GRAPHICS_API_VULKAN
 
 #define XR_KHR_vulkan_swapchain_format_list 1
-#define XR_KHR_vulkan_swapchain_format_list_SPEC_VERSION 3
+#define XR_KHR_vulkan_swapchain_format_list_SPEC_VERSION 4
 #define XR_KHR_VULKAN_SWAPCHAIN_FORMAT_LIST_EXTENSION_NAME "XR_KHR_vulkan_swapchain_format_list"
 typedef struct XrVulkanSwapchainFormatListCreateInfoKHR {
     XrStructureType             type;
@@ -154,11 +158,13 @@ typedef struct XrGraphicsRequirementsOpenGLKHR {
 typedef XrResult (XRAPI_PTR *PFN_xrGetOpenGLGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsOpenGLKHR* graphicsRequirements);
 
 #ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrGetOpenGLGraphicsRequirementsKHR(
     XrInstance                                  instance,
     XrSystemId                                  systemId,
     XrGraphicsRequirementsOpenGLKHR*            graphicsRequirements);
-#endif
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_GRAPHICS_API_OPENGL */
 
 #ifdef XR_USE_GRAPHICS_API_OPENGL_ES
@@ -193,17 +199,19 @@ typedef struct XrGraphicsRequirementsOpenGLESKHR {
 typedef XrResult (XRAPI_PTR *PFN_xrGetOpenGLESGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsOpenGLESKHR* graphicsRequirements);
 
 #ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrGetOpenGLESGraphicsRequirementsKHR(
     XrInstance                                  instance,
     XrSystemId                                  systemId,
     XrGraphicsRequirementsOpenGLESKHR*          graphicsRequirements);
-#endif
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_GRAPHICS_API_OPENGL_ES */
 
 #ifdef XR_USE_GRAPHICS_API_VULKAN
 
 #define XR_KHR_vulkan_enable 1
-#define XR_KHR_vulkan_enable_SPEC_VERSION 7
+#define XR_KHR_vulkan_enable_SPEC_VERSION 8
 #define XR_KHR_VULKAN_ENABLE_EXTENSION_NAME "XR_KHR_vulkan_enable"
 // XrGraphicsBindingVulkanKHR extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingVulkanKHR {
@@ -235,6 +243,7 @@ typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsDeviceKHR)(XrInstance instan
 typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkanKHR* graphicsRequirements);
 
 #ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanInstanceExtensionsKHR(
     XrInstance                                  instance,
     XrSystemId                                  systemId,
@@ -259,7 +268,8 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsRequirementsKHR(
     XrInstance                                  instance,
     XrSystemId                                  systemId,
     XrGraphicsRequirementsVulkanKHR*            graphicsRequirements);
-#endif
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_GRAPHICS_API_VULKAN */
 
 #ifdef XR_USE_GRAPHICS_API_D3D11
@@ -290,11 +300,13 @@ typedef struct XrGraphicsRequirementsD3D11KHR {
 typedef XrResult (XRAPI_PTR *PFN_xrGetD3D11GraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsD3D11KHR* graphicsRequirements);
 
 #ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrGetD3D11GraphicsRequirementsKHR(
     XrInstance                                  instance,
     XrSystemId                                  systemId,
     XrGraphicsRequirementsD3D11KHR*             graphicsRequirements);
-#endif
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_GRAPHICS_API_D3D11 */
 
 #ifdef XR_USE_GRAPHICS_API_D3D12
@@ -326,11 +338,13 @@ typedef struct XrGraphicsRequirementsD3D12KHR {
 typedef XrResult (XRAPI_PTR *PFN_xrGetD3D12GraphicsRequirementsKHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsD3D12KHR* graphicsRequirements);
 
 #ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrGetD3D12GraphicsRequirementsKHR(
     XrInstance                                  instance,
     XrSystemId                                  systemId,
     XrGraphicsRequirementsD3D12KHR*             graphicsRequirements);
-#endif
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_GRAPHICS_API_D3D12 */
 
 #ifdef XR_USE_PLATFORM_WIN32
@@ -342,6 +356,7 @@ typedef XrResult (XRAPI_PTR *PFN_xrConvertWin32PerformanceCounterToTimeKHR)(XrIn
 typedef XrResult (XRAPI_PTR *PFN_xrConvertTimeToWin32PerformanceCounterKHR)(XrInstance instance, XrTime time, LARGE_INTEGER* performanceCounter);
 
 #ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrConvertWin32PerformanceCounterToTimeKHR(
     XrInstance                                  instance,
     const LARGE_INTEGER*                        performanceCounter,
@@ -351,7 +366,8 @@ XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimeToWin32PerformanceCounterKHR(
     XrInstance                                  instance,
     XrTime                                      time,
     LARGE_INTEGER*                              performanceCounter);
-#endif
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_PLATFORM_WIN32 */
 
 #ifdef XR_USE_TIMESPEC
@@ -363,6 +379,7 @@ typedef XrResult (XRAPI_PTR *PFN_xrConvertTimespecTimeToTimeKHR)(XrInstance inst
 typedef XrResult (XRAPI_PTR *PFN_xrConvertTimeToTimespecTimeKHR)(XrInstance instance, XrTime time, struct timespec* timespecTime);
 
 #ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimespecTimeToTimeKHR(
     XrInstance                                  instance,
     const struct timespec*                      timespecTime,
@@ -372,7 +389,8 @@ XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimeToTimespecTimeKHR(
     XrInstance                                  instance,
     XrTime                                      time,
     struct timespec*                            timespecTime);
-#endif
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_TIMESPEC */
 
 #ifdef XR_USE_PLATFORM_ANDROID
@@ -392,7 +410,7 @@ typedef struct XrLoaderInitInfoAndroidKHR {
 #ifdef XR_USE_GRAPHICS_API_VULKAN
 
 #define XR_KHR_vulkan_enable2 1
-#define XR_KHR_vulkan_enable2_SPEC_VERSION 1
+#define XR_KHR_vulkan_enable2_SPEC_VERSION 2
 #define XR_KHR_VULKAN_ENABLE2_EXTENSION_NAME "XR_KHR_vulkan_enable2"
 typedef XrFlags64 XrVulkanInstanceCreateFlagsKHR;
 
@@ -442,6 +460,7 @@ typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsDevice2KHR)(XrInstance insta
 typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsRequirements2KHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkanKHR* graphicsRequirements);
 
 #ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrCreateVulkanInstanceKHR(
     XrInstance                                  instance,
     const XrVulkanInstanceCreateInfoKHR*        createInfo,
@@ -463,7 +482,8 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsRequirements2KHR(
     XrInstance                                  instance,
     XrSystemId                                  systemId,
     XrGraphicsRequirementsVulkanKHR*            graphicsRequirements);
-#endif
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_GRAPHICS_API_VULKAN */
 
 #ifdef XR_USE_PLATFORM_EGL
@@ -492,6 +512,7 @@ typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialAnchorFromPerceptionAnchorMSFT)(
 typedef XrResult (XRAPI_PTR *PFN_xrTryGetPerceptionAnchorFromSpatialAnchorMSFT)(XrSession session, XrSpatialAnchorMSFT anchor, IUnknown** perceptionAnchor);
 
 #ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
 XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpatialAnchorFromPerceptionAnchorMSFT(
     XrSession                                   session,
     IUnknown*                                   perceptionAnchor,
@@ -501,7 +522,8 @@ XRAPI_ATTR XrResult XRAPI_CALL xrTryGetPerceptionAnchorFromSpatialAnchorMSFT(
     XrSession                                   session,
     XrSpatialAnchorMSFT                         anchor,
     IUnknown**                                  perceptionAnchor);
-#endif
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
 #endif /* XR_USE_PLATFORM_WIN32 */
 
 #ifdef XR_USE_PLATFORM_WIN32
@@ -542,6 +564,93 @@ typedef struct XrAndroidSurfaceSwapchainCreateInfoFB {
 #endif // XR_USE_PLATFORM_ANDROID
 
 #endif /* XR_USE_PLATFORM_ANDROID */
+
+#ifdef XR_USE_PLATFORM_WIN32
+
+#define XR_OCULUS_audio_device_guid 1
+#define XR_OCULUS_audio_device_guid_SPEC_VERSION 1
+#define XR_OCULUS_AUDIO_DEVICE_GUID_EXTENSION_NAME "XR_OCULUS_audio_device_guid"
+#define XR_MAX_AUDIO_DEVICE_STR_SIZE_OCULUS 128
+typedef XrResult (XRAPI_PTR *PFN_xrGetAudioOutputDeviceGuidOculus)(XrInstance instance, wchar_t buffer[XR_MAX_AUDIO_DEVICE_STR_SIZE_OCULUS]);
+typedef XrResult (XRAPI_PTR *PFN_xrGetAudioInputDeviceGuidOculus)(XrInstance instance, wchar_t buffer[XR_MAX_AUDIO_DEVICE_STR_SIZE_OCULUS]);
+
+#ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrGetAudioOutputDeviceGuidOculus(
+    XrInstance                                  instance,
+    wchar_t                                     buffer[XR_MAX_AUDIO_DEVICE_STR_SIZE_OCULUS]);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrGetAudioInputDeviceGuidOculus(
+    XrInstance                                  instance,
+    wchar_t                                     buffer[XR_MAX_AUDIO_DEVICE_STR_SIZE_OCULUS]);
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
+#endif /* XR_USE_PLATFORM_WIN32 */
+
+#ifdef XR_USE_PLATFORM_ANDROID
+
+#define XR_FB_swapchain_update_state_android_surface 1
+#define XR_FB_swapchain_update_state_android_surface_SPEC_VERSION 1
+#define XR_FB_SWAPCHAIN_UPDATE_STATE_ANDROID_SURFACE_EXTENSION_NAME "XR_FB_swapchain_update_state_android_surface"
+#ifdef XR_USE_PLATFORM_ANDROID
+typedef struct XrSwapchainStateAndroidSurfaceDimensionsFB {
+    XrStructureType       type;
+    void* XR_MAY_ALIAS    next;
+    uint32_t              width;
+    uint32_t              height;
+} XrSwapchainStateAndroidSurfaceDimensionsFB;
+#endif // XR_USE_PLATFORM_ANDROID
+
+#endif /* XR_USE_PLATFORM_ANDROID */
+
+#ifdef XR_USE_GRAPHICS_API_OPENGL_ES
+
+#define XR_FB_swapchain_update_state_opengl_es 1
+#define XR_FB_swapchain_update_state_opengl_es_SPEC_VERSION 1
+#define XR_FB_SWAPCHAIN_UPDATE_STATE_OPENGL_ES_EXTENSION_NAME "XR_FB_swapchain_update_state_opengl_es"
+#ifdef XR_USE_GRAPHICS_API_OPENGL_ES
+typedef struct XrSwapchainStateSamplerOpenGLESFB {
+    XrStructureType       type;
+    void* XR_MAY_ALIAS    next;
+    EGLenum               minFilter;
+    EGLenum               magFilter;
+    EGLenum               wrapModeS;
+    EGLenum               wrapModeT;
+    EGLenum               swizzleRed;
+    EGLenum               swizzleGreen;
+    EGLenum               swizzleBlue;
+    EGLenum               swizzleAlpha;
+    float                 maxAnisotropy;
+    XrColor4f             borderColor;
+} XrSwapchainStateSamplerOpenGLESFB;
+#endif // XR_USE_GRAPHICS_API_OPENGL_ES
+
+#endif /* XR_USE_GRAPHICS_API_OPENGL_ES */
+
+#ifdef XR_USE_GRAPHICS_API_VULKAN
+
+#define XR_FB_swapchain_update_state_vulkan 1
+#define XR_FB_swapchain_update_state_vulkan_SPEC_VERSION 1
+#define XR_FB_SWAPCHAIN_UPDATE_STATE_VULKAN_EXTENSION_NAME "XR_FB_swapchain_update_state_vulkan"
+#ifdef XR_USE_GRAPHICS_API_VULKAN
+typedef struct XrSwapchainStateSamplerVulkanFB {
+    XrStructureType         type;
+    void* XR_MAY_ALIAS      next;
+    VkFilter                minFilter;
+    VkFilter                magFilter;
+    VkSamplerMipmapMode     mipmapMode;
+    VkSamplerAddressMode    wrapModeS;
+    VkSamplerAddressMode    wrapModeT;
+    VkComponentSwizzle      swizzleRed;
+    VkComponentSwizzle      swizzleGreen;
+    VkComponentSwizzle      swizzleBlue;
+    VkComponentSwizzle      swizzleAlpha;
+    float                   maxAnisotropy;
+    XrColor4f               borderColor;
+} XrSwapchainStateSamplerVulkanFB;
+#endif // XR_USE_GRAPHICS_API_VULKAN
+
+#endif /* XR_USE_GRAPHICS_API_VULKAN */
 
 #ifdef __cplusplus
 }
