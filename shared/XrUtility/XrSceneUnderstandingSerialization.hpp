@@ -16,11 +16,11 @@ namespace xr::su {
         XrSceneComponentsGetInfoMSFT getInfo{XR_TYPE_SCENE_COMPONENTS_GET_INFO_MSFT};
         getInfo.componentType = XR_SCENE_COMPONENT_TYPE_SERIALIZED_SCENE_FRAGMENT_MSFT;
 
-        XrSceneComponentStatesMSFT sceneComponents{XR_TYPE_SCENE_COMPONENT_STATES_MSFT};
+        XrSceneComponentsMSFT sceneComponents{XR_TYPE_SCENE_COMPONENTS_MSFT};
         CHECK_XRCMD(extensions.xrGetSceneComponentsMSFT(scene, &getInfo, &sceneComponents));
         const uint32_t count = sceneComponents.componentCountOutput;
 
-        std::vector<XrSceneComponentStateMSFT> components(count);
+        std::vector<XrSceneComponentMSFT> components(count);
         sceneComponents.componentCapacityInput = count;
         sceneComponents.components = components.data();
 
@@ -28,7 +28,7 @@ namespace xr::su {
 
         std::vector<SceneFragment> result(count);
         for (uint32_t k = 0; k < count; k++) {
-            result[k].id = components[k].componentId;
+            result[k].id = components[k].id;
             result[k].updateTime = components[k].updateTime;
         }
         return result;

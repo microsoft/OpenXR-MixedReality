@@ -48,17 +48,17 @@ namespace {
     struct SceneVisuals {
         SceneVisuals() = default;
         SceneVisuals(std::unique_ptr<xr::su::Scene> scene,
-                     std::vector<XrUuidMSFT> ids,
+                     std::vector<XrUuidMSFT> componentIds,
                      std::vector<xr::su::ScenePlane> planes,
                      std::vector<std::shared_ptr<engine::Object>> visuals)
             : scene(std::move(scene))
-            , ids(std::move(ids))
+            , componentIds(std::move(componentIds))
             , planes(std::move(planes))
             , visuals(std::move(visuals)) {
         }
 
         std::unique_ptr<xr::su::Scene> scene;
-        std::vector<XrUuidMSFT> ids;
+        std::vector<XrUuidMSFT> componentIds;
         std::vector<xr::su::ScenePlane> planes;
         std::vector<std::shared_ptr<engine::Object>> visuals;
 
@@ -248,9 +248,9 @@ namespace {
                                       m_extensions,
                                       m_context.AppSpace,
                                       frameTime.PredictedDisplayTime,
-                                      m_sceneVisuals.ids,
+                                      m_sceneVisuals.componentIds,
                                       m_componentLocations);
-                for (size_t i = 0; i < m_sceneVisuals.ids.size(); ++i) {
+                for (size_t i = 0; i < m_sceneVisuals.componentIds.size(); ++i) {
                     const XrSceneComponentLocationMSFT& location = m_componentLocations[i];
                     const std::shared_ptr<engine::Object>& object = m_sceneVisuals.visuals[i];
                     const xr::su::ScenePlane& scenePlane = m_sceneVisuals.planes[i];
@@ -628,7 +628,7 @@ namespace {
                                                                        XR_SCENE_OBJECT_TYPE_PLATFORM_MSFT,
                                                                        XR_SCENE_OBJECT_TYPE_INFERRED_MSFT};
         std::vector<std::shared_ptr<engine::Object>> visuals;
-        std::vector<XrUuidMSFT> ids;
+        std::vector<XrUuidMSFT> componentIds;
         Pbr::PrimitiveBuilder builder;
 
         const std::unordered_map<xr::su::SceneObject::Id, XrSceneObjectTypeMSFT> sceneObjectIdToType =
@@ -636,15 +636,15 @@ namespace {
 
         auto planes = scene->GetPlanes(typeFilter);
         for (const xr::su::ScenePlane& scenePlane : planes) {
-            const XrSceneObjectTypeMSFT type = sceneObjectIdToType.at(scenePlane.parentObjectId);
+            const XrSceneObjectTypeMSFT type = sceneObjectIdToType.at(scenePlane.parentId);
             std::shared_ptr<engine::PbrModelObject> obj = CreatePlaneVisual(extensions, pbrResources, material, scenePlane, GetColor(type));
             if (obj != nullptr) {
                 obj->SetVisible(false);
                 visuals.push_back(std::move(obj));
-                ids.push_back(static_cast<XrUuidMSFT>(scenePlane.id));
+                componentIds.push_back(static_cast<XrUuidMSFT>(scenePlane.id));
             }
         }
-        return SceneVisuals(std::move(scene), std::move(ids), std::move(planes), std::move(visuals));
+        return SceneVisuals(std::move(scene), std::move(componentIds), std::move(planes), std::move(visuals));
     }
 
     std::shared_ptr<Pbr::Material> CreateTextureMaterial(Pbr::Resources& pbr) {

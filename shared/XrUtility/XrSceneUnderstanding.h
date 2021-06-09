@@ -53,7 +53,7 @@ namespace xr {
                                 const xr::ExtensionDispatchTable& extensions,
                                 const std::vector<XrSceneComputeFeatureMSFT>& requestedFeatures,
                                 const SceneBounds& bounds,
-                                bool disableInferredSceneObjects = false,
+                                XrSceneComputeConsistencyMSFT consistency = XR_SCENE_COMPUTE_CONSISTENCY_SNAPSHOT_COMPLETE_MSFT,
                                 std::optional<XrMeshComputeLodMSFT> visualMeshLevelOfDetail = {}) {
         XrNewSceneComputeInfoMSFT computeInfo{XR_TYPE_NEW_SCENE_COMPUTE_INFO_MSFT};
         computeInfo.requestedFeatureCount = static_cast<uint32_t>(requestedFeatures.size());
@@ -66,7 +66,7 @@ namespace xr {
         computeInfo.bounds.frustums = bounds.frustumBounds.data();
         computeInfo.bounds.sphereCount = static_cast<uint32_t>(bounds.sphereBounds.size());
         computeInfo.bounds.spheres = bounds.sphereBounds.data();
-        computeInfo.disableInferredSceneObjects = disableInferredSceneObjects;
+        computeInfo.consistency = consistency;
 
         XrVisualMeshComputeLodInfoMSFT computeLod{XR_TYPE_VISUAL_MESH_COMPUTE_LOD_INFO_MSFT};
         if (visualMeshLevelOfDetail.has_value()) {

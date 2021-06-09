@@ -14,7 +14,7 @@ namespace xr::su {
         using Id = TypedUuid<SceneObject>;
         using Type = ::XrSceneObjectTypeMSFT;
         Id id;
-        SceneObject::Id parentObjectId;
+        SceneObject::Id parentId;
         XrTime updateTime;
         Type type;
     };
@@ -24,7 +24,7 @@ namespace xr::su {
         using Alignment = ::XrScenePlaneAlignmentTypeMSFT;
         using Extent = XrExtent2Df;
         ScenePlane::Id id;
-        SceneObject::Id parentObjectId;
+        SceneObject::Id parentId;
         XrTime updateTime;
         Alignment alignment;
         Extent size;
@@ -35,7 +35,7 @@ namespace xr::su {
     struct SceneMesh { // XR_SCENE_COMPONENT_TYPE_VISUAL_MESH_MSFT
         using Id = TypedUuid<SceneMesh>;
         SceneMesh::Id id;
-        SceneObject::Id parentObjectId;
+        SceneObject::Id parentId;
         XrTime updateTime;
         uint64_t meshBufferId;
         bool supportsIndicesUint16;
@@ -44,7 +44,7 @@ namespace xr::su {
     struct SceneColliderMesh { // XR_SCENE_COMPONENT_TYPE_COLLIDER_MESH_MSFT
         using Id = TypedUuid<SceneColliderMesh>;
         SceneColliderMesh::Id id;
-        SceneObject::Id parentObjectId;
+        SceneObject::Id parentId;
         XrTime updateTime;
         uint64_t meshBufferId;
         bool supportsIndicesUint16;
@@ -65,16 +65,16 @@ namespace xr::su {
             xr::InsertExtensionStruct(getInfo, typesFilter);
         }
 
-        XrSceneComponentStatesMSFT sceneComponents{XR_TYPE_SCENE_COMPONENT_STATES_MSFT};
+        XrSceneComponentsMSFT sceneComponents{XR_TYPE_SCENE_COMPONENTS_MSFT};
         CHECK_XRCMD(extensions.xrGetSceneComponentsMSFT(scene, &getInfo, &sceneComponents));
         const uint32_t count = sceneComponents.componentCountOutput;
 
-        std::vector<XrSceneComponentStateMSFT> components(count);
+        std::vector<XrSceneComponentMSFT> components(count);
         sceneComponents.componentCapacityInput = count;
         sceneComponents.components = components.data();
 
-        std::vector<XrSceneObjectStateMSFT> objects(count);
-        XrSceneObjectStatesMSFT sceneObjects{XR_TYPE_SCENE_OBJECT_STATES_MSFT};
+        std::vector<XrSceneObjectMSFT> objects(count);
+        XrSceneObjectsMSFT sceneObjects{XR_TYPE_SCENE_OBJECTS_MSFT};
         sceneObjects.sceneObjectCount = count;
         sceneObjects.sceneObjects = objects.data();
         xr::InsertExtensionStruct(sceneComponents, sceneObjects);
@@ -83,7 +83,7 @@ namespace xr::su {
 
         std::vector<SceneObject> result(count);
         for (uint32_t k = 0; k < count; k++) {
-            result[k].id = components[k].componentId;
+            result[k].id = components[k].id;
             result[k].updateTime = components[k].updateTime;
             result[k].type = objects[k].objectType;
         }
@@ -91,21 +91,21 @@ namespace xr::su {
     }
 
     // Gets the list of scene planes in the scene.
-    // - If parentObjectId is set then only the scene planes that are children of that scene object will be returned.
+    // - If parentId is set then only the scene planes that are children of that scene object will be returned.
     // - If filterObjectType is not empty then only the scene planes that match any of the given types will be returned.
     // - If filterAlignment is not empty then only the scene planes that match any of the given alignments will be returned.
     // - If filterObjectType and filterAlignment are not empty then the scene plane must pass both filters.
     inline std::vector<ScenePlane> GetScenePlanes(XrSceneMSFT scene,
                                                   const xr::ExtensionDispatchTable& extensions,
-                                                  std::optional<SceneObject::Id> parentObjectId = {},
+                                                  std::optional<SceneObject::Id> parentId = {},
                                                   const std::vector<SceneObject::Type>& filterObjectType = {},
                                                   const std::vector<ScenePlane::Alignment>& filterAlignment = {}) {
         XrSceneComponentsGetInfoMSFT getInfo{XR_TYPE_SCENE_COMPONENTS_GET_INFO_MSFT};
         getInfo.componentType = XR_SCENE_COMPONENT_TYPE_PLANE_MSFT;
 
         XrSceneComponentParentFilterInfoMSFT parentFilter{XR_TYPE_SCENE_COMPONENT_PARENT_FILTER_INFO_MSFT};
-        if (parentObjectId.has_value()) {
-            parentFilter.parentObjectId = static_cast<XrUuidMSFT>(parentObjectId.value());
+        if (parentId.has_value()) {
+            parentFilter.parentId = static_cast<XrUuidMSFT>(parentId.value());
             xr::InsertExtensionStruct(getInfo, parentFilter);
         }
 
@@ -123,16 +123,16 @@ namespace xr::su {
             xr::InsertExtensionStruct(getInfo, alignmentFilter);
         }
 
-        XrSceneComponentStatesMSFT sceneComponents{XR_TYPE_SCENE_COMPONENT_STATES_MSFT};
+        XrSceneComponentsMSFT sceneComponents{XR_TYPE_SCENE_COMPONENTS_MSFT};
         CHECK_XRCMD(extensions.xrGetSceneComponentsMSFT(scene, &getInfo, &sceneComponents));
         const uint32_t count = sceneComponents.componentCountOutput;
 
-        std::vector<XrSceneComponentStateMSFT> components(count);
+        std::vector<XrSceneComponentMSFT> components(count);
         sceneComponents.componentCapacityInput = count;
         sceneComponents.components = components.data();
 
-        std::vector<XrScenePlaneStateMSFT> planes(count);
-        XrScenePlaneStatesMSFT scenePlanes{XR_TYPE_SCENE_PLANE_STATES_MSFT};
+        std::vector<XrScenePlaneMSFT> planes(count);
+        XrScenePlanesMSFT scenePlanes{XR_TYPE_SCENE_PLANES_MSFT};
         scenePlanes.scenePlaneCount = count;
         scenePlanes.scenePlanes = planes.data();
         xr::InsertExtensionStruct(sceneComponents, scenePlanes);
@@ -141,8 +141,8 @@ namespace xr::su {
 
         std::vector<ScenePlane> result(count);
         for (uint32_t k = 0; k < count; k++) {
-            result[k].id = components[k].componentId;
-            result[k].parentObjectId = components[k].parentObjectId;
+            result[k].id = components[k].id;
+            result[k].parentId = components[k].parentId;
             result[k].updateTime = components[k].updateTime;
             result[k].alignment = planes[k].alignment;
             result[k].size = planes[k].size;
@@ -153,18 +153,18 @@ namespace xr::su {
     }
 
     // Gets the list of scene visual meshes in the scene.
-    // - If parentObjectId is set then only the scene meshes that are children of that scene object will be returned.
+    // - If parentId is set then only the scene meshes that are children of that scene object will be returned.
     // - If filterObjectType is not empty then only the scene objects that match any of the given types will be returned.
     inline std::vector<SceneMesh> GetSceneVisualMeshes(XrSceneMSFT scene,
                                                        const xr::ExtensionDispatchTable& extensions,
-                                                       std::optional<SceneObject::Id> parentObjectId = {},
+                                                       std::optional<SceneObject::Id> parentId = {},
                                                        const std::vector<SceneObject::Type>& filterObjectType = {}) {
         XrSceneComponentsGetInfoMSFT getInfo{XR_TYPE_SCENE_COMPONENTS_GET_INFO_MSFT};
         getInfo.componentType = XR_SCENE_COMPONENT_TYPE_VISUAL_MESH_MSFT;
 
         XrSceneComponentParentFilterInfoMSFT parentFilter{XR_TYPE_SCENE_COMPONENT_PARENT_FILTER_INFO_MSFT};
-        if (parentObjectId.has_value()) {
-            parentFilter.parentObjectId = static_cast<XrUuidMSFT>(parentObjectId.value());
+        if (parentId.has_value()) {
+            parentFilter.parentId = static_cast<XrUuidMSFT>(parentId.value());
             xr::InsertExtensionStruct(getInfo, parentFilter);
         }
 
@@ -175,16 +175,16 @@ namespace xr::su {
             xr::InsertExtensionStruct(getInfo, typesFilter);
         }
 
-        XrSceneComponentStatesMSFT sceneComponents{XR_TYPE_SCENE_COMPONENT_STATES_MSFT};
+        XrSceneComponentsMSFT sceneComponents{XR_TYPE_SCENE_COMPONENTS_MSFT};
         CHECK_XRCMD(extensions.xrGetSceneComponentsMSFT(scene, &getInfo, &sceneComponents));
         const uint32_t count = sceneComponents.componentCountOutput;
 
-        std::vector<XrSceneComponentStateMSFT> components(count);
+        std::vector<XrSceneComponentMSFT> components(count);
         sceneComponents.componentCapacityInput = count;
         sceneComponents.components = components.data();
 
-        std::vector<XrSceneMeshStateMSFT> meshes(count);
-        XrSceneMeshStatesMSFT sceneMeshes{XR_TYPE_SCENE_MESH_STATES_MSFT};
+        std::vector<XrSceneMeshMSFT> meshes(count);
+        XrSceneMeshesMSFT sceneMeshes{XR_TYPE_SCENE_MESHES_MSFT};
         sceneMeshes.sceneMeshCount = count;
         sceneMeshes.sceneMeshes = meshes.data();
         xr::InsertExtensionStruct(sceneComponents, sceneMeshes);
@@ -193,8 +193,8 @@ namespace xr::su {
 
         std::vector<SceneMesh> result(count);
         for (uint32_t k = 0; k < count; k++) {
-            result[k].id = components[k].componentId;
-            result[k].parentObjectId = components[k].parentObjectId;
+            result[k].id = components[k].id;
+            result[k].parentId = components[k].parentId;
             result[k].updateTime = components[k].updateTime;
             result[k].meshBufferId = meshes[k].meshBufferId;
             result[k].supportsIndicesUint16 = meshes[k].supportsIndicesUint16;
@@ -204,14 +204,14 @@ namespace xr::su {
 
     inline std::vector<SceneColliderMesh> GetSceneColliderMeshes(XrSceneMSFT scene,
                                                                  const xr::ExtensionDispatchTable& extensions,
-                                                                 std::optional<SceneObject::Id> parentObjectId = {},
+                                                                 std::optional<SceneObject::Id> parentId = {},
                                                                  const std::vector<SceneObject::Type>& filterObjectType = {}) {
         XrSceneComponentsGetInfoMSFT getInfo{XR_TYPE_SCENE_COMPONENTS_GET_INFO_MSFT};
         getInfo.componentType = XR_SCENE_COMPONENT_TYPE_COLLIDER_MESH_MSFT;
 
         XrSceneComponentParentFilterInfoMSFT parentFilter{XR_TYPE_SCENE_COMPONENT_PARENT_FILTER_INFO_MSFT};
-        if (parentObjectId.has_value()) {
-            parentFilter.parentObjectId = static_cast<XrUuidMSFT>(parentObjectId.value());
+        if (parentId.has_value()) {
+            parentFilter.parentId = static_cast<XrUuidMSFT>(parentId.value());
             xr::InsertExtensionStruct(getInfo, parentFilter);
         }
 
@@ -222,16 +222,16 @@ namespace xr::su {
             xr::InsertExtensionStruct(getInfo, typesFilter);
         }
 
-        XrSceneComponentStatesMSFT sceneComponents{XR_TYPE_SCENE_COMPONENT_STATES_MSFT};
+        XrSceneComponentsMSFT sceneComponents{XR_TYPE_SCENE_COMPONENTS_MSFT};
         CHECK_XRCMD(extensions.xrGetSceneComponentsMSFT(scene, &getInfo, &sceneComponents));
         const uint32_t count = sceneComponents.componentCountOutput;
 
-        std::vector<XrSceneComponentStateMSFT> components(count);
+        std::vector<XrSceneComponentMSFT> components(count);
         sceneComponents.componentCapacityInput = count;
         sceneComponents.components = components.data();
 
-        std::vector<XrSceneMeshStateMSFT> meshes(count);
-        XrSceneMeshStatesMSFT sceneMeshes{XR_TYPE_SCENE_MESH_STATES_MSFT};
+        std::vector<XrSceneMeshMSFT> meshes(count);
+        XrSceneMeshesMSFT sceneMeshes{XR_TYPE_SCENE_MESHES_MSFT};
         sceneMeshes.sceneMeshCount = count;
         sceneMeshes.sceneMeshes = meshes.data();
         xr::InsertExtensionStruct(sceneComponents, sceneMeshes);
@@ -240,8 +240,8 @@ namespace xr::su {
 
         std::vector<SceneColliderMesh> result(count);
         for (uint32_t k = 0; k < count; k++) {
-            result[k].id = components[k].componentId;
-            result[k].parentObjectId = components[k].parentObjectId;
+            result[k].id = components[k].id;
+            result[k].parentId = components[k].parentId;
             result[k].updateTime = components[k].updateTime;
             result[k].meshBufferId = meshes[k].meshBufferId;
             result[k].supportsIndicesUint16 = meshes[k].supportsIndicesUint16;
@@ -255,16 +255,16 @@ namespace xr::su {
                        const xr::ExtensionDispatchTable& extensions,
                        XrSpace baseSpace,
                        XrTime time,
-                       const std::vector<TUuid>& ids,
+                       const std::vector<TUuid>& componentIds,
                        std::vector<XrSceneComponentLocationMSFT>& locations) {
         XrSceneComponentsLocateInfoMSFT locateInfo{XR_TYPE_SCENE_COMPONENTS_LOCATE_INFO_MSFT};
         locateInfo.baseSpace = baseSpace;
         locateInfo.time = time;
-        locateInfo.idCount = static_cast<uint32_t>(ids.size());
+        locateInfo.componentIdCount = static_cast<uint32_t>(componentIds.size());
         static_assert(sizeof(TUuid) == sizeof(XrUuidMSFT));
-        locateInfo.ids = static_cast<const XrUuidMSFT*>(ids.data());
+        locateInfo.componentIds = static_cast<const XrUuidMSFT*>(componentIds.data());
 
-        locations.resize(ids.size());
+        locations.resize(componentIds.size());
         XrSceneComponentLocationsMSFT componentLocations{XR_TYPE_SCENE_COMPONENT_LOCATIONS_MSFT};
         componentLocations.locationCount = static_cast<uint32_t>(locations.size());
         componentLocations.locations = locations.data();
@@ -297,20 +297,20 @@ namespace xr::su {
             return GetSceneColliderMeshes(m_scene.Get(), m_extensions, {}, filterObjectType);
         }
 
-        inline std::vector<ScenePlane> GetChildrenPlanes(SceneObject::Id parentObjectId,
+        inline std::vector<ScenePlane> GetChildrenPlanes(SceneObject::Id parentId,
                                                          const std::vector<SceneObject::Type>& filterObjectType = {},
                                                          const std::vector<ScenePlane::Alignment>& filterAlignment = {}) const {
-            return GetScenePlanes(m_scene.Get(), m_extensions, parentObjectId, filterObjectType, filterAlignment);
+            return GetScenePlanes(m_scene.Get(), m_extensions, parentId, filterObjectType, filterAlignment);
         }
 
-        inline std::vector<SceneMesh> GetChildrenVisualMeshes(SceneObject::Id parentObjectId,
+        inline std::vector<SceneMesh> GetChildrenVisualMeshes(SceneObject::Id parentId,
                                                               const std::vector<SceneObject::Type>& filterObjectType = {}) const {
-            return GetSceneVisualMeshes(m_scene.Get(), m_extensions, parentObjectId, filterObjectType);
+            return GetSceneVisualMeshes(m_scene.Get(), m_extensions, parentId, filterObjectType);
         }
 
-        inline std::vector<SceneColliderMesh> GetChildrenColliderMeshes(SceneObject::Id parentObjectId,
+        inline std::vector<SceneColliderMesh> GetChildrenColliderMeshes(SceneObject::Id parentId,
                                                                         const std::vector<SceneObject::Type>& filterObjectType = {}) const {
-            return GetSceneColliderMeshes(m_scene.Get(), m_extensions, parentObjectId, filterObjectType);
+            return GetSceneColliderMeshes(m_scene.Get(), m_extensions, parentId, filterObjectType);
         }
 
         inline XrSceneMSFT Handle() const noexcept {
@@ -331,10 +331,10 @@ namespace xr::su {
 
         inline void ComputeNewScene(const std::vector<XrSceneComputeFeatureMSFT>& requestedFeatures,
                                     const SceneBounds& bounds,
-                                    bool disableInferredSceneObjects = false,
+                                    XrSceneComputeConsistencyMSFT consistency = XR_SCENE_COMPUTE_CONSISTENCY_SNAPSHOT_COMPLETE_MSFT,
                                     std::optional<XrMeshComputeLodMSFT> visualMeshLevelOfDetail = {}) const {
             xr::ComputeNewScene(
-                m_sceneObserver.Get(), m_extensions, requestedFeatures, bounds, disableInferredSceneObjects, visualMeshLevelOfDetail);
+                m_sceneObserver.Get(), m_extensions, requestedFeatures, bounds, consistency, visualMeshLevelOfDetail);
         }
 
         inline XrSceneComputeStateMSFT GetSceneComputeState() const {
