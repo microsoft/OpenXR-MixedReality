@@ -103,7 +103,7 @@
     _(xrGetSpatialAnchorExportSufficiencyMSFT)         \
     _(xrDestroySpatialAnchorNeighborhoodDataStreamMSFT)
 #else
-#define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)
+#define FOR_EACH_SPATIAL_ANCHOR_EXPORT_FUNCTION(_)
 #endif
 
 #if XR_MSFT_spatial_anchor_persistence_preview
