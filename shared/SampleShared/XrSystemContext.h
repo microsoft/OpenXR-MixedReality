@@ -5,12 +5,12 @@
 
 #include <optional>
 #include <unordered_map>
-#include "XrEnumerate.h"
-#include "XrExtensionContext.h"
-#include "XrViewConfiguration.h"
-#include "XrStruct.h"
+#include "XrUtility/XrEnumerate.h"
+#include "XrUtility/XrExtensionContext.h"
+#include "XrUtility/XrStruct.h"
+#include "SampleShared/XrViewConfiguration.h"
 
-namespace xr {
+namespace sample {
     struct SystemContext {
         XrSystemId Id = XR_NULL_SYSTEM_ID;
         XrFormFactor FormFactor{};
@@ -21,16 +21,16 @@ namespace xr {
 
         std::vector<XrViewConfigurationType> SupportedPrimaryViewConfigurationTypes;
         std::vector<XrViewConfigurationType> SupportedSecondaryViewConfigurationTypes;
-        std::unordered_map<XrViewConfigurationType, xr::ViewProperties> ViewProperties;
+        std::unordered_map<XrViewConfigurationType, sample::ViewProperties> ViewProperties;
     };
 
-    inline std::optional<xr::SystemContext>
+    inline std::optional<sample::SystemContext>
     CreateSystemContext(XrInstance instance,
                         const xr::ExtensionContext& extensions,
                         XrFormFactor formFactor,
                         const std::vector<XrViewConfigurationType>& appSupportedViewConfigurationTypes,
                         const std::vector<XrEnvironmentBlendMode>& appSupportedEnvironmentBlendMode) {
-        xr::SystemContext system{};
+        sample::SystemContext system{};
         XrSystemGetInfo systemInfo{XR_TYPE_SYSTEM_GET_INFO};
         systemInfo.formFactor = formFactor;
         XrResult result = xrGetSystem(instance, &systemInfo, &system.Id);
@@ -63,11 +63,11 @@ namespace xr {
                 continue; // The system doesn't support this view configuration
             }
 
-            auto viewProperties = xr::CreateViewProperties(instance, system.Id, viewConfigType, appSupportedEnvironmentBlendMode);
+            auto viewProperties = sample::CreateViewProperties(instance, system.Id, viewConfigType, appSupportedEnvironmentBlendMode);
             if (viewProperties.SupportedBlendModes.size() > 0) {
                 system.ViewProperties.emplace(viewConfigType, viewProperties);
 
-                if (xr::IsPrimaryViewConfigurationType(viewConfigType)) {
+                if (sample::IsPrimaryViewConfigurationType(viewConfigType)) {
                     system.SupportedPrimaryViewConfigurationTypes.push_back(viewConfigType);
                 } else {
                     system.SupportedSecondaryViewConfigurationTypes.push_back(viewConfigType);
@@ -77,4 +77,4 @@ namespace xr {
 
         return system;
     }
-} // namespace xr
+} // namespace sample

@@ -32,6 +32,7 @@ namespace engine {
 
         const xr::NameVersion AppInfo;
         std::vector<std::string> RequestedExtensions;
+        std::vector<std::string> InteractionProfilesFilter;
         bool SingleThreadedD3D11Device{false};
         bool RenderSynchronously{false};
         std::optional<XrHolographicWindowAttachmentMSFT> HolographicWindowAttachment{std::nullopt};

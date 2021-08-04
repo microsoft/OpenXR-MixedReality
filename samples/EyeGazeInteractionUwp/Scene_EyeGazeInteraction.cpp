@@ -34,7 +34,7 @@ namespace {
             const bool supportsEyeGazeAction =
                 context.Extensions.SupportsEyeGazeInteraction && context.System.EyeGazeInteractionProperties.supportsEyeGazeInteraction;
             if (supportsEyeGazeAction) {
-                xr::ActionSet& actionSet =
+                sample::ActionSet& actionSet =
                     ActionContext().CreateActionSet("eye_gaze_interaction_scene_actions", "Eye Gaze Interaction Scene Actions");
 
                 auto gazeAction = actionSet.CreateAction("gaze_action", "Gaze Action", XR_ACTION_TYPE_POSE_INPUT, {});

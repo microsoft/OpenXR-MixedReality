@@ -4,7 +4,7 @@
 #pragma once
 
 #include <mutex>
-#include <XrUtility/XrActionContext.h>
+#include <SampleShared/XrActionContext.h>
 
 #include "FrameTime.h"
 #include "Context.h"
@@ -78,7 +78,7 @@ namespace engine {
         }
 #pragma endregion
 
-        xr::ActionContext& ActionContext() {
+        sample::ActionContext& ActionContext() {
             return m_actionContext;
         }
 
@@ -95,7 +95,7 @@ namespace engine {
         }
 
     private:
-        xr::ActionContext m_actionContext;
+        sample::ActionContext m_actionContext;
 
         std::atomic<bool> m_isActive{true};
 

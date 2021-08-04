@@ -95,6 +95,8 @@ namespace {
             m_optionalExtensions.DepthExtensionSupported = EnableExtensionIfSupported(XR_KHR_COMPOSITION_LAYER_DEPTH_EXTENSION_NAME);
             m_optionalExtensions.UnboundedRefSpaceSupported = EnableExtensionIfSupported(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
             m_optionalExtensions.SpatialAnchorSupported = EnableExtensionIfSupported(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
+            m_optionalExtensions.MsftHandInteractionSupported = EnableExtensionIfSupported(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
+            m_optionalExtensions.HPMRControllerSupported = EnableExtensionIfSupported(XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME);
 
             return enabledExtensions;
         }
@@ -175,6 +177,44 @@ namespace {
 
                 XrInteractionProfileSuggestedBinding suggestedBindings{XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
                 suggestedBindings.interactionProfile = GetXrPath("/interaction_profiles/khr/simple_controller");
+                suggestedBindings.suggestedBindings = bindings.data();
+                suggestedBindings.countSuggestedBindings = (uint32_t)bindings.size();
+                CHECK_XRCMD(xrSuggestInteractionProfileBindings(m_instance.Get(), &suggestedBindings));
+            }
+
+            // Set up suggested bindings for the hp/mixed_reality_controller profile.
+            if (m_optionalExtensions.HPMRControllerSupported)
+            {
+                std::vector<XrActionSuggestedBinding> bindings;
+                bindings.push_back({m_placeAction.Get(), GetXrPath("/user/hand/right/input/trigger/value")});
+                bindings.push_back({m_placeAction.Get(), GetXrPath("/user/hand/left/input/trigger/value")});
+                bindings.push_back({m_poseAction.Get(), GetXrPath("/user/hand/right/input/grip/pose")});
+                bindings.push_back({m_poseAction.Get(), GetXrPath("/user/hand/left/input/grip/pose")});
+                bindings.push_back({m_vibrateAction.Get(), GetXrPath("/user/hand/right/output/haptic")});
+                bindings.push_back({m_vibrateAction.Get(), GetXrPath("/user/hand/left/output/haptic")});
+                bindings.push_back({m_exitAction.Get(), GetXrPath("/user/hand/right/input/squeeze/value")});
+                bindings.push_back({m_exitAction.Get(), GetXrPath("/user/hand/left/input/squeeze/value")});
+
+                XrInteractionProfileSuggestedBinding suggestedBindings{XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+                suggestedBindings.interactionProfile = GetXrPath("/interaction_profiles/hp/mixed_reality_controller");
+                suggestedBindings.suggestedBindings = bindings.data();
+                suggestedBindings.countSuggestedBindings = (uint32_t)bindings.size();
+                CHECK_XRCMD(xrSuggestInteractionProfileBindings(m_instance.Get(), &suggestedBindings));
+            }
+
+            // Set up suggested bindings for the microsoft/hand_interaction profile.
+            if (m_optionalExtensions.MsftHandInteractionSupported)
+            {
+                std::vector<XrActionSuggestedBinding> bindings;
+                bindings.push_back({m_placeAction.Get(), GetXrPath("/user/hand/right/input/select/value")});
+                bindings.push_back({m_placeAction.Get(), GetXrPath("/user/hand/left/input/select/value")});
+                bindings.push_back({m_poseAction.Get(), GetXrPath("/user/hand/right/input/grip/pose")});
+                bindings.push_back({m_poseAction.Get(), GetXrPath("/user/hand/left/input/grip/pose")});
+                bindings.push_back({m_exitAction.Get(), GetXrPath("/user/hand/right/input/squeeze/value")});
+                bindings.push_back({m_exitAction.Get(), GetXrPath("/user/hand/left/input/squeeze/value")});
+
+                XrInteractionProfileSuggestedBinding suggestedBindings{XR_TYPE_INTERACTION_PROFILE_SUGGESTED_BINDING};
+                suggestedBindings.interactionProfile = GetXrPath("/interaction_profiles/microsoft/hand_interaction");
                 suggestedBindings.suggestedBindings = bindings.data();
                 suggestedBindings.countSuggestedBindings = (uint32_t)bindings.size();
                 CHECK_XRCMD(xrSuggestInteractionProfileBindings(m_instance.Get(), &suggestedBindings));
@@ -856,6 +896,8 @@ namespace {
             bool DepthExtensionSupported{false};
             bool UnboundedRefSpaceSupported{false};
             bool SpatialAnchorSupported{false};
+            bool MsftHandInteractionSupported{false};
+            bool HPMRControllerSupported{false};
         } m_optionalExtensions;
 
         xr::SpaceHandle m_appSpace;

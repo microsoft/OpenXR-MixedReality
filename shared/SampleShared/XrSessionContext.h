@@ -3,11 +3,11 @@
 
 #pragma once
 
-#include "XrEnumerate.h"
-#include "XrSystemContext.h"
-#include "XrViewConfiguration.h"
+#include "XrUtility/XrEnumerate.h"
+#include "SampleShared/XrSystemContext.h"
+#include "SampleShared/XrViewConfiguration.h"
 
-namespace xr {
+namespace sample {
     struct SessionContext {
         const XrSession Handle;
         const XrViewConfigurationType PrimaryViewConfigurationType;
@@ -23,7 +23,7 @@ namespace xr {
         bool SupportsUnboundedSpace;
 
         explicit SessionContext(xr::SessionHandle sessionHandle,
-                                const xr::SystemContext& system,
+                                const sample::SystemContext& system,
                                 const xr::ExtensionContext& extensions,
                                 XrViewConfigurationType primaryViewConfigurationType,
                                 const std::vector<XrViewConfigurationType>& appEnabledSecondaryViewConfigurationTypes,
@@ -70,4 +70,4 @@ namespace xr {
         return result;
     }
 
-} // namespace xr
+} // namespace sample

@@ -19,7 +19,7 @@ namespace {
     struct OrbitScene : public engine::Scene {
         OrbitScene(engine::Context& context)
             : Scene(context) {
-            xr::ActionSet& actionSet = ActionContext().CreateActionSet("orbit_scene_actions", "Orbit Scene Actions");
+            sample::ActionSet& actionSet = ActionContext().CreateActionSet("orbit_scene_actions", "Orbit Scene Actions");
 
             m_selectAction = actionSet.CreateAction("select_action", "Select Action", XR_ACTION_TYPE_BOOLEAN_INPUT, {});
 
@@ -53,6 +53,24 @@ namespace {
             createInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
             createInfo.poseInReferenceSpace = Pose::Identity();
             CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &createInfo, m_viewSpace.Put()));
+        }
+
+        void OnEvent(const XrEventDataBuffer& eventData [[maybe_unused]]) override {
+            if (auto* internactionProfileChanged = xr::event_cast<XrEventDataInteractionProfileChanged>(&eventData)) {
+                XrInteractionProfileState state{XR_TYPE_INTERACTION_PROFILE_STATE};
+
+                CHECK_XRCMD(xrGetCurrentInteractionProfile(m_context.Session.Handle, m_context.Instance.LeftHandPath, &state));
+                std::string leftPath = state.interactionProfile == XR_NULL_PATH
+                                           ? "NULL"
+                                           : xr::PathToString(m_context.Instance.Handle, state.interactionProfile);
+
+                CHECK_XRCMD(xrGetCurrentInteractionProfile(m_context.Session.Handle, m_context.Instance.RightHandPath, &state));
+                std::string rightPath = state.interactionProfile == XR_NULL_PATH
+                                            ? "NULL"
+                                            : xr::PathToString(m_context.Instance.Handle, state.interactionProfile);
+
+                sample::Trace("Interaction profile is changed.\n\tLeft: {}\n\tRight:{}\n", leftPath.c_str(), rightPath.c_str());
+            }
         }
 
         void OnUpdate(const engine::FrameTime& frameTime) override {

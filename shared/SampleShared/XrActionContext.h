@@ -6,11 +6,12 @@
 #include <set>
 #include <list>
 #include <unordered_map>
+#include <unordered_set>
 
-#include "XrString.h"
-#include "XrHandle.h"
+#include "XrUtility/XrString.h"
+#include "XrUtility/XrHandle.h"
 
-namespace xr {
+namespace sample {
     class ActionSet {
     public:
         ActionSet(XrInstance instance, const char* name, const char* localizedName, uint32_t priority = 0)
@@ -105,17 +106,32 @@ namespace xr {
 
         friend void AttachActionsToSession(XrInstance instance,
                                            XrSession session,
-                                           const std::vector<const xr::ActionContext*>& actionContexts);
-        friend void SyncActions(XrSession session, const std::vector<const xr::ActionContext*>& actionContexts);
+                                           const std::vector<const ActionContext*>& actionContexts,
+                                           const std::vector<std::string>& interactionProfilesFilter);
+        friend void SyncActions(XrSession session, const std::vector<const ActionContext*>& actionContexts);
     };
 
     inline void AttachActionsToSession(XrInstance instance,
                                        XrSession session,
-                                       const std::vector<const xr::ActionContext*>& actionContexts) {
+                                       const std::vector<const ActionContext*>& actionContexts,
+                                       const std::vector<std::string>& interactionProfilesFilter) {
+        const bool hasProfileFilter = !interactionProfilesFilter.empty();
+        std::unordered_set<XrPath> enabledProfiles;
+        if (hasProfileFilter) {
+            for (const auto& profileString : interactionProfilesFilter) {
+                XrPath path = XR_NULL_PATH;
+                CHECK_XRCMD(xrStringToPath(instance, profileString.c_str(), &path));
+                enabledProfiles.insert(path);
+            }
+        }
+
         // Collect action bindings for each context and summarize using interaction profile path as key.
         std::unordered_map<XrPath, std::vector<XrActionSuggestedBinding>> allBindings;
-        for (const xr::ActionContext* actionContext : actionContexts) {
+        for (const ActionContext* actionContext : actionContexts) {
             for (const auto& [profilePath, stringBindings] : actionContext->m_actionBindings) {
+                if (hasProfileFilter && enabledProfiles.find(profilePath) == enabledProfiles.end()) {
+                    continue;    // skip the profile if app didn't ask for it.
+                }
                 for (const auto& [actionPath, binding] : stringBindings) {
                     allBindings[profilePath].emplace_back(
                         XrActionSuggestedBinding{actionPath, xr::StringToPath(instance, binding.c_str())});
@@ -132,8 +148,8 @@ namespace xr {
         }
 
         std::vector<XrActionSet> actionSetHandles;
-        for (const xr::ActionContext* actionContext : actionContexts) {
-            for (const xr::ActionSet& actionSet : actionContext->m_actionSets) {
+        for (const ActionContext* actionContext : actionContexts) {
+            for (const ActionSet& actionSet : actionContext->m_actionSets) {
                 actionSetHandles.push_back(actionSet.Handle());
             }
         }
@@ -146,11 +162,11 @@ namespace xr {
         }
     }
 
-    inline void SyncActions(XrSession session, const std::vector<const xr::ActionContext*>& actionContexts) {
+    inline void SyncActions(XrSession session, const std::vector<const ActionContext*>& actionContexts) {
         std::vector<XrActiveActionSet> activeActionSets;
 
-        for (const xr::ActionContext* actionContext : actionContexts) {
-            for (const xr::ActionSet& actionSet : actionContext->m_actionSets) {
+        for (const ActionContext* actionContext : actionContexts) {
+            for (const ActionSet& actionSet : actionContext->m_actionSets) {
                 if (!actionSet.Active()) {
                     continue;
                 }
@@ -172,4 +188,4 @@ namespace xr {
         }
     }
 
-} // namespace xr
+} // namespace sample

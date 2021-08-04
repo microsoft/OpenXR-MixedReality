@@ -23,6 +23,9 @@
 #include <initializer_list>
 #include <optional>
 #include <set>
+#include <list>
+#include <unordered_map>
+#include <unordered_set>
 
 #include <d3d11_2.h>
 #include <DirectXMath.h>

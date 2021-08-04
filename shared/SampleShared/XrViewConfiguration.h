@@ -3,7 +3,7 @@
 
 #pragma once
 
-namespace xr {
+namespace sample {
     // The properties of a view configuration that's immutable for a system
     struct ViewProperties {
         XrViewConfigurationType Type;
@@ -64,4 +64,4 @@ namespace xr {
         }
         return false;
     }
-} // namespace xr
+} // namespace sample

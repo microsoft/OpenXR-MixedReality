@@ -202,7 +202,7 @@ class windows_error : public system_error {
   */
   template <typename... Args>
   windows_error(int error_code, string_view message, const Args&... args) {
-    init(error_code, message, make_format_args(args...));
+    init(error_code, message, fmt::make_format_args(args...));
   }
 };
 
@@ -262,7 +262,7 @@ class buffered_file {
 
   template <typename... Args>
   inline void print(string_view format_str, const Args&... args) {
-    vprint(format_str, make_format_args(args...));
+    vprint(format_str, fmt::make_format_args(args...));
   }
 };
 

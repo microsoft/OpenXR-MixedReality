@@ -24,6 +24,7 @@ namespace {
         static constexpr char const* TouchController = "/interaction_profiles/oculus/touch_controller";
         static constexpr char const* HPMixedRealityController = "/interaction_profiles/hp/mixed_reality_controller";
         static constexpr char const* HandInteraction = "/interaction_profiles/microsoft/hand_interaction";
+        static constexpr char const* SamsungController = "/interaction_profiles/samsung/odyssey_controller";
     };
 
     constexpr char const* aimPoseActionName[xr::Side::Count] = {"left_aim", "right_aim"};
@@ -97,8 +98,20 @@ namespace {
 
         void OnEvent(const XrEventDataBuffer& eventData [[maybe_unused]]) override {
             if (auto* internactionProfileChanged = xr::event_cast<XrEventDataInteractionProfileChanged>(&eventData)) {
-                sample::Trace("Interaction profile is changed");
                 m_interactionProfilesDirty = true;
+
+                XrInteractionProfileState state{XR_TYPE_INTERACTION_PROFILE_STATE};
+                CHECK_XRCMD(xrGetCurrentInteractionProfile(m_context.Session.Handle, m_context.Instance.LeftHandPath, &state));
+                std::string leftPath = state.interactionProfile == XR_NULL_PATH
+                                           ? "NULL"
+                                           : xr::PathToString(m_context.Instance.Handle, state.interactionProfile);
+
+                CHECK_XRCMD(xrGetCurrentInteractionProfile(m_context.Session.Handle, m_context.Instance.RightHandPath, &state));
+                std::string rightPath = state.interactionProfile == XR_NULL_PATH
+                                            ? "NULL"
+                                            : xr::PathToString(m_context.Instance.Handle, state.interactionProfile);
+
+                sample::Trace("Interaction profile is changed.\n\tLeft: {}\n\tRight:{}\n", leftPath.c_str(), rightPath.c_str());
             }
         }
 
@@ -149,8 +162,8 @@ namespace {
         std::atomic<bool> m_interactionProfilesDirty{false};
 
     private:
-        static std::vector<ActionInfo> CreateActions(xr::ActionContext& actionContext, const char* actionSetName) {
-            xr::ActionSet& actionSet = actionContext.CreateActionSet(actionSetName, actionSetName);
+        static std::vector<ActionInfo> CreateActions(sample::ActionContext& actionContext, const char* actionSetName) {
+            sample::ActionSet& actionSet = actionContext.CreateActionSet(actionSetName, actionSetName);
             std::vector<ActionInfo> actions{};
 
             const std::vector<std::string> bothHands = {UserHandPath[xr::Side::Left], UserHandPath[xr::Side::Right]};
@@ -169,11 +182,12 @@ namespace {
                           {InteractionProfiles::SimpleController, "select/click", nullptr},
                       });
 
-            addAction("trigger",
+            addAction("trigger_select_value",
                       XR_ACTION_TYPE_FLOAT_INPUT,
                       {
                           {InteractionProfiles::HPMixedRealityController, "trigger/value", nullptr},
                           {InteractionProfiles::MotionController, "trigger/value", nullptr},
+                          {InteractionProfiles::SamsungController, "trigger/value", nullptr},
                           {InteractionProfiles::HandInteraction, "select/value", nullptr},
                           {InteractionProfiles::TouchController, "trigger/value", nullptr},
                       });
@@ -182,6 +196,7 @@ namespace {
                       {
                           {InteractionProfiles::HPMixedRealityController, "squeeze/value", nullptr},
                           {InteractionProfiles::MotionController, "squeeze/click", nullptr},
+                          {InteractionProfiles::SamsungController, "squeeze/click", nullptr},
                           {InteractionProfiles::HandInteraction, "squeeze/value", nullptr},
                           {InteractionProfiles::TouchController, "squeeze/value", nullptr},
                       });
@@ -190,6 +205,7 @@ namespace {
                       {
                           {InteractionProfiles::HPMixedRealityController, "thumbstick/x", nullptr},
                           {InteractionProfiles::MotionController, "thumbstick/x", nullptr},
+                          {InteractionProfiles::SamsungController, "thumbstick/x", nullptr},
                           {InteractionProfiles::TouchController, "thumbstick/x", nullptr},
                       });
             addAction("thumbstick_y",
@@ -197,6 +213,7 @@ namespace {
                       {
                           {InteractionProfiles::HPMixedRealityController, "thumbstick/y", nullptr},
                           {InteractionProfiles::MotionController, "thumbstick/y", nullptr},
+                          {InteractionProfiles::SamsungController, "thumbstick/y", nullptr},
                           {InteractionProfiles::TouchController, "thumbstick/y", nullptr},
                       });
             addAction("thumbstick_click",
@@ -204,27 +221,32 @@ namespace {
                       {
                           {InteractionProfiles::HPMixedRealityController, "thumbstick/click", nullptr},
                           {InteractionProfiles::MotionController, "thumbstick/click", nullptr},
+                          {InteractionProfiles::SamsungController, "thumbstick/click", nullptr},
                           {InteractionProfiles::TouchController, "thumbstick/click", nullptr},
                       });
             addAction("trackpad_x",
                       XR_ACTION_TYPE_FLOAT_INPUT,
                       {
                           {InteractionProfiles::MotionController, "trackpad/x", nullptr},
+                          {InteractionProfiles::SamsungController, "trackpad/x", nullptr},
                       });
             addAction("trackpad_y",
                       XR_ACTION_TYPE_FLOAT_INPUT,
                       {
                           {InteractionProfiles::MotionController, "trackpad/y", nullptr},
+                          {InteractionProfiles::SamsungController, "trackpad/y", nullptr},
                       });
             addAction("trackpad_touch",
                       XR_ACTION_TYPE_FLOAT_INPUT,
                       {
                           {InteractionProfiles::MotionController, "trackpad/touch", nullptr},
+                          {InteractionProfiles::SamsungController, "trackpad/touch", nullptr},
                       });
             addAction("trackpad_click",
                       XR_ACTION_TYPE_FLOAT_INPUT,
                       {
                           {InteractionProfiles::MotionController, "trackpad/click", nullptr},
+                          {InteractionProfiles::SamsungController, "trackpad/click", nullptr},
                       });
             addAction("a",
                       XR_ACTION_TYPE_BOOLEAN_INPUT,
@@ -255,6 +277,7 @@ namespace {
                       {
                           {InteractionProfiles::HPMixedRealityController, "menu/click", nullptr},
                           {InteractionProfiles::MotionController, "menu/click", nullptr},
+                          {InteractionProfiles::SamsungController, "menu/click", nullptr},
                           {InteractionProfiles::SimpleController, "menu/click", nullptr},
                           {InteractionProfiles::TouchController, "menu/click", UserHandPath[xr::Side::Left]},
                       });
@@ -266,6 +289,7 @@ namespace {
                               {InteractionProfiles::SimpleController, "aim/pose", UserHandPath[side]},
                               {InteractionProfiles::HPMixedRealityController, "aim/pose", UserHandPath[side]},
                               {InteractionProfiles::MotionController, "aim/pose", UserHandPath[side]},
+                              {InteractionProfiles::SamsungController, "aim/pose", UserHandPath[side]},
                               {InteractionProfiles::HandInteraction, "aim/pose", UserHandPath[side]},
                               {InteractionProfiles::TouchController, "aim/pose", UserHandPath[side]},
                           });
@@ -276,6 +300,7 @@ namespace {
                               {InteractionProfiles::SimpleController, "grip/pose", UserHandPath[side]},
                               {InteractionProfiles::HPMixedRealityController, "grip/pose", UserHandPath[side]},
                               {InteractionProfiles::MotionController, "grip/pose", UserHandPath[side]},
+                              {InteractionProfiles::SamsungController, "grip/pose", UserHandPath[side]},
                               {InteractionProfiles::HandInteraction, "grip/pose", UserHandPath[side]},
                               {InteractionProfiles::TouchController, "grip/pose", UserHandPath[side]},
                           });
@@ -302,12 +327,12 @@ namespace {
         }
 
         static void InitializeSuggestBindings(uint32_t side,
-                                              xr::ActionContext& actionContext,
+                                              sample::ActionContext& actionContext,
                                               const xr::ExtensionContext& extensions,
                                               const std::vector<ActionInfo>& actions) {
             const std::string subactionPath = UserHandPath[side];
 
-            std::map<std::string, std::vector<xr::ActionContext::ActionBinding>> suggestedBindings;
+            std::map<std::string, std::vector<sample::ActionContext::ActionBinding>> suggestedBindings;
             for (const auto& actionInfo : actions) {
                 XrAction action = actionInfo.action;
                 for (const auto& [profilePath, componentPath, subactionPath] : actionInfo.actionBindings) {
@@ -335,6 +360,11 @@ namespace {
             if (extensions.SupportsHandInteraction) {
                 actionContext.SuggestInteractionProfileBindings(InteractionProfiles::HandInteraction,
                                                                 suggestedBindings[InteractionProfiles::HandInteraction]);
+            }
+
+            if (extensions.SupportsSamsungOdysseyController) {
+                actionContext.SuggestInteractionProfileBindings(InteractionProfiles::SamsungController,
+                                                                suggestedBindings[InteractionProfiles::SamsungController]);
             }
         }
 
@@ -391,7 +421,7 @@ namespace {
 
             auto ConcatNames = [](const std::set<std::string>& names) -> std::string {
                 if (names.size() == 0) {
-                    return "ERROR: No localized name";
+                    return "No Binding";
                 }
 
                 std::string finalNames;
@@ -407,38 +437,45 @@ namespace {
                 return finalNames;
             };
 
-            // Print interaction profile information in text
-            {
-                if (controllerData.components.size() > 0) {
-                    fmt::memory_buffer buffer;
-                    std::string interactionProfileString =
-                        ConcatNames(xr::QueryActionLocalizedName(context.Session.Handle,
-                                                                 controllerData.components[0].actionInfo.action,
-                                                                 XR_INPUT_SOURCE_LOCALIZED_NAME_INTERACTION_PROFILE_BIT));
-                    std::string handString = ConcatNames(xr::QueryActionLocalizedName(context.Session.Handle,
-                                                                                      controllerData.components[0].actionInfo.action,
-                                                                                      XR_INPUT_SOURCE_LOCALIZED_NAME_USER_PATH_BIT));
-                    fmt::format_to(buffer, "Device: {}\n", handString);
-                    fmt::format_to(buffer, "Interaction Profile: {}\n", interactionProfileString);
-                    if (hasInteractionProfile) {
-                        for (const auto& component : controllerData.components) {
-                            std::string componentString = ConcatNames(xr::QueryActionLocalizedName(
-                                context.Session.Handle, component.actionInfo.action, XR_INPUT_SOURCE_LOCALIZED_NAME_COMPONENT_BIT));
-                            fmt::format_to(buffer, "\n{}:\n{}\n", component.text.c_str(), componentString);
-                            scene.AddObject(component.placementObject);
-                            scene.AddObject(component.valueObject);
-                        }
-                    }
-                    sample::Trace(fmt::to_string(buffer));
+            auto GetControllerString = [&ConcatNames](XrSession session, XrAction action) -> std::string {
+                std::string interactionProfileString =
+                    ConcatNames(xr::QueryActionLocalizedName(session, action, XR_INPUT_SOURCE_LOCALIZED_NAME_INTERACTION_PROFILE_BIT));
+                std::string userPathString =
+                    ConcatNames(xr::QueryActionLocalizedName(session, action, XR_INPUT_SOURCE_LOCALIZED_NAME_USER_PATH_BIT));
+                return fmt::format("{}\n{}", interactionProfileString.c_str(), userPathString.c_str());
+            };
 
-                    // Draw text object for the new interaction profile and components
-                    controllerData.text = fmt::to_string(buffer);
-                    controllerData.textObject = scene.AddObject(CreateTextObject(context, controllerData.side, controllerData.text));
-                    controllerData.textObject->SetParent(controllerData.gripRoot);
-                    const float offset = controllerData.side == xr::Side::Left ? -0.05f : 0.05f;
-                    controllerData.textObject->Pose() = {{-0.707f, 0, 0, 0.707f}, {offset, -0.01f, 0}};
-                    controllerData.textObject->Scale() = {0.1f, 0.1f, 0.1f};
+            auto GetComponentString = [&ConcatNames](XrSession session, XrAction action) -> std::string {
+                std::string userPath =
+                    ConcatNames(xr::QueryActionLocalizedName(session, action, XR_INPUT_SOURCE_LOCALIZED_NAME_USER_PATH_BIT));
+                std::string component =
+                    ConcatNames(xr::QueryActionLocalizedName(session, action, XR_INPUT_SOURCE_LOCALIZED_NAME_COMPONENT_BIT));
+                return userPath + ", " + component;
+            };
+
+            // Print interaction profile information in text
+            if (controllerData.components.size() > 0) {
+                fmt::memory_buffer buffer;
+                std::string controllerLocalizedString =
+                    GetControllerString(context.Session.Handle, controllerData.components[0].actionInfo.action);
+                fmt::format_to(buffer, "{}\n{}\n", controllerData.interactionProfileName.c_str(), controllerLocalizedString.c_str());
+                if (hasInteractionProfile) {
+                    for (const auto& component : controllerData.components) {
+                        std::string componentString = GetComponentString(context.Session.Handle, component.actionInfo.action);
+                        fmt::format_to(buffer, "\n{}:\n{}\n", component.text.c_str(), componentString.c_str());
+                        scene.AddObject(component.placementObject);
+                        scene.AddObject(component.valueObject);
+                    }
                 }
+                sample::Trace(fmt::to_string(buffer));
+
+                // Draw text object for the new interaction profile and components
+                controllerData.text = fmt::to_string(buffer);
+                controllerData.textObject = scene.AddObject(CreateTextObject(context, controllerData.side, controllerData.text));
+                controllerData.textObject->SetParent(controllerData.gripRoot);
+                const float offset = controllerData.side == xr::Side::Left ? -0.05f : 0.05f;
+                controllerData.textObject->Pose() = {{-0.707f, 0, 0, 0.707f}, {offset, -0.01f, 0}};
+                controllerData.textObject->Scale() = {0.1f, 0.1f, 0.1f};
             }
         }
 
@@ -478,14 +515,14 @@ namespace {
             } else if (component.actionInfo.actionType == XR_ACTION_TYPE_POSE_INPUT) {
                 XrActionStatePose state{XR_TYPE_ACTION_STATE_POSE};
                 CHECK_XRCMD(xrGetActionStatePose(context.Session.Handle, &getInfo, &state));
-                component.actionValue = 0;
+                component.actionValue = state.isActive ? 1.f : 0.f;
                 component.isActive = state.isActive;
             } else {
                 assert(false); // Not sure how to visualize this action type yet.
             }
 
             // Update component visual to show a slide bar for the current value.
-            const float u = 0.002f;
+            const float u = 0.0021f;
             const float s = (1 + 10.f * component.actionValue) * u;
             const float p = (1 + 5.0f * component.actionValue) * u;
             component.valueObject->Pose() = xr::math::Pose::Translation({p, 0, 0});
