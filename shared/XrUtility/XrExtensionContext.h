@@ -86,7 +86,7 @@ namespace xr {
         extensions.SupportsSceneUnderstandingSerialization = isExtensionEnabled(XR_MSFT_SCENE_UNDERSTANDING_SERIALIZATION_EXTENSION_NAME);
         extensions.SupportsReprojectionConfiguration = isExtensionEnabled(XR_MSFT_COMPOSITION_LAYER_REPROJECTION_EXTENSION_NAME);
         extensions.SupportsSpatialAnchorExport = isExtensionEnabled(XR_MSFT_SPATIAL_ANCHOR_EXPORT_PREVIEW_EXTENSION_NAME);
-        extensions.SupportsSpatialAnchorPersistence = isExtensionEnabled(XR_MSFT_SPATIAL_ANCHOR_PERSISTENCE_PREVIEW_EXTENSION_NAME);
+        extensions.SupportsSpatialAnchorPersistence = isExtensionEnabled(XR_MSFT_SPATIAL_ANCHOR_PERSISTENCE_EXTENSION_NAME);
 
         return extensions;
     }

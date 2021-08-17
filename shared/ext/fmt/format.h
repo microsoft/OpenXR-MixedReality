@@ -2763,7 +2763,7 @@ class FMT_API system_error : public std::runtime_error {
   template <typename... Args>
   system_error(int error_code, string_view message, const Args&... args)
       : std::runtime_error("") {
-    init(error_code, message, make_format_args(args...));
+    init(error_code, message, fmt::make_format_args(args...));
   }
   system_error(const system_error&) = default;
   system_error& operator=(const system_error&) = default;
@@ -3288,7 +3288,7 @@ inline typename buffer_context<Char>::iterator format_to(
   internal::check_format_string<Args...>(format_str);
   using context = buffer_context<Char>;
   return internal::vformat_to(buf, to_string_view(format_str),
-                              make_format_args<context>(args...));
+                              fmt::make_format_args<context>(args...));
 }
 
 template <typename OutputIt, typename Char = char>
@@ -3329,7 +3329,7 @@ inline OutputIt format_to(OutputIt out, const S& format_str, Args&&... args) {
   internal::check_format_string<Args...>(format_str);
   using context = format_context_t<OutputIt, char_t<S>>;
   return vformat_to(out, to_string_view(format_str),
-                    make_format_args<context>(args...));
+                    fmt::make_format_args<context>(args...));
 }
 
 template <typename OutputIt> struct format_to_n_result {
@@ -3379,7 +3379,7 @@ inline format_to_n_result<OutputIt> format_to_n(OutputIt out, std::size_t n,
   internal::check_format_string<Args...>(format_str);
   using context = format_to_n_context<OutputIt, char_t<S>>;
   return vformat_to_n(out, n, to_string_view(format_str),
-                      make_format_args<context>(args...));
+                      fmt::make_format_args<context>(args...));
 }
 
 template <typename Char>

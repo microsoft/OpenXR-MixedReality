@@ -26,7 +26,7 @@ or choose x64 platform when running on a Windows Desktop PC with the HoloLens 2 
 
 # OpenXR preview extensions
 
-The [openxr_preview](https://github.com/microsoft/OpenXR-MixedReality/tree/master/openxr_preview) folder contains a set of [preview header files](https://github.com/microsoft/OpenXR-MixedReality/tree/master/openxr_preview/include/openxr) containing the following OpenXR extensions that are only available [in preview runtime](http://aka.ms/openxr-preview).
+The [openxr_preview](https://github.com/microsoft/OpenXR-MixedReality/tree/main/openxr_preview) folder contains a set of [preview header files](https://github.com/microsoft/OpenXR-MixedReality/tree/main/openxr_preview/include/openxr) containing the following OpenXR extensions that are only available [in preview runtime](http://aka.ms/openxr-preview).
 
 1. [XR_MSFT_spatial_anchor_export_preview](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_SPATIAL_ANCHOR_EXPORT_PREVIEW)
 
@@ -39,37 +39,37 @@ over the coming months.
 # OpenXR samples and extension usages
 
 - **The core OpenXR API usage patterns** <br/>
-can be found in the [BasicXrApp/OpenXRProgram.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/samples/BasicXrApp/OpenXrProgram.cpp) file.
-The [Run() function](https://github.com/microsoft/OpenXR-MixedReality/blob/master/samples/BasicXrApp/OpenXrProgram.cpp#L28)
+can be found in the [BasicXrApp/OpenXRProgram.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/main/samples/BasicXrApp/OpenXrProgram.cpp) file.
+The [Run() function](https://github.com/microsoft/OpenXR-MixedReality/blob/main/samples/BasicXrApp/OpenXrProgram.cpp#L28)
 captures a typical OpenXR app code flow for session initialization, event handling, the frame loop and input actions.
 
 - **Hand tracking** <br/>
-The [Scene_HandTracking.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/samples/SampleSceneUwp/Scene_HandTracking.cpp)
+The [Scene_HandTracking.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/main/samples/SampleSceneUwp/Scene_HandTracking.cpp)
 demos the usage of [XR_EXT_hand_tracking](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_hand_tracking)
 and [XR_MSFT_hand_tracking_mesh](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_hand_tracking_mesh) extensions.
 
 - **Eye tracking** <br/>
-The [Scene_EyeGazeInteraction.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/samples/EyeGazeInteractionUwp/Scene_EyeGazeInteraction.cpp) file
+The [Scene_EyeGazeInteraction.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/main/samples/EyeGazeInteractionUwp/Scene_EyeGazeInteraction.cpp) file
 demos the usage of [XR_EXT_eye_gaze_interaction](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_EXT_eye_gaze_interaction) extension.
 
 - **Mixed reality capture support** <br/>
-Search "secondary" in [XrApp.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/shared/XrSceneLib/XrApp.cpp) file
+Search "secondary" in [XrApp.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/main/shared/XrSceneLib/XrApp.cpp) file
 to understand the usage of [XR_MSFT_secondary_view_configuration](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_secondary_view_configuration)
 and [XR_MSFT_first_person_observer](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_first_person_observer) extensions.
 
 - **Render the motion controller model** <br/>
-The [ControllerObject.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/shared/XrSceneLib/ControllerObject.cpp) and
-[Scene_ControllerModel.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/samples/SampleSceneWin32/Scene_ControllerModel.cpp) files
+The [ControllerObject.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/main/shared/XrSceneLib/ControllerObject.cpp) and
+[Scene_ControllerModel.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/main/samples/SampleSceneWin32/Scene_ControllerModel.cpp) files
 demos the usage of [XR_MSFT_controller_model](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_controller_model) extension.
 
 - **Holographic window attachment** <br/>
-The [SampleSceneUwp/Main.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/samples/SampleSceneUwp/Main.cpp) file demos protocol activation for XR apps,
+The [SampleSceneUwp/Main.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/main/samples/SampleSceneUwp/Main.cpp) file demos protocol activation for XR apps,
 and using [XR_MSFT_holographic_window_attachment](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_holographic_window_attachment) extension
 to interop with CoreWindow in order to support [keyboard inputs](https://docs.microsoft.com/en-us/windows/mixed-reality/keyboard-mouse-and-controller-input-in-directx#subscribe-for-corewindow-input-events)
 and [TextEditingContext](https://docs.microsoft.com/en-us/uwp/api/Windows.UI.Text.Core.CoreTextEditContext?view=winrt-19041).
 
 - **Understand the local, unbounded and anchor spaces**<br/>
-The [ThreeSpacesUwp](https://github.com/microsoft/OpenXR-MixedReality/blob/master/samples/ThreeSpacesUwp/Scene_ThreeSpaces.cpp) project
+The [ThreeSpacesUwp](https://github.com/microsoft/OpenXR-MixedReality/blob/main/samples/ThreeSpacesUwp/Scene_ThreeSpaces.cpp) project
 demos the usage and differences of [LOCAL](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#reference-spaces),
 [UNBOUNDED](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_unbounded_reference_space) reference spaces
 and [spatial anchors](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XR_MSFT_spatial_anchor).
@@ -79,7 +79,7 @@ and [spatial anchors](https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrs
 
 # OpenXR app best practices for HoloLens 2
 
-The [BasicXrApp](https://github.com/microsoft/OpenXR-MixedReality/tree/master/samples/BasicXrApp) demonstrates the best practices for an OpenXR app to achieve full frame rate and low latency.
+The [BasicXrApp](https://github.com/microsoft/OpenXR-MixedReality/tree/main/samples/BasicXrApp) demonstrates the best practices for an OpenXR app to achieve full frame rate and low latency.
 
 For more detailed information on getting the best visual quality and performance on HoloLens 2, see the [best practices for HoloLens 2](https://aka.ms/openxr-best).
 

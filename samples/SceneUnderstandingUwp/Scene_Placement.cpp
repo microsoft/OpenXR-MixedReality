@@ -96,7 +96,7 @@ namespace {
                                     std::unique_ptr<xr::su::Scene> scene);
 
     struct HandRays {
-        HandRays(engine::Context& context, xr::ActionContext& actionContext, IHandRayListener& rayListener)
+        HandRays(engine::Context& context, sample::ActionContext& actionContext, IHandRayListener& rayListener)
             : m_context{context}
             , m_rayListener(rayListener) {
             const std::vector<std::string> subactionPaths = {"/user/hand/right", "/user/hand/left"};
@@ -188,7 +188,7 @@ namespace {
         engine::Context& m_context;
         IHandRayListener& m_rayListener;
 
-        xr::ActionSet* m_placementActionSet{nullptr};
+        sample::ActionSet* m_placementActionSet{nullptr};
         XrAction m_placeObjectAction{XR_NULL_HANDLE};
         XrAction m_aimPoseAction{XR_NULL_HANDLE};
         xr::SpaceHandle m_leftPointerSpace;

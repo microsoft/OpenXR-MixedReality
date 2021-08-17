@@ -5,10 +5,12 @@
 
 namespace xr {
 
+    typedef uint32_t side_t;
+
     namespace Side {
-        constexpr uint32_t Left = 0;
-        constexpr uint32_t Right = 1;
-        constexpr uint32_t Count = 2;
+        constexpr side_t Left = 0;
+        constexpr side_t Right = 1;
+        constexpr side_t Count = 2;
     } // namespace Side
 
 } // namespace xr

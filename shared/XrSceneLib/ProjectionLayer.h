@@ -36,7 +36,7 @@ namespace engine {
 
     class ProjectionLayer {
     public:
-        explicit ProjectionLayer(const xr::SessionContext& sessionContext);
+        explicit ProjectionLayer(const sample::SessionContext& sessionContext);
         ProjectionLayer(ProjectionLayer&&) = default;
         ProjectionLayer(const ProjectionLayer&) = delete;
 

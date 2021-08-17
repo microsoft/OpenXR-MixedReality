@@ -16,14 +16,14 @@ namespace {
 
     //
     // This sample displays the state of head tracking and controller/hand tracking into HMD view in front of user.
-    // The head tracking state is done by observing the VIEW reference space and 
+    // The head tracking state is done by observing the VIEW reference space and
     // the controller/hand tracking state is done by observing the left/right hand grip pose space.
     // https://www.khronos.org/registry/OpenXR/specs/1.0/html/xrspec.html#XrSpaceLocationFlagBits
     //
     struct TrackingStateScene : public engine::Scene {
         TrackingStateScene(engine::Context& context)
             : Scene(context) {
-            xr::ActionSet& actionSet = ActionContext().CreateActionSet("tracking_state_action_set", "Tracking state action set");
+            sample::ActionSet& actionSet = ActionContext().CreateActionSet("tracking_state_action_set", "Tracking state action set");
             const std::vector<std::string> subactionPathBothHands = {"/user/hand/right", "/user/hand/left"};
             m_gripSpaceAction = actionSet.CreateAction("grip_pose", "Grip Pose", XR_ACTION_TYPE_POSE_INPUT, subactionPathBothHands);
 

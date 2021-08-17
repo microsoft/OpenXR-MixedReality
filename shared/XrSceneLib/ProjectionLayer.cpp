@@ -15,7 +15,7 @@
 
 using namespace DirectX;
 
-engine::ProjectionLayer::ProjectionLayer(const xr::SessionContext& sessionContext) {
+engine::ProjectionLayer::ProjectionLayer(const sample::SessionContext& sessionContext) {
     auto primaryViewConfiguraionType = sessionContext.PrimaryViewConfigurationType;
     auto colorSwapchainFormat = sessionContext.SupportedColorSwapchainFormats[0];
     auto depthSwapchainFormat = sessionContext.SupportedDepthSwapchainFormats[0];

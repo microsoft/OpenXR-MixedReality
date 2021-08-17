@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation.
 // Licensed under the MIT License.
 
-
 #include "pch.h"
 #include <XrSceneLib/Scene.h>
 #include <XrSceneLib/ControllerObject.h>
@@ -12,7 +11,7 @@ namespace {
             : Scene(context)
             , m_leftController(context.Instance.LeftHandPath)
             , m_rightController(context.Instance.RightHandPath) {
-            xr::ActionSet& actionSet = ActionContext().CreateActionSet("controller_model_action_set", "Controller Model Action Set");
+            sample::ActionSet& actionSet = ActionContext().CreateActionSet("controller_model_action_set", "Controller Model Action Set");
 
             const std::vector<std::string> subactionPathBothHands = {"/user/hand/right", "/user/hand/left"};
             m_gripPoseAction = actionSet.CreateAction("grip_pose", "Grip Pose", XR_ACTION_TYPE_POSE_INPUT, subactionPathBothHands);
