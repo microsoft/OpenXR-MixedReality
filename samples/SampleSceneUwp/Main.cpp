@@ -40,6 +40,10 @@ namespace {
         appConfig.RequestedExtensions.push_back(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_MSFT_HAND_TRACKING_MESH_EXTENSION_NAME);
 
+        // NOTE: Uncomment a filter below to test specific action binding of given profile.
+        // appConfig.InteractionProfilesFilter.push_back("/interaction_profiles/microsoft/hand_interaction");
+        // appConfig.InteractionProfilesFilter.push_back("/interaction_profiles/khr/simple_controller");
+
         auto app = CreateXrApp(appConfig);
         app->AddScene(TryCreateTitleScene(app->Context()));
         app->AddScene(TryCreateOrbitScene(app->Context()));

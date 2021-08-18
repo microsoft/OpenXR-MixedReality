@@ -24,7 +24,7 @@ namespace {
     struct ThreeSpacesScene : public engine::Scene {
         ThreeSpacesScene(engine::Context& context)
             : Scene(context) {
-            xr::ActionSet& actionSet = ActionContext().CreateActionSet("three_cubes_scene_actions", "Three Cubes Scene Actions");
+            sample::ActionSet& actionSet = ActionContext().CreateActionSet("three_cubes_scene_actions", "Three Cubes Scene Actions");
 
             const std::vector<std::string> subactionPathBothHands = {"/user/hand/right", "/user/hand/left"};
 

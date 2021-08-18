@@ -5,19 +5,19 @@
 
 #include <pbr/PbrResources.h>
 #include <XrUtility/XrString.h>
-#include <XrUtility/XrInstanceContext.h>
 #include <XrUtility/XrExtensionContext.h>
-#include <XrUtility/XrSystemContext.h>
-#include <XrUtility/XrSessionContext.h>
+#include <SampleShared/XrInstanceContext.h>
+#include <SampleShared/XrSystemContext.h>
+#include <SampleShared/XrSessionContext.h>
 
 namespace engine {
 
     // Session-related resources shared across multiple Scenes.
     struct Context final {
-        Context(xr::InstanceContext instance,
+        Context(sample::InstanceContext instance,
                 xr::ExtensionContext extensions,
-                xr::SystemContext system,
-                xr::SessionContext session,
+                sample::SystemContext system,
+                sample::SessionContext session,
                 XrSpace appSpace,
                 Pbr::Resources pbrResources,
                 winrt::com_ptr<ID3D11Device> device,
@@ -32,10 +32,10 @@ namespace engine {
             , DeviceContext(std::move(deviceContext)) {
         }
 
-        const xr::InstanceContext Instance;
         const xr::ExtensionContext Extensions;
-        const xr::SystemContext System;
-        const xr::SessionContext Session;
+        const sample::InstanceContext Instance;
+        const sample::SystemContext System;
+        const sample::SessionContext Session;
 
         const XrSpace AppSpace;
 

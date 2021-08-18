@@ -344,6 +344,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClInclude Include="XrActionContext.h" />
+    <ClInclude Include="XrInstanceContext.h" />
+    <ClInclude Include="XrSessionContext.h" />
+    <ClInclude Include="XrSystemContext.h" />
+    <ClInclude Include="XrViewConfiguration.h" />
     <ClInclude Include="DirectXTK\dds.h" />
     <ClInclude Include="DirectXTK\DDSTextureLoader.h" />
     <ClInclude Include="DirectXTK\DirectXHelpers.h" />
