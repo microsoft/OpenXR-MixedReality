@@ -52,5 +52,6 @@ namespace xr {
     MAKE_TO_STRING_FUNCS(XrVisibilityMaskTypeKHR);
     MAKE_TO_STRING_FUNCS(XrReprojectionModeMSFT);
     MAKE_TO_STRING_FUNCS(XrSceneComponentTypeMSFT);
+    MAKE_TO_STRING_FUNCS(XrSceneComputeFeatureMSFT);
+    MAKE_TO_STRING_FUNCS(XrSpatialGraphNodeTypeMSFT);
 } // namespace xr
-

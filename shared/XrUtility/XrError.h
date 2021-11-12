@@ -5,7 +5,11 @@
 
 #include <memory>
 #include <stdexcept>
+#include <stdarg.h>
 #include "XrToString.h"
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #define CHECK_XRCMD(cmd) xr::detail::_CheckXrResult(cmd, #cmd, FILE_AND_LINE)
 #define CHECK_XRRESULT(res, cmdStr) xr::detail::_CheckXrResult(res, cmdStr, FILE_AND_LINE)

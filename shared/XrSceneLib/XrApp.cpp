@@ -456,6 +456,9 @@ namespace {
     void ImplementXrApp::EndSession() {
         StopRenderThreadIfRunning();
         m_sessionRunning = false;
+
+        m_projectionLayers.ForEachLayerWithLock([this](auto&& layer) { layer.DestroySwapchains(); });
+
         CHECK_XRCMD(xrEndSession(Context().Session.Handle));
     }
 

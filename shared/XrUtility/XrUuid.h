@@ -14,9 +14,25 @@ inline bool operator!=(const XrUuidMSFT& lh, const XrUuidMSFT& rh) noexcept {
     return !(lh == rh);
 }
 
+inline bool operator<(const XrUuidMSFT& lh, const XrUuidMSFT& rh) noexcept {
+    return memcmp(&lh, &rh, sizeof(XrUuidMSFT)) < 0;
+}
+
 namespace xr {
     // Type safe UUID for ensuring that two different types of UUIDs do not get mixed.
-    // Example: Mesh::Id and Plane::Id.
+    // Example:
+    //      XrUuidMSFT uuid {};
+    //      TypedUuid<Plane> planeId(uuid);     // allowed
+    //      TypedUuid<Mesh> meshId{planeId};    // compile error
+    //      meshId = planeId;   // compile error
+    //      meshId = uuid;      // allowed
+    //      uuid = meshId;      // compiler error
+    //      uuid = static_cast<XrUuidMSFT>(meshId);     // allowed
+    //      if (meshId < meshId_2) {}       // allowed
+    //      if (meshId != planeId) {}       // compiler error
+    //  To access the uint8_t[16] array in TypedUuid, use
+    //      static_cast<XrUuidMSFT>(meshId).bytes
+    //
     template <typename Type>
     struct TypedUuid {
         TypedUuid() noexcept = default;
@@ -41,9 +57,14 @@ namespace xr {
             return m_uuid != other.m_uuid;
         }
 
+        bool operator<(const TypedUuid& other) const noexcept {
+            return m_uuid < other.m_uuid;
+        }
+
     private:
         XrUuidMSFT m_uuid;
     };
+
 } // namespace xr
 
 namespace std {

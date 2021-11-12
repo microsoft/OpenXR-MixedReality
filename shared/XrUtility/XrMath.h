@@ -459,24 +459,22 @@ namespace xr::math {
         return a / std::sqrt(Dot(a, a));
     }
 
-    inline bool IsValidFov(const XrFovf& fov) {
-        if (fov.angleRight >= DirectX::XM_PIDIV2 || fov.angleLeft <= -DirectX::XM_PIDIV2) {
-            return false;
-        }
-
-        if (fov.angleUp >= DirectX::XM_PIDIV2 || fov.angleDown <= -DirectX::XM_PIDIV2) {
-            return false;
-        }
-
-        return true;
-    }
-
     // 2 * n / (r - l)    0                  0                    0
     // 0                  2 * n / (t - b)    0                    0
     // (r + l) / (r - l)  (t + b) / (t - b)  f / (n - f)         -1
     // 0                  0                  n*f / (n - f)        0
     inline DirectX::XMMATRIX ComposeProjectionMatrix(const XrFovf& fov, const NearFar& nearFar) {
-        if (!IsValidFov(fov)) {
+        const auto ValidateFovAngle = [](float angle) {
+            if (angle >= DirectX::XM_PIDIV2 || angle <= -DirectX::XM_PIDIV2) {
+                throw std::runtime_error("Invalid projection specification");
+            }
+        };
+        ValidateFovAngle(fov.angleLeft);
+        ValidateFovAngle(fov.angleRight);
+        ValidateFovAngle(fov.angleUp);
+        ValidateFovAngle(fov.angleDown);
+        if (fabs(fov.angleLeft - fov.angleRight) < std::numeric_limits<float>::epsilon() ||
+            fabs(fov.angleUp - fov.angleDown) < std::numeric_limits<float>::epsilon()) {
             throw std::runtime_error("Invalid projection specification");
         }
 
