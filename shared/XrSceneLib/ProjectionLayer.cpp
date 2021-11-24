@@ -34,6 +34,13 @@ engine::ProjectionLayer::ProjectionLayer(const sample::SessionContext& sessionCo
     }
 }
 
+void engine::ProjectionLayer::DestroySwapchains() {
+    for (auto& viewConfigComponent : m_viewConfigComponents) {
+        viewConfigComponent.second.ColorSwapchain = {};
+        viewConfigComponent.second.DepthSwapchain = {};
+    }
+}
+
 void engine::ProjectionLayer::PrepareRendering(const Context& context,
                                                XrViewConfigurationType viewConfigType,
                                                const std::vector<XrViewConfigurationView>& viewConfigViews) {

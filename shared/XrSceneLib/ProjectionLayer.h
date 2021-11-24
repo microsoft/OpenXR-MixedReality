@@ -68,6 +68,8 @@ namespace engine {
                     const std::vector<std::unique_ptr<Scene>>& activeScenes,
                     XrViewConfigurationType viewConfig);
 
+        void DestroySwapchains();
+
     private:
         struct ViewConfigComponent {
             ProjectionLayerConfig CurrentConfig;

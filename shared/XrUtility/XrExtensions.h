@@ -58,7 +58,11 @@
 #endif
 
 #if XR_MSFT_spatial_graph_bridge
-#define FOR_EACH_SPATIAL_GRAPH_BRIDGE_FUNCTION(_) _(xrCreateSpatialGraphNodeSpaceMSFT)
+#define FOR_EACH_SPATIAL_GRAPH_BRIDGE_FUNCTION(_)   \
+    _(xrCreateSpatialGraphNodeSpaceMSFT)            \
+    _(xrTryCreateSpatialGraphStaticNodeBindingMSFT) \
+    _(xrDestroySpatialGraphStaticNodeBindingMSFT)   \
+    _(xrGetSpatialGraphStaticNodeBindingPropertiesMSFT)
 #else
 #define FOR_EACH_SPATIAL_GRAPH_BRIDGE_FUNCTION(_)
 #endif
@@ -91,19 +95,8 @@
 #define FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_) \
     _(xrDeserializeSceneMSFT)                                  \
     _(xrGetSerializedSceneFragmentDataMSFT)
-
 #else
 #define FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_)
-#endif
-
-#if XR_MSFT_spatial_anchor_export_preview
-#define FOR_EACH_SPATIAL_ANCHOR_EXPORT_FUNCTION(_)     \
-    _(xrCreateSpatialAnchorNeighborhoodDataStreamMSFT) \
-    _(xrReadSpatialAnchorNeighborhoodDataMSFT)         \
-    _(xrGetSpatialAnchorExportSufficiencyMSFT)         \
-    _(xrDestroySpatialAnchorNeighborhoodDataStreamMSFT)
-#else
-#define FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)
 #endif
 
 #if XR_MSFT_spatial_anchor_persistence
@@ -119,7 +112,11 @@
 #define FOR_EACH_SPATIAL_ANCHOR_PERSISTENCE_FUNCTION(_)
 #endif
 
+#if XR_MSFT_composition_layer_reprojection
 #define FOR_EACH_COMPOSITION_LAYER_REPROJECTION_FUNCTION(_) _(xrEnumerateReprojectionModesMSFT)
+#else
+#define FOR_EACH_COMPOSITION_LAYER_REPROJECTION_FUNCTION(_)
+#endif
 
 #define FOR_EACH_EXTENSION_FUNCTION(_)                     \
     FOR_EACH_WIN32_EXTENSION_FUNCTION(_)                   \
@@ -133,14 +130,20 @@
     FOR_EACH_PERCEPTION_ANCHOR_INTEROP_FUNCTION(_)         \
     FOR_EACH_SCENE_UNDERSTANDING_FUNCTION(_)               \
     FOR_EACH_SCENE_UNDERSTANDING_SERIALIZATION_FUNCTION(_) \
-    FOR_EACH_SPATIAL_ANCHOR_EXPORT_FUNCTION(_)             \
     FOR_EACH_SPATIAL_ANCHOR_PERSISTENCE_FUNCTION(_)        \
     FOR_EACH_COMPOSITION_LAYER_REPROJECTION_FUNCTION(_)
-
 
 #define GET_INSTANCE_PROC_ADDRESS(name) \
     (void)xrGetInstanceProcAddr(instance, #name, reinterpret_cast<PFN_xrVoidFunction*>(const_cast<PFN_##name*>(&name)));
 #define DEFINE_PROC_MEMBER(name) PFN_##name name{nullptr};
+
+// Define a local variable of given function name and get proc address from given instance handle.
+// The returned function pointer may be nullptr when the function is not supported by the xr instance.
+// NOTE: The app should cache the function pointer for the lifetime of the corresponding instance handle,
+//       because this xrGetInstanceProcAddr operation may be expensive to do repeatedly in a frame loop.
+#define DEFINE_XR_FUNCTION_AND_GET_INSTANCE_PROC_ADDRESS(xrFunctionName, instance, PFN_xrGetInstanceProcAddr) \
+    PFN_##xrFunctionName xrFunctionName = nullptr;                                                            \
+    (void)(*PFN_xrGetInstanceProcAddr)(instance, #xrFunctionName, (PFN_xrVoidFunction*)&xrFunctionName);
 
 namespace xr {
     struct ExtensionDispatchTable {
@@ -156,4 +159,3 @@ namespace xr {
 #undef DEFINE_PROC_MEMBER
 #undef GET_INSTANCE_PROC_ADDRESS
 #undef FOR_EACH_EXTENSION_FUNCTION
-

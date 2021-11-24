@@ -20,9 +20,10 @@ namespace engine {
         XrCompositionLayerFlags CompositionLayerFlags{};
         XrEyeVisibility EyeVisibility{XR_EYE_VISIBILITY_BOTH};
         LayerGrouping LayerGroup = LayerGrouping::Overlay;
+        DirectX::XMFLOAT4 ColorScale = {1, 1, 1, 1};
+        DirectX::XMFLOAT4 ColorBias = {0, 0, 0, 0};
     };
 
     std::shared_ptr<QuadLayerObject> CreateQuadLayerObject(XrSpace space, XrSwapchainSubImage image);
 
 } // namespace engine
-

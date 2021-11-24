@@ -102,9 +102,6 @@ XR_ENUM_STR(XrResult);
     _(XR_ERROR_COLOR_SPACE_UNSUPPORTED_FB, -1000108000) \
     _(XR_ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT, -1000142001) \
     _(XR_ERROR_SPATIAL_ANCHOR_NAME_INVALID_MSFT, -1000142002) \
-    _(XR_SPATIAL_ANCHOR_EXPORT_DATA_UNAVAILABLE_MSFT, 1000062000) \
-    _(XR_ERROR_SPATIAL_ANCHOR_EXPORT_FAILED_MSFT, -1000062000) \
-    _(XR_ERROR_SPATIAL_ANCHOR_SUFFICIENCY_QUERY_FAILED_MSFT, -1000062001) \
     _(XR_RESULT_MAX_ENUM, 0x7FFFFFFF)
 
 #define XR_LIST_ENUM_XrStructureType(_) \
@@ -200,7 +197,6 @@ XR_ENUM_STR(XrResult);
     _(XR_TYPE_COMPOSITION_LAYER_ALPHA_BLEND_FB, 1000041001) \
     _(XR_TYPE_VIEW_CONFIGURATION_DEPTH_RANGE_EXT, 1000046000) \
     _(XR_TYPE_GRAPHICS_BINDING_EGL_MNDX, 1000048004) \
-    _(XR_TYPE_SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT, 1000049000) \
     _(XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_EXT, 1000051000) \
     _(XR_TYPE_HAND_TRACKER_CREATE_INFO_EXT, 1000051001) \
     _(XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT, 1000051002) \
@@ -258,6 +254,10 @@ XR_ENUM_STR(XrResult);
     _(XR_TYPE_SCENE_DESERIALIZE_INFO_MSFT, 1000098001) \
     _(XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB, 1000101000) \
     _(XR_TYPE_SYSTEM_COLOR_SPACE_PROPERTIES_FB, 1000108000) \
+    _(XR_TYPE_HAND_TRACKING_MESH_FB, 1000110001) \
+    _(XR_TYPE_HAND_TRACKING_SCALE_FB, 1000110003) \
+    _(XR_TYPE_HAND_TRACKING_AIM_STATE_FB, 1000111001) \
+    _(XR_TYPE_HAND_TRACKING_CAPSULES_STATE_FB, 1000112000) \
     _(XR_TYPE_FOVEATION_PROFILE_CREATE_INFO_FB, 1000114000) \
     _(XR_TYPE_SWAPCHAIN_CREATE_INFO_FOVEATION_FB, 1000114001) \
     _(XR_TYPE_SWAPCHAIN_STATE_FOVEATION_FB, 1000114002) \
@@ -273,8 +273,12 @@ XR_ENUM_STR(XrResult);
     _(XR_TYPE_SWAPCHAIN_STATE_ANDROID_SURFACE_DIMENSIONS_FB, 1000161000) \
     _(XR_TYPE_SWAPCHAIN_STATE_SAMPLER_OPENGL_ES_FB, 1000162000) \
     _(XR_TYPE_SWAPCHAIN_STATE_SAMPLER_VULKAN_FB, 1000163000) \
-    _(XR_TYPE_SPATIAL_ANCHOR_EXPORT_PURPOSE_INFO_MSFT, 1000062000) \
-    _(XR_TYPE_SPATIAL_ANCHOR_EXPORT_SUFFICIENCY_MSFT, 1000062001) \
+    _(XR_TYPE_COMPOSITION_LAYER_SPACE_WARP_INFO_FB, 1000171000) \
+    _(XR_TYPE_SYSTEM_SPACE_WARP_PROPERTIES_FB, 1000171001) \
+    _(XR_TYPE_SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT, 1000049000) \
+    _(XR_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_CREATE_INFO_MSFT, 1000049001) \
+    _(XR_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_PROPERTIES_GET_INFO_MSFT, 1000049002) \
+    _(XR_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_PROPERTIES_MSFT, 1000049003) \
     _(XR_STRUCTURE_TYPE_MAX_ENUM, 0x7FFFFFFF)
 
 #define XR_LIST_ENUM_XrFormFactor(_) \
@@ -344,7 +348,7 @@ XR_ENUM_STR(XrResult);
     _(XR_OBJECT_TYPE_SCENE_MSFT, 1000097001) \
     _(XR_OBJECT_TYPE_FOVEATION_PROFILE_FB, 1000114000) \
     _(XR_OBJECT_TYPE_SPATIAL_ANCHOR_STORE_CONNECTION_MSFT, 1000142000) \
-    _(XR_OBJECT_TYPE_SPATIAL_ANCHOR_NEIGHBORHOOD_DATA_STREAM_MSFT, 1000062000) \
+    _(XR_OBJECT_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_MSFT, 1000049000) \
     _(XR_OBJECT_TYPE_MAX_ENUM, 0x7FFFFFFF)
 
 #define XR_LIST_ENUM_XrAndroidThreadTypeKHR(_) \
@@ -440,11 +444,6 @@ XR_ENUM_STR(XrResult);
     _(XR_HAND_POSE_TYPE_TRACKED_MSFT, 0) \
     _(XR_HAND_POSE_TYPE_REFERENCE_OPEN_PALM_MSFT, 1) \
     _(XR_HAND_POSE_TYPE_MAX_ENUM_MSFT, 0x7FFFFFFF)
-
-#define XR_LIST_ENUM_XrSpatialAnchorExportPurposeMSFT(_) \
-    _(XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_RELOCALIZATION_MSFT, 0) \
-    _(XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_SHARING_MSFT, 1) \
-    _(XR_SPATIAL_ANCHOR_EXPORT_PURPOSE_MAX_ENUM_MSFT, 0x7FFFFFFF)
 
 #define XR_LIST_ENUM_XrReprojectionModeMSFT(_) \
     _(XR_REPROJECTION_MODE_DEPTH_MSFT, 1) \
@@ -611,11 +610,24 @@ XR_ENUM_STR(XrResult);
     _(XR_COMPOSITION_LAYER_SECURE_CONTENT_EXCLUDE_LAYER_BIT_FB, 0x00000001) \
     _(XR_COMPOSITION_LAYER_SECURE_CONTENT_REPLACE_LAYER_BIT_FB, 0x00000002) \
 
+#define XR_LIST_BITS_XrHandTrackingAimFlagsFB(_) \
+    _(XR_HAND_TRACKING_AIM_COMPUTED_BIT_FB, 0x00000001) \
+    _(XR_HAND_TRACKING_AIM_VALID_BIT_FB, 0x00000002) \
+    _(XR_HAND_TRACKING_AIM_INDEX_PINCHING_BIT_FB, 0x00000004) \
+    _(XR_HAND_TRACKING_AIM_MIDDLE_PINCHING_BIT_FB, 0x00000008) \
+    _(XR_HAND_TRACKING_AIM_RING_PINCHING_BIT_FB, 0x00000010) \
+    _(XR_HAND_TRACKING_AIM_LITTLE_PINCHING_BIT_FB, 0x00000020) \
+    _(XR_HAND_TRACKING_AIM_SYSTEM_GESTURE_BIT_FB, 0x00000040) \
+    _(XR_HAND_TRACKING_AIM_DOMINANT_HAND_BIT_FB, 0x00000080) \
+    _(XR_HAND_TRACKING_AIM_MENU_PRESSED_BIT_FB, 0x00000100) \
+
 #define XR_LIST_BITS_XrSwapchainCreateFoveationFlagsFB(_) \
     _(XR_SWAPCHAIN_CREATE_FOVEATION_SCALED_BIN_BIT_FB, 0x00000001) \
     _(XR_SWAPCHAIN_CREATE_FOVEATION_FRAGMENT_DENSITY_MAP_BIT_FB, 0x00000002) \
 
 #define XR_LIST_BITS_XrSwapchainStateFoveationFlagsFB(_)
+
+#define XR_LIST_BITS_XrCompositionLayerSpaceWarpInfoFlagsFB(_)
 
 #define XR_LIST_STRUCT_XrApiLayerProperties(_) \
     _(type) \
@@ -1415,6 +1427,23 @@ XR_ENUM_STR(XrResult);
     _(nodeId) \
     _(pose) \
 
+#define XR_LIST_STRUCT_XrSpatialGraphStaticNodeBindingCreateInfoMSFT(_) \
+    _(type) \
+    _(next) \
+    _(space) \
+    _(poseInSpace) \
+    _(time) \
+
+#define XR_LIST_STRUCT_XrSpatialGraphStaticNodeBindingPropertiesGetInfoMSFT(_) \
+    _(type) \
+    _(next) \
+
+#define XR_LIST_STRUCT_XrSpatialGraphStaticNodeBindingPropertiesMSFT(_) \
+    _(type) \
+    _(next) \
+    _(nodeId) \
+    _(poseInNodeSpace) \
+
 #define XR_LIST_STRUCT_XrSystemHandTrackingPropertiesEXT(_) \
     _(type) \
     _(next) \
@@ -1576,18 +1605,6 @@ XR_ENUM_STR(XrResult);
     _(next) \
     _(recommendedFov) \
     _(maxMutableFov) \
-
-#define XR_LIST_STRUCT_XrSpatialAnchorExportPurposeInfoMSFT(_) \
-    _(type) \
-    _(next) \
-    _(exportPurpose) \
-
-#define XR_LIST_STRUCT_XrSpatialAnchorExportSufficiencyMSFT(_) \
-    _(type) \
-    _(next) \
-    _(isMinimallySufficient) \
-    _(recommendedSufficiencyLevel) \
-    _(sufficiencyLevel) \
 
 #define XR_LIST_STRUCT_XrHolographicWindowAttachmentMSFT(_) \
     _(type) \
@@ -1823,6 +1840,59 @@ XR_ENUM_STR(XrResult);
     _(next) \
     _(colorSpace) \
 
+#define XR_LIST_STRUCT_XrVector4sFB(_) \
+    _(x) \
+    _(y) \
+    _(z) \
+    _(w) \
+
+#define XR_LIST_STRUCT_XrHandTrackingMeshFB(_) \
+    _(type) \
+    _(next) \
+    _(jointCapacityInput) \
+    _(jointCountOutput) \
+    _(jointBindPoses) \
+    _(jointRadii) \
+    _(jointParents) \
+    _(vertexCapacityInput) \
+    _(vertexCountOutput) \
+    _(vertexPositions) \
+    _(vertexNormals) \
+    _(vertexUVs) \
+    _(vertexBlendIndices) \
+    _(vertexBlendWeights) \
+    _(indexCapacityInput) \
+    _(indexCountOutput) \
+    _(indices) \
+
+#define XR_LIST_STRUCT_XrHandTrackingScaleFB(_) \
+    _(type) \
+    _(next) \
+    _(sensorOutput) \
+    _(currentOutput) \
+    _(overrideHandScale) \
+    _(overrideValueInput) \
+
+#define XR_LIST_STRUCT_XrHandTrackingAimStateFB(_) \
+    _(type) \
+    _(next) \
+    _(status) \
+    _(aimPose) \
+    _(pinchStrengthIndex) \
+    _(pinchStrengthMiddle) \
+    _(pinchStrengthRing) \
+    _(pinchStrengthLittle) \
+
+#define XR_LIST_STRUCT_XrHandCapsuleFB(_) \
+    _(points) \
+    _(radius) \
+    _(joint) \
+
+#define XR_LIST_STRUCT_XrHandTrackingCapsulesStateFB(_) \
+    _(type) \
+    _(next) \
+    _(capsules) \
+
 #define XR_LIST_STRUCT_XrFoveationProfileCreateInfoFB(_) \
     _(type) \
     _(next) \
@@ -1923,6 +1993,24 @@ XR_ENUM_STR(XrResult);
     _(maxAnisotropy) \
     _(borderColor) \
 
+#define XR_LIST_STRUCT_XrCompositionLayerSpaceWarpInfoFB(_) \
+    _(type) \
+    _(next) \
+    _(layerFlags) \
+    _(motionVectorSubImage) \
+    _(appSpaceDeltaPose) \
+    _(depthSubImage) \
+    _(minDepth) \
+    _(maxDepth) \
+    _(nearZ) \
+    _(farZ) \
+
+#define XR_LIST_STRUCT_XrSystemSpaceWarpPropertiesFB(_) \
+    _(type) \
+    _(next) \
+    _(recommendedMotionVectorImageRectWidth) \
+    _(recommendedMotionVectorImageRectHeight) \
+
 
 
 #define XR_LIST_STRUCTURE_TYPES_CORE(_) \
@@ -1999,6 +2087,9 @@ XR_ENUM_STR(XrResult);
     _(XrCompositionLayerAlphaBlendFB, XR_TYPE_COMPOSITION_LAYER_ALPHA_BLEND_FB) \
     _(XrViewConfigurationDepthRangeEXT, XR_TYPE_VIEW_CONFIGURATION_DEPTH_RANGE_EXT) \
     _(XrSpatialGraphNodeSpaceCreateInfoMSFT, XR_TYPE_SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT) \
+    _(XrSpatialGraphStaticNodeBindingCreateInfoMSFT, XR_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_CREATE_INFO_MSFT) \
+    _(XrSpatialGraphStaticNodeBindingPropertiesGetInfoMSFT, XR_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_PROPERTIES_GET_INFO_MSFT) \
+    _(XrSpatialGraphStaticNodeBindingPropertiesMSFT, XR_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_PROPERTIES_MSFT) \
     _(XrSystemHandTrackingPropertiesEXT, XR_TYPE_SYSTEM_HAND_TRACKING_PROPERTIES_EXT) \
     _(XrHandTrackerCreateInfoEXT, XR_TYPE_HAND_TRACKER_CREATE_INFO_EXT) \
     _(XrHandJointsLocateInfoEXT, XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT) \
@@ -2021,8 +2112,6 @@ XR_ENUM_STR(XrResult);
     _(XrControllerModelNodeStateMSFT, XR_TYPE_CONTROLLER_MODEL_NODE_STATE_MSFT) \
     _(XrControllerModelStateMSFT, XR_TYPE_CONTROLLER_MODEL_STATE_MSFT) \
     _(XrViewConfigurationViewFovEPIC, XR_TYPE_VIEW_CONFIGURATION_VIEW_FOV_EPIC) \
-    _(XrSpatialAnchorExportPurposeInfoMSFT, XR_TYPE_SPATIAL_ANCHOR_EXPORT_PURPOSE_INFO_MSFT) \
-    _(XrSpatialAnchorExportSufficiencyMSFT, XR_TYPE_SPATIAL_ANCHOR_EXPORT_SUFFICIENCY_MSFT) \
     _(XrCompositionLayerReprojectionInfoMSFT, XR_TYPE_COMPOSITION_LAYER_REPROJECTION_INFO_MSFT) \
     _(XrCompositionLayerReprojectionPlaneOverrideMSFT, XR_TYPE_COMPOSITION_LAYER_REPROJECTION_PLANE_OVERRIDE_MSFT) \
     _(XrCompositionLayerSecureContentFB, XR_TYPE_COMPOSITION_LAYER_SECURE_CONTENT_FB) \
@@ -2051,6 +2140,10 @@ XR_ENUM_STR(XrResult);
     _(XrSceneDeserializeInfoMSFT, XR_TYPE_SCENE_DESERIALIZE_INFO_MSFT) \
     _(XrEventDataDisplayRefreshRateChangedFB, XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB) \
     _(XrSystemColorSpacePropertiesFB, XR_TYPE_SYSTEM_COLOR_SPACE_PROPERTIES_FB) \
+    _(XrHandTrackingMeshFB, XR_TYPE_HAND_TRACKING_MESH_FB) \
+    _(XrHandTrackingScaleFB, XR_TYPE_HAND_TRACKING_SCALE_FB) \
+    _(XrHandTrackingAimStateFB, XR_TYPE_HAND_TRACKING_AIM_STATE_FB) \
+    _(XrHandTrackingCapsulesStateFB, XR_TYPE_HAND_TRACKING_CAPSULES_STATE_FB) \
     _(XrFoveationProfileCreateInfoFB, XR_TYPE_FOVEATION_PROFILE_CREATE_INFO_FB) \
     _(XrSwapchainCreateInfoFoveationFB, XR_TYPE_SWAPCHAIN_CREATE_INFO_FOVEATION_FB) \
     _(XrSwapchainStateFoveationFB, XR_TYPE_SWAPCHAIN_STATE_FOVEATION_FB) \
@@ -2061,6 +2154,8 @@ XR_ENUM_STR(XrResult);
     _(XrCompositionLayerDepthTestVARJO, XR_TYPE_COMPOSITION_LAYER_DEPTH_TEST_VARJO) \
     _(XrSpatialAnchorPersistenceInfoMSFT, XR_TYPE_SPATIAL_ANCHOR_PERSISTENCE_INFO_MSFT) \
     _(XrSpatialAnchorFromPersistedAnchorCreateInfoMSFT, XR_TYPE_SPATIAL_ANCHOR_FROM_PERSISTED_ANCHOR_CREATE_INFO_MSFT) \
+    _(XrCompositionLayerSpaceWarpInfoFB, XR_TYPE_COMPOSITION_LAYER_SPACE_WARP_INFO_FB) \
+    _(XrSystemSpaceWarpPropertiesFB, XR_TYPE_SYSTEM_SPACE_WARP_PROPERTIES_FB) \
 
 
 
@@ -2260,7 +2355,6 @@ XR_ENUM_STR(XrResult);
     _(XR_MSFT_perception_anchor_interop, 57) \
     _(XR_EXT_win32_appcontainer_compatible, 58) \
     _(XR_EPIC_view_configuration_fov, 60) \
-    _(XR_MSFT_spatial_anchor_export_preview, 63) \
     _(XR_MSFT_holographic_window_attachment, 64) \
     _(XR_MSFT_composition_layer_reprojection, 67) \
     _(XR_HUAWEI_controller_interaction, 70) \
@@ -2281,6 +2375,9 @@ XR_ENUM_STR(XrResult);
     _(XR_FB_display_refresh_rate, 102) \
     _(XR_HTC_vive_cosmos_controller_interaction, 103) \
     _(XR_FB_color_space, 109) \
+    _(XR_FB_hand_tracking_mesh, 111) \
+    _(XR_FB_hand_tracking_aim, 112) \
+    _(XR_FB_hand_tracking_capsules, 113) \
     _(XR_FB_foveation, 115) \
     _(XR_FB_foveation_configuration, 116) \
     _(XR_KHR_binding_modification, 121) \
@@ -2294,6 +2391,7 @@ XR_ENUM_STR(XrResult);
     _(XR_FB_swapchain_update_state_opengl_es, 163) \
     _(XR_FB_swapchain_update_state_vulkan, 164) \
     _(XR_KHR_swapchain_usage_input_attachment_bit, 166) \
+    _(XR_FB_space_warp, 172) \
 
 
 #endif

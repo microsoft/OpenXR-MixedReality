@@ -34,7 +34,15 @@ namespace xr {
             return *this;
         }
 
-        operator bool() const noexcept {
+        bool operator==(const UniqueExtHandle& other) noexcept {
+            return m_handle == other.m_handle;
+        }
+
+        bool operator!=(const UniqueExtHandle& other) noexcept {
+            return m_handle != other.m_handle;
+        }
+
+        explicit operator bool() const noexcept {
             return m_handle != XR_NULL_HANDLE;
         }
 
