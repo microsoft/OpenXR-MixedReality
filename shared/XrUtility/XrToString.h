@@ -54,4 +54,5 @@ namespace xr {
     MAKE_TO_STRING_FUNCS(XrSceneComponentTypeMSFT);
     MAKE_TO_STRING_FUNCS(XrSceneComputeFeatureMSFT);
     MAKE_TO_STRING_FUNCS(XrSpatialGraphNodeTypeMSFT);
+    MAKE_TO_STRING_FUNCS(XrSceneComputeConsistencyMSFT);
 } // namespace xr

@@ -8,10 +8,9 @@
 #include "XrStruct.h"
 #include "XrHandle.h"
 #include "XrGuid.h"
-#include "XrExtensions.h"
 
 namespace xr {
-    class SpatialGraphStaticNodeBindingHandle : public xr::UniqueExtHandle<XrSpatialGraphStaticNodeBindingMSFT> {};
+    class SpatialGraphStaticNodeBindingHandle : public xr::UniqueXrHandle<XrSpatialGraphStaticNodeBindingMSFT> {};
 
 // GUID_DEFINED is defined in guiddef.h
 #ifdef GUID_DEFINED
@@ -33,36 +32,33 @@ namespace xr {
         return reinterpret_cast<GUID const&>(properties.nodeId);
     }
 
-    inline xr::SpaceHandle CreateSpatialGraphNodeSpace(const xr::ExtensionDispatchTable& extensions,
-                                                       XrSession session,
-                                                       XrSpatialGraphNodeTypeMSFT nodeType,
-                                                       const GUID& nodeId,
-                                                       const XrPosef& pose) {
+    inline xr::SpaceHandle
+    CreateSpatialGraphNodeSpace(XrSession session, XrSpatialGraphNodeTypeMSFT nodeType, const GUID& nodeId, const XrPosef& pose) {
         XrSpatialGraphNodeSpaceCreateInfoMSFT spaceCreateInfo{XR_TYPE_SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT};
         spaceCreateInfo.nodeType = nodeType;
         spaceCreateInfo.pose = pose;
         SetNodeId(spaceCreateInfo, nodeId);
         xr::SpaceHandle space;
-        CHECK_XRCMD(extensions.xrCreateSpatialGraphNodeSpaceMSFT(session, &spaceCreateInfo, space.Put()));
+        CHECK_XRCMD(xrCreateSpatialGraphNodeSpaceMSFT(session, &spaceCreateInfo, space.Put(xrDestroySpace)));
         return space;
     }
 
-    inline xr::SpatialGraphStaticNodeBindingHandle TryCreateSpatialGraphStaticNodeBinding(
-        const xr::ExtensionDispatchTable& extensions, XrSession session, XrSpace space, XrPosef poseInSpace, XrTime time) {
+    inline xr::SpatialGraphStaticNodeBindingHandle
+    TryCreateSpatialGraphStaticNodeBinding(XrSession session, XrSpace space, XrPosef poseInSpace, XrTime time) {
         xr::SpatialGraphStaticNodeBindingHandle nodeBinding;
         XrSpatialGraphStaticNodeBindingCreateInfoMSFT createInfo{XR_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_CREATE_INFO_MSFT};
         createInfo.space = space;
         createInfo.poseInSpace = poseInSpace;
         createInfo.time = time;
-        CHECK_XRCMD(extensions.xrTryCreateSpatialGraphStaticNodeBindingMSFT(
-            session, &createInfo, nodeBinding.Put(extensions.xrDestroySpatialGraphStaticNodeBindingMSFT)));
+        CHECK_XRCMD(xrTryCreateSpatialGraphStaticNodeBindingMSFT(
+            session, &createInfo, nodeBinding.Put(xrDestroySpatialGraphStaticNodeBindingMSFT)));
         return nodeBinding;
     }
 
-    inline SpatialGraphStaticNodeBindingProperties GetSpatialGraphStaticNodeBindingProperties(
-        const xr::ExtensionDispatchTable& extensions, XrSpatialGraphStaticNodeBindingMSFT nodeBinding) {
+    inline SpatialGraphStaticNodeBindingProperties
+    GetSpatialGraphStaticNodeBindingProperties(XrSpatialGraphStaticNodeBindingMSFT nodeBinding) {
         XrSpatialGraphStaticNodeBindingPropertiesMSFT properties{XR_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_PROPERTIES_MSFT};
-        CHECK_XRCMD(extensions.xrGetSpatialGraphStaticNodeBindingPropertiesMSFT(nodeBinding, nullptr, &properties));
+        CHECK_XRCMD(xrGetSpatialGraphStaticNodeBindingPropertiesMSFT(nodeBinding, nullptr, &properties));
         return {GetNodeIdAsGuid(properties), properties.poseInNodeSpace};
     }
 #endif // GUID_DEFINED

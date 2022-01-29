@@ -3,7 +3,14 @@
 
 #pragma once
 
+#ifdef XR_USE_GRAPHICS_API_D3D11
+#include <d3d11.h>
+#endif
+#ifdef XR_USE_GRAPHICS_API_D3D12
+#include <d3d12.h>
+#endif
 #include <openxr/openxr.h>
+#include <openxr/openxr_platform.h>
 #include <openxr/openxr_reflection.h>
 
 #include <string>
@@ -33,7 +40,7 @@ namespace xr {
         std::vector<XrPath> paths;
 
         for (auto string : strings) {
-            paths.push_back(StringToPath(instance, string.c_str()));
+            paths.push_back(xr::StringToPath(instance, string.c_str()));
         }
 
         return paths;

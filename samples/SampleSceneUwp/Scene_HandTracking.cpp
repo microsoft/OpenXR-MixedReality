@@ -46,8 +46,8 @@ namespace {
                 XrHandTrackerCreateInfoEXT createInfo{XR_TYPE_HAND_TRACKER_CREATE_INFO_EXT};
                 createInfo.hand = hand;
                 createInfo.handJointSet = XR_HAND_JOINT_SET_DEFAULT_EXT;
-                CHECK_XRCMD(m_context.Extensions.xrCreateHandTrackerEXT(
-                    m_context.Session.Handle, &createInfo, handData.TrackerHandle.Put(m_context.Extensions.xrDestroyHandTrackerEXT)));
+                CHECK_XRCMD(xrCreateHandTrackerEXT(
+                    m_context.Session.Handle, &createInfo, handData.TrackerHandle.Put(xrDestroyHandTrackerEXT)));
 
                 createJointObjects(handData);
             }
@@ -71,12 +71,12 @@ namespace {
                     XrHandMeshSpaceCreateInfoMSFT meshSpaceCreateInfo{XR_TYPE_HAND_MESH_SPACE_CREATE_INFO_MSFT};
                     meshSpaceCreateInfo.poseInHandMeshSpace = xr::math::Pose::Identity();
                     meshSpaceCreateInfo.handPoseType = XR_HAND_POSE_TYPE_TRACKED_MSFT;
-                    CHECK_XRCMD(m_context.Extensions.xrCreateHandMeshSpaceMSFT(
-                        handData.TrackerHandle.Get(), &meshSpaceCreateInfo, handData.MeshSpace.Put()));
+                    CHECK_XRCMD(xrCreateHandMeshSpaceMSFT(
+                        handData.TrackerHandle.Get(), &meshSpaceCreateInfo, handData.MeshSpace.Put(xrDestroySpace)));
 
                     meshSpaceCreateInfo.handPoseType = XR_HAND_POSE_TYPE_REFERENCE_OPEN_PALM_MSFT;
-                    CHECK_XRCMD(m_context.Extensions.xrCreateHandMeshSpaceMSFT(
-                        handData.TrackerHandle.Get(), &meshSpaceCreateInfo, handData.ReferenceMeshSpace.Put()));
+                    CHECK_XRCMD(xrCreateHandMeshSpaceMSFT(
+                        handData.TrackerHandle.Get(), &meshSpaceCreateInfo, handData.ReferenceMeshSpace.Put(xrDestroySpace)));
                 }
             }
 
@@ -112,7 +112,7 @@ namespace {
                 XrHandJointLocationsEXT locations{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
                 locations.jointCount = (uint32_t)handData.JointLocations.size();
                 locations.jointLocations = handData.JointLocations.data();
-                CHECK_XRCMD(m_context.Extensions.xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &locations));
+                CHECK_XRCMD(xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &locations));
 
                 bool jointsVisible = m_mode == HandDisplayMode::Joints;
                 bool meshVisible = m_mode == HandDisplayMode::Mesh;
@@ -162,16 +162,6 @@ namespace {
         bool UpdateJoints(HandData& handData, XrSpace referenceSpace, XrTime time) {
             bool jointsVisible = false;
 
-            XrHandJointsLocateInfoEXT locateInfo{XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT};
-            locateInfo.baseSpace = m_context.AppSpace;
-            locateInfo.time = time;
-
-            XrHandJointLocationsEXT locations{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
-            locations.jointCount = (uint32_t)handData.JointLocations.size();
-            locations.jointLocations = handData.JointLocations.data();
-
-            CHECK_XRCMD(m_context.Extensions.xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &locations));
-
             for (uint32_t k = 0; k < XR_HAND_JOINT_COUNT_EXT; k++) {
                 if (xr::math::Pose::IsPoseValid(handData.JointLocations[k])) {
                     Pbr::Node& jointNode = handData.JointModel->GetModel()->GetNode(handData.PbrNodeIndices[k]);
@@ -190,7 +180,7 @@ namespace {
             XrHandMeshUpdateInfoMSFT meshUpdateInfo{XR_TYPE_HAND_MESH_UPDATE_INFO_MSFT};
             meshUpdateInfo.time = time;
             meshUpdateInfo.handPoseType = XR_HAND_POSE_TYPE_TRACKED_MSFT;
-            CHECK_XRCMD(m_context.Extensions.xrUpdateHandMeshMSFT(handData.TrackerHandle.Get(), &meshUpdateInfo, &handData.meshState));
+            CHECK_XRCMD(xrUpdateHandMeshMSFT(handData.TrackerHandle.Get(), &meshUpdateInfo, &handData.meshState));
 
             if (!handData.meshState.isActive) {
                 return false;
@@ -254,7 +244,7 @@ namespace {
             locations.jointCount = (uint32_t)handData.JointLocations.size();
             locations.jointLocations = handData.JointLocations.data();
 
-            CHECK_XRCMD(m_context.Extensions.xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &locations));
+            CHECK_XRCMD(xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &locations));
             assert(locations.isActive);
 
             const XrVector3f& vZero = handData.JointLocations[XR_HAND_JOINT_MIDDLE_TIP_EXT].pose.position;

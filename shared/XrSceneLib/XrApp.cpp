@@ -172,7 +172,8 @@ namespace {
 
         sample::InstanceContext instance =
             sample::CreateInstanceContext(m_appConfiguration.AppInfo, {"XrSceneLib", 1}, extensions.EnabledExtensions);
-        extensions.PopulateDispatchTable(instance.Handle);
+
+        xr::g_dispatchTable.Initialize(instance.Handle, xrGetInstanceProcAddr);
 
         // Then get the active system with required form factor.
         // If no system is plugged in, wait until the device is plugged in.
@@ -207,7 +208,7 @@ namespace {
             xr::InsertExtensionStruct(sessionCreateInfo, holographicWindowAttachment);
         }
 
-        CHECK_XRCMD(xrCreateSession(instance.Handle, &sessionCreateInfo, sessionHandle.Put()));
+        CHECK_XRCMD(xrCreateSession(instance.Handle, &sessionCreateInfo, sessionHandle.Put(xrDestroySession)));
 
         sample::SessionContext session(std::move(sessionHandle),
                                        system,
@@ -227,12 +228,12 @@ namespace {
         XrReferenceSpaceCreateInfo spaceCreateInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
         spaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
         spaceCreateInfo.poseInReferenceSpace = xr::math::Pose::Identity();
-        CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_viewSpace.Put()));
+        CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_viewSpace.Put(xrDestroySpace)));
 
         // Create main app space
         spaceCreateInfo.referenceSpaceType =
             extensions.SupportsUnboundedSpace ? XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT : XR_REFERENCE_SPACE_TYPE_LOCAL;
-        CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_appSpace.Put()));
+        CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_appSpace.Put(xrDestroySpace)));
 
         Pbr::Resources pbrResources = sample::InitializePbrResources(device.get());
 

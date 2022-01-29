@@ -10,7 +10,6 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xrUtility", "xrUtility", "{D71728CE-842F-4FA7-94AE-01AEA60BC45A}"
 	ProjectSection(SolutionItems) = preProject
 		shared\XrUtility\XrError.h = shared\XrUtility\XrError.h
-		shared\XrUtility\XrExtensions.h = shared\XrUtility\XrExtensions.h
 		shared\XrUtility\XrHandle.h = shared\XrUtility\XrHandle.h
 		shared\XrUtility\XrMath.h = shared\XrUtility\XrMath.h
 		shared\XrUtility\XrString.h = shared\XrUtility\XrString.h

@@ -28,20 +28,20 @@ namespace {
 
         // Load the controller model as GLTF binary stream using two call idiom
         uint32_t bufferSize = 0;
-        CHECK_XRCMD(context.Extensions.xrLoadControllerModelMSFT(context.Session.Handle, modelKey, 0, &bufferSize, nullptr));
+        CHECK_XRCMD(xrLoadControllerModelMSFT(context.Session.Handle, modelKey, 0, &bufferSize, nullptr));
         auto modelBuffer = std::make_unique<byte[]>(bufferSize);
         CHECK_XRCMD(
-            context.Extensions.xrLoadControllerModelMSFT(context.Session.Handle, modelKey, bufferSize, &bufferSize, modelBuffer.get()));
+            xrLoadControllerModelMSFT(context.Session.Handle, modelKey, bufferSize, &bufferSize, modelBuffer.get()));
         model->PbrModel = Gltf::FromGltfBinary(context.PbrResources, modelBuffer.get(), bufferSize);
 
         // Read the controller model properties with two call idiom
         XrControllerModelPropertiesMSFT properties{XR_TYPE_CONTROLLER_MODEL_PROPERTIES_MSFT};
         properties.nodeCapacityInput = 0;
-        CHECK_XRCMD(context.Extensions.xrGetControllerModelPropertiesMSFT(context.Session.Handle, modelKey, &properties));
+        CHECK_XRCMD(xrGetControllerModelPropertiesMSFT(context.Session.Handle, modelKey, &properties));
         model->NodeProperties.resize(properties.nodeCountOutput, {XR_TYPE_CONTROLLER_MODEL_NODE_PROPERTIES_MSFT});
         properties.nodeProperties = model->NodeProperties.data();
         properties.nodeCapacityInput = static_cast<uint32_t>(model->NodeProperties.size());
-        CHECK_XRCMD(context.Extensions.xrGetControllerModelPropertiesMSFT(context.Session.Handle, modelKey, &properties));
+        CHECK_XRCMD(xrGetControllerModelPropertiesMSFT(context.Session.Handle, modelKey, &properties));
 
         // Compute the index of each node reported by runtime to be animated.
         // The order of m_nodeIndices exactly matches the order of the nodes properties and states.
@@ -63,12 +63,12 @@ namespace {
     void UpdateControllerParts(engine::Context& context, ControllerModel& model) {
         XrControllerModelStateMSFT modelState{XR_TYPE_CONTROLLER_MODEL_STATE_MSFT};
         modelState.nodeCapacityInput = 0;
-        CHECK_XRCMD(context.Extensions.xrGetControllerModelStateMSFT(context.Session.Handle, model.Key, &modelState));
+        CHECK_XRCMD(xrGetControllerModelStateMSFT(context.Session.Handle, model.Key, &modelState));
 
         model.NodeStates.resize(modelState.nodeCountOutput, {XR_TYPE_CONTROLLER_MODEL_STATE_MSFT});
         modelState.nodeCapacityInput = static_cast<uint32_t>(model.NodeStates.size());
         modelState.nodeStates = model.NodeStates.data();
-        CHECK_XRCMD(context.Extensions.xrGetControllerModelStateMSFT(context.Session.Handle, model.Key, &modelState));
+        CHECK_XRCMD(xrGetControllerModelStateMSFT(context.Session.Handle, model.Key, &modelState));
 
         assert(model.NodeStates.size() == model.NodeIndices.size());
         const size_t end = std::min(model.NodeStates.size(), model.NodeIndices.size());
@@ -113,7 +113,7 @@ namespace {
         }
 
         XrControllerModelKeyStateMSFT controllerModelKeyState{XR_TYPE_CONTROLLER_MODEL_KEY_STATE_MSFT};
-        CHECK_XRCMD(context.Extensions.xrGetControllerModelKeyMSFT(context.Session.Handle, m_controllerUserPath, &controllerModelKeyState));
+        CHECK_XRCMD(xrGetControllerModelKeyMSFT(context.Session.Handle, m_controllerUserPath, &controllerModelKeyState));
 
         // If a new valid model key is returned, reload the model into cache asynchronizely
         const bool modelKeyValid = controllerModelKeyState.modelKey != XR_NULL_CONTROLLER_MODEL_KEY_MSFT;

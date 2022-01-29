@@ -2,7 +2,7 @@
 #define OPENXR_REFLECTION_H_ 1
 
 /*
-** Copyright (c) 2017-2021, The Khronos Group Inc.
+** Copyright (c) 2017-2022, The Khronos Group Inc.
 **
 ** SPDX-License-Identifier: Apache-2.0 OR MIT
 */
@@ -100,6 +100,16 @@ XR_ENUM_STR(XrResult);
     _(XR_ERROR_SCENE_COMPUTE_CONSISTENCY_MISMATCH_MSFT, -1000097005) \
     _(XR_ERROR_DISPLAY_REFRESH_RATE_UNSUPPORTED_FB, -1000101000) \
     _(XR_ERROR_COLOR_SPACE_UNSUPPORTED_FB, -1000108000) \
+    _(XR_ERROR_UNEXPECTED_STATE_PASSTHROUGH_FB, -1000118000) \
+    _(XR_ERROR_FEATURE_ALREADY_CREATED_PASSTHROUGH_FB, -1000118001) \
+    _(XR_ERROR_FEATURE_REQUIRED_PASSTHROUGH_FB, -1000118002) \
+    _(XR_ERROR_NOT_PERMITTED_PASSTHROUGH_FB, -1000118003) \
+    _(XR_ERROR_INSUFFICIENT_RESOURCES_PASSTHROUGH_FB, -1000118004) \
+    _(XR_ERROR_UNKNOWN_PASSTHROUGH_FB, -1000118050) \
+    _(XR_ERROR_RENDER_MODEL_KEY_INVALID_FB, -1000119000) \
+    _(XR_RENDER_MODEL_UNAVAILABLE_FB, 1000119020) \
+    _(XR_ERROR_MARKER_NOT_TRACKED_VARJO, -1000124000) \
+    _(XR_ERROR_MARKER_ID_INVALID_VARJO, -1000124001) \
     _(XR_ERROR_SPATIAL_ANCHOR_NAME_NOT_FOUND_MSFT, -1000142001) \
     _(XR_ERROR_SPATIAL_ANCHOR_NAME_INVALID_MSFT, -1000142002) \
     _(XR_RESULT_MAX_ENUM, 0x7FFFFFFF)
@@ -253,6 +263,11 @@ XR_ENUM_STR(XrResult);
     _(XR_TYPE_SERIALIZED_SCENE_FRAGMENT_DATA_GET_INFO_MSFT, 1000098000) \
     _(XR_TYPE_SCENE_DESERIALIZE_INFO_MSFT, 1000098001) \
     _(XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB, 1000101000) \
+    _(XR_TYPE_VIVE_TRACKER_PATHS_HTCX, 1000103000) \
+    _(XR_TYPE_EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX, 1000103001) \
+    _(XR_TYPE_SYSTEM_FACIAL_TRACKING_PROPERTIES_HTC, 1000104000) \
+    _(XR_TYPE_FACIAL_TRACKER_CREATE_INFO_HTC, 1000104001) \
+    _(XR_TYPE_FACIAL_EXPRESSIONS_HTC, 1000104002) \
     _(XR_TYPE_SYSTEM_COLOR_SPACE_PROPERTIES_FB, 1000108000) \
     _(XR_TYPE_HAND_TRACKING_MESH_FB, 1000110001) \
     _(XR_TYPE_HAND_TRACKING_SCALE_FB, 1000110003) \
@@ -262,11 +277,33 @@ XR_ENUM_STR(XrResult);
     _(XR_TYPE_SWAPCHAIN_CREATE_INFO_FOVEATION_FB, 1000114001) \
     _(XR_TYPE_SWAPCHAIN_STATE_FOVEATION_FB, 1000114002) \
     _(XR_TYPE_FOVEATION_LEVEL_PROFILE_CREATE_INFO_FB, 1000115000) \
+    _(XR_TYPE_KEYBOARD_SPACE_CREATE_INFO_FB, 1000116009) \
+    _(XR_TYPE_KEYBOARD_TRACKING_QUERY_FB, 1000116004) \
+    _(XR_TYPE_SYSTEM_KEYBOARD_TRACKING_PROPERTIES_FB, 1000116002) \
+    _(XR_TYPE_TRIANGLE_MESH_CREATE_INFO_FB, 1000117001) \
+    _(XR_TYPE_SYSTEM_PASSTHROUGH_PROPERTIES_FB, 1000118000) \
+    _(XR_TYPE_PASSTHROUGH_CREATE_INFO_FB, 1000118001) \
+    _(XR_TYPE_PASSTHROUGH_LAYER_CREATE_INFO_FB, 1000118002) \
+    _(XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB, 1000118003) \
+    _(XR_TYPE_GEOMETRY_INSTANCE_CREATE_INFO_FB, 1000118004) \
+    _(XR_TYPE_GEOMETRY_INSTANCE_TRANSFORM_FB, 1000118005) \
+    _(XR_TYPE_PASSTHROUGH_STYLE_FB, 1000118020) \
+    _(XR_TYPE_PASSTHROUGH_COLOR_MAP_MONO_TO_RGBA_FB, 1000118021) \
+    _(XR_TYPE_PASSTHROUGH_COLOR_MAP_MONO_TO_MONO_FB, 1000118022) \
+    _(XR_TYPE_EVENT_DATA_PASSTHROUGH_STATE_CHANGED_FB, 1000118030) \
+    _(XR_TYPE_RENDER_MODEL_PATH_INFO_FB, 1000119000) \
+    _(XR_TYPE_RENDER_MODEL_PROPERTIES_FB, 1000119001) \
+    _(XR_TYPE_RENDER_MODEL_BUFFER_FB, 1000119002) \
+    _(XR_TYPE_RENDER_MODEL_LOAD_INFO_FB, 1000119003) \
+    _(XR_TYPE_SYSTEM_RENDER_MODEL_PROPERTIES_FB, 1000119004) \
     _(XR_TYPE_BINDING_MODIFICATIONS_KHR, 1000120000) \
     _(XR_TYPE_VIEW_LOCATE_FOVEATED_RENDERING_VARJO, 1000121000) \
     _(XR_TYPE_FOVEATED_VIEW_CONFIGURATION_VIEW_VARJO, 1000121001) \
     _(XR_TYPE_SYSTEM_FOVEATED_RENDERING_PROPERTIES_VARJO, 1000121002) \
     _(XR_TYPE_COMPOSITION_LAYER_DEPTH_TEST_VARJO, 1000122000) \
+    _(XR_TYPE_SYSTEM_MARKER_TRACKING_PROPERTIES_VARJO, 1000124000) \
+    _(XR_TYPE_EVENT_DATA_MARKER_TRACKING_UPDATE_VARJO, 1000124001) \
+    _(XR_TYPE_MARKER_SPACE_CREATE_INFO_VARJO, 1000124002) \
     _(XR_TYPE_SPATIAL_ANCHOR_PERSISTENCE_INFO_MSFT, 1000142000) \
     _(XR_TYPE_SPATIAL_ANCHOR_FROM_PERSISTED_ANCHOR_CREATE_INFO_MSFT, 1000142001) \
     _(XR_TYPE_SWAPCHAIN_IMAGE_FOVEATION_VULKAN_FB, 1000160000) \
@@ -275,6 +312,8 @@ XR_ENUM_STR(XrResult);
     _(XR_TYPE_SWAPCHAIN_STATE_SAMPLER_VULKAN_FB, 1000163000) \
     _(XR_TYPE_COMPOSITION_LAYER_SPACE_WARP_INFO_FB, 1000171000) \
     _(XR_TYPE_SYSTEM_SPACE_WARP_PROPERTIES_FB, 1000171001) \
+    _(XR_TYPE_DIGITAL_LENS_CONTROL_ALMALENCE, 1000196000) \
+    _(XR_TYPE_PASSTHROUGH_KEYBOARD_HANDS_INTENSITY_FB, 1000203002) \
     _(XR_TYPE_SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT, 1000049000) \
     _(XR_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_CREATE_INFO_MSFT, 1000049001) \
     _(XR_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_PROPERTIES_GET_INFO_MSFT, 1000049002) \
@@ -346,7 +385,12 @@ XR_ENUM_STR(XrResult);
     _(XR_OBJECT_TYPE_HAND_TRACKER_EXT, 1000051000) \
     _(XR_OBJECT_TYPE_SCENE_OBSERVER_MSFT, 1000097000) \
     _(XR_OBJECT_TYPE_SCENE_MSFT, 1000097001) \
+    _(XR_OBJECT_TYPE_FACIAL_TRACKER_HTC, 1000104000) \
     _(XR_OBJECT_TYPE_FOVEATION_PROFILE_FB, 1000114000) \
+    _(XR_OBJECT_TYPE_TRIANGLE_MESH_FB, 1000117000) \
+    _(XR_OBJECT_TYPE_PASSTHROUGH_FB, 1000118000) \
+    _(XR_OBJECT_TYPE_PASSTHROUGH_LAYER_FB, 1000118002) \
+    _(XR_OBJECT_TYPE_GEOMETRY_INSTANCE_FB, 1000118004) \
     _(XR_OBJECT_TYPE_SPATIAL_ANCHOR_STORE_CONNECTION_MSFT, 1000142000) \
     _(XR_OBJECT_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_MSFT, 1000049000) \
     _(XR_OBJECT_TYPE_MAX_ENUM, 0x7FFFFFFF)
@@ -510,6 +554,68 @@ XR_ENUM_STR(XrResult);
     _(XR_SCENE_COMPUTE_STATE_COMPLETED_WITH_ERROR_MSFT, 3) \
     _(XR_SCENE_COMPUTE_STATE_MAX_ENUM_MSFT, 0x7FFFFFFF)
 
+#define XR_LIST_ENUM_XrEyeExpressionHTC(_) \
+    _(XR_EYE_EXPRESSION_LEFT_BLINK_HTC, 0) \
+    _(XR_EYE_EXPRESSION_LEFT_WIDE_HTC, 1) \
+    _(XR_EYE_EXPRESSION_RIGHT_BLINK_HTC, 2) \
+    _(XR_EYE_EXPRESSION_RIGHT_WIDE_HTC, 3) \
+    _(XR_EYE_EXPRESSION_LEFT_SQUEEZE_HTC, 4) \
+    _(XR_EYE_EXPRESSION_RIGHT_SQUEEZE_HTC, 5) \
+    _(XR_EYE_EXPRESSION_LEFT_DOWN_HTC, 6) \
+    _(XR_EYE_EXPRESSION_RIGHT_DOWN_HTC, 7) \
+    _(XR_EYE_EXPRESSION_LEFT_OUT_HTC, 8) \
+    _(XR_EYE_EXPRESSION_RIGHT_IN_HTC, 9) \
+    _(XR_EYE_EXPRESSION_LEFT_IN_HTC, 10) \
+    _(XR_EYE_EXPRESSION_RIGHT_OUT_HTC, 11) \
+    _(XR_EYE_EXPRESSION_LEFT_UP_HTC, 12) \
+    _(XR_EYE_EXPRESSION_RIGHT_UP_HTC, 13) \
+    _(XR_EYE_EXPRESSION_MAX_ENUM_HTC, 0x7FFFFFFF)
+
+#define XR_LIST_ENUM_XrLipExpressionHTC(_) \
+    _(XR_LIP_EXPRESSION_JAW_RIGHT_HTC, 0) \
+    _(XR_LIP_EXPRESSION_JAW_LEFT_HTC, 1) \
+    _(XR_LIP_EXPRESSION_JAW_FORWARD_HTC, 2) \
+    _(XR_LIP_EXPRESSION_JAW_OPEN_HTC, 3) \
+    _(XR_LIP_EXPRESSION_MOUTH_APE_SHAPE_HTC, 4) \
+    _(XR_LIP_EXPRESSION_MOUTH_UPPER_RIGHT_HTC, 5) \
+    _(XR_LIP_EXPRESSION_MOUTH_UPPER_LEFT_HTC, 6) \
+    _(XR_LIP_EXPRESSION_MOUTH_LOWER_RIGHT_HTC, 7) \
+    _(XR_LIP_EXPRESSION_MOUTH_LOWER_LEFT_HTC, 8) \
+    _(XR_LIP_EXPRESSION_MOUTH_UPPER_OVERTURN_HTC, 9) \
+    _(XR_LIP_EXPRESSION_MOUTH_LOWER_OVERTURN_HTC, 10) \
+    _(XR_LIP_EXPRESSION_MOUTH_POUT_HTC, 11) \
+    _(XR_LIP_EXPRESSION_MOUTH_SMILE_RIGHT_HTC, 12) \
+    _(XR_LIP_EXPRESSION_MOUTH_SMILE_LEFT_HTC, 13) \
+    _(XR_LIP_EXPRESSION_MOUTH_SAD_RIGHT_HTC, 14) \
+    _(XR_LIP_EXPRESSION_MOUTH_SAD_LEFT_HTC, 15) \
+    _(XR_LIP_EXPRESSION_CHEEK_PUFF_RIGHT_HTC, 16) \
+    _(XR_LIP_EXPRESSION_CHEEK_PUFF_LEFT_HTC, 17) \
+    _(XR_LIP_EXPRESSION_CHEEK_SUCK_HTC, 18) \
+    _(XR_LIP_EXPRESSION_MOUTH_UPPER_UPRIGHT_HTC, 19) \
+    _(XR_LIP_EXPRESSION_MOUTH_UPPER_UPLEFT_HTC, 20) \
+    _(XR_LIP_EXPRESSION_MOUTH_LOWER_DOWNRIGHT_HTC, 21) \
+    _(XR_LIP_EXPRESSION_MOUTH_LOWER_DOWNLEFT_HTC, 22) \
+    _(XR_LIP_EXPRESSION_MOUTH_UPPER_INSIDE_HTC, 23) \
+    _(XR_LIP_EXPRESSION_MOUTH_LOWER_INSIDE_HTC, 24) \
+    _(XR_LIP_EXPRESSION_MOUTH_LOWER_OVERLAY_HTC, 25) \
+    _(XR_LIP_EXPRESSION_TONGUE_LONGSTEP1_HTC, 26) \
+    _(XR_LIP_EXPRESSION_TONGUE_LEFT_HTC, 27) \
+    _(XR_LIP_EXPRESSION_TONGUE_RIGHT_HTC, 28) \
+    _(XR_LIP_EXPRESSION_TONGUE_UP_HTC, 29) \
+    _(XR_LIP_EXPRESSION_TONGUE_DOWN_HTC, 30) \
+    _(XR_LIP_EXPRESSION_TONGUE_ROLL_HTC, 31) \
+    _(XR_LIP_EXPRESSION_TONGUE_LONGSTEP2_HTC, 32) \
+    _(XR_LIP_EXPRESSION_TONGUE_UPRIGHT_MORPH_HTC, 33) \
+    _(XR_LIP_EXPRESSION_TONGUE_UPLEFT_MORPH_HTC, 34) \
+    _(XR_LIP_EXPRESSION_TONGUE_DOWNRIGHT_MORPH_HTC, 35) \
+    _(XR_LIP_EXPRESSION_TONGUE_DOWNLEFT_MORPH_HTC, 36) \
+    _(XR_LIP_EXPRESSION_MAX_ENUM_HTC, 0x7FFFFFFF)
+
+#define XR_LIST_ENUM_XrFacialTrackingTypeHTC(_) \
+    _(XR_FACIAL_TRACKING_TYPE_EYE_DEFAULT_HTC, 1) \
+    _(XR_FACIAL_TRACKING_TYPE_LIP_DEFAULT_HTC, 2) \
+    _(XR_FACIAL_TRACKING_TYPE_MAX_ENUM_HTC, 0x7FFFFFFF)
+
 #define XR_LIST_ENUM_XrColorSpaceFB(_) \
     _(XR_COLOR_SPACE_UNMANAGED_FB, 0) \
     _(XR_COLOR_SPACE_REC2020_FB, 1) \
@@ -532,6 +638,18 @@ XR_ENUM_STR(XrResult);
     _(XR_FOVEATION_DYNAMIC_DISABLED_FB, 0) \
     _(XR_FOVEATION_DYNAMIC_LEVEL_ENABLED_FB, 1) \
     _(XR_FOVEATION_DYNAMIC_MAX_ENUM_FB, 0x7FFFFFFF)
+
+#define XR_LIST_ENUM_XrWindingOrderFB(_) \
+    _(XR_WINDING_ORDER_UNKNOWN_FB, 0) \
+    _(XR_WINDING_ORDER_CW_FB, 1) \
+    _(XR_WINDING_ORDER_CCW_FB, 2) \
+    _(XR_WINDING_ORDER_MAX_ENUM_FB, 0x7FFFFFFF)
+
+#define XR_LIST_ENUM_XrPassthroughLayerPurposeFB(_) \
+    _(XR_PASSTHROUGH_LAYER_PURPOSE_RECONSTRUCTION_FB, 0) \
+    _(XR_PASSTHROUGH_LAYER_PURPOSE_PROJECTED_FB, 1) \
+    _(XR_PASSTHROUGH_LAYER_PURPOSE_TRACKED_KEYBOARD_HANDS_FB, 1000203001) \
+    _(XR_PASSTHROUGH_LAYER_PURPOSE_MAX_ENUM_FB, 0x7FFFFFFF)
 
 #define XR_LIST_BITS_XrInstanceCreateFlags(_)
 
@@ -627,7 +745,34 @@ XR_ENUM_STR(XrResult);
 
 #define XR_LIST_BITS_XrSwapchainStateFoveationFlagsFB(_)
 
+#define XR_LIST_BITS_XrKeyboardTrackingFlagsFB(_) \
+    _(XR_KEYBOARD_TRACKING_EXISTS_BIT_FB, 0x00000001) \
+    _(XR_KEYBOARD_TRACKING_LOCAL_BIT_FB, 0x00000002) \
+    _(XR_KEYBOARD_TRACKING_REMOTE_BIT_FB, 0x00000004) \
+    _(XR_KEYBOARD_TRACKING_CONNECTED_BIT_FB, 0x00000008) \
+
+#define XR_LIST_BITS_XrKeyboardTrackingQueryFlagsFB(_) \
+    _(XR_KEYBOARD_TRACKING_QUERY_LOCAL_BIT_FB, 0x00000002) \
+    _(XR_KEYBOARD_TRACKING_QUERY_REMOTE_BIT_FB, 0x00000004) \
+
+#define XR_LIST_BITS_XrTriangleMeshFlagsFB(_) \
+    _(XR_TRIANGLE_MESH_MUTABLE_BIT_FB, 0x00000001) \
+
+#define XR_LIST_BITS_XrPassthroughFlagsFB(_) \
+    _(XR_PASSTHROUGH_IS_RUNNING_AT_CREATION_BIT_FB, 0x00000001) \
+
+#define XR_LIST_BITS_XrPassthroughStateChangedFlagsFB(_) \
+    _(XR_PASSTHROUGH_STATE_CHANGED_REINIT_REQUIRED_BIT_FB, 0x00000001) \
+    _(XR_PASSTHROUGH_STATE_CHANGED_NON_RECOVERABLE_ERROR_BIT_FB, 0x00000002) \
+    _(XR_PASSTHROUGH_STATE_CHANGED_RECOVERABLE_ERROR_BIT_FB, 0x00000004) \
+    _(XR_PASSTHROUGH_STATE_CHANGED_RESTORED_ERROR_BIT_FB, 0x00000008) \
+
+#define XR_LIST_BITS_XrRenderModelFlagsFB(_)
+
 #define XR_LIST_BITS_XrCompositionLayerSpaceWarpInfoFlagsFB(_)
+
+#define XR_LIST_BITS_XrDigitalLensControlFlagsALMALENCE(_) \
+    _(XR_DIGITAL_LENS_CONTROL_PROCESSING_DISABLE_BIT_ALMALENCE, 0x00000001) \
 
 #define XR_LIST_STRUCT_XrApiLayerProperties(_) \
     _(type) \
@@ -1835,6 +1980,36 @@ XR_ENUM_STR(XrResult);
     _(fromDisplayRefreshRate) \
     _(toDisplayRefreshRate) \
 
+#define XR_LIST_STRUCT_XrViveTrackerPathsHTCX(_) \
+    _(type) \
+    _(next) \
+    _(persistentPath) \
+    _(rolePath) \
+
+#define XR_LIST_STRUCT_XrEventDataViveTrackerConnectedHTCX(_) \
+    _(type) \
+    _(next) \
+    _(paths) \
+
+#define XR_LIST_STRUCT_XrSystemFacialTrackingPropertiesHTC(_) \
+    _(type) \
+    _(next) \
+    _(supportEyeFacialTracking) \
+    _(supportLipFacialTracking) \
+
+#define XR_LIST_STRUCT_XrFacialExpressionsHTC(_) \
+    _(type) \
+    _(next) \
+    _(isActive) \
+    _(sampleTime) \
+    _(expressionCount) \
+    _(expressionWeightings) \
+
+#define XR_LIST_STRUCT_XrFacialTrackerCreateInfoHTC(_) \
+    _(type) \
+    _(next) \
+    _(facialTrackingType) \
+
 #define XR_LIST_STRUCT_XrSystemColorSpacePropertiesFB(_) \
     _(type) \
     _(next) \
@@ -1915,6 +2090,130 @@ XR_ENUM_STR(XrResult);
     _(verticalOffset) \
     _(dynamic) \
 
+#define XR_LIST_STRUCT_XrSystemKeyboardTrackingPropertiesFB(_) \
+    _(type) \
+    _(next) \
+    _(supportsKeyboardTracking) \
+
+#define XR_LIST_STRUCT_XrKeyboardTrackingDescriptionFB(_) \
+    _(trackedKeyboardId) \
+    _(size) \
+    _(flags) \
+    _(name) \
+
+#define XR_LIST_STRUCT_XrKeyboardSpaceCreateInfoFB(_) \
+    _(type) \
+    _(next) \
+    _(trackedKeyboardId) \
+
+#define XR_LIST_STRUCT_XrKeyboardTrackingQueryFB(_) \
+    _(type) \
+    _(next) \
+    _(flags) \
+
+#define XR_LIST_STRUCT_XrTriangleMeshCreateInfoFB(_) \
+    _(type) \
+    _(next) \
+    _(flags) \
+    _(windingOrder) \
+    _(vertexCount) \
+    _(vertexBuffer) \
+    _(triangleCount) \
+    _(indexBuffer) \
+
+#define XR_LIST_STRUCT_XrSystemPassthroughPropertiesFB(_) \
+    _(type) \
+    _(next) \
+    _(supportsPassthrough) \
+
+#define XR_LIST_STRUCT_XrPassthroughCreateInfoFB(_) \
+    _(type) \
+    _(next) \
+    _(flags) \
+
+#define XR_LIST_STRUCT_XrPassthroughLayerCreateInfoFB(_) \
+    _(type) \
+    _(next) \
+    _(passthrough) \
+    _(flags) \
+    _(purpose) \
+
+#define XR_LIST_STRUCT_XrCompositionLayerPassthroughFB(_) \
+    _(type) \
+    _(next) \
+    _(flags) \
+    _(space) \
+    _(layerHandle) \
+
+#define XR_LIST_STRUCT_XrGeometryInstanceCreateInfoFB(_) \
+    _(type) \
+    _(next) \
+    _(layer) \
+    _(mesh) \
+    _(baseSpace) \
+    _(pose) \
+    _(scale) \
+
+#define XR_LIST_STRUCT_XrGeometryInstanceTransformFB(_) \
+    _(type) \
+    _(next) \
+    _(baseSpace) \
+    _(time) \
+    _(pose) \
+    _(scale) \
+
+#define XR_LIST_STRUCT_XrPassthroughStyleFB(_) \
+    _(type) \
+    _(next) \
+    _(textureOpacityFactor) \
+    _(edgeColor) \
+
+#define XR_LIST_STRUCT_XrPassthroughColorMapMonoToRgbaFB(_) \
+    _(type) \
+    _(next) \
+    _(textureColorMap) \
+
+#define XR_LIST_STRUCT_XrPassthroughColorMapMonoToMonoFB(_) \
+    _(type) \
+    _(next) \
+    _(textureColorMap) \
+
+#define XR_LIST_STRUCT_XrEventDataPassthroughStateChangedFB(_) \
+    _(type) \
+    _(next) \
+    _(flags) \
+
+#define XR_LIST_STRUCT_XrRenderModelPathInfoFB(_) \
+    _(type) \
+    _(next) \
+    _(path) \
+
+#define XR_LIST_STRUCT_XrRenderModelPropertiesFB(_) \
+    _(type) \
+    _(next) \
+    _(vendorId) \
+    _(modelName) \
+    _(modelKey) \
+    _(modelVersion) \
+    _(flags) \
+
+#define XR_LIST_STRUCT_XrRenderModelBufferFB(_) \
+    _(type) \
+    _(next) \
+    _(bufferCapacityInput) \
+    _(bufferCountOutput) \
+    _(buffer) \
+
+#define XR_LIST_STRUCT_XrRenderModelLoadInfoFB(_) \
+    _(type) \
+    _(next) \
+    _(modelKey) \
+
+#define XR_LIST_STRUCT_XrSystemRenderModelPropertiesFB(_) \
+    _(type) \
+    _(next) \
+    _(supportsRenderModelLoading) \
+
 #define XR_LIST_STRUCT_XrViewLocateFoveatedRenderingVARJO(_) \
     _(type) \
     _(next) \
@@ -1935,6 +2234,25 @@ XR_ENUM_STR(XrResult);
     _(next) \
     _(depthTestRangeNearZ) \
     _(depthTestRangeFarZ) \
+
+#define XR_LIST_STRUCT_XrSystemMarkerTrackingPropertiesVARJO(_) \
+    _(type) \
+    _(next) \
+    _(supportsMarkerTracking) \
+
+#define XR_LIST_STRUCT_XrEventDataMarkerTrackingUpdateVARJO(_) \
+    _(type) \
+    _(next) \
+    _(markerId) \
+    _(isActive) \
+    _(isPredicted) \
+    _(time) \
+
+#define XR_LIST_STRUCT_XrMarkerSpaceCreateInfoVARJO(_) \
+    _(type) \
+    _(next) \
+    _(markerId) \
+    _(poseInMarkerSpace) \
 
 #define XR_LIST_STRUCT_XrSpatialAnchorPersistenceNameMSFT(_) \
     _(name) \
@@ -2010,6 +2328,20 @@ XR_ENUM_STR(XrResult);
     _(next) \
     _(recommendedMotionVectorImageRectWidth) \
     _(recommendedMotionVectorImageRectHeight) \
+
+#define XR_LIST_STRUCT_XrDigitalLensControlALMALENCE(_) \
+    _(type) \
+    _(next) \
+    _(flags) \
+
+#define XR_LIST_STRUCT_XrPassthroughKeyboardHandsIntensityFB(_) \
+    _(type) \
+    _(next) \
+    _(leftHandIntensity) \
+    _(rightHandIntensity) \
+
+#define XR_LIST_STRUCT_XrUuidEXT(_) \
+    _(data) \
 
 
 
@@ -2139,6 +2471,11 @@ XR_ENUM_STR(XrResult);
     _(XrSerializedSceneFragmentDataGetInfoMSFT, XR_TYPE_SERIALIZED_SCENE_FRAGMENT_DATA_GET_INFO_MSFT) \
     _(XrSceneDeserializeInfoMSFT, XR_TYPE_SCENE_DESERIALIZE_INFO_MSFT) \
     _(XrEventDataDisplayRefreshRateChangedFB, XR_TYPE_EVENT_DATA_DISPLAY_REFRESH_RATE_CHANGED_FB) \
+    _(XrViveTrackerPathsHTCX, XR_TYPE_VIVE_TRACKER_PATHS_HTCX) \
+    _(XrEventDataViveTrackerConnectedHTCX, XR_TYPE_EVENT_DATA_VIVE_TRACKER_CONNECTED_HTCX) \
+    _(XrSystemFacialTrackingPropertiesHTC, XR_TYPE_SYSTEM_FACIAL_TRACKING_PROPERTIES_HTC) \
+    _(XrFacialExpressionsHTC, XR_TYPE_FACIAL_EXPRESSIONS_HTC) \
+    _(XrFacialTrackerCreateInfoHTC, XR_TYPE_FACIAL_TRACKER_CREATE_INFO_HTC) \
     _(XrSystemColorSpacePropertiesFB, XR_TYPE_SYSTEM_COLOR_SPACE_PROPERTIES_FB) \
     _(XrHandTrackingMeshFB, XR_TYPE_HAND_TRACKING_MESH_FB) \
     _(XrHandTrackingScaleFB, XR_TYPE_HAND_TRACKING_SCALE_FB) \
@@ -2148,14 +2485,38 @@ XR_ENUM_STR(XrResult);
     _(XrSwapchainCreateInfoFoveationFB, XR_TYPE_SWAPCHAIN_CREATE_INFO_FOVEATION_FB) \
     _(XrSwapchainStateFoveationFB, XR_TYPE_SWAPCHAIN_STATE_FOVEATION_FB) \
     _(XrFoveationLevelProfileCreateInfoFB, XR_TYPE_FOVEATION_LEVEL_PROFILE_CREATE_INFO_FB) \
+    _(XrSystemKeyboardTrackingPropertiesFB, XR_TYPE_SYSTEM_KEYBOARD_TRACKING_PROPERTIES_FB) \
+    _(XrKeyboardSpaceCreateInfoFB, XR_TYPE_KEYBOARD_SPACE_CREATE_INFO_FB) \
+    _(XrKeyboardTrackingQueryFB, XR_TYPE_KEYBOARD_TRACKING_QUERY_FB) \
+    _(XrTriangleMeshCreateInfoFB, XR_TYPE_TRIANGLE_MESH_CREATE_INFO_FB) \
+    _(XrSystemPassthroughPropertiesFB, XR_TYPE_SYSTEM_PASSTHROUGH_PROPERTIES_FB) \
+    _(XrPassthroughCreateInfoFB, XR_TYPE_PASSTHROUGH_CREATE_INFO_FB) \
+    _(XrPassthroughLayerCreateInfoFB, XR_TYPE_PASSTHROUGH_LAYER_CREATE_INFO_FB) \
+    _(XrCompositionLayerPassthroughFB, XR_TYPE_COMPOSITION_LAYER_PASSTHROUGH_FB) \
+    _(XrGeometryInstanceCreateInfoFB, XR_TYPE_GEOMETRY_INSTANCE_CREATE_INFO_FB) \
+    _(XrGeometryInstanceTransformFB, XR_TYPE_GEOMETRY_INSTANCE_TRANSFORM_FB) \
+    _(XrPassthroughStyleFB, XR_TYPE_PASSTHROUGH_STYLE_FB) \
+    _(XrPassthroughColorMapMonoToRgbaFB, XR_TYPE_PASSTHROUGH_COLOR_MAP_MONO_TO_RGBA_FB) \
+    _(XrPassthroughColorMapMonoToMonoFB, XR_TYPE_PASSTHROUGH_COLOR_MAP_MONO_TO_MONO_FB) \
+    _(XrEventDataPassthroughStateChangedFB, XR_TYPE_EVENT_DATA_PASSTHROUGH_STATE_CHANGED_FB) \
+    _(XrRenderModelPathInfoFB, XR_TYPE_RENDER_MODEL_PATH_INFO_FB) \
+    _(XrRenderModelPropertiesFB, XR_TYPE_RENDER_MODEL_PROPERTIES_FB) \
+    _(XrRenderModelBufferFB, XR_TYPE_RENDER_MODEL_BUFFER_FB) \
+    _(XrRenderModelLoadInfoFB, XR_TYPE_RENDER_MODEL_LOAD_INFO_FB) \
+    _(XrSystemRenderModelPropertiesFB, XR_TYPE_SYSTEM_RENDER_MODEL_PROPERTIES_FB) \
     _(XrViewLocateFoveatedRenderingVARJO, XR_TYPE_VIEW_LOCATE_FOVEATED_RENDERING_VARJO) \
     _(XrFoveatedViewConfigurationViewVARJO, XR_TYPE_FOVEATED_VIEW_CONFIGURATION_VIEW_VARJO) \
     _(XrSystemFoveatedRenderingPropertiesVARJO, XR_TYPE_SYSTEM_FOVEATED_RENDERING_PROPERTIES_VARJO) \
     _(XrCompositionLayerDepthTestVARJO, XR_TYPE_COMPOSITION_LAYER_DEPTH_TEST_VARJO) \
+    _(XrSystemMarkerTrackingPropertiesVARJO, XR_TYPE_SYSTEM_MARKER_TRACKING_PROPERTIES_VARJO) \
+    _(XrEventDataMarkerTrackingUpdateVARJO, XR_TYPE_EVENT_DATA_MARKER_TRACKING_UPDATE_VARJO) \
+    _(XrMarkerSpaceCreateInfoVARJO, XR_TYPE_MARKER_SPACE_CREATE_INFO_VARJO) \
     _(XrSpatialAnchorPersistenceInfoMSFT, XR_TYPE_SPATIAL_ANCHOR_PERSISTENCE_INFO_MSFT) \
     _(XrSpatialAnchorFromPersistedAnchorCreateInfoMSFT, XR_TYPE_SPATIAL_ANCHOR_FROM_PERSISTED_ANCHOR_CREATE_INFO_MSFT) \
     _(XrCompositionLayerSpaceWarpInfoFB, XR_TYPE_COMPOSITION_LAYER_SPACE_WARP_INFO_FB) \
     _(XrSystemSpaceWarpPropertiesFB, XR_TYPE_SYSTEM_SPACE_WARP_PROPERTIES_FB) \
+    _(XrDigitalLensControlALMALENCE, XR_TYPE_DIGITAL_LENS_CONTROL_ALMALENCE) \
+    _(XrPassthroughKeyboardHandsIntensityFB, XR_TYPE_PASSTHROUGH_KEYBOARD_HANDS_INTENSITY_FB) \
 
 
 
@@ -2374,16 +2735,24 @@ XR_ENUM_STR(XrResult);
     _(XR_MSFT_scene_understanding_serialization, 99) \
     _(XR_FB_display_refresh_rate, 102) \
     _(XR_HTC_vive_cosmos_controller_interaction, 103) \
+    _(XR_HTCX_vive_tracker_interaction, 104) \
+    _(XR_HTC_facial_tracking, 105) \
+    _(XR_HTC_vive_focus3_controller_interaction, 106) \
     _(XR_FB_color_space, 109) \
     _(XR_FB_hand_tracking_mesh, 111) \
     _(XR_FB_hand_tracking_aim, 112) \
     _(XR_FB_hand_tracking_capsules, 113) \
     _(XR_FB_foveation, 115) \
     _(XR_FB_foveation_configuration, 116) \
+    _(XR_FB_keyboard_tracking, 117) \
+    _(XR_FB_triangle_mesh, 118) \
+    _(XR_FB_passthrough, 119) \
+    _(XR_FB_render_model, 120) \
     _(XR_KHR_binding_modification, 121) \
     _(XR_VARJO_foveated_rendering, 122) \
     _(XR_VARJO_composition_layer_depth_test, 123) \
     _(XR_VARJO_environment_depth_estimation, 124) \
+    _(XR_VARJO_marker_tracking, 125) \
     _(XR_MSFT_spatial_anchor_persistence, 143) \
     _(XR_OCULUS_audio_device_guid, 160) \
     _(XR_FB_foveation_vulkan, 161) \
@@ -2392,6 +2761,9 @@ XR_ENUM_STR(XrResult);
     _(XR_FB_swapchain_update_state_vulkan, 164) \
     _(XR_KHR_swapchain_usage_input_attachment_bit, 166) \
     _(XR_FB_space_warp, 172) \
+    _(XR_ALMALENCE_digital_lens_control, 197) \
+    _(XR_FB_passthrough_keyboard_hands, 204) \
+    _(XR_EXT_uuid, 300) \
 
 
 #endif

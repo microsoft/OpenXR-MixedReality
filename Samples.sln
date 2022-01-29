@@ -31,13 +31,14 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "sampleShared", "sampleShare
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "XrUtility", "XrUtility", "{AF0F6DD8-1BC3-4818-919E-9B239B544B5E}"
 	ProjectSection(SolutionItems) = preProject
+		shared\XrUtility\XrDispatchTable.h = shared\XrUtility\XrDispatchTable.h
 		shared\XrUtility\XrActionContext.h = shared\XrUtility\XrActionContext.h
 		shared\XrUtility\XrEnumerate.h = shared\XrUtility\XrEnumerate.h
 		shared\XrUtility\XrError.h = shared\XrUtility\XrError.h
 		shared\XrUtility\XrExtensionContext.h = shared\XrUtility\XrExtensionContext.h
-		shared\XrUtility\XrExtensions.h = shared\XrUtility\XrExtensions.h
 		shared\XrUtility\XrHandle.h = shared\XrUtility\XrHandle.h
 		shared\XrUtility\XrInstanceContext.h = shared\XrUtility\XrInstanceContext.h
+		shared\XrUtility\XrListFunctions.h = shared\XrUtility\XrListFunctions.h
 		shared\XrUtility\XrMath.h = shared\XrUtility\XrMath.h
 		shared\XrUtility\XrSceneUnderstanding.h = shared\XrUtility\XrSceneUnderstanding.h
 		shared\XrUtility\XrSceneUnderstanding.hpp = shared\XrUtility\XrSceneUnderstanding.hpp
