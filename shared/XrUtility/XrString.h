@@ -3,12 +3,7 @@
 
 #pragma once
 
-#ifdef XR_USE_GRAPHICS_API_D3D11
-#include <d3d11.h>
-#endif
-#ifdef XR_USE_GRAPHICS_API_D3D12
-#include <d3d12.h>
-#endif
+#include <XrUtility/XrPlatformDependencies.h>
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
 #include <openxr/openxr_reflection.h>
