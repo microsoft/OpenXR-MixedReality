@@ -18,6 +18,9 @@
 
 #ifdef XR_USE_PLATFORM_WIN32
 
+// OLE desktop APIs cannot be overriden with the following desktop parition flag.
+#include <ocidl.h>
+
 #include <winapifamily.h>
 #if !(WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP | WINAPI_PARTITION_SYSTEM))
 // Enable desktop partition APIs, such as RegOpenKeyEx, LoadLibraryEx, PathFileExists etc.

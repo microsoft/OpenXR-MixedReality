@@ -38,7 +38,7 @@ extern "C" {
     #define XR_NULL_HANDLE 0
 #endif
 #endif
-        
+
 
 
 #define XR_NULL_SYSTEM_ID 0
@@ -87,13 +87,13 @@ extern "C" {
     #define XR_DEFINE_HANDLE(object) typedef uint64_t object;
 #endif
 #endif
-        
+
 
 
 #if !defined(XR_DEFINE_ATOM)
     #define XR_DEFINE_ATOM(object) typedef uint64_t object;
 #endif
-        
+
 
 typedef uint64_t XrVersion;
 typedef uint64_t XrFlags64;
@@ -413,8 +413,8 @@ typedef enum XrStructureType {
     XR_TYPE_PASSTHROUGH_KEYBOARD_HANDS_INTENSITY_FB = 1000203002,
     XR_TYPE_SPATIAL_GRAPH_NODE_SPACE_CREATE_INFO_MSFT = 1000049000,
     XR_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_CREATE_INFO_MSFT = 1000049001,
-    XR_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_PROPERTIES_GET_INFO_MSFT = 1000049002,
-    XR_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_PROPERTIES_MSFT = 1000049003,
+    XR_TYPE_SPATIAL_GRAPH_NODE_BINDING_PROPERTIES_GET_INFO_MSFT = 1000049002,
+    XR_TYPE_SPATIAL_GRAPH_NODE_BINDING_PROPERTIES_MSFT = 1000049003,
     XR_TYPE_GRAPHICS_BINDING_VULKAN2_KHR = XR_TYPE_GRAPHICS_BINDING_VULKAN_KHR,
     XR_TYPE_SWAPCHAIN_IMAGE_VULKAN2_KHR = XR_TYPE_SWAPCHAIN_IMAGE_VULKAN_KHR,
     XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN2_KHR = XR_TYPE_GRAPHICS_REQUIREMENTS_VULKAN_KHR,
@@ -500,7 +500,7 @@ typedef enum XrObjectType {
     XR_OBJECT_TYPE_PASSTHROUGH_LAYER_FB = 1000118002,
     XR_OBJECT_TYPE_GEOMETRY_INSTANCE_FB = 1000118004,
     XR_OBJECT_TYPE_SPATIAL_ANCHOR_STORE_CONNECTION_MSFT = 1000142000,
-    XR_OBJECT_TYPE_SPATIAL_GRAPH_STATIC_NODE_BINDING_MSFT = 1000049000,
+    XR_OBJECT_TYPE_SPATIAL_GRAPH_NODE_BINDING_MSFT = 1000049000,
     XR_OBJECT_TYPE_MAX_ENUM = 0x7FFFFFFF
 } XrObjectType;
 typedef XrFlags64 XrInstanceCreateFlags;
@@ -1715,7 +1715,7 @@ typedef XrBool32 (XRAPI_PTR *PFN_xrDebugUtilsMessengerCallbackEXT)(
             XrDebugUtilsMessageTypeFlagsEXT                  messageTypes,
             const XrDebugUtilsMessengerCallbackDataEXT*      callbackData,
             void*                                            userData);
-        
+
 
 // XrDebugUtilsMessengerCreateInfoEXT extends XrInstanceCreateInfo
 typedef struct XrDebugUtilsMessengerCreateInfoEXT {
@@ -1982,9 +1982,9 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetInputDeviceLocationEXT(
 
 #define XR_MSFT_spatial_graph_bridge 1
 
-            XR_DEFINE_HANDLE(XrSpatialGraphStaticNodeBindingMSFT)
+            XR_DEFINE_HANDLE(XrSpatialGraphNodeBindingMSFT)
 
-#define XR_MSFT_spatial_graph_bridge_SPEC_VERSION 1
+#define XR_MSFT_spatial_graph_bridge_SPEC_VERSION 2
 #define XR_MSFT_SPATIAL_GRAPH_BRIDGE_EXTENSION_NAME "XR_MSFT_spatial_graph_bridge"
 #define XR_GUID_SIZE_MSFT                 16
 
@@ -2009,22 +2009,22 @@ typedef struct XrSpatialGraphStaticNodeBindingCreateInfoMSFT {
     XrTime                      time;
 } XrSpatialGraphStaticNodeBindingCreateInfoMSFT;
 
-typedef struct XrSpatialGraphStaticNodeBindingPropertiesGetInfoMSFT {
+typedef struct XrSpatialGraphNodeBindingPropertiesGetInfoMSFT {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
-} XrSpatialGraphStaticNodeBindingPropertiesGetInfoMSFT;
+} XrSpatialGraphNodeBindingPropertiesGetInfoMSFT;
 
-typedef struct XrSpatialGraphStaticNodeBindingPropertiesMSFT {
+typedef struct XrSpatialGraphNodeBindingPropertiesMSFT {
     XrStructureType       type;
     void* XR_MAY_ALIAS    next;
     uint8_t               nodeId[XR_GUID_SIZE_MSFT];
     XrPosef               poseInNodeSpace;
-} XrSpatialGraphStaticNodeBindingPropertiesMSFT;
+} XrSpatialGraphNodeBindingPropertiesMSFT;
 
 typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialGraphNodeSpaceMSFT)(XrSession session, const XrSpatialGraphNodeSpaceCreateInfoMSFT* createInfo, XrSpace* space);
-typedef XrResult (XRAPI_PTR *PFN_xrTryCreateSpatialGraphStaticNodeBindingMSFT)(XrSession session, const XrSpatialGraphStaticNodeBindingCreateInfoMSFT* createInfo, XrSpatialGraphStaticNodeBindingMSFT* nodeBinding);
-typedef XrResult (XRAPI_PTR *PFN_xrDestroySpatialGraphStaticNodeBindingMSFT)(XrSpatialGraphStaticNodeBindingMSFT nodeBinding);
-typedef XrResult (XRAPI_PTR *PFN_xrGetSpatialGraphStaticNodeBindingPropertiesMSFT)(XrSpatialGraphStaticNodeBindingMSFT nodeBinding, const XrSpatialGraphStaticNodeBindingPropertiesGetInfoMSFT* getInfo, XrSpatialGraphStaticNodeBindingPropertiesMSFT* properties);
+typedef XrResult (XRAPI_PTR *PFN_xrTryCreateSpatialGraphStaticNodeBindingMSFT)(XrSession session, const XrSpatialGraphStaticNodeBindingCreateInfoMSFT* createInfo, XrSpatialGraphNodeBindingMSFT* nodeBinding);
+typedef XrResult (XRAPI_PTR *PFN_xrDestroySpatialGraphNodeBindingMSFT)(XrSpatialGraphNodeBindingMSFT nodeBinding);
+typedef XrResult (XRAPI_PTR *PFN_xrGetSpatialGraphNodeBindingPropertiesMSFT)(XrSpatialGraphNodeBindingMSFT nodeBinding, const XrSpatialGraphNodeBindingPropertiesGetInfoMSFT* getInfo, XrSpatialGraphNodeBindingPropertiesMSFT* properties);
 
 #ifndef XR_NO_PROTOTYPES
 #ifdef XR_EXTENSION_PROTOTYPES
@@ -2036,15 +2036,15 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateSpatialGraphNodeSpaceMSFT(
 XRAPI_ATTR XrResult XRAPI_CALL xrTryCreateSpatialGraphStaticNodeBindingMSFT(
     XrSession                                   session,
     const XrSpatialGraphStaticNodeBindingCreateInfoMSFT* createInfo,
-    XrSpatialGraphStaticNodeBindingMSFT*        nodeBinding);
+    XrSpatialGraphNodeBindingMSFT*              nodeBinding);
 
-XRAPI_ATTR XrResult XRAPI_CALL xrDestroySpatialGraphStaticNodeBindingMSFT(
-    XrSpatialGraphStaticNodeBindingMSFT         nodeBinding);
+XRAPI_ATTR XrResult XRAPI_CALL xrDestroySpatialGraphNodeBindingMSFT(
+    XrSpatialGraphNodeBindingMSFT               nodeBinding);
 
-XRAPI_ATTR XrResult XRAPI_CALL xrGetSpatialGraphStaticNodeBindingPropertiesMSFT(
-    XrSpatialGraphStaticNodeBindingMSFT         nodeBinding,
-    const XrSpatialGraphStaticNodeBindingPropertiesGetInfoMSFT* getInfo,
-    XrSpatialGraphStaticNodeBindingPropertiesMSFT* properties);
+XRAPI_ATTR XrResult XRAPI_CALL xrGetSpatialGraphNodeBindingPropertiesMSFT(
+    XrSpatialGraphNodeBindingMSFT               nodeBinding,
+    const XrSpatialGraphNodeBindingPropertiesGetInfoMSFT* getInfo,
+    XrSpatialGraphNodeBindingPropertiesMSFT*    properties);
 #endif /* XR_EXTENSION_PROTOTYPES */
 #endif /* !XR_NO_PROTOTYPES */
 

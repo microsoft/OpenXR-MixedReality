@@ -98,8 +98,8 @@
 #define XR_LIST_FUNCTIONS_XR_MSFT_spatial_graph_bridge(_) \
     _(xrCreateSpatialGraphNodeSpaceMSFT)                  \
     _(xrTryCreateSpatialGraphStaticNodeBindingMSFT)       \
-    _(xrDestroySpatialGraphStaticNodeBindingMSFT)         \
-    _(xrGetSpatialGraphStaticNodeBindingPropertiesMSFT)
+    _(xrDestroySpatialGraphNodeBindingMSFT)               \
+    _(xrGetSpatialGraphNodeBindingPropertiesMSFT)
 
 #define XR_LIST_FUNCTIONS_XR_MSFT_holographic_remoting(_) \
     _(xrRemotingSetContextPropertiesMSFT)                 \

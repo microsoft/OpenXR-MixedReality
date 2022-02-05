@@ -8,8 +8,7 @@
 #define NOMINMAX
 #define WIN32_LEAN_AND_MEAN // Exclude rarely-used stuff from Windows headers
 #include <windows.h>
-#include <wincodec.h>
-
+#include <unknwn.h>
 #include <winrt/base.h> // for winrt::com_ptr
 
 #include <array>
