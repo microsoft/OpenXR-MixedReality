@@ -162,16 +162,6 @@ namespace {
         bool UpdateJoints(HandData& handData, XrSpace referenceSpace, XrTime time) {
             bool jointsVisible = false;
 
-            XrHandJointsLocateInfoEXT locateInfo{XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT};
-            locateInfo.baseSpace = m_context.AppSpace;
-            locateInfo.time = time;
-
-            XrHandJointLocationsEXT locations{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
-            locations.jointCount = (uint32_t)handData.JointLocations.size();
-            locations.jointLocations = handData.JointLocations.data();
-
-            CHECK_XRCMD(m_context.Extensions.xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &locations));
-
             for (uint32_t k = 0; k < XR_HAND_JOINT_COUNT_EXT; k++) {
                 if (xr::math::Pose::IsPoseValid(handData.JointLocations[k])) {
                     Pbr::Node& jointNode = handData.JointModel->GetModel()->GetNode(handData.PbrNodeIndices[k]);

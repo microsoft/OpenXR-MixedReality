@@ -61,8 +61,8 @@
 #define FOR_EACH_SPATIAL_GRAPH_BRIDGE_FUNCTION(_)   \
     _(xrCreateSpatialGraphNodeSpaceMSFT)            \
     _(xrTryCreateSpatialGraphStaticNodeBindingMSFT) \
-    _(xrDestroySpatialGraphStaticNodeBindingMSFT)   \
-    _(xrGetSpatialGraphStaticNodeBindingPropertiesMSFT)
+    _(xrDestroySpatialGraphNodeBindingMSFT)         \
+    _(xrGetSpatialGraphNodeBindingPropertiesMSFT)
 #else
 #define FOR_EACH_SPATIAL_GRAPH_BRIDGE_FUNCTION(_)
 #endif

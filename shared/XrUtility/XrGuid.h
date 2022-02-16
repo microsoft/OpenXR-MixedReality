@@ -5,6 +5,7 @@
 
 #include <functional>
 #include <string.h>
+#include <openxr/openxr.h>
 
 namespace xr {
 
