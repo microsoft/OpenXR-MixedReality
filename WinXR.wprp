@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8" standalone='yes'?>
+
+<WindowsPerformanceRecorder Version="1.0" Author="Bryce Hutchings" Team="bryceh@microsoft.com" Company="Microsoft Corporation" Copyright="Microsoft Corporation" Tag="WinXR">
+  <Profiles>
+    <SystemCollector Id="SystemCollector" Name="NT Kernel Logger" Realtime="false">
+      <BufferSize Value="1024"/>
+      <Buffers Value="100"/>
+    </SystemCollector>
+    <EventCollector Id="EventCollector" Name="Event Collector" Private="false" ProcessPrivate="false" Secure="false" Realtime="false">
+      <!-- 4000k buffer size * 100 buffers = ~400MB ETL limit -->
+      <BufferSize Value="4000"/>
+      <Buffers Value="100"/>
+    </EventCollector>
+
+    <EventProvider Name="72E9B8D0-434D-4F50-9DCC-E6DFC9DF2B63" Id="WinXr" />
+    <EventProvider Name="765EDB1E-8414-4B94-AF14-1499F1A583ED" Id="WinXr.Continuous" />
+    <EventProvider Name="1A7ECC17-25D6-4A60-8812-020FC576B321" Id="WinXr.FrameTiming" />
+    <EventProvider Name="A125DAE1-20E6-4041-AAD6-CE5FC5129389" Id="Microsoft.Windows.WinXrPerformance" />
+
+    <!-- Perception -->
+    <EventProvider Name="05c32102-40e0-4b2b-b778-e5fd577c472b" Id="Microsoft.Windows.Analog.Spectrum" />
+    <!-- <EventProvider Name="356E1338-04AD-420E-8B8A-A2EB678541CF" Id="Microsoft.Windows.Analog.SpectrumContinuous" /> -->
+    <!-- <EventProvider Name="32bd5542-afcb-569e-4d02-ebe0e08bde8e" Id="Microsoft.Windows.Analog.Spectrum.TrackingDiagnostics" /> -->
+    <EventProvider Name="E6852BC9-A7B6-4127-AC15-8D5C50BE9BD7" Id="Microsoft.Windows.PerceptionApi.Stub" />
+
+    <!-- Driver Client -->
+    <!-- <EventProvider Name="0504EB02-3A16-54E4-A2FF-3D85FA2F13E6" Id="Microsoft.Windows.Analog.HolographicDriverClient" /> -->
+    <!-- <EventProvider Name="092da0c3-6935-5a0c-4034-d9bddce5708f" Id="Microsoft.Windows.Analog.HolographicDriverClientContinuous" /> -->
+
+    <!-- Simulation -->
+    <EventProvider Name="47F16003-0637-4D05-A9DA-1FC40BBD0944" Id="Microsoft.Windows.Analog.PerceptionSimulation" />
+    <EventProvider Name="104d97cd-836b-5d83-835f-1f2a47ce02c5" Id="Microsoft.Windows.Analog.PerceptionSimulation.InputHost" />
+
+    <!-- MRP -->
+    <EventProvider Name="CAE82C8B-0097-4C53-9D72-F56D14C1284F" Id="Microsoft.Windows.Shell.HolographicFirstRun" />
+
+    <!-- Shell -->
+    <EventProvider Name="5D1E83A6-BBE3-4844-94C0-0347370B5208" Id="Microsoft.Windows.HoloSI" />
+    <EventProvider Name="3F159176-AF51-44F4-838F-B1268A925924" Id="Microsoft.Windows.Analog.HoloShell" />
+    <EventProvider Name="155a4d3f-9e34-547a-16a5-5f25ecf07d3f" Id="Microsoft.Windows.Holographic.Coordinator" />
+    <EventProvider Name="467247af-d1bb-5ab6-b8c9-0b056bc16247" Id="Microsoft.Windows.Holographic.Positioner" />
+    <EventProvider Name="a329db5c-f4b7-5ce4-1fd8-f030503f517a" Id="Microsoft.Windows.Holographic.HolographicLoader" />
+
+    <!-- Input (ISM) -->
+    <!-- <EventProvider Name="83BDA64C-A52C-4B37-8E61-086C22A4CD15" Id="Microsoft.Windows.InputStateManager" /> -->
+    <!-- <EventProvider Name="F903DB44-149E-4B4E-AFE1-2A1096F53DFA" Id="Microsoft.Windows.Analog.SpatialInteraction" /> -->
+    <!-- <EventProvider Name="45A9F627-567D-449E-BC48-29EE4B2CD3A5" Id="Microsoft.Windows.Analog.RawInputProvidersContinuous" /> -->
+
+    <!-- Debug layer traces (only works when debug layer is enabled) -->
+    <EventProvider Name="F1FF64EF-FAF3-5699-8E51-F6EC2FBD97D1" Id="Microsoft-Windows-DXGIDebug" />
+
+    <!-- Watson logging -->
+    <EventProvider Name="1377561D-9312-452C-AD13-C4A1C9C906E0" Id="Microsoft.Windows.FaultReporting" />
+    <EventProvider Name="CC79CF77-70D9-4082-9B52-23F3A3E92FE4" Id="Microsoft.Windows.WindowsErrorReporting" />
+    <EventProvider Name="3E0D88DE-AE5C-438A-BB1C-C2E627F8AECB" Id="Microsoft.Windows.HangReporting" />
+
+    <!-- Unity XR Plugin -->
+    <EventProvider Name="61097790-612A-44BF-8258-6F23FCAFE981" Id="Microsoft.Windows.UnityOpenXRPluginProvider" />
+    <EventProvider Name="4D86B54B-DEB4-4938-B9A9-816C0A76DA59" Id="Microsoft.Windows.UnityOpenXRPluginContinuousProvider" />
+
+    <Profile Id="WinXR.Verbose.File" LoggingMode="File" Name="WinXR" DetailLevel="Verbose" Description="Collect traces for WinXr" Default="true">
+      <Collectors>
+        <EventCollectorId Value="EventCollector">
+          <EventProviders>
+            <EventProviderId Value="WinXr"/>
+            <EventProviderId Value="WinXr.Continuous"/>
+            <EventProviderId Value="WinXr.FrameTiming"/>
+            <EventProviderId Value="Microsoft.Windows.WinXrPerformance"/>
+            <EventProviderId Value="Microsoft.Windows.Analog.Spectrum"/>
+            <!-- <EventProviderId Value="Microsoft.Windows.Analog.SpectrumContinuous" /> -->
+            <!-- <EventProviderId Value="Microsoft.Windows.Analog.Spectrum.TrackingDiagnostics" /> -->
+            <EventProviderId Value="Microsoft.Windows.PerceptionApi.Stub" />
+            <!-- <EventProviderId Value="Microsoft.Windows.Analog.HolographicDriverClient" /> -->
+            <!-- <EventProviderId Value="Microsoft.Windows.Analog.HolographicDriverClientContinuous" /> -->
+            <EventProviderId Value="Microsoft.Windows.Analog.PerceptionSimulation" />
+            <EventProviderId Value="Microsoft.Windows.Analog.PerceptionSimulation.InputHost" />
+            <EventProviderId Value="Microsoft.Windows.Shell.HolographicFirstRun" />
+            <EventProviderId Value="Microsoft.Windows.HoloSI"/>
+            <EventProviderId Value="Microsoft.Windows.Holographic.Coordinator"/>
+            <EventProviderId Value="Microsoft.Windows.Analog.HoloShell"/>
+            <EventProviderId Value="Microsoft.Windows.Holographic.Positioner"/>
+            <EventProviderId Value="Microsoft.Windows.Holographic.HolographicLoader"/>
+            <!-- <EventProviderId Value="Microsoft.Windows.InputStateManager" /> -->
+            <!-- <EventProviderId Value="Microsoft.Windows.Analog.SpatialInteraction" /> -->
+            <!-- <EventProviderId Value="Microsoft.Windows.Analog.RawInputProvidersContinuous" /> -->
+            <EventProviderId Value="Microsoft-Windows-DXGIDebug"/>
+            <EventProviderId Value="Microsoft.Windows.FaultReporting" />
+            <EventProviderId Value="Microsoft.Windows.WindowsErrorReporting" />
+            <EventProviderId Value="Microsoft.Windows.HangReporting" />
+            <EventProviderId Value="Microsoft.Windows.UnityOpenXRPluginProvider"/>
+            <EventProviderId Value="Microsoft.Windows.UnityOpenXRPluginContinuousProvider" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+
+    <Profile Id="WinXR.Verbose.Memory" LoggingMode="Memory" Name="WinXR" DetailLevel="Verbose" Description="Collect traces for WinXr">
+      <Collectors>
+        <EventCollectorId Value="EventCollector">
+          <EventProviders>
+            <EventProviderId Value="WinXr"/>
+            <EventProviderId Value="WinXr.Continuous"/>
+            <EventProviderId Value="WinXr.FrameTiming"/>
+            <EventProviderId Value="Microsoft.Windows.WinXrPerformance"/>
+            <EventProviderId Value="Microsoft.Windows.Analog.Spectrum"/>
+            <!-- <EventProviderId Value="Microsoft.Windows.Analog.SpectrumContinuous" /> -->
+            <!-- <EventProviderId Value="Microsoft.Windows.Analog.Spectrum.TrackingDiagnostics" /> -->
+            <EventProviderId Value="Microsoft.Windows.PerceptionApi.Stub" />
+            <!-- <EventProviderId Value="Microsoft.Windows.Analog.HolographicDriverClient" /> -->
+            <!-- <EventProviderId Value="Microsoft.Windows.Analog.HolographicDriverClientContinuous" /> -->
+            <EventProviderId Value="Microsoft.Windows.Analog.PerceptionSimulation" />
+            <EventProviderId Value="Microsoft.Windows.Analog.PerceptionSimulation.InputHost" />
+            <EventProviderId Value="Microsoft.Windows.Shell.HolographicFirstRun" />
+            <EventProviderId Value="Microsoft.Windows.HoloSI"/>
+            <EventProviderId Value="Microsoft.Windows.Holographic.Coordinator"/>
+            <EventProviderId Value="Microsoft.Windows.Analog.HoloShell"/>
+            <EventProviderId Value="Microsoft.Windows.Holographic.Positioner"/>
+            <EventProviderId Value="Microsoft.Windows.Holographic.HolographicLoader"/>
+            <!-- <EventProviderId Value="Microsoft.Windows.InputStateManager" /> -->
+            <!-- <EventProviderId Value="Microsoft.Windows.Analog.SpatialInteraction" /> -->
+            <!-- <EventProviderId Value="Microsoft.Windows.Analog.RawInputProvidersContinuous" /> -->
+            <EventProviderId Value="Microsoft-Windows-DXGIDebug"/>
+            <EventProviderId Value="Microsoft.Windows.FaultReporting" />
+            <EventProviderId Value="Microsoft.Windows.WindowsErrorReporting" />
+            <EventProviderId Value="Microsoft.Windows.HangReporting" />
+            <EventProviderId Value="Microsoft.Windows.UnityOpenXRPluginProvider"/>
+            <EventProviderId Value="Microsoft.Windows.UnityOpenXRPluginContinuousProvider" />
+          </EventProviders>
+        </EventCollectorId>
+      </Collectors>
+    </Profile>
+  </Profiles>
+
+  <TraceMergeProperties>
+    <TraceMergeProperty  Id="TraceMerge_Default" Name="TraceMerge_Default" Base="">
+      <DeletePreMergedTraceFiles Value="true"/>
+      <CustomEvents>
+        <CustomEvent Value="ImageId"/>
+        <CustomEvent Value="BuildInfo"/>
+        <CustomEvent Value="VolumeMapping"/>
+        <CustomEvent Value="EventMetadata"/>
+        <CustomEvent Value="PerfTrackMetadata"/>
+        <CustomEvent Value="WinSAT"/>
+        <CustomEvent Value="NetworkInterface"/>
+      </CustomEvents>
+    </TraceMergeProperty>
+  </TraceMergeProperties>
+
+</WindowsPerformanceRecorder>
