@@ -90,8 +90,7 @@ namespace {
                                       float& distance);
     Pbr::RGBAColor GetColor(XrSceneObjectTypeMSFT type);
     std::shared_ptr<Pbr::Material> CreateTextureMaterial(Pbr::Resources& pbr);
-    SceneVisuals CreateSceneVisuals(const xr::ExtensionDispatchTable& extensions,
-                                    const Pbr::Resources& pbrResources,
+    SceneVisuals CreateSceneVisuals(const Pbr::Resources& pbrResources,
                                     const std::shared_ptr<Pbr::Material>& material,
                                     std::unique_ptr<xr::su::Scene> scene);
 
@@ -137,10 +136,10 @@ namespace {
             actionSpaceCreateInfo.poseInActionSpace = xr::math::Pose::Identity();
 
             actionSpaceCreateInfo.subactionPath = m_context.Instance.LeftHandPath;
-            CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &actionSpaceCreateInfo, m_leftPointerSpace.Put()));
+            CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &actionSpaceCreateInfo, m_leftPointerSpace.Put(xrDestroySpace)));
 
             actionSpaceCreateInfo.subactionPath = m_context.Instance.RightHandPath;
-            CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &actionSpaceCreateInfo, m_rightPointerSpace.Put()));
+            CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &actionSpaceCreateInfo, m_rightPointerSpace.Put(xrDestroySpace)));
         }
 
         void OnUpdate(const engine::FrameTime& frameTime) {
@@ -201,14 +200,13 @@ namespace {
     struct PlacementScene : public engine::Scene, public IHandRayListener {
         explicit PlacementScene(engine::Context& context)
             : Scene(context)
-            , m_extensions(context.Extensions)
             , m_planeMaterial(CreateTextureMaterial(context.PbrResources))
             , m_nextUpdate{engine::FrameTime::clock::now() + UpdateInterval}
             , m_handRays{context, ActionContext(), *this} {
             XrReferenceSpaceCreateInfo spaceCreateInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
             spaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
             spaceCreateInfo.poseInReferenceSpace = xr::math::Pose::Identity();
-            CHECK_XRCMD(xrCreateReferenceSpace(context.Session.Handle, &spaceCreateInfo, m_viewSpace.Put()));
+            CHECK_XRCMD(xrCreateReferenceSpace(context.Session.Handle, &spaceCreateInfo, m_viewSpace.Put(xrDestroySpace)));
 
             constexpr float AxisLength = 0.2f;
             m_previewCubes[LeftHand] = engine::CreateAxis(m_context.PbrResources, AxisLength);
@@ -245,7 +243,6 @@ namespace {
             // Update the location of all scene objects
             if (m_sceneVisuals.scene) {
                 xr::su::LocateObjects(m_sceneVisuals.scene->Handle(),
-                                      m_extensions,
                                       m_context.AppSpace,
                                       frameTime.PredictedDisplayTime,
                                       m_sceneVisuals.componentIds,
@@ -282,7 +279,6 @@ namespace {
                     // Send the scene compute result to the background thread for processing
                     m_future = std::async(std::launch::async,
                                           &CreateSceneVisuals,
-                                          std::cref(m_extensions),
                                           std::cref(m_context.PbrResources),
                                           m_planeMaterial,
                                           m_sceneObserver->CreateScene());
@@ -371,10 +367,8 @@ namespace {
                     anchorCreateInfo.space = m_context.AppSpace;
                     anchorCreateInfo.pose = objectHit.hitPose;
                     anchorCreateInfo.time = time;
-                    XrResult result =
-                        m_extensions.xrCreateSpatialAnchorMSFT(m_context.Session.Handle,
-                                                               &anchorCreateInfo,
-                                                               placedObject.anchor.Put(m_context.Extensions.xrDestroySpatialAnchorMSFT));
+                    XrResult result = xrCreateSpatialAnchorMSFT(
+                        m_context.Session.Handle, &anchorCreateInfo, placedObject.anchor.Put(xrDestroySpatialAnchorMSFT));
                     if (XR_FAILED(result)) {
                         if (result == XR_ERROR_CREATE_SPATIAL_ANCHOR_FAILED_MSFT) {
                             sample::Trace("Anchor cannot be created, likely due to lost tracking. User should try again later");
@@ -386,8 +380,8 @@ namespace {
                     XrSpatialAnchorSpaceCreateInfoMSFT anchorSpaceCreateInfo{XR_TYPE_SPATIAL_ANCHOR_SPACE_CREATE_INFO_MSFT};
                     anchorSpaceCreateInfo.anchor = placedObject.anchor.Get();
                     anchorSpaceCreateInfo.poseInAnchorSpace = xr::math::Pose::Identity();
-                    CHECK_XRCMD(m_extensions.xrCreateSpatialAnchorSpaceMSFT(
-                        m_context.Session.Handle, &anchorSpaceCreateInfo, placedObject.space.Put()));
+                    CHECK_XRCMD(xrCreateSpatialAnchorSpaceMSFT(
+                        m_context.Session.Handle, &anchorSpaceCreateInfo, placedObject.space.Put(xrDestroySpace)));
 
                     auto cube = CreatePlacementCube();
                     cube->Pose() = objectHit.hitPose;
@@ -412,7 +406,7 @@ namespace {
         enum class ScanState { Idle, Waiting, Processing };
 
         void Enable() {
-            m_sceneObserver = std::make_unique<xr::su::SceneObserver>(m_extensions, m_context.Session.Handle);
+            m_sceneObserver = std::make_unique<xr::su::SceneObserver>(m_context.Session.Handle);
             m_scanState = ScanState::Idle;
 
             const auto createPointerRay = [this](const std::shared_ptr<engine::PbrModelObject>& parent, const Pbr::RGBAColor& color) {
@@ -466,7 +460,6 @@ namespace {
             }
         }
 
-        const xr::ExtensionDispatchTable& m_extensions;
         // The XrSceneObserver needs to be destroyed after SceneVisuals because SceneVisuals contains an XrScene.
         std::unique_ptr<xr::su::SceneObserver> m_sceneObserver;
         std::shared_ptr<Pbr::Material> m_planeMaterial;
@@ -575,8 +568,7 @@ namespace {
         }
     }
 
-    std::shared_ptr<engine::PbrModelObject> CreateMeshVisual(const xr::ExtensionDispatchTable& extensions,
-                                                             const Pbr::Resources& pbrResources,
+    std::shared_ptr<engine::PbrModelObject> CreateMeshVisual(const Pbr::Resources& pbrResources,
                                                              const std::shared_ptr<Pbr::Material>& material,
                                                              XrSceneMSFT scene,
                                                              uint64_t meshBufferId,
@@ -584,7 +576,7 @@ namespace {
                                                              const Pbr::RGBAColor& color) {
         std::vector<XrVector3f> vertexBuffer;
         std::vector<uint32_t> indexBuffer;
-        xr::ReadMeshBuffers(scene, extensions, meshBufferId, vertexBuffer, indexBuffer);
+        xr::ReadMeshBuffers(scene, meshBufferId, vertexBuffer, indexBuffer);
         if (indexBuffer.empty() || vertexBuffer.empty()) {
             return nullptr;
         }
@@ -594,8 +586,7 @@ namespace {
         return std::make_shared<engine::PbrModelObject>(std::move(model));
     }
 
-    std::shared_ptr<engine::PbrModelObject> CreatePlaneVisual(const xr::ExtensionDispatchTable& extensions,
-                                                              const Pbr::Resources& pbrResources,
+    std::shared_ptr<engine::PbrModelObject> CreatePlaneVisual(const Pbr::Resources& pbrResources,
                                                               const std::shared_ptr<Pbr::Material>& material,
                                                               const xr::su::ScenePlane& scenePlane,
                                                               const Pbr::RGBAColor& color) {
@@ -617,8 +608,7 @@ namespace {
         return map;
     }
 
-    SceneVisuals CreateSceneVisuals(const xr::ExtensionDispatchTable& extensions,
-                                    const Pbr::Resources& pbrResources,
+    SceneVisuals CreateSceneVisuals(const Pbr::Resources& pbrResources,
                                     const std::shared_ptr<Pbr::Material>& material,
                                     std::unique_ptr<xr::su::Scene> scene) {
         static const std::vector<xr::su::SceneObject::Type> typeFilter{XR_SCENE_OBJECT_TYPE_BACKGROUND_MSFT,
@@ -637,7 +627,7 @@ namespace {
         auto planes = scene->GetPlanes(typeFilter);
         for (const xr::su::ScenePlane& scenePlane : planes) {
             const XrSceneObjectTypeMSFT type = sceneObjectIdToType.at(scenePlane.parentId);
-            std::shared_ptr<engine::PbrModelObject> obj = CreatePlaneVisual(extensions, pbrResources, material, scenePlane, GetColor(type));
+            std::shared_ptr<engine::PbrModelObject> obj = CreatePlaneVisual(pbrResources, material, scenePlane, GetColor(type));
             if (obj != nullptr) {
                 obj->SetVisible(false);
                 visuals.push_back(std::move(obj));

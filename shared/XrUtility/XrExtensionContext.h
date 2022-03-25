@@ -3,12 +3,10 @@
 
 #pragma once
 
-#include "XrError.h"
 #include "XrEnumerate.h"
-#include "XrExtensions.h"
 
 namespace xr {
-    struct ExtensionContext : xr::ExtensionDispatchTable {
+    struct ExtensionContext {
         bool SupportsD3D11{false};
         bool SupportsD3D12{false};
         bool SupportsDepthInfo{false};

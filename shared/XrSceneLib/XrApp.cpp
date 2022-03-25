@@ -5,8 +5,8 @@
 
 #include <XrUtility/XrEnumerate.h>
 #include <XrUtility/XrToString.h>
+#include <XrUtility/XrViewConfiguration.h>
 
-#include <SampleShared/XrViewConfiguration.h>
 #include <SampleShared/FileUtility.h>
 #include <SampleShared/DxUtility.h>
 #include <SampleShared/Trace.h>
@@ -107,7 +107,7 @@ namespace {
         xr::SpaceHandle m_appSpace;
 
         engine::ProjectionLayers m_projectionLayers;
-        std::unordered_map<XrViewConfigurationType, sample::ViewConfigurationState> m_viewConfigStates;
+        std::unordered_map<XrViewConfigurationType, xr::ViewConfigurationState> m_viewConfigStates;
 
         std::mutex m_secondaryViewConfigActiveMutex;
         std::vector<XrSecondaryViewConfigurationStateMSFT> m_secondaryViewConfigurationsState;
@@ -138,7 +138,7 @@ namespace {
         void RenderViewConfiguration(const std::scoped_lock<std::mutex>& proofOfSceneLock,
                                      XrViewConfigurationType viewConfigurationType,
                                      engine::CompositionLayers& layers);
-        void SetSecondaryViewConfigurationActive(sample::ViewConfigurationState& secondaryViewConfigState, bool active);
+        void SetSecondaryViewConfigurationActive(xr::ViewConfigurationState& secondaryViewConfigState, bool active);
 
         void FinalizeActionBindings();
         void SyncActions(const std::scoped_lock<std::mutex>& proofOfSceneLock);
@@ -172,7 +172,8 @@ namespace {
 
         sample::InstanceContext instance =
             sample::CreateInstanceContext(m_appConfiguration.AppInfo, {"XrSceneLib", 1}, extensions.EnabledExtensions);
-        extensions.PopulateDispatchTable(instance.Handle);
+
+        xr::g_dispatchTable.Initialize(instance.Handle, xrGetInstanceProcAddr);
 
         // Then get the active system with required form factor.
         // If no system is plugged in, wait until the device is plugged in.
@@ -207,7 +208,7 @@ namespace {
             xr::InsertExtensionStruct(sessionCreateInfo, holographicWindowAttachment);
         }
 
-        CHECK_XRCMD(xrCreateSession(instance.Handle, &sessionCreateInfo, sessionHandle.Put()));
+        CHECK_XRCMD(xrCreateSession(instance.Handle, &sessionCreateInfo, sessionHandle.Put(xrDestroySession)));
 
         sample::SessionContext session(std::move(sessionHandle),
                                        system,
@@ -220,19 +221,19 @@ namespace {
         // Initialize XrViewConfigurationView and XrView buffers
         for (const auto& viewConfigurationType : sample::GetAllViewConfigurationTypes(session)) {
             m_viewConfigStates.emplace(viewConfigurationType,
-                                       sample::CreateViewConfigurationState(viewConfigurationType, instance.Handle, system.Id));
+                                       xr::CreateViewConfigurationState(viewConfigurationType, instance.Handle, system.Id));
         }
 
         // Create view app space
         XrReferenceSpaceCreateInfo spaceCreateInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
         spaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
         spaceCreateInfo.poseInReferenceSpace = xr::math::Pose::Identity();
-        CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_viewSpace.Put()));
+        CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_viewSpace.Put(xrDestroySpace)));
 
         // Create main app space
         spaceCreateInfo.referenceSpaceType =
             extensions.SupportsUnboundedSpace ? XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT : XR_REFERENCE_SPACE_TYPE_LOCAL;
-        CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_appSpace.Put()));
+        CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_appSpace.Put(xrDestroySpace)));
 
         Pbr::Resources pbrResources = sample::InitializePbrResources(device.get());
 
@@ -500,7 +501,7 @@ namespace {
         }
     }
 
-    void ImplementXrApp::SetSecondaryViewConfigurationActive(sample::ViewConfigurationState& secondaryViewConfigState, bool active) {
+    void ImplementXrApp::SetSecondaryViewConfigurationActive(xr::ViewConfigurationState& secondaryViewConfigState, bool active) {
         if (secondaryViewConfigState.Active != active) {
             secondaryViewConfigState.Active = active;
 
@@ -509,7 +510,7 @@ namespace {
             if (active) {
                 std::vector<XrViewConfigurationView> newViewConfigViews =
                     xr::EnumerateViewConfigurationViews(Context().Instance.Handle, Context().System.Id, secondaryViewConfigState.Type);
-                if (sample::IsRecommendedSwapchainSizeChanged(secondaryViewConfigState.ViewConfigViews, newViewConfigViews)) {
+                if (xr::IsRecommendedSwapchainSizeChanged(secondaryViewConfigState.ViewConfigViews, newViewConfigViews)) {
                     secondaryViewConfigState.ViewConfigViews = std::move(newViewConfigViews);
                     m_projectionLayers.ForEachLayerWithLock([secondaryViewConfigType = secondaryViewConfigState.Type](auto&& layer) {
                         layer.Config(secondaryViewConfigType).ForceReset = true;
@@ -536,7 +537,7 @@ namespace {
 
         m_projectionLayers.ForEachLayerWithLock([this](auto&& layer) {
             for (auto& [viewConfigType, state] : m_viewConfigStates) {
-                if (sample::IsPrimaryViewConfigurationType(viewConfigType) || state.Active) {
+                if (xr::IsPrimaryViewConfigurationType(viewConfigType) || state.Active) {
                     layer.PrepareRendering(Context(), viewConfigType, state.ViewConfigViews);
                 }
             }

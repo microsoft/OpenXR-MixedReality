@@ -322,7 +322,7 @@ namespace {
             createInfo.action = action;
             createInfo.poseInActionSpace = xr::math::Pose::Identity();
             createInfo.subactionPath = XR_NULL_PATH;
-            CHECK_XRCMD(xrCreateActionSpace(session, &createInfo, space.Put()));
+            CHECK_XRCMD(xrCreateActionSpace(session, &createInfo, space.Put(xrDestroySpace)));
             return space;
         }
 

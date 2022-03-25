@@ -47,7 +47,7 @@ namespace {
             for (ControllerData& controller : {std::ref(m_leftController), std::ref(m_rightController)}) {
                 actionSpaceCreateInfo.subactionPath = controller.UserPath;
                 actionSpaceCreateInfo.action = m_gripPoseAction;
-                CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &actionSpaceCreateInfo, controller.GripSpace.Put()));
+                CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &actionSpaceCreateInfo, controller.GripSpace.Put(xrDestroySpace)));
 
                 // Controller objects are created with empty model.  It will be loaded when available.
                 controller.Object = AddObject(CreateControllerObject(m_context, controller.UserPath));

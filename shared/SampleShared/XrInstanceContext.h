@@ -42,7 +42,7 @@ namespace sample {
         xr::SetApplicationInfo(instanceCreateInfo.applicationInfo, appInfo, engineInfo);
 
         xr::InstanceHandle instance;
-        CHECK_XRCMD(xrCreateInstance(&instanceCreateInfo, instance.Put()));
+        CHECK_XRCMD(xrCreateInstance(&instanceCreateInfo, instance.Put(xrDestroyInstance)));
 
         XrInstanceProperties instanceProperties{XR_TYPE_INSTANCE_PROPERTIES};
         CHECK_XRCMD(xrGetInstanceProperties(instance.Get(), &instanceProperties));

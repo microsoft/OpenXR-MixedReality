@@ -4,8 +4,8 @@
 #pragma once
 
 #include "XrUtility/XrEnumerate.h"
+#include "XrUtility/XrViewConfiguration.h"
 #include "SampleShared/XrSystemContext.h"
-#include "SampleShared/XrViewConfiguration.h"
 
 namespace sample {
     struct SessionContext {
