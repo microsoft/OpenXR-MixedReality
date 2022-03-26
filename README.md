@@ -40,7 +40,7 @@ over the coming months.
 
 - **The core OpenXR API usage patterns** <br/>
 can be found in the [BasicXrApp/OpenXRProgram.cpp](https://github.com/microsoft/OpenXR-MixedReality/blob/main/samples/BasicXrApp/OpenXrProgram.cpp) file.
-The [Run() function](https://github.com/microsoft/OpenXR-MixedReality/blob/main/samples/BasicXrApp/OpenXrProgram.cpp#L15)
+The [Run() function](https://github.com/microsoft/OpenXR-MixedReality/blob/main/samples/BasicXrApp/OpenXrProgram.cpp#L28)
 captures a typical OpenXR app code flow for session initialization, event handling, the frame loop and input actions.
 
 - **Hand tracking** <br/>

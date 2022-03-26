@@ -52,7 +52,7 @@ namespace {
             XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
             createInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
             createInfo.poseInReferenceSpace = Pose::Identity();
-            CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &createInfo, m_viewSpace.Put()));
+            CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &createInfo, m_viewSpace.Put(xrDestroySpace)));
         }
 
         void OnEvent(const XrEventDataBuffer& eventData [[maybe_unused]]) override {

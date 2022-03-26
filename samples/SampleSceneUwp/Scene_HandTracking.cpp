@@ -19,6 +19,31 @@ namespace {
         HandTrackingScene(engine::Context& context, bool enableHandMesh)
             : Scene(context)
             , m_enableHandMesh(enableHandMesh) {
+            sample::ActionSet& actionSet = ActionContext().CreateActionSet("hand_tracking_scene_actions", "Hand Tracking Scene Actions");
+
+            m_motionRangeModeChangeAction = actionSet.CreateAction(
+                "motion_range_mode_change_action", "Motion Range Mode Change Action", XR_ACTION_TYPE_BOOLEAN_INPUT, {});
+
+            ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/microsoft/motion_controller",
+                                                              {
+                                                                  {m_motionRangeModeChangeAction, "/user/hand/right/input/trigger"},
+                                                                  {m_motionRangeModeChangeAction, "/user/hand/left/input/trigger"},
+                                                              });
+
+            ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/khr/simple_controller",
+                                                              {
+                                                                  {m_motionRangeModeChangeAction, "/user/hand/right/input/select/click"},
+                                                                  {m_motionRangeModeChangeAction, "/user/hand/left/input/select/click"},
+                                                              });
+
+            if (context.Extensions.SupportsHPMixedRealityController) {
+                ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/hp/mixed_reality_controller",
+                                                                  {
+                                                                      {m_motionRangeModeChangeAction, "/user/hand/right/input/trigger"},
+                                                                      {m_motionRangeModeChangeAction, "/user/hand/left/input/trigger"},
+                                                                  });
+            }
+
             const std::tuple<XrHandEXT, HandData&> hands[] = {{XrHandEXT::XR_HAND_LEFT_EXT, m_leftHandData},
                                                               {XrHandEXT::XR_HAND_RIGHT_EXT, m_rightHandData}};
 
@@ -46,8 +71,8 @@ namespace {
                 XrHandTrackerCreateInfoEXT createInfo{XR_TYPE_HAND_TRACKER_CREATE_INFO_EXT};
                 createInfo.hand = hand;
                 createInfo.handJointSet = XR_HAND_JOINT_SET_DEFAULT_EXT;
-                CHECK_XRCMD(m_context.Extensions.xrCreateHandTrackerEXT(
-                    m_context.Session.Handle, &createInfo, handData.TrackerHandle.Put(m_context.Extensions.xrDestroyHandTrackerEXT)));
+                CHECK_XRCMD(
+                    xrCreateHandTrackerEXT(m_context.Session.Handle, &createInfo, handData.TrackerHandle.Put(xrDestroyHandTrackerEXT)));
 
                 createJointObjects(handData);
             }
@@ -71,12 +96,12 @@ namespace {
                     XrHandMeshSpaceCreateInfoMSFT meshSpaceCreateInfo{XR_TYPE_HAND_MESH_SPACE_CREATE_INFO_MSFT};
                     meshSpaceCreateInfo.poseInHandMeshSpace = xr::math::Pose::Identity();
                     meshSpaceCreateInfo.handPoseType = XR_HAND_POSE_TYPE_TRACKED_MSFT;
-                    CHECK_XRCMD(m_context.Extensions.xrCreateHandMeshSpaceMSFT(
-                        handData.TrackerHandle.Get(), &meshSpaceCreateInfo, handData.MeshSpace.Put()));
+                    CHECK_XRCMD(xrCreateHandMeshSpaceMSFT(
+                        handData.TrackerHandle.Get(), &meshSpaceCreateInfo, handData.MeshSpace.Put(xrDestroySpace)));
 
                     meshSpaceCreateInfo.handPoseType = XR_HAND_POSE_TYPE_REFERENCE_OPEN_PALM_MSFT;
-                    CHECK_XRCMD(m_context.Extensions.xrCreateHandMeshSpaceMSFT(
-                        handData.TrackerHandle.Get(), &meshSpaceCreateInfo, handData.ReferenceMeshSpace.Put()));
+                    CHECK_XRCMD(xrCreateHandMeshSpaceMSFT(
+                        handData.TrackerHandle.Get(), &meshSpaceCreateInfo, handData.ReferenceMeshSpace.Put(xrDestroySpace)));
                 }
             }
 
@@ -104,15 +129,27 @@ namespace {
         }
 
         void OnUpdate(const engine::FrameTime& frameTime) override {
+            XrActionStateBoolean state{XR_TYPE_ACTION_STATE_BOOLEAN};
+            XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
+            getInfo.action = m_motionRangeModeChangeAction;
+            CHECK_XRCMD(xrGetActionStateBoolean(m_context.Session.Handle, &getInfo, &state));
+            const bool isMotionRangeModeChangeButtonPressed = state.isActive && state.changedSinceLastSync && state.currentState;
+            if (isMotionRangeModeChangeButtonPressed) {
+                m_motionRangeMode = (MotionRangeMode)(((uint32_t)m_motionRangeMode + 1) % (uint32_t)MotionRangeMode::Count);
+            }
             for (HandData& handData : {std::ref(m_leftHandData), std::ref(m_rightHandData)}) {
-                XrHandJointsLocateInfoEXT locateInfo{XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT};
+                XrHandJointsMotionRangeInfoEXT motionRangeInfo{XR_TYPE_HAND_JOINTS_MOTION_RANGE_INFO_EXT};
+                motionRangeInfo.handJointsMotionRange = m_motionRangeMode == MotionRangeMode::Unobstructed
+                                                            ? XR_HAND_JOINTS_MOTION_RANGE_UNOBSTRUCTED_EXT
+                                                            : XR_HAND_JOINTS_MOTION_RANGE_CONFORMING_TO_CONTROLLER_EXT;
+                XrHandJointsLocateInfoEXT locateInfo{XR_TYPE_HAND_JOINTS_LOCATE_INFO_EXT, &motionRangeInfo};
                 locateInfo.baseSpace = m_context.AppSpace;
                 locateInfo.time = frameTime.PredictedDisplayTime;
 
                 XrHandJointLocationsEXT locations{XR_TYPE_HAND_JOINT_LOCATIONS_EXT};
                 locations.jointCount = (uint32_t)handData.JointLocations.size();
                 locations.jointLocations = handData.JointLocations.data();
-                CHECK_XRCMD(m_context.Extensions.xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &locations));
+                CHECK_XRCMD(xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &locations));
 
                 bool jointsVisible = m_mode == HandDisplayMode::Joints;
                 bool meshVisible = m_mode == HandDisplayMode::Mesh;
@@ -180,7 +217,7 @@ namespace {
             XrHandMeshUpdateInfoMSFT meshUpdateInfo{XR_TYPE_HAND_MESH_UPDATE_INFO_MSFT};
             meshUpdateInfo.time = time;
             meshUpdateInfo.handPoseType = XR_HAND_POSE_TYPE_TRACKED_MSFT;
-            CHECK_XRCMD(m_context.Extensions.xrUpdateHandMeshMSFT(handData.TrackerHandle.Get(), &meshUpdateInfo, &handData.meshState));
+            CHECK_XRCMD(xrUpdateHandMeshMSFT(handData.TrackerHandle.Get(), &meshUpdateInfo, &handData.meshState));
 
             if (!handData.meshState.isActive) {
                 return false;
@@ -244,7 +281,7 @@ namespace {
             locations.jointCount = (uint32_t)handData.JointLocations.size();
             locations.jointLocations = handData.JointLocations.data();
 
-            CHECK_XRCMD(m_context.Extensions.xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &locations));
+            CHECK_XRCMD(xrLocateHandJointsEXT(handData.TrackerHandle.Get(), &locateInfo, &locations));
             assert(locations.isActive);
 
             const XrVector3f& vZero = handData.JointLocations[XR_HAND_JOINT_MIDDLE_TIP_EXT].pose.position;
@@ -331,6 +368,10 @@ namespace {
         bool m_enableHandMesh{false};
         enum class HandDisplayMode { Mesh, Joints, Count };
         HandDisplayMode m_mode{HandDisplayMode::Joints};
+
+        enum class MotionRangeMode { Unobstructed, Controller, Count };
+        MotionRangeMode m_motionRangeMode{MotionRangeMode::Unobstructed};
+        XrAction m_motionRangeModeChangeAction{XR_NULL_HANDLE};
 
         std::shared_ptr<Pbr::Material> m_meshMaterial, m_jointMaterial;
 

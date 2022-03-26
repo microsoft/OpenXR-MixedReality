@@ -30,10 +30,10 @@ namespace {
 
     struct EyeGazeInteractionScene : public engine::Scene {
         EyeGazeInteractionScene(engine::Context& context)
-            : Scene(context) {
-            const bool supportsEyeGazeAction =
-                context.Extensions.SupportsEyeGazeInteraction && context.System.EyeGazeInteractionProperties.supportsEyeGazeInteraction;
-            if (supportsEyeGazeAction) {
+            : Scene(context)
+            , m_supportsEyeGazeAction(context.Extensions.SupportsEyeGazeInteraction &&
+                                      context.System.EyeGazeInteractionProperties.supportsEyeGazeInteraction) {
+            if (m_supportsEyeGazeAction) {
                 sample::ActionSet& actionSet =
                     ActionContext().CreateActionSet("eye_gaze_interaction_scene_actions", "Eye Gaze Interaction Scene Actions");
 
@@ -47,13 +47,13 @@ namespace {
                 XrActionSpaceCreateInfo createInfo{XR_TYPE_ACTION_SPACE_CREATE_INFO};
                 createInfo.action = gazeAction;
                 createInfo.poseInActionSpace = Pose::Identity();
-                CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &createInfo, m_gazeSpace.Put()));
+                CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &createInfo, m_gazeSpace.Put(xrDestroySpace)));
             } else {
                 // Use VIEW reference space to simulate eye gaze when the system doesn't support
                 XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
                 createInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
                 createInfo.poseInReferenceSpace = Pose::Identity();
-                CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &createInfo, m_gazeSpace.Put()));
+                CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &createInfo, m_gazeSpace.Put(xrDestroySpace)));
             }
 
             m_gazeObject = AddObject(engine::CreateObject());
@@ -83,6 +83,17 @@ namespace {
             XrSpaceLocation location{XR_TYPE_SPACE_LOCATION};
             CHECK_XRCMD(xrLocateSpace(m_gazeSpace.Get(), m_context.AppSpace, frameTime.PredictedDisplayTime, &location));
 
+            // eye gaze sample time validation
+            if (m_supportsEyeGazeAction) {
+                XrEyeGazeSampleTimeEXT eyeGazeSampleTime{XR_TYPE_EYE_GAZE_SAMPLE_TIME_EXT};
+                XrSpaceLocation testLocation{XR_TYPE_SPACE_LOCATION, &eyeGazeSampleTime};
+                CHECK_XRCMD(xrLocateSpace(m_gazeSpace.Get(), m_context.AppSpace, frameTime.PredictedDisplayTime, &testLocation));
+                CHECK_XRCMD(xrLocateSpace(m_context.AppSpace, m_gazeSpace.Get(), frameTime.PredictedDisplayTime, &testLocation));
+                CHECK_XRCMD(xrLocateSpace(m_gazeSpace.Get(), m_gazeSpace.Get(), frameTime.PredictedDisplayTime, &testLocation));
+                assert(XR_ERROR_VALIDATION_FAILURE ==
+                       xrLocateSpace(m_context.AppSpace, m_context.AppSpace, frameTime.PredictedDisplayTime, &testLocation));
+            }
+
             if (Pose::IsPoseValid(location)) {
                 m_gazeObject->SetVisible(true);
                 m_gazeObject->Pose() = location.pose;
@@ -100,6 +111,7 @@ namespace {
         }
 
     private:
+        const bool m_supportsEyeGazeAction{false};
         xr::SpaceHandle m_gazeSpace;
         std::shared_ptr<engine::Object> m_gazeObject;
         std::shared_ptr<engine::Object> m_gazeLookAtAxis;

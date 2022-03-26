@@ -20,7 +20,7 @@ namespace sample {
             strcpy_s(actionSetCreateInfo.actionSetName, name);
             strcpy_s(actionSetCreateInfo.localizedActionSetName, localizedName);
             actionSetCreateInfo.priority = priority;
-            CHECK_XRCMD(xrCreateActionSet(m_instance, &actionSetCreateInfo, m_actionSet.Put()));
+            CHECK_XRCMD(xrCreateActionSet(m_instance, &actionSetCreateInfo, m_actionSet.Put(xrDestroyActionSet)));
         }
 
         XrAction CreateAction(const char* actionName,
@@ -41,7 +41,7 @@ namespace sample {
             }
 
             xr::ActionHandle action;
-            CHECK_XRCMD(xrCreateAction(m_actionSet.Get(), &actionCreateInfo, action.Put()));
+            CHECK_XRCMD(xrCreateAction(m_actionSet.Get(), &actionCreateInfo, action.Put(xrDestroyAction)));
 
             m_actions.push_back(std::move(action));
 

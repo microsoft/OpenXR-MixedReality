@@ -39,6 +39,7 @@ void EnterVR() {
         engine::XrAppConfiguration appConfig({"SampleSceneWin32", 1});
         appConfig.RequestedExtensions.push_back(XR_MSFT_CONTROLLER_MODEL_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_EXT_HAND_JOINTS_MOTION_RANGE_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_MSFT_HAND_TRACKING_MESH_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_EXT_HP_MIXED_REALITY_CONTROLLER_EXTENSION_NAME);

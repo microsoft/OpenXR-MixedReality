@@ -61,7 +61,7 @@ namespace {
 
             for (auto side : {xr::Side::Left, xr::Side::Right}) {
                 spaceCreateInfo.subactionPath = side == xr::Side::Left ? m_context.Instance.LeftHandPath : m_context.Instance.RightHandPath;
-                CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &spaceCreateInfo, m_gripSpace[side].Put()));
+                CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &spaceCreateInfo, m_gripSpace[side].Put(xrDestroySpace)));
 
                 const float offset = side == xr::Side::Left ? -0.5f : 0.5f;
                 AddTextBlock(m_handTextBlock[side], Pose::Translation({offset, 0, -1.0f}), {0.4f, 0.3f}, {256, 256});
@@ -74,7 +74,7 @@ namespace {
                 XrReferenceSpaceCreateInfo createInfo{XR_TYPE_REFERENCE_SPACE_CREATE_INFO};
                 createInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_VIEW;
                 createInfo.poseInReferenceSpace = Pose::Identity();
-                CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &createInfo, m_viewSpace.Put()));
+                CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &createInfo, m_viewSpace.Put(xrDestroySpace)));
             }
         }
 
