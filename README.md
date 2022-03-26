@@ -28,7 +28,7 @@ or choose x64 platform when running on a Windows Desktop PC with the HoloLens 2 
 
 The [openxr_preview](https://github.com/microsoft/OpenXR-MixedReality/tree/main/openxr_preview) folder contains a set of [preview header files](https://github.com/microsoft/OpenXR-MixedReality/tree/main/openxr_preview/include/openxr) containing the following OpenXR extensions that are only available [in preview runtime](http://aka.ms/openxr-preview).
 
-1. There's no additional preview extensions in latest preview runtime.
+1. [XR_MSFT_spatial_graph_bridge](https://microsoft.github.io/OpenXR-MixedReality/openxr_preview/specs/openxr.html#XR_MSFT_spatial_graph_bridge) Revision 2 adds the `XrSpatialGraphNodeBindingMSFT` handle and `xrTryCreateSpatialGraphStaticNodeBindingMSFT` function so that applications can try to get a spatial graph node from an `XrSpace` handle.
 
 Please send feedback on preview extensions and samples at [GitHub issues](https://github.com/microsoft/OpenXR-MixedReality/issues).
 We are planning to incorporate your feedback and finalize these extensions as vendor extensions (MSFT) or cross-vendor extensions (EXT)

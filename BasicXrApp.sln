@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.421
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.32228.343
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BasicXrApp_uwp", "samples\BasicXrApp\BasicXrApp_uwp.vcxproj", "{1B09B21C-2D7A-4278-81C8-84A47D5834A7}"
 EndProject
@@ -9,10 +9,27 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "BasicXrApp_win32", "samples
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "xrUtility", "xrUtility", "{D71728CE-842F-4FA7-94AE-01AEA60BC45A}"
 	ProjectSection(SolutionItems) = preProject
+		shared\XrUtility\XrDispatchTable.h = shared\XrUtility\XrDispatchTable.h
+		shared\XrUtility\XrEnumerate.h = shared\XrUtility\XrEnumerate.h
 		shared\XrUtility\XrError.h = shared\XrUtility\XrError.h
+		shared\XrUtility\XrExtensionContext.h = shared\XrUtility\XrExtensionContext.h
+		shared\XrUtility\XrExtensionDefined.h = shared\XrUtility\XrExtensionDefined.h
+		shared\XrUtility\XrGuid.h = shared\XrUtility\XrGuid.h
 		shared\XrUtility\XrHandle.h = shared\XrUtility\XrHandle.h
+		shared\XrUtility\XrListFunctions.h = shared\XrUtility\XrListFunctions.h
 		shared\XrUtility\XrMath.h = shared\XrUtility\XrMath.h
+		shared\XrUtility\XrPlatformDependencies.h = shared\XrUtility\XrPlatformDependencies.h
+		shared\XrUtility\XrSceneUnderstanding.h = shared\XrUtility\XrSceneUnderstanding.h
+		shared\XrUtility\XrSceneUnderstanding.hpp = shared\XrUtility\XrSceneUnderstanding.hpp
+		shared\XrUtility\XrSceneUnderstandingSerialization.hpp = shared\XrUtility\XrSceneUnderstandingSerialization.hpp
+		shared\XrUtility\XrSide.h = shared\XrUtility\XrSide.h
+		shared\XrUtility\XrSpatialGraphBridge.h = shared\XrUtility\XrSpatialGraphBridge.h
+		shared\XrUtility\XrStereoView.h = shared\XrUtility\XrStereoView.h
 		shared\XrUtility\XrString.h = shared\XrUtility\XrString.h
+		shared\XrUtility\XrStruct.h = shared\XrUtility\XrStruct.h
+		shared\XrUtility\XrToString.h = shared\XrUtility\XrToString.h
+		shared\XrUtility\XrUuid.h = shared\XrUtility\XrUuid.h
+		shared\XrUtility\XrViewConfiguration.h = shared\XrUtility\XrViewConfiguration.h
 	EndProjectSection
 EndProject
 Global
