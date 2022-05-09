@@ -26,6 +26,7 @@ namespace windows {
     using namespace winrt::Windows::UI::ViewManagement;
     using namespace winrt::Windows::Graphics::Holographic;
     using namespace winrt::Windows::ApplicationModel::Preview::Holographic;
+    using namespace winrt::Windows::UI::Input;
 } // namespace windows
 
 namespace {
@@ -106,6 +107,7 @@ namespace {
 
             InitializeTextEditingContext();
             window.KeyDown({this, &AppView::OnKeyDown});
+            window.PointerPressed({this, &AppView::OnMouseClick});
             window.Closed({this, &AppView::OnWindowClosed});
         }
 
@@ -130,6 +132,19 @@ namespace {
                     const bool shown = inputPane.TryShow();
                     sample::Trace("InputPane::TryShow() -> {}", shown);
                 }
+            }
+        }
+
+        void OnMouseClick(windows::CoreWindow const& sender, windows::PointerEventArgs const& args) {
+            sample::Trace("EnteredOnMouseclick");
+
+            if (args.GetIntermediatePoints())
+            {
+                sample::Trace("MouseRecognized!!");
+            }
+            if (args.CurrentPoint())
+            {
+                sample::Trace("MouseRecognized!!");
             }
         }
 
