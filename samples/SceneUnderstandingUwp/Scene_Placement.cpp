@@ -284,7 +284,7 @@ namespace {
                                           m_sceneObserver->CreateScene());
                     m_scanState = ScanState::Processing;
                 } else if (state == XR_SCENE_COMPUTE_STATE_COMPLETED_WITH_ERROR_MSFT) {
-                    sample::Trace(L"Compute completed with error");
+                    sample::Trace("Compute completed with error");
                     m_scanState = ScanState::Idle;
                 }
             } else if (m_scanState == ScanState::Idle) {

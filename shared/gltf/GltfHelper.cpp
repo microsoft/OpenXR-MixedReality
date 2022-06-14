@@ -3,6 +3,8 @@
 // Licensed under the MIT License. See License.txt in the project root for license information.
 #include "pch.h"
 #include <stdexcept>
+// Enable iterative parsing to avoid possible stack overflow
+#define RAPIDJSON_PARSE_DEFAULT_FLAGS kParseIterativeFlag
 #define TINYGLTF_USE_RAPIDJSON
 #define TINYGLTF_USE_RAPIDJSON_CRTALLOCATOR
 #define TINYGLTF_NO_STB_IMAGE_WRITE
@@ -569,7 +571,7 @@ namespace GltfHelper
             auto c = parameters.find(name.data());
             return c != parameters.end() ? c->second.bool_value : defaultValue;
         };
-        
+
         // Read an optional boolean parameter if available, otherwise use the default.
         auto readParameterFactorAsString = [](const tinygltf::ParameterMap& parameters, std::string_view name, std::string_view defaultValue) {
             auto c = parameters.find(name.data());

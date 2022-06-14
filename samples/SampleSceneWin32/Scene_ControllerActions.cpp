@@ -458,11 +458,11 @@ namespace {
                 fmt::memory_buffer buffer;
                 std::string controllerLocalizedString =
                     GetControllerString(context.Session.Handle, controllerData.components[0].actionInfo.action);
-                fmt::format_to(buffer, "{}\n{}\n", controllerData.interactionProfileName.c_str(), controllerLocalizedString.c_str());
+                fmt::format_to(fmt::appender(buffer), "{}\n{}\n", controllerData.interactionProfileName, controllerLocalizedString);
                 if (hasInteractionProfile) {
                     for (const auto& component : controllerData.components) {
                         std::string componentString = GetComponentString(context.Session.Handle, component.actionInfo.action);
-                        fmt::format_to(buffer, "\n{}:\n{}\n", component.text.c_str(), componentString.c_str());
+                        fmt::format_to(fmt::appender(buffer), "\n{}:\n{}\n", component.text, componentString);
                         scene.AddObject(component.placementObject);
                         scene.AddObject(component.valueObject);
                     }
@@ -490,7 +490,7 @@ namespace {
             textInfo.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
 
             auto textTexture = std::make_unique<engine::TextTexture>(context, textInfo);
-            textTexture->Draw(xr::utf8_to_wide(text).c_str());
+            textTexture->Draw(text.data());
             const auto& material = textTexture->CreatePbrMaterial(context.PbrResources);
 
             // The new quad always have width of 1 meter

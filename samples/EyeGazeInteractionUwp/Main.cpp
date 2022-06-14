@@ -23,7 +23,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         sample::Trace("Unhandled Exception: {}", ex.what());
         return 1;
     } catch (...) {
-        sample::Trace(L"Unhandled Exception");
+        sample::Trace("Unhandled Exception");
         return 1;
     }
 

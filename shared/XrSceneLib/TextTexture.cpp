@@ -70,7 +70,7 @@ engine::TextTexture::TextTexture(Context& context, TextTextureInfo textInfo)
     CHECK_HRCMD(m_d2dContext->CreateSolidColorBrush(brushColor, m_brush.put()));
 }
 
-void engine::TextTexture::Draw(const wchar_t* text) {
+void engine::TextTexture::Draw(const char* text) {
     m_d2dContext->SaveDrawingState(m_stateBlock.get());
 
     const D2D1_SIZE_F renderTargetSize = m_d2dContext->GetSize();
@@ -79,11 +79,12 @@ void engine::TextTexture::Draw(const wchar_t* text) {
     const auto& background = m_textInfo.Background;
     m_d2dContext->Clear(D2D1::ColorF(background.x, background.y, background.z, background.w));
 
-    const UINT32 textLength = text ? static_cast<UINT32>(wcslen(text)) : 0;
+    const UINT32 textLength = text ? static_cast<UINT32>(strlen(text)) : 0;
     if (textLength > 0) {
         const auto& margin = m_textInfo.Margin;
-        m_d2dContext->DrawText(text,
-                               textLength,
+        std::wstring wtext = xr::utf8_to_wide(text);
+        m_d2dContext->DrawText(wtext.c_str(),
+                               (UINT32)wtext.size(),
                                m_textFormat.get(),
                                D2D1::RectF(m_textInfo.Margin,
                                            m_textInfo.Margin,

@@ -83,17 +83,6 @@ namespace {
             XrSpaceLocation location{XR_TYPE_SPACE_LOCATION};
             CHECK_XRCMD(xrLocateSpace(m_gazeSpace.Get(), m_context.AppSpace, frameTime.PredictedDisplayTime, &location));
 
-            // eye gaze sample time validation
-            if (m_supportsEyeGazeAction) {
-                XrEyeGazeSampleTimeEXT eyeGazeSampleTime{XR_TYPE_EYE_GAZE_SAMPLE_TIME_EXT};
-                XrSpaceLocation testLocation{XR_TYPE_SPACE_LOCATION, &eyeGazeSampleTime};
-                CHECK_XRCMD(xrLocateSpace(m_gazeSpace.Get(), m_context.AppSpace, frameTime.PredictedDisplayTime, &testLocation));
-                CHECK_XRCMD(xrLocateSpace(m_context.AppSpace, m_gazeSpace.Get(), frameTime.PredictedDisplayTime, &testLocation));
-                CHECK_XRCMD(xrLocateSpace(m_gazeSpace.Get(), m_gazeSpace.Get(), frameTime.PredictedDisplayTime, &testLocation));
-                assert(XR_ERROR_VALIDATION_FAILURE ==
-                       xrLocateSpace(m_context.AppSpace, m_context.AppSpace, frameTime.PredictedDisplayTime, &testLocation));
-            }
-
             if (Pose::IsPoseValid(location)) {
                 m_gazeObject->SetVisible(true);
                 m_gazeObject->Pose() = location.pose;

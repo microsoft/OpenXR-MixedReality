@@ -118,7 +118,7 @@ namespace {
         }
 
         void OnKeyDown(windows::CoreWindow const& sender, windows::KeyEventArgs const& args) {
-            sample::Trace("OnKeyDown : 0x{:x}", args.VirtualKey());
+            sample::Trace("OnKeyDown : 0x{:x}", (int)args.VirtualKey());
 
             // This sample toggles the software keyboard in HMD using space key
             if (args.VirtualKey() == winrt::Windows::System::VirtualKey::Space) {

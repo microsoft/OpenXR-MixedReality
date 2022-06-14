@@ -49,3 +49,4 @@
 #define FMT_HEADER_ONLY
 #endif
 #include <fmt/format.h>
+#include <fmt/xchar.h>
