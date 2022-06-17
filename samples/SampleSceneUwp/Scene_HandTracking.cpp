@@ -44,6 +44,14 @@ namespace {
                                                                   });
             }
 
+            if (context.Extensions.SupportsHandInteraction) {
+                ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction",
+                                                                  {
+                                                                      {m_motionRangeModeChangeAction, "/user/hand/left/input/select"},
+                                                                      {m_motionRangeModeChangeAction, "/user/hand/right/input/select"},
+                                                                  });
+            }
+
             const std::tuple<XrHandEXT, HandData&> hands[] = {{XrHandEXT::XR_HAND_LEFT_EXT, m_leftHandData},
                                                               {XrHandEXT::XR_HAND_RIGHT_EXT, m_rightHandData}};
 
