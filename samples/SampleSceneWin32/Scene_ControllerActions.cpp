@@ -492,6 +492,8 @@ namespace {
             auto textTexture = std::make_unique<engine::TextTexture>(context, textInfo);
             textTexture->Draw(text.data());
             const auto& material = textTexture->CreatePbrMaterial(context.PbrResources);
+            // Disable alpha blending because this text box set a background color
+            material->SetAlphaBlended(false);
 
             // The new quad always have width of 1 meter
             const float quadHeight = float(height) / float(width);
