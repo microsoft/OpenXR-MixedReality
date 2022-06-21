@@ -4,6 +4,8 @@
 
 #include "pch.h"
 
+// Enable iterative parsing to avoid possible stack overflow
+#define RAPIDJSON_PARSE_DEFAULT_FLAGS kParseIterativeFlag
 #define TINYGLTF_USE_RAPIDJSON
 #define TINYGLTF_USE_RAPIDJSON_CRTALLOCATOR
 #define TINYGLTF_NO_STB_IMAGE_WRITE

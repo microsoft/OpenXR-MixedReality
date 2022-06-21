@@ -275,7 +275,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsRequirementsKHR(
 #ifdef XR_USE_GRAPHICS_API_D3D11
 
 #define XR_KHR_D3D11_enable 1
-#define XR_KHR_D3D11_enable_SPEC_VERSION  8
+#define XR_KHR_D3D11_enable_SPEC_VERSION  9
 #define XR_KHR_D3D11_ENABLE_EXTENSION_NAME "XR_KHR_D3D11_enable"
 // XrGraphicsBindingD3D11KHR extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingD3D11KHR {
@@ -285,7 +285,7 @@ typedef struct XrGraphicsBindingD3D11KHR {
 } XrGraphicsBindingD3D11KHR;
 
 typedef struct XrSwapchainImageD3D11KHR {
-    XrStructureType       type;
+     XrStructureType      type;
     void* XR_MAY_ALIAS    next;
     ID3D11Texture2D*      texture;
 } XrSwapchainImageD3D11KHR;
@@ -312,7 +312,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetD3D11GraphicsRequirementsKHR(
 #ifdef XR_USE_GRAPHICS_API_D3D12
 
 #define XR_KHR_D3D12_enable 1
-#define XR_KHR_D3D12_enable_SPEC_VERSION  8
+#define XR_KHR_D3D12_enable_SPEC_VERSION  9
 #define XR_KHR_D3D12_ENABLE_EXTENSION_NAME "XR_KHR_D3D12_enable"
 // XrGraphicsBindingD3D12KHR extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingD3D12KHR {
@@ -323,7 +323,7 @@ typedef struct XrGraphicsBindingD3D12KHR {
 } XrGraphicsBindingD3D12KHR;
 
 typedef struct XrSwapchainImageD3D12KHR {
-    XrStructureType       type;
+     XrStructureType      type;
     void* XR_MAY_ALIAS    next;
     ID3D12Resource*       texture;
 } XrSwapchainImageD3D12KHR;
@@ -353,7 +353,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetD3D12GraphicsRequirementsKHR(
 #define XR_KHR_win32_convert_performance_counter_time_SPEC_VERSION 1
 #define XR_KHR_WIN32_CONVERT_PERFORMANCE_COUNTER_TIME_EXTENSION_NAME "XR_KHR_win32_convert_performance_counter_time"
 typedef XrResult (XRAPI_PTR *PFN_xrConvertWin32PerformanceCounterToTimeKHR)(XrInstance instance, const LARGE_INTEGER* performanceCounter, XrTime* time);
-typedef XrResult (XRAPI_PTR *PFN_xrConvertTimeToWin32PerformanceCounterKHR)(XrInstance instance, XrTime time, LARGE_INTEGER* performanceCounter);
+typedef XrResult (XRAPI_PTR *PFN_xrConvertTimeToWin32PerformanceCounterKHR)(XrInstance instance, XrTime   time, LARGE_INTEGER* performanceCounter);
 
 #ifndef XR_NO_PROTOTYPES
 #ifdef XR_EXTENSION_PROTOTYPES
@@ -376,7 +376,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrConvertTimeToWin32PerformanceCounterKHR(
 #define XR_KHR_convert_timespec_time_SPEC_VERSION 1
 #define XR_KHR_CONVERT_TIMESPEC_TIME_EXTENSION_NAME "XR_KHR_convert_timespec_time"
 typedef XrResult (XRAPI_PTR *PFN_xrConvertTimespecTimeToTimeKHR)(XrInstance instance, const struct timespec* timespecTime, XrTime* time);
-typedef XrResult (XRAPI_PTR *PFN_xrConvertTimeToTimespecTimeKHR)(XrInstance instance, XrTime time, struct timespec* timespecTime);
+typedef XrResult (XRAPI_PTR *PFN_xrConvertTimeToTimespecTimeKHR)(XrInstance instance, XrTime   time, struct timespec* timespecTime);
 
 #ifndef XR_NO_PROTOTYPES
 #ifdef XR_EXTENSION_PROTOTYPES
@@ -454,9 +454,9 @@ typedef XrSwapchainImageVulkanKHR XrSwapchainImageVulkan2KHR;
 
 typedef XrGraphicsRequirementsVulkanKHR XrGraphicsRequirementsVulkan2KHR;
 
-typedef XrResult (XRAPI_PTR *PFN_xrCreateVulkanInstanceKHR)(XrInstance instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance* vulkanInstance, VkResult* vulkanResult);
-typedef XrResult (XRAPI_PTR *PFN_xrCreateVulkanDeviceKHR)(XrInstance instance, const XrVulkanDeviceCreateInfoKHR* createInfo, VkDevice* vulkanDevice, VkResult* vulkanResult);
-typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsDevice2KHR)(XrInstance instance, const XrVulkanGraphicsDeviceGetInfoKHR* getInfo, VkPhysicalDevice* vulkanPhysicalDevice);
+typedef XrResult (XRAPI_PTR *PFN_xrCreateVulkanInstanceKHR)(XrInstance                           instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance*                          vulkanInstance, VkResult*                            vulkanResult);
+typedef XrResult (XRAPI_PTR *PFN_xrCreateVulkanDeviceKHR)(XrInstance                          instance, const XrVulkanDeviceCreateInfoKHR*  createInfo, VkDevice*                           vulkanDevice, VkResult*                           vulkanResult);
+typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsDevice2KHR)(XrInstance                              instance, const XrVulkanGraphicsDeviceGetInfoKHR* getInfo, VkPhysicalDevice*                       vulkanPhysicalDevice);
 typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsRequirements2KHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkanKHR* graphicsRequirements);
 
 #ifndef XR_NO_PROTOTYPES
@@ -665,6 +665,21 @@ typedef struct XrSwapchainStateSamplerVulkanFB {
     XrColor4f               borderColor;
 } XrSwapchainStateSamplerVulkanFB;
 #endif // XR_USE_GRAPHICS_API_VULKAN
+
+#endif /* XR_USE_GRAPHICS_API_VULKAN */
+
+#ifdef XR_USE_GRAPHICS_API_VULKAN
+
+#define XR_META_vulkan_swapchain_create_info 1
+#define XR_META_vulkan_swapchain_create_info_SPEC_VERSION 1
+#define XR_META_VULKAN_SWAPCHAIN_CREATE_INFO_EXTENSION_NAME "XR_META_vulkan_swapchain_create_info"
+// XrVulkanSwapchainCreateInfoMETA extends XrSwapchainCreateInfo
+typedef struct XrVulkanSwapchainCreateInfoMETA {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    VkImageCreateFlags          additionalCreateFlags;
+    VkImageUsageFlags           additionalUsageFlags;
+} XrVulkanSwapchainCreateInfoMETA;
 
 #endif /* XR_USE_GRAPHICS_API_VULKAN */
 

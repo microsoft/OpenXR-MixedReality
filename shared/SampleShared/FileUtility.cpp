@@ -65,16 +65,16 @@ namespace sample {
         }
 
         sample::Trace(fmt::format("File \"{}\" is not found in app folder \"{}\" and search folders{}",
-                                    xr::wide_to_utf8(filename.c_str()),
-                                    xr::wide_to_utf8(appFolder.c_str()),
-                                    [&searchFolders]() -> std::string {
-                                        fmt::memory_buffer buffer;
-                                        for (auto& folder : searchFolders) {
-                                            fmt::format_to(buffer, " \"{}\"", xr::wide_to_utf8(folder.c_str()));
-                                        }
-                                        return buffer.data();
-                                    }())
-                            .c_str());
+                                  xr::wide_to_utf8(filename.c_str()),
+                                  xr::wide_to_utf8(appFolder.c_str()),
+                                  [&searchFolders]() -> std::string {
+                                      fmt::memory_buffer buffer;
+                                      for (auto& folder : searchFolders) {
+                                          fmt::format_to(fmt::appender(buffer), " \"{}\"", xr::wide_to_utf8(folder.c_str()));
+                                      }
+                                      return fmt::to_string(buffer);
+                                  }())
+                          .c_str());
 
         assert(false && "The file should be embeded in app folder in debug build.");
         return "";

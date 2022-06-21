@@ -88,7 +88,7 @@ namespace {
                 CHECK_XRCMD(xrLocateSpace(m_gripSpace[side].Get(), m_context.AppSpace, frameTime.PredictedDisplayTime, &location));
 
                 fmt::memory_buffer buffer;
-                fmt::format_to(buffer,
+                fmt::format_to(fmt::appender(buffer),
                                "{} hand tracking\n{}/input/grip/pose\n\n",
                                side == xr::Side::Left ? "Left" : "Right",
                                side == xr::Side::Left ? "/user/hand/left" : "/user/hand/right");
@@ -100,8 +100,8 @@ namespace {
                 XrActionStatePose poseState{XR_TYPE_ACTION_STATE_POSE};
                 CHECK_XRCMD(xrGetActionStatePose(m_context.Session.Handle, &getInfo, &poseState));
 
-                fmt::format_to(buffer, "poseState.IsActive={}\n", poseState.isActive);
-                UpdateTextBlock(m_handTextBlock[side], buffer.data());
+                fmt::format_to(fmt::appender(buffer), "poseState.IsActive={}\n", poseState.isActive);
+                UpdateTextBlock(m_handTextBlock[side], fmt::to_string(buffer).c_str());
             }
 
             // Update VIEW reference space and inspect if head tracking state
@@ -109,9 +109,9 @@ namespace {
                 CHECK_XRCMD(xrLocateSpace(m_viewSpace.Get(), m_context.AppSpace, frameTime.PredictedDisplayTime, &location));
 
                 fmt::memory_buffer buffer;
-                fmt::format_to(buffer, "Head tracking\na.k.a VIEW reference space\n\n");
+                fmt::format_to(fmt::appender(buffer), "Head tracking\na.k.a VIEW reference space\n\n");
                 FormatTrackingState(buffer, location.locationFlags, velocity.velocityFlags);
-                UpdateTextBlock(m_headTextBlock, buffer.data());
+                UpdateTextBlock(m_headTextBlock, fmt::to_string(buffer).c_str());
             }
         }
 
@@ -122,15 +122,15 @@ namespace {
         }
 
         void FormatTrackingState(fmt::memory_buffer& buffer, XrSpaceLocationFlags locationFlags, XrSpaceVelocityFlags velocityFlags) {
-            fmt::format_to(buffer,
+            fmt::format_to(fmt::appender(buffer),
                            "Pose Tracked: p={}, o={}\n",
                            TestBit(locationFlags, XR_SPACE_LOCATION_POSITION_TRACKED_BIT),
                            TestBit(locationFlags, XR_SPACE_LOCATION_ORIENTATION_TRACKED_BIT));
-            fmt::format_to(buffer,
+            fmt::format_to(fmt::appender(buffer),
                            "Pose Valid : p={}, o={}\n",
                            TestBit(locationFlags, XR_SPACE_LOCATION_POSITION_VALID_BIT),
                            TestBit(locationFlags, XR_SPACE_LOCATION_ORIENTATION_VALID_BIT));
-            fmt::format_to(buffer,
+            fmt::format_to(fmt::appender(buffer),
                            "Velocity Valid: lv={}, av={}\n",
                            TestBit(velocityFlags, XR_SPACE_VELOCITY_LINEAR_VALID_BIT),
                            TestBit(velocityFlags, XR_SPACE_VELOCITY_ANGULAR_VALID_BIT));
@@ -148,7 +148,7 @@ namespace {
             uint32_t pixelHeight = (uint32_t)std::floor(size.height * pixelWidth / size.width); // Keep texture aspect ratio
 
             textBlock.TextTexture = std::make_unique<engine::TextTexture>(m_context, GetTextInfo(pixelWidth, pixelHeight));
-            textBlock.TextTexture->Draw(xr::utf8_to_wide(textBlock.Text).c_str());
+            textBlock.TextTexture->Draw(textBlock.Text.c_str());
 
             const auto material = textBlock.TextTexture->CreatePbrMaterial(m_context.PbrResources);
             textBlock.Object = AddObject(engine::CreateQuad(m_context.PbrResources, {size.width, size.height}, material));
@@ -158,7 +158,7 @@ namespace {
         void UpdateTextBlock(TextBlock& textBlock, const char* text) {
             if (strcmp(textBlock.Text.c_str(), text) != 0) {
                 textBlock.Text = text;
-                textBlock.TextTexture->Draw(xr::utf8_to_wide(textBlock.Text).c_str());
+                textBlock.TextTexture->Draw(textBlock.Text.c_str());
                 const auto material = textBlock.TextTexture->CreatePbrMaterial(m_context.PbrResources);
                 textBlock.Object->GetModel()->GetPrimitive(0).SetMaterial(material);
             }

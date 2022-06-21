@@ -48,16 +48,15 @@ namespace {
                 block.Object->SetParent(m_background);
             };
 
-            m_title.Text =
-                fmt::format(L"{}, v{}", xr::utf8_to_wide(m_context.Instance.AppInfo.Name), m_context.Instance.AppInfo.Version).c_str();
+            m_title.Text = fmt::format("{}, v{}", m_context.Instance.AppInfo.Name, m_context.Instance.AppInfo.Version).c_str();
             textInfo.FontSize = 16.0f;
             placeTextBlock(m_title, margin, titleHeight / 2 - margin * 2);
 
-            m_subtitle.Text = fmt::format(L"OpenXR API version: {}.{}.{}\n{}, v{}.{}.{}",
+            m_subtitle.Text = fmt::format("OpenXR API version: {}.{}.{}\n{}, v{}.{}.{}",
                                           XR_VERSION_MAJOR(XR_CURRENT_API_VERSION),
                                           XR_VERSION_MINOR(XR_CURRENT_API_VERSION),
                                           XR_VERSION_PATCH(XR_CURRENT_API_VERSION),
-                                          xr::utf8_to_wide(m_context.Instance.Properties.runtimeName),
+                                          m_context.Instance.Properties.runtimeName,
                                           XR_VERSION_MAJOR(m_context.Instance.Properties.runtimeVersion),
                                           XR_VERSION_MINOR(m_context.Instance.Properties.runtimeVersion),
                                           XR_VERSION_PATCH(m_context.Instance.Properties.runtimeVersion))
@@ -88,7 +87,7 @@ namespace {
 
     private:
         struct TextBlock {
-            std::wstring Text;
+            std::string Text;
             std::shared_ptr<engine::PbrModelObject> Object;
         };
 

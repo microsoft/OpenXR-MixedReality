@@ -368,7 +368,7 @@ namespace {
                 } catch (const std::exception& ex) {
                     sample::Trace("Render thread exception: {}", ex.what());
                 } catch (...) {
-                    sample::Trace(L"Render thread exception");
+                    sample::Trace("Render thread exception");
                 }
             });
         }
@@ -377,7 +377,7 @@ namespace {
     void ImplementXrApp::StopRenderThreadIfRunning() {
         bool alreadyRunning = true;
         if (m_renderThreadRunning.compare_exchange_strong(alreadyRunning, false)) {
-            sample::Trace(L"Stopping render thread...");
+            sample::Trace("Stopping render thread...");
             {
                 // Notify "frameReadyToRender" with "renderThreadRunning = false" to exit render thread.
                 std::unique_lock lock(m_frameReadyToRenderMutex);
@@ -386,7 +386,7 @@ namespace {
             m_frameReadyToRenderNotify.notify_all();
             if (m_renderThread.joinable()) {
                 m_renderThread.join();
-                sample::Trace(L"Render thread joined.");
+                sample::Trace("Render thread joined.");
             }
         }
     }
