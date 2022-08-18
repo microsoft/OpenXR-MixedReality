@@ -53,9 +53,11 @@ namespace xr::math {
         NearFar NearFar;
     };
 
-    // Type conversion between math types
+    // Type conversion between math types.
+    // If you get the error "attempting to reference a deleted function" then you need to implement
+    // xr::math::detail::implement_math_cast for types X and Y. See examples further down.
     template <typename X, typename Y>
-    constexpr const X& cast(const Y& value);
+    constexpr const X& cast(const Y& value) = delete;
 
     // Convert XR types to DX
     DirectX::XMVECTOR XM_CALLCONV LoadXrVector2(const XrVector2f& vector);
@@ -104,13 +106,6 @@ namespace xr::math {
             return reinterpret_cast<X&>(value);
         }
     } // namespace detail
-
-#ifdef _MSC_VER
-    template <typename X, typename Y>
-    constexpr const X& cast(const Y& value) {
-        static_assert(false, "Undefined cast from Y to type X");
-    }
-#endif
 
 #define DEFINE_CAST(X, Y)                             \
     template <>                                       \
