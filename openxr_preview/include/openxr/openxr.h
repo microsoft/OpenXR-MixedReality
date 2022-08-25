@@ -25,7 +25,7 @@ extern "C" {
     ((((major) & 0xffffULL) << 48) | (((minor) & 0xffffULL) << 32) | ((patch) & 0xffffffffULL))
 
 // OpenXR current version number.
-#define XR_CURRENT_API_VERSION XR_MAKE_VERSION(1, 0, 23)
+#define XR_CURRENT_API_VERSION XR_MAKE_VERSION(1, 0, 24)
 
 #define XR_VERSION_MAJOR(version) (uint16_t)(((uint64_t)(version) >> 48)& 0xffffULL)
 #define XR_VERSION_MINOR(version) (uint16_t)(((uint64_t)(version) >> 32) & 0xffffULL)
@@ -41,7 +41,7 @@ extern "C" {
     #define XR_NULL_HANDLE 0
 #endif
 #endif
-
+        
 
 
 #define XR_NULL_SYSTEM_ID 0
@@ -90,13 +90,13 @@ extern "C" {
     #define XR_DEFINE_HANDLE(object) typedef uint64_t object;
 #endif
 #endif
-
+        
 
 
 #if !defined(XR_DEFINE_ATOM)
     #define XR_DEFINE_ATOM(object) typedef uint64_t object;
 #endif
-
+        
 
 typedef uint64_t XrVersion;
 typedef uint64_t XrFlags64;
@@ -439,6 +439,9 @@ typedef enum XrStructureType {
     XR_TYPE_SWAPCHAIN_STATE_SAMPLER_VULKAN_FB = 1000163000,
     XR_TYPE_COMPOSITION_LAYER_SPACE_WARP_INFO_FB = 1000171000,
     XR_TYPE_SYSTEM_SPACE_WARP_PROPERTIES_FB = 1000171001,
+    XR_TYPE_SEMANTIC_LABELS_FB = 1000175000,
+    XR_TYPE_ROOM_LAYOUT_FB = 1000175001,
+    XR_TYPE_BOUNDARY_2D_FB = 1000175002,
     XR_TYPE_DIGITAL_LENS_CONTROL_ALMALENCE = 1000196000,
     XR_TYPE_SPACE_CONTAINER_FB = 1000199000,
     XR_TYPE_PASSTHROUGH_KEYBOARD_HANDS_INTENSITY_FB = 1000203002,
@@ -1058,7 +1061,7 @@ typedef struct XrEventDataInstanceLossPending {
 } XrEventDataInstanceLossPending;
 
 typedef struct XrEventDataSessionStateChanged {
-     XrStructureType            type;
+    XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
     XrSession                   session;
     XrSessionState              state;
@@ -1131,7 +1134,7 @@ typedef XrResult (XRAPI_PTR *PFN_xrEnumerateReferenceSpaces)(XrSession session, 
 typedef XrResult (XRAPI_PTR *PFN_xrCreateReferenceSpace)(XrSession session, const XrReferenceSpaceCreateInfo* createInfo, XrSpace* space);
 typedef XrResult (XRAPI_PTR *PFN_xrGetReferenceSpaceBoundsRect)(XrSession session, XrReferenceSpaceType referenceSpaceType, XrExtent2Df* bounds);
 typedef XrResult (XRAPI_PTR *PFN_xrCreateActionSpace)(XrSession session, const XrActionSpaceCreateInfo* createInfo, XrSpace* space);
-typedef XrResult (XRAPI_PTR *PFN_xrLocateSpace)(XrSpace space, XrSpace baseSpace, XrTime   time, XrSpaceLocation* location);
+typedef XrResult (XRAPI_PTR *PFN_xrLocateSpace)(XrSpace space, XrSpace baseSpace, XrTime time, XrSpaceLocation* location);
 typedef XrResult (XRAPI_PTR *PFN_xrDestroySpace)(XrSpace space);
 typedef XrResult (XRAPI_PTR *PFN_xrEnumerateViewConfigurations)(XrInstance instance, XrSystemId systemId, uint32_t viewConfigurationTypeCapacityInput, uint32_t* viewConfigurationTypeCountOutput, XrViewConfigurationType* viewConfigurationTypes);
 typedef XrResult (XRAPI_PTR *PFN_xrGetViewConfigurationProperties)(XrInstance instance, XrSystemId systemId, XrViewConfigurationType viewConfigurationType, XrViewConfigurationProperties* configurationProperties);
@@ -1140,9 +1143,9 @@ typedef XrResult (XRAPI_PTR *PFN_xrEnumerateSwapchainFormats)(XrSession session,
 typedef XrResult (XRAPI_PTR *PFN_xrCreateSwapchain)(XrSession session, const XrSwapchainCreateInfo* createInfo, XrSwapchain* swapchain);
 typedef XrResult (XRAPI_PTR *PFN_xrDestroySwapchain)(XrSwapchain swapchain);
 typedef XrResult (XRAPI_PTR *PFN_xrEnumerateSwapchainImages)(XrSwapchain swapchain, uint32_t imageCapacityInput, uint32_t* imageCountOutput, XrSwapchainImageBaseHeader* images);
-typedef XrResult (XRAPI_PTR *PFN_xrAcquireSwapchainImage)(XrSwapchain         swapchain, const XrSwapchainImageAcquireInfo* acquireInfo, uint32_t* index);
+typedef XrResult (XRAPI_PTR *PFN_xrAcquireSwapchainImage)(XrSwapchain swapchain, const XrSwapchainImageAcquireInfo* acquireInfo, uint32_t* index);
 typedef XrResult (XRAPI_PTR *PFN_xrWaitSwapchainImage)(XrSwapchain swapchain, const XrSwapchainImageWaitInfo* waitInfo);
-typedef XrResult (XRAPI_PTR *PFN_xrReleaseSwapchainImage)(XrSwapchain         swapchain, const XrSwapchainImageReleaseInfo* releaseInfo);
+typedef XrResult (XRAPI_PTR *PFN_xrReleaseSwapchainImage)(XrSwapchain swapchain, const XrSwapchainImageReleaseInfo* releaseInfo);
 typedef XrResult (XRAPI_PTR *PFN_xrBeginSession)(XrSession session, const XrSessionBeginInfo* beginInfo);
 typedef XrResult (XRAPI_PTR *PFN_xrEndSession)(XrSession session);
 typedef XrResult (XRAPI_PTR *PFN_xrRequestExitSession)(XrSession session);
@@ -1746,7 +1749,7 @@ typedef XrBool32 (XRAPI_PTR *PFN_xrDebugUtilsMessengerCallbackEXT)(
             XrDebugUtilsMessageTypeFlagsEXT                  messageTypes,
             const XrDebugUtilsMessengerCallbackDataEXT*      callbackData,
             void*                                            userData);
-
+        
 
 // XrDebugUtilsMessengerCreateInfoEXT extends XrInstanceCreateInfo
 typedef struct XrDebugUtilsMessengerCreateInfoEXT {
@@ -1761,7 +1764,7 @@ typedef struct XrDebugUtilsMessengerCreateInfoEXT {
 typedef XrResult (XRAPI_PTR *PFN_xrSetDebugUtilsObjectNameEXT)(XrInstance instance, const XrDebugUtilsObjectNameInfoEXT* nameInfo);
 typedef XrResult (XRAPI_PTR *PFN_xrCreateDebugUtilsMessengerEXT)(XrInstance instance, const XrDebugUtilsMessengerCreateInfoEXT* createInfo, XrDebugUtilsMessengerEXT* messenger);
 typedef XrResult (XRAPI_PTR *PFN_xrDestroyDebugUtilsMessengerEXT)(XrDebugUtilsMessengerEXT messenger);
-typedef XrResult                                    (XRAPI_PTR *PFN_xrSubmitDebugUtilsMessageEXT)(XrInstance                                  instance, XrDebugUtilsMessageSeverityFlagsEXT         messageSeverity, XrDebugUtilsMessageTypeFlagsEXT             messageTypes, const XrDebugUtilsMessengerCallbackDataEXT* callbackData);
+typedef XrResult (XRAPI_PTR *PFN_xrSubmitDebugUtilsMessageEXT)(XrInstance instance, XrDebugUtilsMessageSeverityFlagsEXT messageSeverity, XrDebugUtilsMessageTypeFlagsEXT messageTypes, const XrDebugUtilsMessengerCallbackDataEXT* callbackData);
 typedef XrResult (XRAPI_PTR *PFN_xrSessionBeginDebugUtilsLabelRegionEXT)(XrSession session, const XrDebugUtilsLabelEXT* labelInfo);
 typedef XrResult (XRAPI_PTR *PFN_xrSessionEndDebugUtilsLabelRegionEXT)(XrSession session);
 typedef XrResult (XRAPI_PTR *PFN_xrSessionInsertDebugUtilsLabelEXT)(XrSession session, const XrDebugUtilsLabelEXT* labelInfo);
@@ -1780,7 +1783,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateDebugUtilsMessengerEXT(
 XRAPI_ATTR XrResult XRAPI_CALL xrDestroyDebugUtilsMessengerEXT(
     XrDebugUtilsMessengerEXT                    messenger);
 
-XRAPI_ATTR XrResult                                    XRAPI_CALL xrSubmitDebugUtilsMessageEXT(
+XRAPI_ATTR XrResult XRAPI_CALL xrSubmitDebugUtilsMessageEXT(
     XrInstance                                  instance,
     XrDebugUtilsMessageSeverityFlagsEXT         messageSeverity,
     XrDebugUtilsMessageTypeFlagsEXT             messageTypes,
@@ -2603,7 +2606,7 @@ typedef struct XrHandJointsMotionRangeInfoEXT {
 
             XR_DEFINE_HANDLE(XrSceneMSFT)
 
-#define XR_MSFT_scene_understanding_SPEC_VERSION 1
+#define XR_MSFT_scene_understanding_SPEC_VERSION 2
 #define XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME "XR_MSFT_scene_understanding"
 
 typedef enum XrSceneComputeFeatureMSFT {
@@ -2925,7 +2928,7 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetSceneMeshBuffersMSFT(
 
 
 #define XR_MSFT_scene_understanding_serialization 1
-#define XR_MSFT_scene_understanding_serialization_SPEC_VERSION 1
+#define XR_MSFT_scene_understanding_serialization_SPEC_VERSION 2
 #define XR_MSFT_SCENE_UNDERSTANDING_SERIALIZATION_EXTENSION_NAME "XR_MSFT_scene_understanding_serialization"
 typedef struct XrSerializedSceneFragmentDataGetInfoMSFT {
     XrStructureType             type;
@@ -3317,6 +3320,10 @@ XR_DEFINE_ATOM(XrAsyncRequestIdFB)
 typedef enum XrSpaceComponentTypeFB {
     XR_SPACE_COMPONENT_TYPE_LOCATABLE_FB = 0,
     XR_SPACE_COMPONENT_TYPE_STORABLE_FB = 1,
+    XR_SPACE_COMPONENT_TYPE_BOUNDED_2D_FB = 3,
+    XR_SPACE_COMPONENT_TYPE_BOUNDED_3D_FB = 4,
+    XR_SPACE_COMPONENT_TYPE_SEMANTIC_LABELS_FB = 5,
+    XR_SPACE_COMPONENT_TYPE_ROOM_LAYOUT_FB = 6,
     XR_SPACE_COMPONENT_TYPE_SPACE_CONTAINER_FB = 7,
     XR_SPACE_COMPONENT_TYPE_MAX_ENUM_FB = 0x7FFFFFFF
 } XrSpaceComponentTypeFB;
@@ -3958,7 +3965,7 @@ typedef struct XrMarkerSpaceCreateInfoVARJO {
     XrPosef                     poseInMarkerSpace;
 } XrMarkerSpaceCreateInfoVARJO;
 
-typedef XrResult  (XRAPI_PTR *PFN_xrSetMarkerTrackingVARJO)(XrSession session, XrBool32  enabled);
+typedef XrResult (XRAPI_PTR *PFN_xrSetMarkerTrackingVARJO)(XrSession session, XrBool32 enabled);
 typedef XrResult (XRAPI_PTR *PFN_xrSetMarkerTrackingTimeoutVARJO)(XrSession session, uint64_t markerId, XrDuration timeout);
 typedef XrResult (XRAPI_PTR *PFN_xrSetMarkerTrackingPredictionVARJO)(XrSession session, uint64_t markerId, XrBool32 enabled);
 typedef XrResult (XRAPI_PTR *PFN_xrGetMarkerSizeVARJO)(XrSession session, uint64_t markerId, XrExtent2Df* size);
@@ -3966,7 +3973,7 @@ typedef XrResult (XRAPI_PTR *PFN_xrCreateMarkerSpaceVARJO)(XrSession session, co
 
 #ifndef XR_NO_PROTOTYPES
 #ifdef XR_EXTENSION_PROTOTYPES
-XRAPI_ATTR XrResult  XRAPI_CALL xrSetMarkerTrackingVARJO(
+XRAPI_ATTR XrResult XRAPI_CALL xrSetMarkerTrackingVARJO(
     XrSession                                   session,
     XrBool32                                    enabled);
 
@@ -3996,11 +4003,11 @@ XRAPI_ATTR XrResult XRAPI_CALL xrCreateMarkerSpaceVARJO(
 #define XR_VARJO_view_offset 1
 #define XR_VARJO_view_offset_SPEC_VERSION 1
 #define XR_VARJO_VIEW_OFFSET_EXTENSION_NAME "XR_VARJO_view_offset"
-typedef XrResult  (XRAPI_PTR *PFN_xrSetViewOffsetVARJO)(XrSession session, float offset);
+typedef XrResult (XRAPI_PTR *PFN_xrSetViewOffsetVARJO)(XrSession session, float offset);
 
 #ifndef XR_NO_PROTOTYPES
 #ifdef XR_EXTENSION_PROTOTYPES
-XRAPI_ATTR XrResult  XRAPI_CALL xrSetViewOffsetVARJO(
+XRAPI_ATTR XrResult XRAPI_CALL xrSetViewOffsetVARJO(
     XrSession                                   session,
     float                                       offset);
 #endif /* XR_EXTENSION_PROTOTYPES */
@@ -4035,7 +4042,7 @@ typedef XrResult (XRAPI_PTR *PFN_xrDestroySpatialAnchorStoreConnectionMSFT)(XrSp
 typedef XrResult (XRAPI_PTR *PFN_xrPersistSpatialAnchorMSFT)(XrSpatialAnchorStoreConnectionMSFT spatialAnchorStore, const XrSpatialAnchorPersistenceInfoMSFT* spatialAnchorPersistenceInfo);
 typedef XrResult (XRAPI_PTR *PFN_xrEnumeratePersistedSpatialAnchorNamesMSFT)(XrSpatialAnchorStoreConnectionMSFT spatialAnchorStore, uint32_t spatialAnchorNamesCapacityInput, uint32_t* spatialAnchorNamesCountOutput, XrSpatialAnchorPersistenceNameMSFT* persistedAnchorNames);
 typedef XrResult (XRAPI_PTR *PFN_xrCreateSpatialAnchorFromPersistedNameMSFT)(XrSession session, const XrSpatialAnchorFromPersistedAnchorCreateInfoMSFT* spatialAnchorCreateInfo, XrSpatialAnchorMSFT* spatialAnchor);
-typedef XrResult (XRAPI_PTR *PFN_xrUnpersistSpatialAnchorMSFT)(XrSpatialAnchorStoreConnectionMSFT        spatialAnchorStore, const XrSpatialAnchorPersistenceNameMSFT* spatialAnchorPersistenceName);
+typedef XrResult (XRAPI_PTR *PFN_xrUnpersistSpatialAnchorMSFT)(XrSpatialAnchorStoreConnectionMSFT spatialAnchorStore, const XrSpatialAnchorPersistenceNameMSFT* spatialAnchorPersistenceName);
 typedef XrResult (XRAPI_PTR *PFN_xrClearSpatialAnchorStoreMSFT)(XrSpatialAnchorStoreConnectionMSFT spatialAnchorStore);
 
 #ifndef XR_NO_PROTOTYPES
@@ -4303,6 +4310,93 @@ typedef struct XrSystemSpaceWarpPropertiesFB {
 
 
 
+#define XR_FB_scene 1
+#define XR_FB_scene_SPEC_VERSION          1
+#define XR_FB_SCENE_EXTENSION_NAME        "XR_FB_scene"
+typedef struct XrExtent3DfFB {
+    float    width;
+    float    height;
+    float    depth;
+} XrExtent3DfFB;
+
+typedef struct XrOffset3DfFB {
+    float    x;
+    float    y;
+    float    z;
+} XrOffset3DfFB;
+
+typedef struct XrRect3DfFB {
+    XrOffset3DfFB    offset;
+    XrExtent3DfFB    extent;
+} XrRect3DfFB;
+
+typedef struct XrSemanticLabelsFB {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    uint32_t                    bufferCapacityInput;
+    uint32_t                    bufferCountOutput;
+    char*                       buffer;
+} XrSemanticLabelsFB;
+
+typedef struct XrRoomLayoutFB {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    XrUuidEXT                   floorUuid;
+    XrUuidEXT                   ceilingUuid;
+    uint32_t                    wallUuidCapacityInput;
+    uint32_t                    wallUuidCountOutput;
+    XrUuidEXT*                  wallUuids;
+} XrRoomLayoutFB;
+
+typedef struct XrBoundary2DFB {
+    XrStructureType             type;
+    const void* XR_MAY_ALIAS    next;
+    uint32_t                    vertexCapacityInput;
+    uint32_t                    vertexCountOutput;
+    XrVector2f*                 vertices;
+} XrBoundary2DFB;
+
+typedef XrResult (XRAPI_PTR *PFN_xrGetSpaceBoundingBox2DFB)(XrSession session, XrSpace space, XrRect2Df* boundingBox2DOutput);
+typedef XrResult (XRAPI_PTR *PFN_xrGetSpaceBoundingBox3DFB)(XrSession session, XrSpace space, XrRect3DfFB* boundingBox3DOutput);
+typedef XrResult (XRAPI_PTR *PFN_xrGetSpaceSemanticLabelsFB)(XrSession session, XrSpace space, XrSemanticLabelsFB* semanticLabelsOutput);
+typedef XrResult (XRAPI_PTR *PFN_xrGetSpaceBoundary2DFB)(XrSession session, XrSpace space, XrBoundary2DFB* boundary2DOutput);
+typedef XrResult (XRAPI_PTR *PFN_xrGetSpaceRoomLayoutFB)(XrSession session, XrSpace space, XrRoomLayoutFB* roomLayoutOutput);
+
+#ifndef XR_NO_PROTOTYPES
+#ifdef XR_EXTENSION_PROTOTYPES
+XRAPI_ATTR XrResult XRAPI_CALL xrGetSpaceBoundingBox2DFB(
+    XrSession                                   session,
+    XrSpace                                     space,
+    XrRect2Df*                                  boundingBox2DOutput);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrGetSpaceBoundingBox3DFB(
+    XrSession                                   session,
+    XrSpace                                     space,
+    XrRect3DfFB*                                boundingBox3DOutput);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrGetSpaceSemanticLabelsFB(
+    XrSession                                   session,
+    XrSpace                                     space,
+    XrSemanticLabelsFB*                         semanticLabelsOutput);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrGetSpaceBoundary2DFB(
+    XrSession                                   session,
+    XrSpace                                     space,
+    XrBoundary2DFB*                             boundary2DOutput);
+
+XRAPI_ATTR XrResult XRAPI_CALL xrGetSpaceRoomLayoutFB(
+    XrSession                                   session,
+    XrSpace                                     space,
+    XrRoomLayoutFB*                             roomLayoutOutput);
+#endif /* XR_EXTENSION_PROTOTYPES */
+#endif /* !XR_NO_PROTOTYPES */
+
+
+#define XR_EXT_palm_pose 1
+#define XR_EXT_palm_pose_SPEC_VERSION     2
+#define XR_EXT_PALM_POSE_EXTENSION_NAME   "XR_EXT_palm_pose"
+
+
 #define XR_ALMALENCE_digital_lens_control 1
 #define XR_ALMALENCE_digital_lens_control_SPEC_VERSION 1
 #define XR_ALMALENCE_DIGITAL_LENS_CONTROL_EXTENSION_NAME "XR_ALMALENCE_digital_lens_control"
@@ -4329,13 +4423,13 @@ XRAPI_ATTR XrResult XRAPI_CALL xrSetDigitalLensControlALMALENCE(
 
 
 #define XR_FB_spatial_entity_container 1
-#define XR_FB_spatial_entity_container_SPEC_VERSION 1
+#define XR_FB_spatial_entity_container_SPEC_VERSION 2
 #define XR_FB_SPATIAL_ENTITY_CONTAINER_EXTENSION_NAME "XR_FB_spatial_entity_container"
 typedef struct XrSpaceContainerFB {
     XrStructureType             type;
     const void* XR_MAY_ALIAS    next;
     uint32_t                    uuidCapacityInput;
-    uint32_t*                   uuidCountOutput;
+    uint32_t                    uuidCountOutput;
     XrUuidEXT*                  uuids;
 } XrSpaceContainerFB;
 

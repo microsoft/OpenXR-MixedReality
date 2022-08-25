@@ -498,6 +498,7 @@ namespace {
                     scene->Update(m_currentFrameTime);
                 }
             }
+
         }
     }
 

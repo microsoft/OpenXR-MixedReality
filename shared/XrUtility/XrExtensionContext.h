@@ -30,6 +30,7 @@ namespace xr {
         bool SupportsSceneUnderstanding{false};
         bool SupportsSceneUnderstandingSerialization{false};
         bool SupportsReprojectionConfiguration{false};
+        bool SupportsPalmPose{false};
 
         std::vector<const char*> EnabledExtensions;
 
@@ -84,6 +85,7 @@ namespace xr {
         extensions.SupportsSceneUnderstandingSerialization = extensions.IsEnabled(XR_MSFT_SCENE_UNDERSTANDING_SERIALIZATION_EXTENSION_NAME);
         extensions.SupportsReprojectionConfiguration = extensions.IsEnabled(XR_MSFT_COMPOSITION_LAYER_REPROJECTION_EXTENSION_NAME);
         extensions.SupportsSpatialAnchorPersistence = extensions.IsEnabled(XR_MSFT_SPATIAL_ANCHOR_PERSISTENCE_EXTENSION_NAME);
+        extensions.SupportsPalmPose = extensions.IsEnabled(XR_EXT_PALM_POSE_EXTENSION_NAME);
 
         return extensions;
     }
