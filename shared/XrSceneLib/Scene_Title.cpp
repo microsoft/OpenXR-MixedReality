@@ -41,7 +41,7 @@ namespace {
             auto placeTextBlock = [&](TextBlock& block, float top, float blockHeight) {
                 textInfo.Height = (uint32_t)std::floor(blockHeight * textInfo.Width / titleWidth); // Keep texture aspect ratio
                 auto textTexture = std::make_unique<engine::TextTexture>(m_context, textInfo);
-                textTexture->Draw(block.Text.c_str());
+                textTexture->Draw(block.Text);
                 const auto& material = textTexture->CreatePbrMaterial(m_context.PbrResources);
                 block.Object = AddObject(engine::CreateQuad(m_context.PbrResources, {titleWidth, blockHeight}, material));
                 block.Object->Pose() = Pose::Translation({0, (titleHeight / 2) - top - (blockHeight / 2), margin});

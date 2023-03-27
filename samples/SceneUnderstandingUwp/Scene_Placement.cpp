@@ -117,16 +117,26 @@ namespace {
                                                             {
                                                                 {m_aimPoseAction, "/user/hand/right/input/aim"},
                                                                 {m_aimPoseAction, "/user/hand/left/input/aim"},
-                                                                {m_placeObjectAction, "/user/hand/right/input/select"},
-                                                                {m_placeObjectAction, "/user/hand/left/input/select"},
+                                                                {m_placeObjectAction, "/user/hand/right/input/select/click"},
+                                                                {m_placeObjectAction, "/user/hand/left/input/select/click"},
                                                             });
-            if (context.Extensions.SupportsHandInteraction) {
+            if (context.Extensions.SupportsHandInteractionMSFT) {
                 actionContext.SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction",
                                                                 {
                                                                     {m_aimPoseAction, "/user/hand/right/input/aim"},
                                                                     {m_aimPoseAction, "/user/hand/left/input/aim"},
-                                                                    {m_placeObjectAction, "/user/hand/right/input/select"},
-                                                                    {m_placeObjectAction, "/user/hand/left/input/select"},
+                                                                    {m_placeObjectAction, "/user/hand/right/input/select/value"},
+                                                                    {m_placeObjectAction, "/user/hand/left/input/select/value"},
+                                                                });
+            }
+
+            if (context.Extensions.SupportsHandInteractionEXT) {
+                actionContext.SuggestInteractionProfileBindings("/interaction_profiles/ext/hand_interaction_ext",
+                                                                {
+                                                                    {m_aimPoseAction, "/user/hand/right/input/aim"},
+                                                                    {m_aimPoseAction, "/user/hand/left/input/aim"},
+                                                                    {m_placeObjectAction, "/user/hand/right/input/aim_activate_ext"},
+                                                                    {m_placeObjectAction, "/user/hand/left/input/aim_activate_ext"},
                                                                 });
             }
 

@@ -23,6 +23,8 @@ namespace xr::math {
         XrPosef Slerp(const XrPosef& a, const XrPosef& b, float alpha);
         XrPosef Invert(const XrPosef& pose);
 
+        constexpr bool IsIdentity(const XrPosef& pose);
+
         constexpr bool IsPoseValid(const XrSpaceLocation& location);
         constexpr bool IsPoseTracked(const XrSpaceLocation& location);
         constexpr bool IsPoseValid(const XrHandJointLocationEXT& jointLocation);
@@ -254,10 +256,9 @@ namespace xr::math {
     }
 
     inline DirectX::XMMATRIX XM_CALLCONV LoadXrPose(const XrPosef& pose) {
-        const DirectX::XMVECTOR orientation = LoadXrQuaternion(pose.orientation);
-        const DirectX::XMVECTOR position = LoadXrVector3(pose.position);
-        DirectX::XMMATRIX matrix = DirectX::XMMatrixRotationQuaternion(orientation);
-        matrix.r[3] = DirectX::XMVectorAdd(matrix.r[3], position);
+        DirectX::XMMATRIX matrix = DirectX::XMMatrixRotationQuaternion(LoadXrQuaternion(pose.orientation));
+        const XrVector3f& p = pose.position;
+        matrix.r[3] = DirectX::XMVectorSet(p.x, p.y, p.z, 1.0f);
         return matrix;
     }
 
@@ -356,6 +357,11 @@ namespace xr::math {
             StoreXrQuaternion(&c.orientation, DirectX::XMQuaternionMultiply(qa, qb));
             StoreXrVector3(&c.position, DirectX::XMVectorAdd(DirectX::XMVector3Rotate(pa, qb), pb));
             return c;
+        }
+
+        constexpr bool IsIdentity(const XrPosef& pose) {
+            return pose.position.x == 0 && pose.position.y == 0 && pose.position.z == 0 && pose.orientation.x == 0 &&
+                   pose.orientation.y == 0 && pose.orientation.z == 0 && pose.orientation.w == 1;
         }
 
         constexpr bool IsPoseValid(XrSpaceLocationFlags locationFlags) {

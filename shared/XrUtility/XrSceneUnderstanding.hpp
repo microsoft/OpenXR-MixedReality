@@ -49,6 +49,21 @@ namespace xr::su {
         bool supportsIndicesUint16;
     };
 
+    struct SceneMarker { // XR_SCENE_COMPONENT_TYPE_MARKER_MSFT
+        using Id = TypedUuid<SceneMarker>;
+        using MarkerType = ::XrSceneMarkerTypeMSFT;
+        SceneMarker::Id id;
+        MarkerType markerType;
+        XrTime lastSeenTime;
+        XrOffset2Df center;
+        XrExtent2Df size;
+    };
+
+    struct SceneQRCode : public SceneMarker {
+        XrSceneMarkerQRCodeSymbolTypeMSFT symbolType;
+        uint8_t qrVersion;
+    };
+
     // Gets the list of scene objects in the scene.
     // If filterObjectType is not empty then only the scene objects that match any of the given types will be returned.
     inline std::vector<SceneObject> GetSceneObjects(XrSceneMSFT scene, const std::vector<SceneObject::Type>& filterObjectType = {}) {
@@ -243,6 +258,102 @@ namespace xr::su {
         return result;
     }
 
+    template<typename T>
+    class GetMarkerExtension {
+    public:
+        GetMarkerExtension(int count) {}
+
+        template <typename XrStruct>
+        void Insert(XrStruct& xrStruct) {}
+
+        void CopyTo(T*, int k){}
+    };
+
+    template <>
+    class GetMarkerExtension<SceneQRCode> {
+        std::vector<XrSceneMarkerQRCodeMSFT> m_qrCodes;
+        XrSceneMarkerQRCodesMSFT m_sceneQRCodes{XR_TYPE_SCENE_MARKER_QR_CODES_MSFT};
+
+    public:
+        GetMarkerExtension(int count)
+            : m_qrCodes(count){
+            m_sceneQRCodes.qrCodeCount = count;
+            m_sceneQRCodes.qrCodes = m_qrCodes.data();
+        }
+
+        template <typename XrStruct>
+        void Insert(XrStruct& xrStruct) {
+            xr::InsertExtensionStruct(xrStruct, m_sceneQRCodes);
+        }
+
+        void CopyTo(SceneQRCode* target, int k) {
+            target->qrVersion= m_qrCodes[k].qrVersion;
+            target->symbolType = m_qrCodes[k].symbolType;
+        }
+    };
+
+    template <typename T>
+    inline std::vector<T> GetSceneMarkers(XrSceneMSFT scene) {
+        XrSceneComponentsGetInfoMSFT getInfo{XR_TYPE_SCENE_COMPONENTS_GET_INFO_MSFT};
+        getInfo.componentType = XR_SCENE_COMPONENT_TYPE_MARKER_MSFT;
+
+        XrSceneMarkerTypeFilterMSFT typesFilter{XR_TYPE_SCENE_MARKER_TYPE_FILTER_MSFT};
+        XrSceneMarkerTypeMSFT markerTypes[1] = {XrSceneMarkerTypeMSFT::XR_SCENE_MARKER_TYPE_QR_CODE_MSFT };
+        typesFilter.markerTypeCount = static_cast<uint32_t>(std::size(markerTypes));
+        typesFilter.markerTypes = markerTypes;
+        xr::InsertExtensionStruct(getInfo, typesFilter);
+        XrSceneComponentsMSFT sceneComponents{XR_TYPE_SCENE_COMPONENTS_MSFT};
+
+        // Get the number of markers
+        CHECK_XRCMD(xrGetSceneComponentsMSFT(scene, &getInfo, &sceneComponents));
+        const uint32_t count = sceneComponents.componentCountOutput;
+
+        std::vector<XrSceneComponentMSFT> components(count);
+        sceneComponents.componentCapacityInput = count;
+        sceneComponents.components = components.data();
+
+        std::vector<XrSceneMarkerMSFT> markers(count);
+        XrSceneMarkersMSFT sceneMarkers{XR_TYPE_SCENE_MARKERS_MSFT};
+        sceneMarkers.sceneMarkerCount = count;
+        sceneMarkers.sceneMarkers = markers.data();
+        xr::InsertExtensionStruct(sceneComponents, sceneMarkers);
+
+        GetMarkerExtension<T> extension(count);
+        extension.Insert(sceneComponents);
+
+        CHECK_XRCMD(xrGetSceneComponentsMSFT(scene, &getInfo, &sceneComponents));
+
+        std::vector<T> result(count);
+        for (uint32_t k = 0; k < count; k++) {
+            auto& m = result[k];
+            m.id = components[k].id;
+            m.markerType = markers[k].markerType;
+            m.lastSeenTime = markers[k].lastSeenTime;
+            m.center = markers[k].center;
+            m.size = markers[k].size;
+            extension.CopyTo(&m, k);
+        }
+        return result;
+    }
+
+    inline void GetSceneMarkerRawData(XrSceneMSFT scene, const SceneMarker::Id& markerId, std::vector<uint8_t>& data) {
+        uint32_t dataSize;
+        CHECK_XRCMD(xrGetSceneMarkerRawDataMSFT(scene, (XrUuidMSFT*)&markerId, 0, &dataSize, nullptr));
+        data.resize(dataSize);
+        CHECK_XRCMD(xrGetSceneMarkerRawDataMSFT(scene, (XrUuidMSFT*)&markerId, dataSize, &dataSize, data.data()));
+    }
+
+    inline std::string GetSceneMarkerDecodedString(XrSceneMSFT scene, const SceneMarker::Id& markerId) {
+        uint32_t characterCount;
+        CHECK_XRCMD(xrGetSceneMarkerDecodedStringMSFT(scene, (XrUuidMSFT*)&markerId, 0, &characterCount, nullptr));
+        std::string ret;
+        ret.resize(characterCount);
+        CHECK_XRCMD(xrGetSceneMarkerDecodedStringMSFT(scene, (XrUuidMSFT*)&markerId, characterCount, &characterCount, ret.data()));
+        // characterCount includes the null terminator needed to fill the buffer but we need to trim it
+        ret.resize(characterCount - 1);
+        return ret;
+    }
+
     // Locate components given space and time.
     template <typename TUuid>
     void LocateObjects(XrSceneMSFT scene,
@@ -303,6 +414,19 @@ namespace xr::su {
         inline std::vector<SceneColliderMesh> GetChildrenColliderMeshes(SceneObject::Id parentId,
                                                                         const std::vector<SceneObject::Type>& filterObjectType = {}) const {
             return GetSceneColliderMeshes(m_scene.Get(), parentId, filterObjectType);
+        }
+
+        template <typename T>
+        inline std::vector<T> GetMarkers() const {
+            return GetSceneMarkers<T>(m_scene.Get());
+        }
+
+        inline std::string GetMarkerDecodedString(const SceneMarker::Id& markerId) {
+            return GetSceneMarkerDecodedString(m_scene.Get(), markerId);
+        }
+
+        inline void GetMarkerRawData(const SceneMarker::Id& markerId, std::vector<uint8_t>& data) {
+            GetSceneMarkerRawData(m_scene.Get(), markerId, data);
         }
 
         inline XrSceneMSFT Handle() const noexcept {

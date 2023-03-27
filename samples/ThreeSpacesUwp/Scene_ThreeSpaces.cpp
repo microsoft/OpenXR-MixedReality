@@ -39,11 +39,21 @@ namespace {
                                                                   {m_aimPoseAction, "/user/hand/right/input/aim/pose"},
                                                               });
 
-            if (context.Extensions.SupportsHandInteraction) {
+            if (context.Extensions.SupportsHandInteractionMSFT) {
                 ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction",
                                                                   {
                                                                       {m_selectAction, "/user/hand/left/input/select/value"},
                                                                       {m_selectAction, "/user/hand/right/input/select/value"},
+                                                                      {m_aimPoseAction, "/user/hand/left/input/aim/pose"},
+                                                                      {m_aimPoseAction, "/user/hand/right/input/aim/pose"},
+                                                                  });
+            }
+
+            if (context.Extensions.SupportsHandInteractionEXT) {
+                ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/ext/hand_interaction_ext",
+                                                                  {
+                                                                      {m_selectAction, "/user/hand/left/input/aim_activate_ext/value"},
+                                                                      {m_selectAction, "/user/hand/right/input/aim_activate_ext/value"},
                                                                       {m_aimPoseAction, "/user/hand/left/input/aim/pose"},
                                                                       {m_aimPoseAction, "/user/hand/right/input/aim/pose"},
                                                                   });

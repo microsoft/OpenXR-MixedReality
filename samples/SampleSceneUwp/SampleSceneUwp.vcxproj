@@ -136,8 +136,12 @@
     </ClCompile>
     <ClCompile Include="Scene_Orbit.cpp" />
     <ClCompile Include="Scene_HandTracking.cpp" />
+    <ClCompile Include="..\SampleSceneWin32\Scene_ControllerActions.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\SampleSceneWin32\Key.glb">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="packages.config" />
     <None Include="TemporaryKey.pfx" />
   </ItemGroup>

@@ -72,6 +72,7 @@ namespace engine {
     std::shared_ptr<PbrModelObject> CreateAxis(const Pbr::Resources& pbrResources,
                                                float axisLength = 1.0f,
                                                float axisThickness = 0.01f,
+                                               float originAdditionalThickness = 0.01f,
                                                float roughness = 0.85f,
                                                float metallic = 0.01f);
 

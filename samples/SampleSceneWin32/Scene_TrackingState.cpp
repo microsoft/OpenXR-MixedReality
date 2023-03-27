@@ -39,8 +39,16 @@ namespace {
                                                                   {m_gripSpaceAction, "/user/hand/right/input/grip/pose"},
                                                               });
 
-            if (context.Extensions.SupportsHandInteraction) {
+            if (context.Extensions.SupportsHandInteractionMSFT) {
                 ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction",
+                                                                  {
+                                                                      {m_gripSpaceAction, "/user/hand/left/input/grip/pose"},
+                                                                      {m_gripSpaceAction, "/user/hand/right/input/grip/pose"},
+                                                                  });
+            }
+
+            if (context.Extensions.SupportsHandInteractionEXT) {
+                ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/ext/hand_interaction_ext",
                                                                   {
                                                                       {m_gripSpaceAction, "/user/hand/left/input/grip/pose"},
                                                                       {m_gripSpaceAction, "/user/hand/right/input/grip/pose"},
@@ -148,7 +156,7 @@ namespace {
             uint32_t pixelHeight = (uint32_t)std::floor(size.height * pixelWidth / size.width); // Keep texture aspect ratio
 
             textBlock.TextTexture = std::make_unique<engine::TextTexture>(m_context, GetTextInfo(pixelWidth, pixelHeight));
-            textBlock.TextTexture->Draw(textBlock.Text.c_str());
+            textBlock.TextTexture->Draw(textBlock.Text);
 
             const auto material = textBlock.TextTexture->CreatePbrMaterial(m_context.PbrResources);
             textBlock.Object = AddObject(engine::CreateQuad(m_context.PbrResources, {size.width, size.height}, material));
@@ -158,7 +166,7 @@ namespace {
         void UpdateTextBlock(TextBlock& textBlock, const char* text) {
             if (strcmp(textBlock.Text.c_str(), text) != 0) {
                 textBlock.Text = text;
-                textBlock.TextTexture->Draw(textBlock.Text.c_str());
+                textBlock.TextTexture->Draw(textBlock.Text);
                 const auto material = textBlock.TextTexture->CreatePbrMaterial(m_context.PbrResources);
                 textBlock.Object->GetModel()->GetPrimitive(0).SetMaterial(material);
             }

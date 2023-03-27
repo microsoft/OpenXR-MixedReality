@@ -26,9 +26,12 @@ or choose x64 platform when running on a Windows Desktop PC with the HoloLens 2 
 
 # OpenXR preview extensions
 
-The [openxr_preview](https://github.com/microsoft/OpenXR-MixedReality/tree/main/openxr_preview) folder contains a set of [preview header files](https://github.com/microsoft/OpenXR-MixedReality/tree/main/openxr_preview/include/openxr) containing the following OpenXR extensions that are only available [in preview runtime](http://aka.ms/openxr-preview).
+The [openxr_preview](https://github.com/microsoft/OpenXR-MixedReality/tree/main/openxr_preview) folder contains an additional
+[openxr_msft_preview.h](https://github.com/microsoft/OpenXR-MixedReality/tree/main/openxr_preview/include/openxr/openxr_msft_preview.h) header to offer
+the following OpenXR extensions that are only available [in preview runtime](http://aka.ms/openxr-preview).
 
-1. There's no additional preview extensions in latest preview runtime.
+1. [XR_EXTX_hand_interaction](https://github.com/microsoft/OpenXR-MixedReality/tree/main/openxr_preview/include/openxr/preview/xr_ext_hand_interaction.h)
+2. [XR_MSFTX_scene_marker](https://github.com/microsoft/OpenXR-MixedReality/tree/main/openxr_preview/include/openxr/preview/xr_msft_scene_marker.h)
 
 Please send feedback on preview extensions and samples at [GitHub issues](https://github.com/microsoft/OpenXR-MixedReality/issues).
 We are planning to incorporate your feedback and finalize these extensions as vendor extensions (MSFT) or cross-vendor extensions (EXT)
