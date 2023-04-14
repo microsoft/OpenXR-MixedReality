@@ -8,6 +8,8 @@
 #include <XrSceneLib/SpaceObject.h>
 #include <XrSceneLib/TextTexture.h>
 #include <XrSceneLib/Scene.h>
+#include <SampleShared/FileUtility.h>
+#include <pbr/GltfLoader.h>
 
 using namespace DirectX;
 using namespace xr::math;
@@ -23,13 +25,19 @@ namespace {
         static constexpr char const* MotionController = "/interaction_profiles/microsoft/motion_controller";
         static constexpr char const* TouchController = "/interaction_profiles/oculus/touch_controller";
         static constexpr char const* HPMixedRealityController = "/interaction_profiles/hp/mixed_reality_controller";
-        static constexpr char const* HandInteraction = "/interaction_profiles/microsoft/hand_interaction";
+        static constexpr char const* HandInteractionMSFT = "/interaction_profiles/microsoft/hand_interaction";
+        static constexpr char const* HandInteractionEXT = "/interaction_profiles/ext/hand_interaction_ext";
         static constexpr char const* SamsungController = "/interaction_profiles/samsung/odyssey_controller";
     };
 
     constexpr char const* aimPoseActionName[xr::Side::Count] = {"left_aim", "right_aim"};
     constexpr char const* gripPoseActionName[xr::Side::Count] = {"left_grip", "right_grip"};
+    constexpr char const* pinchPoseActionName[xr::Side::Count] = {"left_pinch", "right_pinch"};
+    constexpr char const* pokePoseActionName[xr::Side::Count] = {"left_poke", "right_poke"};
 
+    // To visualize the Poke Interaction, draw a sphere with a 5 mm radius.
+    constexpr float PokeRadius = .005f;
+    
     //
     // This sample visualizes the current interaction profile and its controller components
     // as a list of slide bars to their latest values. It also visualizes aim and grip pose.
@@ -37,7 +45,7 @@ namespace {
     struct ControllerActionsScene : public engine::Scene {
         ControllerActionsScene(engine::Context& context)
             : Scene(context)
-            , m_actions(CreateActions(ActionContext(), "controller_actions_scene_actionset")) {
+            , m_actions(CreateActions(ActionContext(), m_context.Extensions, "controller_actions_scene_actionset")) {
             for (auto side : {xr::Side::Left, xr::Side::Right}) {
                 ControllerData& controllerData = m_controllerData[side];
                 controllerData.side = side;
@@ -71,6 +79,44 @@ namespace {
                     axis->SetParent(controllerData.gripRoot);
                 }
 
+                if (m_context.Extensions.SupportsHandInteractionEXT) {
+                    // Initialize objects attached to pinch pose
+                    {
+                        XrAction pinchAction = FindAction(m_actions, pinchPoseActionName[side]).action;
+                        xr::SpaceHandle pinchSpace = CreateActionSpace(context.Session.Handle, pinchAction);
+                        controllerData.pinchRoot = AddObject(engine::CreateSpaceObject(std::move(pinchSpace)));
+
+                        auto axis = AddObject(engine::CreateAxis(m_context.PbrResources, 0.05f, 0.001f, 0.001f));
+                        axis->SetParent(controllerData.pinchRoot);
+
+                        // Load Key object to vizualise pinch pose and plane
+                        auto glbData = sample::ReadFileBytes(sample::FindFileInAppFolder(L"Key.glb"));
+                        controllerData.pinchPlaneObject =
+                            std::make_shared<engine::PbrModelObject>(Gltf::FromGltfBinary(m_context.PbrResources, glbData));
+                        controllerData.pinchPlane = AddObject(controllerData.pinchPlaneObject);
+                        controllerData.pinchPlane->SetParent(controllerData.pinchRoot);
+                        controllerData.pinchPlaneObject->SetFillMode(Pbr::FillMode::Wireframe);
+                    }
+
+                    // Initialize objects attached to poke pose
+                    {
+                        XrAction pokeAction = FindAction(m_actions, pokePoseActionName[side]).action;
+                        xr::SpaceHandle pokeSpace = CreateActionSpace(context.Session.Handle, pokeAction);
+                        controllerData.pokeRoot = AddObject(engine::CreateSpaceObject(std::move(pokeSpace)));
+
+                        auto axis = AddObject(engine::CreateAxis(m_context.PbrResources, 0.05f, 0.001f, 0.0f));
+                        axis->SetParent(controllerData.pokeRoot);
+
+                        // Initialize sphere to visualize the poke.
+                        controllerData.pokeSphere =
+                            AddObject(engine::CreateSphere(m_context.PbrResources, 2.0f * PokeRadius, 20, Pbr::FromSRGB(Colors::Yellow)));
+                        // Pose of the Poke action should be on the sphere's surface, so that the sphere will collide with a target
+                        // surface at the same time as the poke's pose does, hence offset the sphere's position along Z axis
+                        controllerData.pokeSphere->Pose().position = {0.0f, 0.0f, PokeRadius};
+                        controllerData.pokeSphere->SetParent(controllerData.pokeRoot);
+                    }
+                }
+
                 m_interactionProfilesDirty = true;
             }
         }
@@ -92,6 +138,23 @@ namespace {
                 // Update the value and visual for each controller component
                 for (auto& component : m_controllerData[side].components) {
                     UpdateComponentValueVisuals(m_context, xr::StringToPath(m_context.Instance.Handle, UserHandPath[side]), component);
+                }
+
+                // Find the pinch action
+                if (m_context.Extensions.SupportsHandInteractionEXT) {
+                    XrAction pinchAction = FindAction(m_actions, "pinch").action;
+                    if (pinchAction) {
+                        XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
+                        getInfo.action = pinchAction;
+                        getInfo.subactionPath = xr::StringToPath(m_context.Instance.Handle, UserHandPath[side]);
+                        XrActionStateFloat state{XR_TYPE_ACTION_STATE_FLOAT};
+                        CHECK_XRCMD(xrGetActionStateFloat(m_context.Session.Handle, &getInfo, &state));
+                        if (state.isActive && state.changedSinceLastSync) {
+                            const bool isPinched = (state.currentState == 1.0f);
+                            m_controllerData[side].pinchPlaneObject->SetFillMode(isPinched ? Pbr::FillMode::Solid
+                                                                                           : Pbr::FillMode::Wireframe);
+                        }
+                    }
                 }
             }
         }
@@ -155,6 +218,11 @@ namespace {
 
             std::shared_ptr<engine::Object> gripRoot;
             std::shared_ptr<engine::Object> aimRoot;
+            std::shared_ptr<engine::Object> pinchRoot;
+            std::shared_ptr<engine::Object> pinchPlane;
+            std::shared_ptr<engine::Object> pokeRoot;
+            std::shared_ptr<engine::Object> pokeSphere;
+            std::shared_ptr<engine::PbrModelObject> pinchPlaneObject;
         };
 
         const std::vector<ActionInfo> m_actions;
@@ -162,7 +230,9 @@ namespace {
         std::atomic<bool> m_interactionProfilesDirty{false};
 
     private:
-        static std::vector<ActionInfo> CreateActions(sample::ActionContext& actionContext, const char* actionSetName) {
+        static std::vector<ActionInfo> CreateActions(sample::ActionContext& actionContext,
+                                                     const xr::ExtensionContext& extensions,
+                                                     const char* actionSetName) {
             sample::ActionSet& actionSet = actionContext.CreateActionSet(actionSetName, actionSetName);
             std::vector<ActionInfo> actions{};
 
@@ -188,7 +258,7 @@ namespace {
                           {InteractionProfiles::HPMixedRealityController, "trigger/value", nullptr},
                           {InteractionProfiles::MotionController, "trigger/value", nullptr},
                           {InteractionProfiles::SamsungController, "trigger/value", nullptr},
-                          {InteractionProfiles::HandInteraction, "select/value", nullptr},
+                          {InteractionProfiles::HandInteractionMSFT, "select/value", nullptr},
                           {InteractionProfiles::TouchController, "trigger/value", nullptr},
                       });
             addAction("squeeze",
@@ -197,8 +267,38 @@ namespace {
                           {InteractionProfiles::HPMixedRealityController, "squeeze/value", nullptr},
                           {InteractionProfiles::MotionController, "squeeze/click", nullptr},
                           {InteractionProfiles::SamsungController, "squeeze/click", nullptr},
-                          {InteractionProfiles::HandInteraction, "squeeze/value", nullptr},
+                          {InteractionProfiles::HandInteractionMSFT, "squeeze/value", nullptr},
                           {InteractionProfiles::TouchController, "squeeze/value", nullptr},
+                      });
+            addAction("aim_activate",
+                      XR_ACTION_TYPE_FLOAT_INPUT,
+                      {
+                          {InteractionProfiles::HandInteractionEXT, "aim_activate_ext/value", nullptr},
+                      });
+            addAction("aim_activate_ready",
+                      XR_ACTION_TYPE_BOOLEAN_INPUT,
+                      {
+                          {InteractionProfiles::HandInteractionEXT, "aim_activate_ext/ready_ext", nullptr},
+                      });
+            addAction("grasp",
+                      XR_ACTION_TYPE_FLOAT_INPUT,
+                      {
+                          {InteractionProfiles::HandInteractionEXT, "grasp_ext/value", nullptr},
+                      });
+            addAction("grasp_ready",
+                      XR_ACTION_TYPE_BOOLEAN_INPUT,
+                      {
+                          {InteractionProfiles::HandInteractionEXT, "grasp_ext/ready_ext", nullptr},
+                      });
+            addAction("pinch",
+                      XR_ACTION_TYPE_FLOAT_INPUT,
+                      {
+                          {InteractionProfiles::HandInteractionEXT, "pinch_ext/value", nullptr},
+                      });
+            addAction("pinch_ready",
+                      XR_ACTION_TYPE_BOOLEAN_INPUT,
+                      {
+                          {InteractionProfiles::HandInteractionEXT, "pinch_ext/ready_ext", nullptr},
                       });
             addAction("thumbstick_x",
                       XR_ACTION_TYPE_FLOAT_INPUT,
@@ -290,7 +390,8 @@ namespace {
                               {InteractionProfiles::HPMixedRealityController, "aim/pose", UserHandPath[side]},
                               {InteractionProfiles::MotionController, "aim/pose", UserHandPath[side]},
                               {InteractionProfiles::SamsungController, "aim/pose", UserHandPath[side]},
-                              {InteractionProfiles::HandInteraction, "aim/pose", UserHandPath[side]},
+                              {InteractionProfiles::HandInteractionMSFT, "aim/pose", UserHandPath[side]},
+                              {InteractionProfiles::HandInteractionEXT, "aim/pose", UserHandPath[side]},
                               {InteractionProfiles::TouchController, "aim/pose", UserHandPath[side]},
                           });
 
@@ -301,9 +402,36 @@ namespace {
                               {InteractionProfiles::HPMixedRealityController, "grip/pose", UserHandPath[side]},
                               {InteractionProfiles::MotionController, "grip/pose", UserHandPath[side]},
                               {InteractionProfiles::SamsungController, "grip/pose", UserHandPath[side]},
-                              {InteractionProfiles::HandInteraction, "grip/pose", UserHandPath[side]},
+                              {InteractionProfiles::HandInteractionMSFT, "grip/pose", UserHandPath[side]},
+                              {InteractionProfiles::HandInteractionEXT, "grip/pose", UserHandPath[side]},
                               {InteractionProfiles::TouchController, "grip/pose", UserHandPath[side]},
                           });
+
+                if (extensions.SupportsHandInteractionEXT) {
+                    addAction(pinchPoseActionName[side],
+                              XR_ACTION_TYPE_POSE_INPUT,
+                              {
+                                  {InteractionProfiles::SimpleController, "pinch_ext/pose", UserHandPath[side]},
+                                  {InteractionProfiles::HPMixedRealityController, "pinch_ext/pose", UserHandPath[side]},
+                                  {InteractionProfiles::MotionController, "pinch_ext/pose", UserHandPath[side]},
+                                  {InteractionProfiles::SamsungController, "pinch_ext/pose", UserHandPath[side]},
+                                  {InteractionProfiles::HandInteractionMSFT, "pinch_ext/pose", UserHandPath[side]},
+                                  {InteractionProfiles::HandInteractionEXT, "pinch_ext/pose", UserHandPath[side]},
+                                  {InteractionProfiles::TouchController, "pinch_ext/pose", UserHandPath[side]},
+                              });
+
+                    addAction(pokePoseActionName[side],
+                              XR_ACTION_TYPE_POSE_INPUT,
+                              {
+                                  {InteractionProfiles::SimpleController, "poke_ext/pose", UserHandPath[side]},
+                                  {InteractionProfiles::HPMixedRealityController, "poke_ext/pose", UserHandPath[side]},
+                                  {InteractionProfiles::MotionController, "poke_ext/pose", UserHandPath[side]},
+                                  {InteractionProfiles::SamsungController, "poke_ext/pose", UserHandPath[side]},
+                                  {InteractionProfiles::HandInteractionMSFT, "poke_ext/pose", UserHandPath[side]},
+                                  {InteractionProfiles::HandInteractionEXT, "poke_ext/pose", UserHandPath[side]},
+                                  {InteractionProfiles::TouchController, "poke_ext/pose", UserHandPath[side]},
+                              });
+                }
             }
 
             return actions;
@@ -357,9 +485,14 @@ namespace {
                                                                 suggestedBindings[InteractionProfiles::HPMixedRealityController]);
             }
 
-            if (extensions.SupportsHandInteraction) {
-                actionContext.SuggestInteractionProfileBindings(InteractionProfiles::HandInteraction,
-                                                                suggestedBindings[InteractionProfiles::HandInteraction]);
+            if (extensions.SupportsHandInteractionMSFT) {
+                actionContext.SuggestInteractionProfileBindings(InteractionProfiles::HandInteractionMSFT,
+                                                                suggestedBindings[InteractionProfiles::HandInteractionMSFT]);
+            }
+
+            if (extensions.SupportsHandInteractionEXT) {
+                actionContext.SuggestInteractionProfileBindings(InteractionProfiles::HandInteractionEXT,
+                                                                suggestedBindings[InteractionProfiles::HandInteractionEXT]);
             }
 
             if (extensions.SupportsSamsungOdysseyController) {
@@ -480,7 +613,7 @@ namespace {
         }
 
         static std::shared_ptr<engine::Object> CreateTextObject(engine::Context& context, uint32_t side, std::string_view text) {
-            constexpr uint32_t width = 480, height = 960;
+            constexpr uint32_t width = 480, height = 1200;
             engine::TextTextureInfo textInfo{width, height}; // pixels
             textInfo.FontSize = 18;
             textInfo.Foreground = Pbr::RGBA::White;
@@ -490,7 +623,7 @@ namespace {
             textInfo.ParagraphAlignment = DWRITE_PARAGRAPH_ALIGNMENT_NEAR;
 
             auto textTexture = std::make_unique<engine::TextTexture>(context, textInfo);
-            textTexture->Draw(text.data());
+            textTexture->Draw(text);
             const auto& material = textTexture->CreatePbrMaterial(context.PbrResources);
             // Disable alpha blending because this text box set a background color
             material->SetAlphaBlended(false);

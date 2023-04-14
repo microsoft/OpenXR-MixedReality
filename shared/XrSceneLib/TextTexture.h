@@ -34,7 +34,7 @@ namespace engine {
     public:
         TextTexture(Context& context, TextTextureInfo textInfo);
 
-        void Draw(const char* text);
+        void Draw(std::string_view text);
         ID3D11Texture2D* Texture() const;
         std::shared_ptr<Pbr::Material> CreatePbrMaterial(const Pbr::Resources& pbrResources) const;
 

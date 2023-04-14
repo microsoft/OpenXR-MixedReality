@@ -64,6 +64,7 @@ namespace Pbr {
 
         PrimitiveBuilder& AddAxis(float axisLength = 1.0f,
                                   float axisThickness = 0.1f,
+                                  float originAdditionalThickness = 0.01f,
                                   Pbr::NodeIndex_t transformIndex = Pbr::RootNodeIndex);
         PrimitiveBuilder& AddSphere(float diameter,
                                     uint32_t tessellation,

@@ -25,10 +25,16 @@
   <ItemGroup>
     <None Include="packages.config" />
     <None Include="$(OpenXRLoaderBinaryRoot)\bin\openxr_loader.dll" />
+    <None Include="Key.glb">
+      <Filter>SceneAssets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="Resources">
       <UniqueIdentifier>{d833b40e-3939-4c3b-8788-8d0a14dc2bd8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SceneAssets">
+      <UniqueIdentifier>{0663c26d-ed88-4d16-b85f-328ecb7ef765}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>

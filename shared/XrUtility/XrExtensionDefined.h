@@ -100,3 +100,9 @@
 #else
 #define XR_MSFT_composition_layer_reprojection_DEFINED(_, defined, undefined) _(undefined)
 #endif
+
+#ifdef XR_MSFTX_scene_marker
+#define XR_MSFTX_scene_marker_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_MSFTX_scene_marker_DEFINED(_, defined, undefined) _(undefined)
+#endif

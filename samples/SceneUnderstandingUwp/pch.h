@@ -31,11 +31,13 @@
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
 #include <openxr/openxr_reflection.h>
+#include <openxr/openxr_msft_preview.h>
 
 #define ENABLE_GLOBAL_XR_DISPATCH_TABLE
 #include <XrUtility/XrDispatchTable.h>
 #include <XrUtility/XrError.h>
 #include <XrUtility/XrMath.h>
+#include <XrUtility/XrUuid.h>
 #include <SampleShared/Trace.h>
 #include <SampleShared/ScopeGuard.h>
 

@@ -29,6 +29,9 @@ namespace {
         // Load the controller model as GLTF binary stream using two call idiom
         uint32_t bufferSize = 0;
         CHECK_XRCMD(xrLoadControllerModelMSFT(context.Session.Handle, modelKey, 0, &bufferSize, nullptr));
+        if (bufferSize == 0) {
+            return nullptr;
+        }
         auto modelBuffer = std::make_unique<byte[]>(bufferSize);
         CHECK_XRCMD(
             xrLoadControllerModelMSFT(context.Session.Handle, modelKey, bufferSize, &bufferSize, modelBuffer.get()));
@@ -115,7 +118,7 @@ namespace {
         XrControllerModelKeyStateMSFT controllerModelKeyState{XR_TYPE_CONTROLLER_MODEL_KEY_STATE_MSFT};
         CHECK_XRCMD(xrGetControllerModelKeyMSFT(context.Session.Handle, m_controllerUserPath, &controllerModelKeyState));
 
-        // If a new valid model key is returned, reload the model into cache asynchronizely
+        // If a new valid model key is returned, reload the model into cache asynchronously
         const bool modelKeyValid = controllerModelKeyState.modelKey != XR_NULL_CONTROLLER_MODEL_KEY_MSFT;
         if (modelKeyValid && (m_model == nullptr || m_model->Key != controllerModelKeyState.modelKey)) {
             // Avoid two background tasks running together. The new one will start in future update after the old one is finished.

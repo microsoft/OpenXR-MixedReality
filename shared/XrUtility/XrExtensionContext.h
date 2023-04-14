@@ -3,6 +3,7 @@
 
 #pragma once
 
+#include <openxr/openxr_msft_preview.h>
 #include "XrEnumerate.h"
 
 namespace xr {
@@ -13,7 +14,8 @@ namespace xr {
         bool SupportsVisibilityMask{false};
         bool SupportsUnboundedSpace{false};
         bool SupportsSpatialAnchor{false};
-        bool SupportsHandInteraction{false};
+        bool SupportsHandInteractionEXT{false};
+        bool SupportsHandInteractionMSFT{false};
         bool SupportsEyeGazeInteraction{false};
         bool SupportsHandJointTracking{false};
         bool SupportsHandMeshTracking{false};
@@ -30,6 +32,8 @@ namespace xr {
         bool SupportsSceneUnderstanding{false};
         bool SupportsSceneUnderstandingSerialization{false};
         bool SupportsReprojectionConfiguration{false};
+        bool SupportsPalmPose{false};
+        bool SupportsSceneMarker{false};
 
         std::vector<const char*> EnabledExtensions;
 
@@ -70,7 +74,8 @@ namespace xr {
         extensions.SupportsVisibilityMask = extensions.IsEnabled(XR_KHR_VISIBILITY_MASK_EXTENSION_NAME);
         extensions.SupportsUnboundedSpace = extensions.IsEnabled(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
         extensions.SupportsSpatialAnchor = extensions.IsEnabled(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
-        extensions.SupportsHandInteraction = extensions.IsEnabled(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
+        extensions.SupportsHandInteractionEXT = extensions.IsEnabled(XR_EXT_HAND_INTERACTION_EXTENSION_NAME);
+        extensions.SupportsHandInteractionMSFT = extensions.IsEnabled(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
         extensions.SupportsEyeGazeInteraction = extensions.IsEnabled(XR_EXT_EYE_GAZE_INTERACTION_EXTENSION_NAME);
         extensions.SupportsSecondaryViewConfiguration = extensions.IsEnabled(XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME);
         extensions.SupportsHandJointTracking = extensions.IsEnabled(XR_EXT_HAND_TRACKING_EXTENSION_NAME);
@@ -84,6 +89,8 @@ namespace xr {
         extensions.SupportsSceneUnderstandingSerialization = extensions.IsEnabled(XR_MSFT_SCENE_UNDERSTANDING_SERIALIZATION_EXTENSION_NAME);
         extensions.SupportsReprojectionConfiguration = extensions.IsEnabled(XR_MSFT_COMPOSITION_LAYER_REPROJECTION_EXTENSION_NAME);
         extensions.SupportsSpatialAnchorPersistence = extensions.IsEnabled(XR_MSFT_SPATIAL_ANCHOR_PERSISTENCE_EXTENSION_NAME);
+        extensions.SupportsPalmPose = extensions.IsEnabled(XR_EXT_PALM_POSE_EXTENSION_NAME);
+        extensions.SupportsSceneMarker = extensions.IsEnabled(XR_MSFTX_SCENE_MARKER_EXTENSION_NAME);
 
         return extensions;
     }
