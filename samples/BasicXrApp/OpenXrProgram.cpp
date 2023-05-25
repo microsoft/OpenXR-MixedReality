@@ -5,6 +5,8 @@
 #include "OpenXrProgram.h"
 #include "DxUtility.h"
 
+#include <dxgi1_6.h>
+
 namespace {
     struct ImplementOpenXrProgram : sample::IOpenXrProgram {
         ImplementOpenXrProgram(std::string applicationName, std::unique_ptr<sample::IGraphicsPluginD3D11> graphicsPlugin)
@@ -258,6 +260,60 @@ namespace {
             m_nearFar = {20.f, 0.1f};
         }
 
+        winrt::com_ptr<IDXGIAdapter> GetAdaptor(ID3D11Device* device) {
+             winrt::com_ptr<IDXGIDevice> dxgiDevice;
+             device->QueryInterface(__uuidof(IDXGIDevice), dxgiDevice.put_void());
+             winrt::com_ptr<IDXGIAdapter> adapter;
+             dxgiDevice->GetAdapter(adapter.put());
+             return adapter;
+        }
+
+        winrt::com_ptr<IDXGIAdapter> GetAdaptor(LUID adapterLuid) {
+             winrt::com_ptr<IDXGIFactory2> dxgiFactory;
+             CreateDXGIFactory2(0, IID_PPV_ARGS(dxgiFactory.put()));
+
+             uint32_t adapterIndex = 0;
+             winrt::com_ptr<IDXGIAdapter1> adapter;
+             while (dxgiFactory->EnumAdapters1(adapterIndex, adapter.put()) != DXGI_ERROR_NOT_FOUND) {
+                DXGI_ADAPTER_DESC1 adapterDesc;
+                adapter->GetDesc1(&adapterDesc);
+
+                if (memcmp(&adapterDesc.AdapterLuid, &adapterLuid, sizeof(LUID)) == 0) {
+                    // Found the matching adapter
+                    break;
+                }
+                adapterIndex++;
+                adapter = nullptr;
+             }
+
+            return adapter;
+        }
+
+        std::vector<DXGI_COLOR_SPACE_TYPE> GetAdaptorColorSpaces(IDXGIAdapter* adapter) {
+            std::vector<DXGI_COLOR_SPACE_TYPE> colorSpaces;
+
+            std::vector<winrt::com_ptr<IDXGIOutput6>> outputs;
+            {
+                IDXGIOutput* output = nullptr;
+                for (UINT i = 0; adapter->EnumOutputs(i, &output) != DXGI_ERROR_NOT_FOUND; ++i) {
+                    winrt::com_ptr<IDXGIOutput6> output6;
+                    output->QueryInterface(output6.put());
+                    outputs.emplace_back(output6);
+                    output = nullptr;
+                }
+            }
+
+            for (const auto& output : outputs) {
+                DXGI_OUTPUT_DESC1 outputDesc{};
+                output->GetDesc1(&outputDesc);
+
+                DXGI_COLOR_SPACE_TYPE colorSpace = outputDesc.ColorSpace;
+                colorSpaces.push_back(colorSpace);
+            }
+
+            return colorSpaces;
+        }
+
         void InitializeSession() {
             CHECK(m_instance.Get() != XR_NULL_HANDLE);
             CHECK(m_systemId != XR_NULL_SYSTEM_ID);
@@ -281,6 +337,60 @@ namespace {
             CHECK_MSG(featureLevels.size() != 0, "Unsupported minimum feature level!");
 
             ID3D11Device* device = m_graphicsPlugin->InitializeDevice(graphicsRequirements.adapterLuid, featureLevels);
+            auto adapter = GetAdaptor(device);
+
+            auto colorSpaces = GetAdaptorColorSpaces(adapter.get());
+            for (auto colorSpace : colorSpaces) {
+                switch (colorSpace) {
+                case DXGI_COLOR_SPACE_RGB_FULL_G22_NONE_P709:
+                    printf("Color Space: RGB Full G22 None P709\n");
+                    break;
+                case DXGI_COLOR_SPACE_RGB_FULL_G10_NONE_P709:
+                    printf("Color Space: RGB Full G10 None P709\n");
+                    break;
+                case DXGI_COLOR_SPACE_RGB_STUDIO_G22_NONE_P709:
+                    printf("Color Space: RGB Studio G22 None P709\n");
+                    break;
+                case DXGI_COLOR_SPACE_RGB_STUDIO_G22_NONE_P2020:
+                    printf("Color Space: RGB Studio G22 None P2020\n");
+                    break;
+                case DXGI_COLOR_SPACE_RESERVED:
+                    printf("Color Space: Reserved\n");
+                    break;
+                case DXGI_COLOR_SPACE_YCBCR_FULL_G22_NONE_P709_X601:
+                    printf("Color Space: YCbCr Full G22 None P709 X601\n");
+                    break;
+                case DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P601:
+                    printf("Color Space: YCbCr Studio G22 Left P601\n");
+                    break;
+                case DXGI_COLOR_SPACE_YCBCR_FULL_G22_LEFT_P601:
+                    printf("Color Space: YCbCr Full G22 Left P601\n");
+                    break;
+                case DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P709:
+                    printf("Color Space: YCbCr Studio G22 Left P709\n");
+                    break;
+                case DXGI_COLOR_SPACE_YCBCR_FULL_G22_LEFT_P709:
+                    printf("Color Space: YCbCr Full G22 Left P709\n");
+                    break;
+                case DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_LEFT_P2020:
+                    printf("Color Space: YCbCr Studio G22 Left P2020\n");
+                    break;
+                case DXGI_COLOR_SPACE_YCBCR_FULL_G22_LEFT_P2020:
+                    printf("Color Space: YCbCr Full G22 Left P2020\n");
+                    break;
+                case DXGI_COLOR_SPACE_RGB_FULL_G2084_NONE_P2020:
+                    printf("Color Space: RGB Full G2084 None P2020\n");
+                    break;
+                case DXGI_COLOR_SPACE_YCBCR_STUDIO_G2084_LEFT_P2020:
+                    printf("Color Space: YCbCr Studio G2084 Left P2020\n");
+                    break;
+                case DXGI_COLOR_SPACE_RGB_STUDIO_G2084_NONE_P2020:
+                    printf("Color Space: RGB Studio G2084 None P2020\n");
+                    break;
+                case DXGI_COLOR_SPACE_YCBCR_STUDIO_G22_TOPLEFT_P2020:
+                    printf("Color Space: YCbCr Studio G22 TopLeft P2020\n");
+                }
+            }
 
             XrGraphicsBindingD3D11KHR graphicsBinding{XR_TYPE_GRAPHICS_BINDING_D3D11_KHR};
             graphicsBinding.device = device;
