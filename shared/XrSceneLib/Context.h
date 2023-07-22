@@ -5,7 +5,7 @@
 
 #include <pbr/PbrResources.h>
 #include <XrUtility/XrString.h>
-#include <XrUtility/XrExtensionContext.h>
+#include <XrUtility/XrEnabledExtensions.h>
 #include <SampleShared/XrInstanceContext.h>
 #include <SampleShared/XrSystemContext.h>
 #include <SampleShared/XrSessionContext.h>
@@ -15,7 +15,7 @@ namespace engine {
     // Session-related resources shared across multiple Scenes.
     struct Context final {
         Context(sample::InstanceContext instance,
-                xr::ExtensionContext extensions,
+                xr::EnabledExtensions extensions,
                 sample::SystemContext system,
                 sample::SessionContext session,
                 XrSpace appSpace,
@@ -32,7 +32,7 @@ namespace engine {
             , DeviceContext(std::move(deviceContext)) {
         }
 
-        const xr::ExtensionContext Extensions;
+        const xr::EnabledExtensions Extensions;
         const sample::InstanceContext Instance;
         const sample::SystemContext System;
         const sample::SessionContext Session;

@@ -35,11 +35,19 @@ namespace {
                                                                   {m_selectAction, "/user/hand/left/input/trigger"},
                                                               });
 
-            if (context.Extensions.SupportsHandInteraction) {
+            if (context.Extensions.XR_MSFT_hand_interaction_enabled) {
                 ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction",
                                                                   {
                                                                       {m_selectAction, "/user/hand/right/input/select"},
                                                                       {m_selectAction, "/user/hand/left/input/select"},
+                                                                  });
+            }
+
+            if (context.Extensions.XR_EXT_hand_interaction_enabled) {
+                ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/ext/hand_interaction_ext",
+                                                                  {
+                                                                      {m_selectAction, "/user/hand/right/input/aim_activate_ext"},
+                                                                      {m_selectAction, "/user/hand/left/input/aim_activate_ext"},
                                                                   });
             }
 

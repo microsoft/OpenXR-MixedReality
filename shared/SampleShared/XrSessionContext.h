@@ -20,11 +20,11 @@ namespace sample {
         // note: all runtimes must support VIEW and LOCAL reference spaces.
         std::vector<XrReferenceSpaceType> SupportedReferenceSpaces;
         bool SupportsStageSpace;
-        bool SupportsUnboundedSpace;
+        bool XR_MSFT_unbounded_reference_space_enabled;
 
         explicit SessionContext(xr::SessionHandle sessionHandle,
                                 const sample::SystemContext& system,
-                                const xr::ExtensionContext& extensions,
+                                const xr::EnabledExtensions& extensions,
                                 XrViewConfigurationType primaryViewConfigurationType,
                                 const std::vector<XrViewConfigurationType>& appEnabledSecondaryViewConfigurationTypes,
                                 const std::vector<DXGI_FORMAT>& appSupportedColorSwapchainFormats,
@@ -53,8 +53,8 @@ namespace sample {
             assert(xr::Contains(SupportedReferenceSpaces, XR_REFERENCE_SPACE_TYPE_VIEW));
             assert(xr::Contains(SupportedReferenceSpaces, XR_REFERENCE_SPACE_TYPE_LOCAL));
             SupportsStageSpace = xr::Contains(SupportedReferenceSpaces, XR_REFERENCE_SPACE_TYPE_STAGE);
-            SupportsUnboundedSpace =
-                extensions.SupportsUnboundedSpace && xr::Contains(SupportedReferenceSpaces, XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT);
+            XR_MSFT_unbounded_reference_space_enabled =
+                extensions.XR_MSFT_unbounded_reference_space_enabled&& xr::Contains(SupportedReferenceSpaces, XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT);
         }
 
     private:

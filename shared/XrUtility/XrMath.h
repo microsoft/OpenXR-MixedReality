@@ -22,7 +22,8 @@ namespace xr::math {
         XrPosef Multiply(const XrPosef& a, const XrPosef& b);
         XrPosef Slerp(const XrPosef& a, const XrPosef& b, float alpha);
         XrPosef Invert(const XrPosef& pose);
-
+        bool NearEqual(const XrPosef& a, const XrPosef& b, const float epsilon);
+        constexpr bool IsIdentity(const XrPosef& pose);
         constexpr bool IsPoseValid(const XrSpaceLocation& location);
         constexpr bool IsPoseTracked(const XrSpaceLocation& location);
         constexpr bool IsPoseValid(const XrHandJointLocationEXT& jointLocation);
@@ -356,6 +357,32 @@ namespace xr::math {
             StoreXrQuaternion(&c.orientation, DirectX::XMQuaternionMultiply(qa, qb));
             StoreXrVector3(&c.position, DirectX::XMVectorAdd(DirectX::XMVector3Rotate(pa, qb), pb));
             return c;
+        }
+
+        constexpr bool IsIdentity(const XrPosef& pose) {
+            return pose.position.x == 0 && pose.position.y == 0 && pose.position.z == 0 && pose.orientation.x == 0 &&
+                   pose.orientation.y == 0 && pose.orientation.z == 0 && pose.orientation.w == 1;
+        }
+
+        inline bool NearEqual(const XrPosef& a, const XrPosef& b, const float epsilon) {
+            // Construct the difference in these poses as A^-1 * B
+            const DirectX::XMVECTOR qaInverted = DirectX::XMQuaternionConjugate(LoadXrQuaternion(a.orientation));
+            const DirectX::XMVECTOR paInverted = DirectX::XMVector3Rotate(DirectX::XMVectorNegate(LoadXrVector3(a.position)), qaInverted);
+            const DirectX::XMVECTOR pb = LoadXrVector3(b.position);
+            const DirectX::XMVECTOR qb = LoadXrQuaternion(b.orientation);
+
+            XrPosef diff;
+            StoreXrQuaternion(&diff.orientation, DirectX::XMQuaternionMultiply(qaInverted, qb));
+            StoreXrVector3(&diff.position, DirectX::XMVectorAdd(DirectX::XMVector3Rotate(paInverted, qb), pb));
+
+            // Check if the difference is the identity pose (within error of epsilon)
+            return std::fabs(diff.position.x - Identity().position.x) < epsilon &&
+                   std::fabs(diff.position.y - Identity().position.y) < epsilon &&
+                   std::fabs(diff.position.z - Identity().position.z) < epsilon &&
+                   std::fabs(diff.orientation.x - Identity().orientation.x) < epsilon &&
+                   std::fabs(diff.orientation.y - Identity().orientation.y) < epsilon &&
+                   std::fabs(diff.orientation.z - Identity().orientation.z) < epsilon &&
+                   std::fabs(diff.orientation.w - Identity().orientation.w) < epsilon;
         }
 
         constexpr bool IsPoseValid(XrSpaceLocationFlags locationFlags) {

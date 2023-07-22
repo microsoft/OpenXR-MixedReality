@@ -31,7 +31,7 @@ namespace {
     struct EyeGazeInteractionScene : public engine::Scene {
         EyeGazeInteractionScene(engine::Context& context)
             : Scene(context)
-            , m_supportsEyeGazeAction(context.Extensions.SupportsEyeGazeInteraction &&
+            , m_supportsEyeGazeAction(context.Extensions.XR_EXT_eye_gaze_interaction_enabled &&
                                       context.System.EyeGazeInteractionProperties.supportsEyeGazeInteraction) {
             if (m_supportsEyeGazeAction) {
                 sample::ActionSet& actionSet =

@@ -5,6 +5,7 @@
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Scene_Orbit.cpp" />
     <ClCompile Include="Scene_HandTracking.cpp" />
+    <ClCompile Include="..\SampleSceneWin32\Scene_ControllerActions.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />
@@ -16,10 +17,16 @@
     <None Include="TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="$(OpenXRLoaderBinaryRoot)\bin\openxr_loader.dll" />
+    <None Include="Key.glb">
+      <Filter>SceneAssets</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DeploymentContent">
       <UniqueIdentifier>{8eb32a1e-ec4a-4c3c-881e-2e7e281f7df2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SceneAssets">
+      <UniqueIdentifier>{a67580aa-7f1a-4463-8062-9c107745a7ce}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
 </Project>

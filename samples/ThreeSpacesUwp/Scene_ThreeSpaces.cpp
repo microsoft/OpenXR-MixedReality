@@ -39,11 +39,21 @@ namespace {
                                                                   {m_aimPoseAction, "/user/hand/right/input/aim/pose"},
                                                               });
 
-            if (context.Extensions.SupportsHandInteraction) {
+            if (context.Extensions.XR_MSFT_hand_interaction_enabled) {
                 ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction",
                                                                   {
                                                                       {m_selectAction, "/user/hand/left/input/select/value"},
                                                                       {m_selectAction, "/user/hand/right/input/select/value"},
+                                                                      {m_aimPoseAction, "/user/hand/left/input/aim/pose"},
+                                                                      {m_aimPoseAction, "/user/hand/right/input/aim/pose"},
+                                                                  });
+            }
+
+            if (context.Extensions.XR_EXT_hand_interaction_enabled) {
+                ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/ext/hand_interaction_ext",
+                                                                  {
+                                                                      {m_selectAction, "/user/hand/left/input/aim_activate_ext/value"},
+                                                                      {m_selectAction, "/user/hand/right/input/aim_activate_ext/value"},
                                                                       {m_aimPoseAction, "/user/hand/left/input/aim/pose"},
                                                                       {m_aimPoseAction, "/user/hand/right/input/aim/pose"},
                                                                   });
@@ -62,7 +72,7 @@ namespace {
             m_holograms.emplace_back(m_localSpace.Get(),
                                      AddObject(engine::CreateAxis(m_context.PbrResources, 0.1f /*length*/, 0.05f /*thickness*/)));
 
-            if (m_context.Extensions.SupportsUnboundedSpace) {
+            if (m_context.Extensions.XR_MSFT_unbounded_reference_space_enabled) {
                 referenceSpaceCreateInfo.referenceSpaceType = XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT;
                 CHECK_XRCMD(xrCreateReferenceSpace(m_context.Session.Handle, &referenceSpaceCreateInfo, m_unboundedSpace.Put(xrDestroySpace)));
 
@@ -171,7 +181,7 @@ namespace {
         }
 
         XrSpace CreateSpacialAnchorSpace(XrSpace space, XrTime time) {
-            if (!m_context.Extensions.SupportsSpatialAnchor) {
+            if (!m_context.Extensions.XR_MSFT_spatial_anchor_enabled) {
                 return XR_NULL_HANDLE; // cannot create hologram on spatial anchor.
             }
 

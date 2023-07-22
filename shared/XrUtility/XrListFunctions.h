@@ -101,15 +101,6 @@
     _(xrDestroySpatialGraphNodeBindingMSFT)               \
     _(xrGetSpatialGraphNodeBindingPropertiesMSFT)
 
-#define XR_LIST_FUNCTIONS_XR_MSFT_holographic_remoting(_) \
-    _(xrRemotingSetContextPropertiesMSFT)                 \
-    _(xrRemotingConnectMSFT)                              \
-    _(xrRemotingListenMSFT)                               \
-    _(xrRemotingDisconnectMSFT)                           \
-    _(xrRemotingGetConnectionStateMSFT)                   \
-    _(xrRemotingSetSecureConnectionClientCallbacksMSFT)   \
-    _(xrRemotingSetSecureConnectionServerCallbacksMSFT)
-
 #define XR_LIST_FUNCTIONS_XR_MSFT_perception_anchor_interop(_) \
     _(xrCreateSpatialAnchorFromPerceptionAnchorMSFT)           \
     _(xrTryGetPerceptionAnchorFromSpatialAnchorMSFT)
@@ -130,6 +121,10 @@
     _(xrDeserializeSceneMSFT)                                          \
     _(xrGetSerializedSceneFragmentDataMSFT)
 
+#define XR_LIST_FUNCTIONS_XR_MSFT_scene_marker(_) \
+    _(xrGetSceneMarkerRawDataMSFT)                \
+    _(xrGetSceneMarkerDecodedStringMSFT)
+
 #define XR_LIST_FUNCTIONS_XR_MSFT_spatial_anchor_persistence(_) \
     _(xrCreateSpatialAnchorStoreConnectionMSFT)                 \
     _(xrDestroySpatialAnchorStoreConnectionMSFT)                \
@@ -140,6 +135,52 @@
     _(xrClearSpatialAnchorStoreMSFT)
 
 #define XR_LIST_FUNCTIONS_XR_MSFT_composition_layer_reprojection(_) _(xrEnumerateReprojectionModesMSFT)
+
+#define XR_LIST_FUNCTIONS_XR_EXT_performance_settings(_) _(xrPerfSettingsSetPerformanceLevelEXT)
+
+#define XR_LIST_FUNCTIONS_XR_FB_foveation(_) \
+    _(xrCreateFoveationProfileFB)            \
+    _(xrDestroyFoveationProfileFB)
+
+#define XR_LIST_FUNCTIONS_XR_FB_swapchain_update_state(_) \
+    _(xrUpdateSwapchainFB)                                \
+    _(xrGetSwapchainStateFB)
+
+#define XR_LIST_FUNCTIONS_XR_FB_swapchain_update_state(_) \
+    _(xrUpdateSwapchainFB)                                \
+    _(xrGetSwapchainStateFB)
+
+#define XR_LIST_FUNCTIONS_XR_FB_passthrough(_) \
+    _(xrCreatePassthroughFB)                   \
+    _(xrDestroyPassthroughFB)                  \
+    _(xrPassthroughStartFB)                    \
+    _(xrPassthroughPauseFB)                    \
+    _(xrCreatePassthroughLayerFB)              \
+    _(xrDestroyPassthroughLayerFB)             \
+    _(xrPassthroughLayerPauseFB)               \
+    _(xrPassthroughLayerResumeFB)              \
+    _(xrPassthroughLayerSetStyleFB)            \
+    _(xrCreateGeometryInstanceFB)              \
+    _(xrDestroyGeometryInstanceFB)             \
+    _(xrGeometryInstanceSetTransformFB)
+
+#define XR_LIST_FUNCTIONS_XR_FB_keyboard_tracking(_) \
+    _(xrQuerySystemTrackedKeyboardFB)                \
+    _(xrCreateKeyboardSpaceFB)
+
+#define XR_LIST_FUNCTIONS_XR_FB_display_refresh_rate(_) \
+    _(xrEnumerateDisplayRefreshRatesFB)                 \
+    _(xrGetDisplayRefreshRateFB)                        \
+    _(xrRequestDisplayRefreshRateFB)
+
+#define XR_LIST_FUNCTIONS_XR_varjo_marker_tracking(_) \
+    _(xrSetMarkerTrackingVARJO)                       \
+    _(xrCreateMarkerSpaceVARJO)
+
+#define XR_LIST_FUNCTIONS_XR_FB_render_model(_) \
+    _(xrEnumerateRenderModelPathsFB)            \
+    _(xrGetRenderModelPropertiesFB)             \
+    _(xrLoadRenderModelFB)
 
 // clang-format off
 #define XR_LIST_FUNCTIONS_OPENXR_EXTENSIONS(_, __)                                                                                  \
@@ -153,10 +194,18 @@
     XR_EXT_hand_tracking_DEFINED(XR_LIST_FUNCTIONS_XR_EXT_hand_tracking, _, __)                                                     \
     XR_MSFT_hand_tracking_mesh_DEFINED(XR_LIST_FUNCTIONS_XR_MSFT_hand_tracking_mesh, _, __)                                         \
     XR_MSFT_spatial_graph_bridge_DEFINED(XR_LIST_FUNCTIONS_XR_MSFT_spatial_graph_bridge, _, __)                                     \
-    XR_MSFT_holographic_remoting_DEFINED(XR_LIST_FUNCTIONS_XR_MSFT_holographic_remoting, _, __)                                     \
     XR_MSFT_perception_anchor_interop_DEFINED(XR_LIST_FUNCTIONS_XR_MSFT_perception_anchor_interop, _, __)                           \
     XR_MSFT_scene_understanding_DEFINED(XR_LIST_FUNCTIONS_XR_MSFT_scene_understanding, _, __)                                       \
     XR_MSFT_scene_understanding_serialization_DEFINED(XR_LIST_FUNCTIONS_XR_MSFT_scene_understanding_serialization, _, __)           \
+    XR_MSFT_scene_marker_DEFINED(XR_LIST_FUNCTIONS_XR_MSFT_scene_marker, _, __)                                                     \
     XR_MSFT_spatial_anchor_persistence_DEFINED(XR_LIST_FUNCTIONS_XR_MSFT_spatial_anchor_persistence, _, __)                         \
     XR_MSFT_composition_layer_reprojection_DEFINED(XR_LIST_FUNCTIONS_XR_MSFT_composition_layer_reprojection, _, __)                 \
+    XR_EXT_performance_settings_DEFINED(XR_LIST_FUNCTIONS_XR_EXT_performance_settings, _, __)                                       \
+    XR_FB_foveation_DEFINED(XR_LIST_FUNCTIONS_XR_FB_foveation, _, __)                                                               \
+    XR_FB_swapchain_update_state_DEFINED(XR_LIST_FUNCTIONS_XR_FB_swapchain_update_state, _, __)                                     \
+    XR_FB_passthrough_DEFINED(XR_LIST_FUNCTIONS_XR_FB_passthrough, _, __)                                                           \
+    XR_FB_keyboard_tracking_DEFINED(XR_LIST_FUNCTIONS_XR_FB_keyboard_tracking, _, __)                                               \
+    XR_FB_display_refresh_rate_DEFINED(XR_LIST_FUNCTIONS_XR_FB_display_refresh_rate, _, __)                                         \
+    XR_varjo_marker_tracking_DEFINED(XR_LIST_FUNCTIONS_XR_varjo_marker_tracking, _, __)                                             \
+    XR_FB_render_model_DEFINED(XR_LIST_FUNCTIONS_XR_FB_render_model, _, __)
 // clang-format on

@@ -33,7 +33,7 @@ namespace {
                                                                   {m_gripPoseAction, "/user/hand/left/input/grip"},
                                                               });
 
-            if (context.Extensions.SupportsHPMixedRealityController) {
+            if (context.Extensions.XR_EXT_hp_mixed_reality_controller_enabled) {
                 ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/hp/mixed_reality_controller",
                                                                   {
                                                                       {m_gripPoseAction, "/user/hand/right/input/grip"},
@@ -47,7 +47,8 @@ namespace {
             for (ControllerData& controller : {std::ref(m_leftController), std::ref(m_rightController)}) {
                 actionSpaceCreateInfo.subactionPath = controller.UserPath;
                 actionSpaceCreateInfo.action = m_gripPoseAction;
-                CHECK_XRCMD(xrCreateActionSpace(m_context.Session.Handle, &actionSpaceCreateInfo, controller.GripSpace.Put(xrDestroySpace)));
+                CHECK_XRCMD(
+                    xrCreateActionSpace(m_context.Session.Handle, &actionSpaceCreateInfo, controller.GripSpace.Put(xrDestroySpace)));
 
                 // Controller objects are created with empty model.  It will be loaded when available.
                 controller.Object = AddObject(CreateControllerObject(m_context, controller.UserPath));
@@ -88,5 +89,5 @@ namespace {
 } // namespace
 
 std::unique_ptr<engine::Scene> TryCreateControllerModelScene(engine::Context& context) {
-    return context.Extensions.SupportsControllerModel ? std::make_unique<ControllerModelScene>(context) : nullptr;
+    return context.Extensions.XR_MSFT_controller_model_enabled ? std::make_unique<ControllerModelScene>(context) : nullptr;
 }

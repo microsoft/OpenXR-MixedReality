@@ -4,6 +4,7 @@
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="pch.cpp" />
     <ClCompile Include="Scene_Placement.cpp" />
+    <ClCompile Include="Scene_QRCode.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h" />

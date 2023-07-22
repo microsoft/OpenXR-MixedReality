@@ -43,8 +43,8 @@ namespace Pbr {
         return linearColor;
     }
 
-    PrimitiveBuilder& PrimitiveBuilder::AddAxis(float axisLength, float axisThickness, Pbr::NodeIndex_t transformIndex) {
-        AddCube(axisThickness + 0.01f, transformIndex, Pbr::FromSRGB(Colors::Gray));
+    PrimitiveBuilder& PrimitiveBuilder::AddAxis(float axisLength, float axisThickness, float originAdditionalThickness, Pbr::NodeIndex_t transformIndex) {
+        AddCube(axisThickness + originAdditionalThickness, transformIndex, Pbr::FromSRGB(Colors::Gray));
         AddCube({axisLength, axisThickness, axisThickness}, XMVECTORF32{axisLength / 2, 0, 0}, transformIndex, Pbr::FromSRGB(Colors::Red));
         AddCube({axisThickness, axisLength, axisThickness}, XMVECTORF32{0, axisLength / 2, 0}, transformIndex, Pbr::FromSRGB(Colors::Green));
         AddCube({axisThickness, axisThickness, axisLength}, XMVECTORF32{0, 0, axisLength / 2}, transformIndex, Pbr::FromSRGB(Colors::Blue));

@@ -16,6 +16,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         appConfig.RequestedExtensions.push_back(XR_MSFT_UNBOUNDED_REFERENCE_SPACE_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_MSFT_HAND_INTERACTION_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_EXT_HAND_INTERACTION_EXTENSION_NAME);
 
         auto app = engine::CreateXrApp(appConfig);
         app->AddScene(TryCreateTitleScene(app->Context()));

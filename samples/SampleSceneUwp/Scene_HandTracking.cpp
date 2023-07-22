@@ -36,7 +36,7 @@ namespace {
                                                                   {m_motionRangeModeChangeAction, "/user/hand/left/input/select/click"},
                                                               });
 
-            if (context.Extensions.SupportsHPMixedRealityController) {
+            if (context.Extensions.XR_EXT_hp_mixed_reality_controller_enabled) {
                 ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/hp/mixed_reality_controller",
                                                                   {
                                                                       {m_motionRangeModeChangeAction, "/user/hand/right/input/trigger"},
@@ -44,11 +44,19 @@ namespace {
                                                                   });
             }
 
-            if (context.Extensions.SupportsHandInteraction) {
+            if (context.Extensions.XR_MSFT_hand_interaction_enabled) {
                 ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction",
                                                                   {
                                                                       {m_motionRangeModeChangeAction, "/user/hand/left/input/select"},
                                                                       {m_motionRangeModeChangeAction, "/user/hand/right/input/select"},
+                                                                  });
+            }
+
+            if (context.Extensions.XR_EXT_hand_interaction_enabled) {
+                ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/ext/hand_interaction_ext",
+                                                                  {
+                                                                      {m_motionRangeModeChangeAction, "/user/hand/left/input/aim_activate_ext"},
+                                                                      {m_motionRangeModeChangeAction, "/user/hand/right/input/aim_activate_ext"},
                                                                   });
             }
 
@@ -64,7 +72,7 @@ namespace {
                 // Create a axis object attached to each joint location
                 for (uint32_t k = 0; k < std::size(handData.PbrNodeIndices); k++) {
                     handData.PbrNodeIndices[k] = jointModel->AddNode(DirectX::XMMatrixIdentity(), Pbr::RootNodeIndex, "joint");
-                    primitiveBuilder.AddAxis(1.0f, 0.5f, handData.PbrNodeIndices[k]);
+                    primitiveBuilder.AddAxis(1.0f, 0.5f, .01f, handData.PbrNodeIndices[k]);
                 }
 
                 // Now that the axis have been added for each joint into the primitive builder,
@@ -390,11 +398,11 @@ namespace {
 } // namespace
 
 std::unique_ptr<engine::Scene> TryCreateHandTrackingScene(engine::Context& context) {
-    if (!context.Extensions.SupportsHandJointTracking || !context.System.HandTrackingProperties.supportsHandTracking) {
+    if (!context.Extensions.XR_EXT_hand_tracking_enabled || !context.System.HandTrackingProperties.supportsHandTracking) {
         return nullptr;
     }
 
-    const bool enableHandMesh = context.Extensions.SupportsHandMeshTracking && context.System.HandMeshProperties.supportsHandTrackingMesh;
+    const bool enableHandMesh = context.Extensions.XR_MSFT_hand_tracking_mesh_enabled && context.System.HandMeshProperties.supportsHandTrackingMesh;
 
     return std::make_unique<HandTrackingScene>(context, enableHandMesh);
 }

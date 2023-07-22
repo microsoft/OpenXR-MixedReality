@@ -114,12 +114,14 @@ std::shared_ptr<PbrModelObject> engine::CreateSphere(const Pbr::Resources& pbrRe
 std::shared_ptr<PbrModelObject> engine::CreateAxis(const Pbr::Resources& pbrResources,
                                                    float axisLength /*= 1.0f*/,
                                                    float axisThickness /*= 0.01f*/,
+                                                   float originAdditionalThickness /*= 0.01f*/,
                                                    float roughness /*= 0.85f*/,
                                                    float metallic /*= 0.01f*/) {
     auto material = Pbr::Material::CreateFlat(pbrResources, Pbr::RGBA::White, roughness, metallic);
 
     auto axisModel = std::make_shared<Pbr::Model>();
-    axisModel->AddPrimitive(Pbr::Primitive(pbrResources, Pbr::PrimitiveBuilder().AddAxis(axisLength, axisThickness), material));
+    axisModel->AddPrimitive(
+        Pbr::Primitive(pbrResources, Pbr::PrimitiveBuilder().AddAxis(axisLength, axisThickness, originAdditionalThickness), material));
 
     return std::make_shared<PbrModelObject>(std::move(axisModel));
 }

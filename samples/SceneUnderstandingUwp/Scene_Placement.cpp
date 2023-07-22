@@ -117,16 +117,26 @@ namespace {
                                                             {
                                                                 {m_aimPoseAction, "/user/hand/right/input/aim"},
                                                                 {m_aimPoseAction, "/user/hand/left/input/aim"},
-                                                                {m_placeObjectAction, "/user/hand/right/input/select"},
-                                                                {m_placeObjectAction, "/user/hand/left/input/select"},
+                                                                {m_placeObjectAction, "/user/hand/right/input/select/click"},
+                                                                {m_placeObjectAction, "/user/hand/left/input/select/click"},
                                                             });
-            if (context.Extensions.SupportsHandInteraction) {
+            if (context.Extensions.XR_MSFT_hand_interaction_enabled) {
                 actionContext.SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction",
                                                                 {
                                                                     {m_aimPoseAction, "/user/hand/right/input/aim"},
                                                                     {m_aimPoseAction, "/user/hand/left/input/aim"},
-                                                                    {m_placeObjectAction, "/user/hand/right/input/select"},
-                                                                    {m_placeObjectAction, "/user/hand/left/input/select"},
+                                                                    {m_placeObjectAction, "/user/hand/right/input/select/value"},
+                                                                    {m_placeObjectAction, "/user/hand/left/input/select/value"},
+                                                                });
+            }
+
+            if (context.Extensions.XR_EXT_hand_interaction_enabled) {
+                actionContext.SuggestInteractionProfileBindings("/interaction_profiles/ext/hand_interaction_ext",
+                                                                {
+                                                                    {m_aimPoseAction, "/user/hand/right/input/aim"},
+                                                                    {m_aimPoseAction, "/user/hand/left/input/aim"},
+                                                                    {m_placeObjectAction, "/user/hand/right/input/aim_activate_ext"},
+                                                                    {m_placeObjectAction, "/user/hand/left/input/aim_activate_ext"},
                                                                 });
             }
 
@@ -656,5 +666,5 @@ namespace {
 } // namespace
 
 std::unique_ptr<engine::Scene> TryCreatePlacementScene(engine::Context& context) {
-    return context.Extensions.SupportsSceneUnderstanding ? std::make_unique<PlacementScene>(context) : nullptr;
+    return context.Extensions.XR_MSFT_scene_understanding_enabled ? std::make_unique<PlacementScene>(context) : nullptr;
 }
