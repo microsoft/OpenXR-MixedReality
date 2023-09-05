@@ -32,6 +32,11 @@
     <ClInclude Include="ThreadPool.h" />
     <ClInclude Include="ScopeGuard.h" />
     <ClInclude Include="TextureUtility.h" />
+    <ClInclude Include="XrActionContext.h" />
+    <ClInclude Include="XrInstanceContext.h" />
+    <ClInclude Include="XrSessionContext.h" />
+    <ClInclude Include="XrSystemContext.h" />
+    <ClInclude Include="XrViewConfiguration.h" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DirectXTK">
