@@ -17,9 +17,7 @@
     <None Include="TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="$(OpenXRLoaderBinaryRoot)\bin\openxr_loader.dll" />
-    <None Include="Key.glb">
-      <Filter>SceneAssets</Filter>
-    </None>
+    <None Include="..\SampleSceneWin32\Key.glb" />
   </ItemGroup>
   <ItemGroup>
     <Filter Include="DeploymentContent">
