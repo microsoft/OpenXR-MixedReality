@@ -153,34 +153,35 @@ namespace {
         // Create an instance using combined extensions of XrSceneLib and the application.
         // The extension context record those supported by the runtime and enabled by the instance.
         std::vector<std::string> requestedExtensions = CombineSceneLibRequestedExtensions(m_appConfiguration.RequestedExtensions);
-        std::vector<const char*> requestedExtensionsCStr;
-        for (const std::string& ext : requestedExtensions) {
-            requestedExtensionsCStr.push_back(ext.c_str());
-        }
+        std::vector<XrExtensionProperties> instanceExtensions = xr::EnumerateInstanceExtensionProperties();
+        std::vector<std::string> selectedExtensions = xr::Intersect(
+            requestedExtensions, instanceExtensions, [](const std::string& extension, const XrExtensionProperties& supported) {
+                return extension == supported.extensionName;
+            });
+        std::vector<const char*> selectedExtensionsCstr = xr::StringsToCStrings(selectedExtensions);
 
-        xr::ExtensionContext extensions = xr::CreateExtensionContext(requestedExtensionsCStr);
+        sample::InstanceContext instance =
+            sample::CreateInstanceContext(m_appConfiguration.AppInfo, {"XrSceneLib", 1}, selectedExtensionsCstr);
+        xr::EnabledExtensions enabledExtensions = xr::EnabledExtensions(selectedExtensionsCstr, instanceExtensions);
+
+        xr::g_dispatchTable.Initialize(instance.Handle, xrGetInstanceProcAddr);
 
         // For example, this sample currently requires D3D11 extension to be supported.
-        if (!extensions.SupportsD3D11) {
+        if (!enabledExtensions.XR_KHR_D3D11_enable_enabled) {
             throw std::logic_error("This sample currently only supports D3D11.");
         }
 #if UWP
-        if (!extensions.SupportsAppContainer) {
+        if (!enabledExtensions.XR_EXT_win32_appcontainer_compatible_enabled) {
             throw std::logic_error("The UWP version of this sample requires XR_EXT_win32_appcontainer_compatible extension.");
         }
 #endif
 
-        sample::InstanceContext instance =
-            sample::CreateInstanceContext(m_appConfiguration.AppInfo, {"XrSceneLib", 1}, extensions.EnabledExtensions);
-
-        xr::g_dispatchTable.Initialize(instance.Handle, xrGetInstanceProcAddr);
-
         // Then get the active system with required form factor.
         // If no system is plugged in, wait until the device is plugged in.
-        sample::SystemContext system = [&instance, &extensions] {
+        sample::SystemContext system = [&instance, &enabledExtensions] {
             std::optional<sample::SystemContext> systemOpt;
             while (!(systemOpt = sample::CreateSystemContext(instance.Handle,
-                                                             extensions,
+                                                             enabledExtensions,
                                                              XR_FORM_FACTOR_HEAD_MOUNTED_DISPLAY,
                                                              SupportedViewConfigurationTypes,
                                                              SupportedEnvironmentBlendModes))) {
@@ -195,7 +196,7 @@ namespace {
         }
 
         auto [d3d11Binding, device, deviceContext] = sample::dx::CreateD3D11Binding(
-            instance.Handle, system.Id, extensions, m_appConfiguration.SingleThreadedD3D11Device, SupportedFeatureLevels);
+            instance.Handle, system.Id, enabledExtensions, m_appConfiguration.SingleThreadedD3D11Device, SupportedFeatureLevels);
 
         xr::SessionHandle sessionHandle;
         XrSessionCreateInfo sessionCreateInfo{XR_TYPE_SESSION_CREATE_INFO, nullptr, 0, system.Id};
@@ -203,7 +204,7 @@ namespace {
         xr::InsertExtensionStruct(sessionCreateInfo, d3d11Binding);
 
         XrHolographicWindowAttachmentMSFT holographicWindowAttachment;
-        if (m_appConfiguration.HolographicWindowAttachment.has_value() && extensions.SupportsHolographicWindowAttachment) {
+        if (m_appConfiguration.HolographicWindowAttachment.has_value() && enabledExtensions.XR_MSFT_holographic_window_attachment_enabled) {
             holographicWindowAttachment = m_appConfiguration.HolographicWindowAttachment.value();
             xr::InsertExtensionStruct(sessionCreateInfo, holographicWindowAttachment);
         }
@@ -212,7 +213,7 @@ namespace {
 
         sample::SessionContext session(std::move(sessionHandle),
                                        system,
-                                       extensions,
+                                       enabledExtensions,
                                        PrimaryViewConfigurationType,
                                        SupportedViewConfigurationTypes, // enable all supported secondary view config
                                        SupportedColorSwapchainFormats,
@@ -231,14 +232,15 @@ namespace {
         CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_viewSpace.Put(xrDestroySpace)));
 
         // Create main app space
-        spaceCreateInfo.referenceSpaceType =
-            extensions.SupportsUnboundedSpace ? XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT : XR_REFERENCE_SPACE_TYPE_LOCAL;
+        spaceCreateInfo.referenceSpaceType = enabledExtensions.XR_MSFT_unbounded_reference_space_enabled
+                                                 ? XR_REFERENCE_SPACE_TYPE_UNBOUNDED_MSFT
+                                                 : XR_REFERENCE_SPACE_TYPE_LOCAL;
         CHECK_XRCMD(xrCreateReferenceSpace(session.Handle, &spaceCreateInfo, m_appSpace.Put(xrDestroySpace)));
 
         Pbr::Resources pbrResources = sample::InitializePbrResources(device.get());
 
         m_context = std::make_unique<engine::Context>(std::move(instance),
-                                                      std::move(extensions),
+                                                      std::move(enabledExtensions),
                                                       std::move(system),
                                                       std::move(session),
                                                       m_appSpace.Get(),
@@ -443,7 +445,7 @@ namespace {
 
         XrSecondaryViewConfigurationSessionBeginInfoMSFT secondaryViewConfigInfo{
             XR_TYPE_SECONDARY_VIEW_CONFIGURATION_SESSION_BEGIN_INFO_MSFT};
-        if (Context().Extensions.SupportsSecondaryViewConfiguration &&
+        if (Context().Extensions.XR_MSFT_secondary_view_configuration_enabled &&
             Context().Session.EnabledSecondaryViewConfigurationTypes.size() > 0) {
             secondaryViewConfigInfo.viewConfigurationCount = (uint32_t)Context().Session.EnabledSecondaryViewConfigurationTypes.size();
             secondaryViewConfigInfo.enabledViewConfigurationTypes = Context().Session.EnabledSecondaryViewConfigurationTypes.data();
@@ -473,7 +475,7 @@ namespace {
         std::vector<XrSecondaryViewConfigurationStateMSFT> secondaryViewConfigStates(enabledSecondaryViewConfigCount,
                                                                                      {XR_TYPE_SECONDARY_VIEW_CONFIGURATION_STATE_MSFT});
 
-        if (Context().Extensions.SupportsSecondaryViewConfiguration && enabledSecondaryViewConfigCount > 0) {
+        if (Context().Extensions.XR_MSFT_secondary_view_configuration_enabled && enabledSecondaryViewConfigCount > 0) {
             secondaryViewConfigFrameState.viewConfigurationCount = (uint32_t)secondaryViewConfigStates.size();
             secondaryViewConfigFrameState.viewConfigurationStates = secondaryViewConfigStates.data();
             xr::InsertExtensionStruct(frameState, secondaryViewConfigFrameState);
@@ -482,7 +484,7 @@ namespace {
         XrFrameWaitInfo waitFrameInfo{XR_TYPE_FRAME_WAIT_INFO};
         CHECK_XRCMD(xrWaitFrame(Context().Session.Handle, &waitFrameInfo, &frameState));
 
-        if (Context().Extensions.SupportsSecondaryViewConfiguration) {
+        if (Context().Extensions.XR_MSFT_secondary_view_configuration_enabled) {
             std::scoped_lock lock(m_secondaryViewConfigActiveMutex);
             m_secondaryViewConfigurationsState = std::move(secondaryViewConfigStates);
         }
@@ -529,7 +531,7 @@ namespace {
         XrFrameBeginInfo beginFrameDescription{XR_TYPE_FRAME_BEGIN_INFO};
         CHECK_XRCMD(xrBeginFrame(Context().Session.Handle, &beginFrameDescription));
 
-        if (Context().Extensions.SupportsSecondaryViewConfiguration) {
+        if (Context().Extensions.XR_MSFT_secondary_view_configuration_enabled) {
             std::scoped_lock lock(m_secondaryViewConfigActiveMutex);
             for (auto& state : m_secondaryViewConfigurationsState) {
                 SetSecondaryViewConfigurationActive(m_viewConfigStates.at(state.viewConfigurationType), state.active);
@@ -554,7 +556,7 @@ namespace {
         std::vector<XrSecondaryViewConfigurationLayerInfoMSFT> activeSecondaryViewConfigLayerInfos;
 
         // Chain secondary view configuration layers data to endFrameInfo
-        if (Context().Extensions.SupportsSecondaryViewConfiguration &&
+        if (Context().Extensions.XR_MSFT_secondary_view_configuration_enabled &&
             Context().Session.EnabledSecondaryViewConfigurationTypes.size() > 0) {
             for (auto& secondaryViewConfigType : Context().Session.EnabledSecondaryViewConfigurationTypes) {
                 auto& secondaryViewConfig = m_viewConfigStates.at(secondaryViewConfigType);
@@ -593,7 +595,7 @@ namespace {
             endFrameInfo.layers = primaryViewConfigLayers.LayerData();
 
             // Render layers for any active secondary view configurations too.
-            if (Context().Extensions.SupportsSecondaryViewConfiguration && activeSecondaryViewConfigLayerInfos.size() > 0) {
+            if (Context().Extensions.XR_MSFT_secondary_view_configuration_enabled && activeSecondaryViewConfigLayerInfos.size() > 0) {
                 for (size_t i = 0; i < activeSecondaryViewConfigLayerInfos.size(); i++) {
                     XrSecondaryViewConfigurationLayerInfoMSFT& secondaryViewConfigLayerInfo = activeSecondaryViewConfigLayerInfos.at(i);
                     engine::CompositionLayers& secondaryViewConfigLayers = layersForAllViewConfigs.at(i + 1);

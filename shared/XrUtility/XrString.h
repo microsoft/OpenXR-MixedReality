@@ -26,21 +26,27 @@ namespace xr {
         uint32_t count;
         CHECK_XRCMD(xrPathToString(instance, path, 0, &count, nullptr));
         std::string string;
-        string.resize(count);
+        string.resize(count - 1); // OpenXR size includes '\0', std::string::size doesn't.
         CHECK_XRCMD(xrPathToString(instance, path, count, &count, string.data()));
-        // Remove the null character
-        string.resize(count - 1);
         return string;
     }
 
     inline std::vector<XrPath> StringsToPaths(XrInstance instance, const std::vector<std::string>& strings) {
         std::vector<XrPath> paths;
 
-        for (auto string : strings) {
+        for (auto& string : strings) {
             paths.push_back(xr::StringToPath(instance, string.c_str()));
         }
 
         return paths;
+    }
+
+    inline std::vector<const char*> StringsToCStrings(const std::vector<std::string>& strings) {
+        std::vector<const char*> cStrings;
+        for (auto& string : strings) {
+            cStrings.push_back(string.c_str());
+        }
+        return cStrings;
     }
 
 #ifdef _WIN32

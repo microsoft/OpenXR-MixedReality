@@ -14,8 +14,31 @@ namespace xr {
         return std::end(array) != std::find(std::begin(array), std::end(array), value);
     }
 
+    template <class A, class B, class TIntersectPredicate>
+    inline std::vector<A> Intersect(const std::vector<A>& listA, const std::vector<B>& listB, TIntersectPredicate predicate) {
+        std::vector<A> result;
+        for (auto& a : listA) {
+            for (auto& b : listB) {
+                if (predicate(a, b)) {
+                    result.push_back(a);
+                    break;
+                }
+            }
+        }
+        return result;
+    }
+
+    inline std::vector<XrApiLayerProperties> EnumerateApiLayerProperties() {
+        uint32_t apiLayerCount = 0;
+        CHECK_XRCMD(xrEnumerateApiLayerProperties(0, &apiLayerCount, nullptr));
+        std::vector<XrApiLayerProperties> apiLayerProperties(apiLayerCount, {XR_TYPE_API_LAYER_PROPERTIES});
+        CHECK_XRCMD(xrEnumerateApiLayerProperties(apiLayerCount, &apiLayerCount, apiLayerProperties.data()));
+        apiLayerProperties.resize(apiLayerCount);
+        return apiLayerProperties;
+    }
+
     inline std::vector<XrExtensionProperties> EnumerateInstanceExtensionProperties(const char* layerName = nullptr) {
-        uint32_t extensionCount;
+        uint32_t extensionCount = 0;
         CHECK_XRCMD(xrEnumerateInstanceExtensionProperties(layerName, 0, &extensionCount, nullptr));
         std::vector<XrExtensionProperties> extensionProperties(extensionCount, {XR_TYPE_EXTENSION_PROPERTIES});
         CHECK_XRCMD(xrEnumerateInstanceExtensionProperties(layerName, extensionCount, &extensionCount, extensionProperties.data()));
@@ -35,7 +58,7 @@ namespace xr {
     inline std::vector<XrViewConfigurationView> EnumerateViewConfigurationViews(XrInstance instance,
                                                                                 XrSystemId systemId,
                                                                                 XrViewConfigurationType viewConfigurationType) {
-        uint32_t viewCount;
+        uint32_t viewCount = 0;
         CHECK_XRCMD(xrEnumerateViewConfigurationViews(instance, systemId, viewConfigurationType, 0, &viewCount, nullptr));
 
         std::vector<XrViewConfigurationView> viewConfigViews(viewCount, {XR_TYPE_VIEW_CONFIGURATION_VIEW});
@@ -48,7 +71,7 @@ namespace xr {
     inline std::vector<XrEnvironmentBlendMode> EnumerateEnvironmentBlendModes(XrInstance instance,
                                                                               XrSystemId systemId,
                                                                               XrViewConfigurationType viewConfigType) {
-        uint32_t blendModeCount;
+        uint32_t blendModeCount = 0;
         CHECK_XRCMD(xrEnumerateEnvironmentBlendModes(instance, systemId, viewConfigType, 0, &blendModeCount, nullptr));
 
         std::vector<XrEnvironmentBlendMode> blendModes(blendModeCount);
@@ -73,7 +96,7 @@ namespace xr {
     }
 
     inline std::vector<int64_t> EnumerateSwapchainFormats(XrSession session) {
-        uint32_t swapchainFormatsCount;
+        uint32_t swapchainFormatsCount = 0;
         CHECK_XRCMD(xrEnumerateSwapchainFormats(session, 0, &swapchainFormatsCount, nullptr));
 
         std::vector<int64_t> runtimeFormats(swapchainFormatsCount);
@@ -97,7 +120,7 @@ namespace xr {
     }
 
     inline std::vector<XrReferenceSpaceType> EnumerateReferenceSpaceTypes(XrSession session) {
-        uint32_t spaceCountOutput;
+        uint32_t spaceCountOutput = 0;
         CHECK_XRCMD(xrEnumerateReferenceSpaces(session, 0, &spaceCountOutput, nullptr));
 
         std::vector<XrReferenceSpaceType> runtimeSupportedReferenceSpaces(spaceCountOutput);
@@ -109,7 +132,7 @@ namespace xr {
     inline std::set<std::string> QueryActionLocalizedName(XrSession session, XrAction action, XrInputSourceLocalizedNameFlags flags) {
         std::set<std::string> names;
         uint32_t nameCapacityOutput = 0;
-        uint32_t sourcesCount;
+        uint32_t sourcesCount = 0;
 
         XrBoundSourcesForActionEnumerateInfo enumerateBoundSourcesInfo{XR_TYPE_BOUND_SOURCES_FOR_ACTION_ENUMERATE_INFO};
         enumerateBoundSourcesInfo.action = action;

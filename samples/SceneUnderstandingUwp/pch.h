@@ -31,7 +31,7 @@
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
 #include <openxr/openxr_reflection.h>
-#include <openxr/openxr_msft_preview.h>
+#include <openxr_preview/openxr_msft_preview.h>
 
 #define ENABLE_GLOBAL_XR_DISPATCH_TABLE
 #include <XrUtility/XrDispatchTable.h>

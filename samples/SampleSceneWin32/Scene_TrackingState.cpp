@@ -39,7 +39,7 @@ namespace {
                                                                   {m_gripSpaceAction, "/user/hand/right/input/grip/pose"},
                                                               });
 
-            if (context.Extensions.SupportsHandInteractionMSFT) {
+            if (context.Extensions.XR_MSFT_hand_interaction_enabled) {
                 ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction",
                                                                   {
                                                                       {m_gripSpaceAction, "/user/hand/left/input/grip/pose"},
@@ -47,7 +47,7 @@ namespace {
                                                                   });
             }
 
-            if (context.Extensions.SupportsHandInteractionEXT) {
+            if (context.Extensions.XR_EXT_hand_interaction_enabled) {
                 ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/ext/hand_interaction_ext",
                                                                   {
                                                                       {m_gripSpaceAction, "/user/hand/left/input/grip/pose"},
@@ -55,7 +55,7 @@ namespace {
                                                                   });
             }
 
-            if (context.Extensions.SupportsHPMixedRealityController) {
+            if (context.Extensions.XR_EXT_hp_mixed_reality_controller_enabled) {
                 ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/hp/mixed_reality_controller",
                                                                   {
                                                                       {m_gripSpaceAction, "/user/hand/left/input/grip/pose"},

@@ -73,7 +73,7 @@ namespace {
                                                                   {m_switchFilterAction, "/user/hand/right/input/select/click"},
                                                                   {m_switchFilterAction, "/user/hand/left/input/select/click"},
                                                               });
-            if (context.Extensions.SupportsHandInteractionMSFT) {
+            if (context.Extensions.XR_MSFT_hand_interaction_enabled) {
                 ActionContext().SuggestInteractionProfileBindings("/interaction_profiles/microsoft/hand_interaction",
                                                                   {
                                                                       {m_switchFilterAction, "/user/hand/left/input/select/value"},
@@ -178,10 +178,12 @@ namespace {
                 for (size_t i = 0; i < m_markerIds.size(); ++i) {
                     const XrSceneComponentLocationMSFT& location = m_componentLocations[i];
                     auto& visualInfo = m_markerVisuals[m_markerIds[i]];
-                    const std::shared_ptr<engine::Object>& object = visualInfo.second;
+                    const std::shared_ptr<engine::PbrModelObject>& object = visualInfo.second;
                     const auto centerToPose = visualInfo.first;
                     if (xr::math::Pose::IsPoseValid(location.flags)) {
                         object->Pose() = xr::math::Pose::Multiply(centerToPose, location.pose);
+                        object->SetFillMode(xr::math::Pose::IsPoseTracked(location.flags) ? Pbr::FillMode::Solid
+                                                                                          : Pbr::FillMode::Wireframe);
                     } else {
                         object->SetVisible(false);
                     }
@@ -352,6 +354,7 @@ namespace {
             xr::InsertExtensionStruct(getInfo, typesFilter);
             XrSceneComponentsMSFT sceneComponents{XR_TYPE_SCENE_COMPONENTS_MSFT};
 
+
             // Get the number of markers
             CHECK_XRCMD(xrGetSceneComponentsMSFT(m_scene.Get(), &getInfo, &sceneComponents));
             const uint32_t count = sceneComponents.componentCountOutput;
@@ -362,13 +365,13 @@ namespace {
 
             std::vector<XrSceneMarkerMSFT> markers(count);
             XrSceneMarkersMSFT sceneMarkers{XR_TYPE_SCENE_MARKERS_MSFT};
-            sceneMarkers.sceneMarkerCount = count;
+            sceneMarkers.sceneMarkerCapacityInput = count;
             sceneMarkers.sceneMarkers = markers.data();
             xr::InsertExtensionStruct(sceneComponents, sceneMarkers);
 
             std::vector<XrSceneMarkerQRCodeMSFT> qrcodes(count);
             XrSceneMarkerQRCodesMSFT sceneQRCodes{XR_TYPE_SCENE_MARKER_QR_CODES_MSFT};
-            sceneQRCodes.qrCodeCount = count;
+            sceneQRCodes.qrCodeCapacityInput = count;
             sceneQRCodes.qrCodes = qrcodes.data();
             xr::InsertExtensionStruct(sceneComponents, sceneQRCodes);
 
@@ -380,14 +383,15 @@ namespace {
             for (uint32_t i = 0; i < count; ++i) {
                 const XrDuration markerAgeNanos = predictedDisplayTime - markers[i].lastSeenTime;
                 std::chrono::nanoseconds markerAge = duration<XrDuration, std::nano>(markerAgeNanos);
+                std::chrono::duration<float> markerAgeSeconds = markerAge;
                 if (markerAge < MaxMarkerAge) {
                     auto& markerId = components[i].id;
 
                     // Always re-create to enable color change and dimension change
-                    auto visual = CreateMarkerVisual(
-                        markerId,
-                        markers[i],
-                        qrcodes[i]);
+                    auto visual = CreateMarkerVisual(markerId,
+                                                     markers[i],
+                                                     qrcodes[i],
+                                                     markerAgeSeconds.count());
                     XrQuaternionf rotation = xr::math::Quaternion::RotationAxisAngle(XrVector3f{1.0f, 0.0f, 0.0f}, XM_PI);
                     XrVector3f centerOffset{markers[i].center.x, markers[i].center.y, 0.0f};
                     auto centerToPose = xr::math::Pose::MakePose(rotation, centerOffset);
@@ -412,7 +416,8 @@ namespace {
         // Create a Quad which covers the marker and displays the marker's string as text
         std::shared_ptr<engine::PbrModelObject> CreateMarkerVisual(const XrUuidMSFT& markerId,
                                                                    const XrSceneMarkerMSFT& marker,
-                                                                   const XrSceneMarkerQRCodeMSFT& qrcode) {
+                                                                   const XrSceneMarkerQRCodeMSFT& qrcode,
+                                                                   float ageSeconds) {
             uint32_t stringLength{0};
             std::vector<char> markerString;
             CHECK_XRCMD(xrGetSceneMarkerDecodedStringMSFT(m_scene.Get(), &markerId, 0, &stringLength, nullptr));
@@ -432,7 +437,9 @@ namespace {
             textInfo.FontSize = 32.0f;
 
             auto textTexture = std::make_unique<engine::TextTexture>(m_context, textInfo);
-            textTexture->Draw(markerString.data());
+            char label[512];
+            sprintf_s(label, "%s\n%.3f s", markerString.data(), ageSeconds);
+            textTexture->Draw(label);
             const auto& material = textTexture->CreatePbrMaterial(m_context.PbrResources);
             return engine::CreateQuad(m_context.PbrResources, size, material);
         }
@@ -442,7 +449,7 @@ namespace {
         xr::UniqueXrHandle<XrSceneMSFT> m_scene;
         std::vector<XrUuidMSFT> m_markerIds;
         std::vector<XrSceneComponentLocationMSFT> m_componentLocations;
-        std::unordered_map<XrUuidMSFT, std::pair<XrPosef, std::shared_ptr<engine::Object>>> m_markerVisuals;
+        std::unordered_map<XrUuidMSFT, std::pair<XrPosef, std::shared_ptr<engine::PbrModelObject>>> m_markerVisuals;
         XrTime m_lastTimeOfUpdate{};
         XrNewSceneComputeInfoMSFT m_sceneComputeInfo{XR_TYPE_NEW_SCENE_COMPUTE_INFO_MSFT};
         XrSceneSphereBoundMSFT m_sphereBounds{0.0f};
@@ -466,6 +473,6 @@ namespace {
 } // namespace
 
 std::unique_ptr<engine::Scene> TryCreateQRCodeScene(engine::Context& context) {
-    return context.Extensions.SupportsSceneMarker ? std::make_unique<QRCodeScene>(context) : nullptr;
+    return context.Extensions.XR_MSFT_scene_marker_enabled ? std::make_unique<QRCodeScene>(context) : nullptr;
 }
 

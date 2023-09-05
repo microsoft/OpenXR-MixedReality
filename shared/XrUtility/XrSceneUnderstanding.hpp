@@ -51,9 +51,8 @@ namespace xr::su {
 
     struct SceneMarker { // XR_SCENE_COMPONENT_TYPE_MARKER_MSFT
         using Id = TypedUuid<SceneMarker>;
-        using MarkerType = ::XrSceneMarkerTypeMSFT;
         SceneMarker::Id id;
-        MarkerType markerType;
+        ::XrSceneMarkerTypeMSFT markerType;
         XrTime lastSeenTime;
         XrOffset2Df center;
         XrExtent2Df size;
@@ -258,47 +257,13 @@ namespace xr::su {
         return result;
     }
 
-    template<typename T>
-    class GetMarkerExtension {
-    public:
-        GetMarkerExtension(int count) {}
-
-        template <typename XrStruct>
-        void Insert(XrStruct& xrStruct) {}
-
-        void CopyTo(T*, int k){}
-    };
-
-    template <>
-    class GetMarkerExtension<SceneQRCode> {
-        std::vector<XrSceneMarkerQRCodeMSFT> m_qrCodes;
-        XrSceneMarkerQRCodesMSFT m_sceneQRCodes{XR_TYPE_SCENE_MARKER_QR_CODES_MSFT};
-
-    public:
-        GetMarkerExtension(int count)
-            : m_qrCodes(count){
-            m_sceneQRCodes.qrCodeCount = count;
-            m_sceneQRCodes.qrCodes = m_qrCodes.data();
-        }
-
-        template <typename XrStruct>
-        void Insert(XrStruct& xrStruct) {
-            xr::InsertExtensionStruct(xrStruct, m_sceneQRCodes);
-        }
-
-        void CopyTo(SceneQRCode* target, int k) {
-            target->qrVersion= m_qrCodes[k].qrVersion;
-            target->symbolType = m_qrCodes[k].symbolType;
-        }
-    };
-
     template <typename T>
     inline std::vector<T> GetSceneMarkers(XrSceneMSFT scene) {
         XrSceneComponentsGetInfoMSFT getInfo{XR_TYPE_SCENE_COMPONENTS_GET_INFO_MSFT};
         getInfo.componentType = XR_SCENE_COMPONENT_TYPE_MARKER_MSFT;
 
         XrSceneMarkerTypeFilterMSFT typesFilter{XR_TYPE_SCENE_MARKER_TYPE_FILTER_MSFT};
-        XrSceneMarkerTypeMSFT markerTypes[1] = {XrSceneMarkerTypeMSFT::XR_SCENE_MARKER_TYPE_QR_CODE_MSFT };
+        XrSceneMarkerTypeMSFT markerTypes[1] = {XrSceneMarkerTypeMSFT::XR_SCENE_MARKER_TYPE_QR_CODE_MSFT};
         typesFilter.markerTypeCount = static_cast<uint32_t>(std::size(markerTypes));
         typesFilter.markerTypes = markerTypes;
         xr::InsertExtensionStruct(getInfo, typesFilter);
@@ -314,12 +279,16 @@ namespace xr::su {
 
         std::vector<XrSceneMarkerMSFT> markers(count);
         XrSceneMarkersMSFT sceneMarkers{XR_TYPE_SCENE_MARKERS_MSFT};
-        sceneMarkers.sceneMarkerCount = count;
+        sceneMarkers.sceneMarkerCapacityInput = count;
         sceneMarkers.sceneMarkers = markers.data();
         xr::InsertExtensionStruct(sceneComponents, sceneMarkers);
 
-        GetMarkerExtension<T> extension(count);
-        extension.Insert(sceneComponents);
+        std::vector<XrSceneMarkerQRCodeMSFT> qrCodes(count);
+        XrSceneMarkerQRCodesMSFT sceneQRCodes{XR_TYPE_SCENE_MARKER_QR_CODES_MSFT};
+        sceneQRCodes.qrCodeCapacityInput = count;
+        sceneQRCodes.qrCodes = qrCodes.data();
+
+        xr::InsertExtensionStruct(sceneComponents, sceneQRCodes);
 
         CHECK_XRCMD(xrGetSceneComponentsMSFT(scene, &getInfo, &sceneComponents));
 
@@ -331,26 +300,25 @@ namespace xr::su {
             m.lastSeenTime = markers[k].lastSeenTime;
             m.center = markers[k].center;
             m.size = markers[k].size;
-            extension.CopyTo(&m, k);
+            m.qrVersion = qrCodes[k].version;
+            m.symbolType = qrCodes[k].symbolType;
         }
         return result;
     }
 
     inline void GetSceneMarkerRawData(XrSceneMSFT scene, const SceneMarker::Id& markerId, std::vector<uint8_t>& data) {
-        uint32_t dataSize;
+        uint32_t dataSize = 0;
         CHECK_XRCMD(xrGetSceneMarkerRawDataMSFT(scene, (XrUuidMSFT*)&markerId, 0, &dataSize, nullptr));
         data.resize(dataSize);
         CHECK_XRCMD(xrGetSceneMarkerRawDataMSFT(scene, (XrUuidMSFT*)&markerId, dataSize, &dataSize, data.data()));
     }
 
     inline std::string GetSceneMarkerDecodedString(XrSceneMSFT scene, const SceneMarker::Id& markerId) {
-        uint32_t characterCount;
+        uint32_t characterCount = 0;
         CHECK_XRCMD(xrGetSceneMarkerDecodedStringMSFT(scene, (XrUuidMSFT*)&markerId, 0, &characterCount, nullptr));
         std::string ret;
-        ret.resize(characterCount);
+        ret.resize(characterCount - 1); // std::string includes room for the null terminator.
         CHECK_XRCMD(xrGetSceneMarkerDecodedStringMSFT(scene, (XrUuidMSFT*)&markerId, characterCount, &characterCount, ret.data()));
-        // characterCount includes the null terminator needed to fill the buffer but we need to trim it
-        ret.resize(characterCount - 1);
         return ret;
     }
 

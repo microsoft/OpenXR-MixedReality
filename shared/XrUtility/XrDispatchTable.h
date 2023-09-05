@@ -3,11 +3,10 @@
 
 #pragma once
 
-#include <XrUtility/XrPlatformDependencies.h>
 #include <openxr/openxr.h>
 #include <openxr/openxr_platform.h>
 #include <openxr/openxr_reflection.h>
-#include <openxr/openxr_msft_preview.h>
+#include <openxr_preview/openxr_msft_preview.h>
 
 #include "XrListFunctions.h"
 
@@ -30,6 +29,7 @@ namespace xr {
         XR_LIST_FUNCTIONS_OPENXR_FUNCTIONS(XR_DISPATCH_TABLE_MEMBER);
         XR_LIST_FUNCTIONS_OPENXR_EXTENSIONS(XR_DISPATCH_TABLE_MEMBER, XR_DISPATCH_TABLE_MEMBER_VOID);
         XR_LIST_FUNCTIONS_MSFT_PREVIEW(XR_DISPATCH_TABLE_MEMBER);
+
 #undef XR_DISPATCH_TABLE_DEFINE_MEMBER
 #undef XR_DISPATCH_TABLE_MEMBER_VOID
 

@@ -99,7 +99,7 @@ namespace {
     };
 
     ControllerObject::ControllerObject(engine::Context& context, XrPath controllerUserPath)
-        : m_extensionSupported(context.Extensions.SupportsControllerModel)
+        : m_extensionSupported(context.Extensions.XR_MSFT_controller_model_enabled)
         , m_controllerUserPath(controllerUserPath) {
     }
 

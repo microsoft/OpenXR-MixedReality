@@ -2,7 +2,7 @@
 #define OPENXR_REFLECTION_PARENT_STRUCTS_H_ 1
 
 /*
-** Copyright (c) 2017-2022, The Khronos Group Inc.
+** Copyright (c) 2017-2023, The Khronos Group Inc.
 **
 ** SPDX-License-Identifier: Apache-2.0 OR MIT
 */
@@ -58,12 +58,12 @@ This file contains expansion macros (X Macros) for OpenXR structures that have a
     _avail(XrEventDataSpatialAnchorCreateCompleteFB, XR_TYPE_EVENT_DATA_SPATIAL_ANCHOR_CREATE_COMPLETE_FB) \
     _avail(XrEventDataSpaceSetStatusCompleteFB, XR_TYPE_EVENT_DATA_SPACE_SET_STATUS_COMPLETE_FB) \
     _avail(XrEventDataMarkerTrackingUpdateVARJO, XR_TYPE_EVENT_DATA_MARKER_TRACKING_UPDATE_VARJO) \
-    _avail(XrEventDataChromaKeyConfigChangedVARJO, XR_TYPE_EVENT_DATA_CHROMA_KEY_CONFIG_CHANGED_VARJO) \
-    _avail(XrEventDataCameraControlChangedVARJO, XR_TYPE_EVENT_DATA_CAMERA_CONTROL_CHANGED_VARJO) \
     _avail(XrEventDataSpaceQueryResultsAvailableFB, XR_TYPE_EVENT_DATA_SPACE_QUERY_RESULTS_AVAILABLE_FB) \
     _avail(XrEventDataSpaceQueryCompleteFB, XR_TYPE_EVENT_DATA_SPACE_QUERY_COMPLETE_FB) \
     _avail(XrEventDataSpaceSaveCompleteFB, XR_TYPE_EVENT_DATA_SPACE_SAVE_COMPLETE_FB) \
     _avail(XrEventDataSpaceEraseCompleteFB, XR_TYPE_EVENT_DATA_SPACE_ERASE_COMPLETE_FB) \
+    _avail(XrEventDataSpaceShareCompleteFB, XR_TYPE_EVENT_DATA_SPACE_SHARE_COMPLETE_FB) \
+    _avail(XrEventDataSpaceListSaveCompleteFB, XR_TYPE_EVENT_DATA_SPACE_LIST_SAVE_COMPLETE_FB) \
 
 
 

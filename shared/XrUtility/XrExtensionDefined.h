@@ -65,12 +65,6 @@
 #define XR_MSFT_spatial_graph_bridge_DEFINED(_, defined, undefined) _(undefined)
 #endif
 
-#ifdef XR_MSFT_holographic_remoting
-#define XR_MSFT_holographic_remoting_DEFINED(_, defined, undefined) _(defined)
-#else
-#define XR_MSFT_holographic_remoting_DEFINED(_, defined, undefined) _(undefined)
-#endif
-
 #ifdef XR_MSFT_perception_anchor_interop
 #define XR_MSFT_perception_anchor_interop_DEFINED(_, defined, undefined) _(defined)
 #else
@@ -101,8 +95,80 @@
 #define XR_MSFT_composition_layer_reprojection_DEFINED(_, defined, undefined) _(undefined)
 #endif
 
-#ifdef XR_MSFTX_scene_marker
-#define XR_MSFTX_scene_marker_DEFINED(_, defined, undefined) _(defined)
+#ifdef XR_VARJO_marker_tracking
+#define XR_varjo_marker_tracking_DEFINED(_, defined, undefined) _(defined)
 #else
-#define XR_MSFTX_scene_marker_DEFINED(_, defined, undefined) _(undefined)
+#define XR_varjo_marker_tracking_DEFINED(_, defined, undefined) _(undefined)
+#endif
+
+#ifdef XR_FB_render_model
+#define XR_FB_render_model_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_FB_render_model_DEFINED(_, defined, undefined) _(undefined)
+#endif
+
+#ifdef XR_FB_keyboard_tracking
+#define XR_FB_keyboard_tracking_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_FB_keyboard_tracking_DEFINED(_, defined, undefined) _(undefined)
+#endif
+
+#ifdef XR_MSFT_scene_marker
+#define XR_MSFT_scene_marker_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_MSFT_scene_marker_DEFINED(_, defined, undefined) _(undefined)
+#endif
+
+#ifdef XR_EXT_performance_settings
+#define XR_EXT_performance_settings_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_EXT_performance_settings_DEFINED(_, defined, undefined) _(undefined)
+#endif
+
+#ifdef XR_FB_foveation
+#define XR_FB_foveation_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_FB_foveation_DEFINED(_, defined, undefined) _(undefined)
+#endif
+
+#ifdef XR_FB_swapchain_update_state
+#define XR_FB_swapchain_update_state_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_FB_swapchain_update_state_DEFINED(_, defined, undefined) _(undefined)
+#endif
+
+#ifdef XR_FB_passthrough
+#define XR_FB_passthrough_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_FB_passthrough_DEFINED(_, defined, undefined) _(undefined)
+#endif
+
+#ifdef XR_FB_keyboard_tracking
+#define XR_FB_keyboard_tracking_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_FB_keyboard_tracking_DEFINED(_, defined, undefined) _(undefined)
+#endif
+
+#ifdef XR_FB_display_refresh_rate
+#define XR_FB_display_refresh_rate_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_FB_display_refresh_rate_DEFINED(_, defined, undefined) _(undefined)
+#endif
+
+#ifdef XR_VARJO_marker_tracking
+#define XR_varjo_marker_tracking_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_varjo_marker_tracking_DEFINED(_, defined, undefined) _(undefined)
+#endif
+
+#ifdef XR_FB_render_model
+#define XR_FB_render_model_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_FB_render_model_DEFINED(_, defined, undefined) _(undefined)
+#endif
+
+#ifdef XR_MSFT_scene_marker
+#define XR_MSFT_scene_marker_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_MSFT_scene_marker_DEFINED(_, defined, undefined) _(undefined)
 #endif

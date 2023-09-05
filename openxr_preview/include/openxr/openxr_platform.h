@@ -2,7 +2,7 @@
 #define OPENXR_PLATFORM_H_ 1
 
 /*
-** Copyright 2017-2022 The Khronos Group Inc.
+** Copyright 2017-2023 The Khronos Group Inc.
 **
 ** SPDX-License-Identifier: Apache-2.0 OR MIT
 */
@@ -454,9 +454,9 @@ typedef XrSwapchainImageVulkanKHR XrSwapchainImageVulkan2KHR;
 
 typedef XrGraphicsRequirementsVulkanKHR XrGraphicsRequirementsVulkan2KHR;
 
-typedef XrResult (XRAPI_PTR *PFN_xrCreateVulkanInstanceKHR)(XrInstance                           instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance*                          vulkanInstance, VkResult*                            vulkanResult);
-typedef XrResult (XRAPI_PTR *PFN_xrCreateVulkanDeviceKHR)(XrInstance                          instance, const XrVulkanDeviceCreateInfoKHR*  createInfo, VkDevice*                           vulkanDevice, VkResult*                           vulkanResult);
-typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsDevice2KHR)(XrInstance                              instance, const XrVulkanGraphicsDeviceGetInfoKHR* getInfo, VkPhysicalDevice*                       vulkanPhysicalDevice);
+typedef XrResult (XRAPI_PTR *PFN_xrCreateVulkanInstanceKHR)(XrInstance instance, const XrVulkanInstanceCreateInfoKHR* createInfo, VkInstance* vulkanInstance, VkResult* vulkanResult);
+typedef XrResult (XRAPI_PTR *PFN_xrCreateVulkanDeviceKHR)(XrInstance instance, const XrVulkanDeviceCreateInfoKHR* createInfo, VkDevice* vulkanDevice, VkResult* vulkanResult);
+typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsDevice2KHR)(XrInstance instance, const XrVulkanGraphicsDeviceGetInfoKHR* getInfo, VkPhysicalDevice* vulkanPhysicalDevice);
 typedef XrResult (XRAPI_PTR *PFN_xrGetVulkanGraphicsRequirements2KHR)(XrInstance instance, XrSystemId systemId, XrGraphicsRequirementsVulkanKHR* graphicsRequirements);
 
 #ifndef XR_NO_PROTOTYPES
@@ -491,14 +491,15 @@ XRAPI_ATTR XrResult XRAPI_CALL xrGetVulkanGraphicsRequirements2KHR(
 #define XR_MNDX_egl_enable 1
 #define XR_MNDX_egl_enable_SPEC_VERSION   1
 #define XR_MNDX_EGL_ENABLE_EXTENSION_NAME "XR_MNDX_egl_enable"
+typedef void *(*PFN_xrEglGetProcAddressMNDX)(const char *name);
 // XrGraphicsBindingEGLMNDX extends XrSessionCreateInfo
 typedef struct XrGraphicsBindingEGLMNDX {
-    XrStructureType             type;
-    const void* XR_MAY_ALIAS    next;
-    PFNEGLGETPROCADDRESSPROC    getProcAddress;
-    EGLDisplay                  display;
-    EGLConfig                   config;
-    EGLContext                  context;
+    XrStructureType                type;
+    const void* XR_MAY_ALIAS       next;
+    PFN_xrEglGetProcAddressMNDX    getProcAddress;
+    EGLDisplay                     display;
+    EGLConfig                      config;
+    EGLContext                     context;
 } XrGraphicsBindingEGLMNDX;
 
 #endif /* XR_USE_PLATFORM_EGL */

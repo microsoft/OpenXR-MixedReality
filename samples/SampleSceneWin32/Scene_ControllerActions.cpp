@@ -79,7 +79,7 @@ namespace {
                     axis->SetParent(controllerData.gripRoot);
                 }
 
-                if (m_context.Extensions.SupportsHandInteractionEXT) {
+                if (m_context.Extensions.XR_EXT_hand_interaction_enabled) {
                     // Initialize objects attached to pinch pose
                     {
                         XrAction pinchAction = FindAction(m_actions, pinchPoseActionName[side]).action;
@@ -141,7 +141,7 @@ namespace {
                 }
 
                 // Find the pinch action
-                if (m_context.Extensions.SupportsHandInteractionEXT) {
+                if (m_context.Extensions.XR_EXT_hand_interaction_enabled) {
                     XrAction pinchAction = FindAction(m_actions, "pinch").action;
                     if (pinchAction) {
                         XrActionStateGetInfo getInfo{XR_TYPE_ACTION_STATE_GET_INFO};
@@ -231,7 +231,7 @@ namespace {
 
     private:
         static std::vector<ActionInfo> CreateActions(sample::ActionContext& actionContext,
-                                                     const xr::ExtensionContext& extensions,
+                                                     const xr::EnabledExtensions& extensions,
                                                      const char* actionSetName) {
             sample::ActionSet& actionSet = actionContext.CreateActionSet(actionSetName, actionSetName);
             std::vector<ActionInfo> actions{};
@@ -407,7 +407,7 @@ namespace {
                               {InteractionProfiles::TouchController, "grip/pose", UserHandPath[side]},
                           });
 
-                if (extensions.SupportsHandInteractionEXT) {
+                if (extensions.XR_EXT_hand_interaction_enabled) {
                     addAction(pinchPoseActionName[side],
                               XR_ACTION_TYPE_POSE_INPUT,
                               {
@@ -456,7 +456,7 @@ namespace {
 
         static void InitializeSuggestBindings(uint32_t side,
                                               sample::ActionContext& actionContext,
-                                              const xr::ExtensionContext& extensions,
+                                              const xr::EnabledExtensions& extensions,
                                               const std::vector<ActionInfo>& actions) {
             const std::string subactionPath = UserHandPath[side];
 
@@ -480,22 +480,22 @@ namespace {
             actionContext.SuggestInteractionProfileBindings(InteractionProfiles::TouchController,
                                                             suggestedBindings[InteractionProfiles::TouchController]);
 
-            if (extensions.SupportsHPMixedRealityController) {
+            if (extensions.XR_EXT_hp_mixed_reality_controller_enabled) {
                 actionContext.SuggestInteractionProfileBindings(InteractionProfiles::HPMixedRealityController,
                                                                 suggestedBindings[InteractionProfiles::HPMixedRealityController]);
             }
 
-            if (extensions.SupportsHandInteractionMSFT) {
+            if (extensions.XR_MSFT_hand_interaction_enabled) {
                 actionContext.SuggestInteractionProfileBindings(InteractionProfiles::HandInteractionMSFT,
                                                                 suggestedBindings[InteractionProfiles::HandInteractionMSFT]);
             }
 
-            if (extensions.SupportsHandInteractionEXT) {
+            if (extensions.XR_EXT_hand_interaction_enabled) {
                 actionContext.SuggestInteractionProfileBindings(InteractionProfiles::HandInteractionEXT,
                                                                 suggestedBindings[InteractionProfiles::HandInteractionEXT]);
             }
 
-            if (extensions.SupportsSamsungOdysseyController) {
+            if (extensions.XR_EXT_samsung_odyssey_controller_enabled) {
                 actionContext.SuggestInteractionProfileBindings(InteractionProfiles::SamsungController,
                                                                 suggestedBindings[InteractionProfiles::SamsungController]);
             }

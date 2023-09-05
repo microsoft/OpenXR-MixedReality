@@ -6,7 +6,7 @@
 #include <optional>
 #include <unordered_map>
 #include "XrUtility/XrEnumerate.h"
-#include "XrUtility/XrExtensionContext.h"
+#include "XrUtility/XrEnabledExtensions.h"
 #include "XrUtility/XrStruct.h"
 #include "XrUtility/XrViewConfiguration.h"
 
@@ -26,7 +26,7 @@ namespace sample {
 
     inline std::optional<sample::SystemContext>
     CreateSystemContext(XrInstance instance,
-                        const xr::ExtensionContext& extensions,
+                        const xr::EnabledExtensions& extensions,
                         XrFormFactor formFactor,
                         const std::vector<XrViewConfigurationType>& appSupportedViewConfigurationTypes,
                         const std::vector<XrEnvironmentBlendMode>& appSupportedEnvironmentBlendMode) {
@@ -43,13 +43,13 @@ namespace sample {
         system.FormFactor = formFactor;
 
         // Initialize system properties including extension system properties.
-        if (extensions.SupportsHandJointTracking) {
+        if (extensions.XR_EXT_hand_tracking_enabled) {
             xr::InsertExtensionStruct(system.Properties, system.HandTrackingProperties);
         }
-        if (extensions.SupportsHandMeshTracking) {
+        if (extensions.XR_MSFT_hand_tracking_mesh_enabled) {
             xr::InsertExtensionStruct(system.Properties, system.HandMeshProperties);
         }
-        if (extensions.SupportsEyeGazeInteraction) {
+        if (extensions.XR_EXT_eye_gaze_interaction_enabled) {
             xr::InsertExtensionStruct(system.Properties, system.EyeGazeInteractionProperties);
         }
         CHECK_XRCMD(xrGetSystemProperties(instance, system.Id, &system.Properties));

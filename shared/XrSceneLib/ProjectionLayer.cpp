@@ -124,7 +124,7 @@ void engine::ProjectionLayer::PrepareRendering(const Context& context,
     const uint32_t arrayLength = layerCurrentConfig.DoubleWideMode ? 1 : (uint32_t)viewConfigViews.size();
 
     const std::optional<XrViewConfigurationType> viewConfigurationForSwapchain =
-        context.Extensions.SupportsSecondaryViewConfiguration ? std::optional{viewConfigType} : std::nullopt;
+        context.Extensions.XR_MSFT_secondary_view_configuration_enabled ? std::optional{viewConfigType} : std::nullopt;
 
     // Create color swapchain with recommended properties.
     viewConfigComponent.ColorSwapchain =
@@ -217,7 +217,7 @@ bool engine::ProjectionLayer::Render(Context& context,
             projectionViews[viewIndex].subImage.imageRect = viewConfigComponent.LayerColorImageRect[viewIndex];
 
             D3D11_VIEWPORT viewport = viewports[viewIndex];
-            if (currentConfig.SubmitDepthInfo && context.Extensions.SupportsDepthInfo) {
+            if (currentConfig.SubmitDepthInfo && context.Extensions.XR_KHR_composition_layer_depth_enabled) {
                 depthInfo[viewIndex] = {XR_TYPE_COMPOSITION_LAYER_DEPTH_INFO_KHR};
                 depthInfo[viewIndex].minDepth = viewport.MinDepth = normalizedViewportMinDepth;
                 depthInfo[viewIndex].maxDepth = viewport.MaxDepth = normalizedViewportMaxDepth;

@@ -127,10 +127,10 @@ namespace sample::dx {
     std::tuple<XrGraphicsBindingD3D11KHR, winrt::com_ptr<ID3D11Device>, winrt::com_ptr<ID3D11DeviceContext>>
     CreateD3D11Binding(XrInstance instance,
                        XrSystemId systemId,
-                       const xr::ExtensionContext& extensions,
+                       const xr::EnabledExtensions& extensions,
                        bool singleThreadedD3D11Device,
                        const std::vector<D3D_FEATURE_LEVEL>& appSupportedFeatureLevels) {
-        if (!extensions.SupportsD3D11) {
+        if (!extensions.XR_KHR_D3D11_enable_enabled) {
             throw std::exception("The runtime doesn't support D3D11 extensions.");
         }
         _Analysis_assume_(xrGetD3D11GraphicsRequirementsKHR != nullptr);

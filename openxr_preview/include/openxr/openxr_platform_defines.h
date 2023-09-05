@@ -1,5 +1,5 @@
 /*
-** Copyright (c) 2017-2022, The Khronos Group Inc.
+** Copyright (c) 2017-2023, The Khronos Group Inc.
 **
 ** SPDX-License-Identifier: Apache-2.0 OR MIT
 */
@@ -102,6 +102,10 @@ typedef unsigned __int64 uint64_t;
 #define XR_CPP_NULLPTR_SUPPORTED 1
 #endif
 #endif
+
+#if !defined(XR_CPP_NULLPTR_SUPPORTED)
+#define XR_CPP_NULLPTR_SUPPORTED 0
+#endif  // !defined(XR_CPP_NULLPTR_SUPPORTED)
 
 #ifdef __cplusplus
 }

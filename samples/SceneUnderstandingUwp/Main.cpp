@@ -17,7 +17,7 @@ int APIENTRY wWinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance
         appConfig.RequestedExtensions.push_back(XR_MSFT_SPATIAL_ANCHOR_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_MSFT_SCENE_UNDERSTANDING_EXTENSION_NAME);
         appConfig.RequestedExtensions.push_back(XR_MSFT_SCENE_UNDERSTANDING_SERIALIZATION_EXTENSION_NAME);
-        appConfig.RequestedExtensions.push_back(XR_MSFTX_SCENE_MARKER_EXTENSION_NAME);
+        appConfig.RequestedExtensions.push_back(XR_MSFT_SCENE_MARKER_EXTENSION_NAME);
 
         auto app = CreateXrApp(appConfig);
         app->AddScene(TryCreateTitleScene(app->Context()));
