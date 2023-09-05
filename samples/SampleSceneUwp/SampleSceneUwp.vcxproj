@@ -45,10 +45,10 @@
     <DefaultLanguage>en-US</DefaultLanguage>
     <AppContainerApplication>true</AppContainerApplication>
     <ApplicationType>Windows Store</ApplicationType>
-    <WindowsTargetPlatformVersion>10.0.18362.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0</WindowsTargetPlatformVersion>
     <WindowsTargetPlatformMinVersion>10.0.17763.0</WindowsTargetPlatformMinVersion>
     <ApplicationTypeRevision>10.0</ApplicationTypeRevision>
-    <PackageCertificateThumbprint>2C8ECCE422302CD00B52EAE031E9F8BBF1C6ABA7</PackageCertificateThumbprint>
+    <PackageCertificateThumbprint>1082728B1950B0EE8CB190365A12982646D59B38</PackageCertificateThumbprint>
     <PackageCertificateKeyFile>TemporaryKey.pfx</PackageCertificateKeyFile>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -56,7 +56,7 @@
     <!-- PREfast builds only compile code, not link them. Set the uwp projects to static lib to skip package generation problems. -->
     <ConfigurationType Condition="'$(LinkCompiled)'!='false'">Application</ConfigurationType>
     <ConfigurationType Condition="'$(LinkCompiled)'=='false'">StaticLibrary</ConfigurationType>
-    <PlatformToolset>v142</PlatformToolset>
+    <PlatformToolset>v143</PlatformToolset>
     <CharacterSet>Unicode</CharacterSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)'=='Debug'" Label="Configuration">
