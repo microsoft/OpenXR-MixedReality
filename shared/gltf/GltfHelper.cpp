@@ -55,7 +55,10 @@ namespace
             primitive->Vertices[vertexIndex].Tangent.x = fvTangent[0];
             primitive->Vertices[vertexIndex].Tangent.y = fvTangent[1];
             primitive->Vertices[vertexIndex].Tangent.z = fvTangent[2];
-            primitive->Vertices[vertexIndex].Tangent.w = fSign;
+            // handedness difference, see:
+            // https://github.com/KhronosGroup/glTF-Sample-Models/issues/174
+            // https://github.com/KhronosGroup/glTF/issues/2056
+            primitive->Vertices[vertexIndex].Tangent.w = -fSign;
         };
 
         // Run the MikkTSpace algorithm.
