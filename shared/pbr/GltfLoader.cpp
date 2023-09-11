@@ -204,14 +204,14 @@ namespace Gltf {
                                            Pbr::RGBAColor defaultRGBA) {
                         // Find or load the image referenced by the texture.
                         const ImageKey imageKey = std::make_tuple(texture.Image, sRGB);
-                        winrt::com_ptr<ID3D11ShaderResourceView> textureView = imageMap[imageKey];
+                        winrt::com_ptr<ID3D11ShaderResourceView> textureView =
+                            texture.Image != nullptr ? imageMap[imageKey] : pbrResources.CreateSolidColorTexture(defaultRGBA);
                         if (!textureView) // If not cached, load the image and store it in the texture cache.
                         {
                             // TODO: Generate mipmaps if sampler's minification filter (minFilter) uses mipmapping.
                             // TODO: If texture is not power-of-two and (sampler has wrapping=repeat/mirrored_repeat OR minFilter uses
                             // mipmapping), resize to power-of-two.
-                            textureView = texture.Image != nullptr ? LoadImage(pbrResources.GetDevice().get(), *texture.Image, sRGB)
-                                                                   : pbrResources.CreateSolidColorTexture(defaultRGBA);
+                            textureView = LoadImage(pbrResources.GetDevice().get(), *texture.Image, sRGB);
                             imageMap[imageKey] = textureView;
                         }
 
