@@ -43,4 +43,3 @@ namespace engine {
         std::vector<XrCompositionLayerBaseHeader const*> m_compositionLayers;
     };
 } // namespace engine
-

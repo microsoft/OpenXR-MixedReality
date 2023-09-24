@@ -17,17 +17,21 @@
 namespace xr {
 
     inline XrPath StringToPath(XrInstance instance, const char* str) {
-        XrPath path;
+        XrPath path = XR_NULL_PATH;
         CHECK_XRCMD(xrStringToPath(instance, str, &path));
         return path;
     }
 
     inline std::string PathToString(XrInstance instance, XrPath path) {
-        uint32_t count;
+        uint32_t count = 0;
         CHECK_XRCMD(xrPathToString(instance, path, 0, &count, nullptr));
         std::string string;
-        string.resize(count - 1); // OpenXR size includes '\0', std::string::size doesn't.
-        CHECK_XRCMD(xrPathToString(instance, path, count, &count, string.data()));
+
+        if (count > 0) {
+            string.resize(count - 1); // OpenXR size includes '\0', std::string::size doesn't.
+            CHECK_XRCMD(xrPathToString(instance, path, count, &count, string.data()));
+        }
+
         return string;
     }
 

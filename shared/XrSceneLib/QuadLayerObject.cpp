@@ -33,4 +33,3 @@ void engine::AppendQuadLayer(engine::CompositionLayers& layers, engine::QuadLaye
 
     xr::math::StoreXrExtent(&quadLayer.size, scale); // Use x and y but ignore z.
 };
-

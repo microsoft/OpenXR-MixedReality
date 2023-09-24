@@ -82,5 +82,6 @@ namespace xr {
     class SwapchainHandle : public UniqueXrHandle<XrSwapchain> {};
     class SpatialAnchorHandle : public UniqueXrHandle<XrSpatialAnchorMSFT> {};
     class HandTrackerHandle : public UniqueXrHandle<XrHandTrackerEXT> {};
+    class FoveationProfileHandle : public UniqueXrHandle<XrFoveationProfileFB> {};
 
 } // namespace xr

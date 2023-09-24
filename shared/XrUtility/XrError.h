@@ -13,11 +13,17 @@
 #include <android/log.h>
 #endif
 
+#define THROW(msg) xr::detail::_Throw(msg, nullptr, FILE_AND_LINE)
+#define CHECK(exp) xr::detail::_Check((exp), "Check failed", #exp, FILE_AND_LINE)
+#define CHECK_MSG(exp, msg) xr::detail::_Check((exp), msg, #exp, FILE_AND_LINE)
+
+#define THROW_XRRESULT(res, cmdStr) xr::detail::_ThrowXrResult(res, cmdStr, FILE_AND_LINE)
 #define CHECK_XRCMD(cmd) xr::detail::_CheckXrResult(cmd, #cmd, FILE_AND_LINE)
 #define CHECK_XRRESULT(res, cmdStr) xr::detail::_CheckXrResult(res, cmdStr, FILE_AND_LINE)
 
 #define CHECK_XRCMD_PRINT(cmd) xr::detail::_CheckXrResultPrint(cmd, #cmd, FILE_AND_LINE)
 
+#define THROW_HRESULT(res, cmdStr) xr::detail::_ThrowHResult(res, cmdStr, FILE_AND_LINE)
 #define CHECK_HRCMD(cmd) xr::detail::_CheckHResult(cmd, #cmd, FILE_AND_LINE)
 #define CHECK_HRESULT(res, cmdStr) xr::detail::_CheckHResult(res, cmdStr, FILE_AND_LINE)
 
@@ -76,18 +82,13 @@ namespace xr::detail {
 #endif
     }
 
-#define THROW(msg) xr::detail::_Throw(msg, nullptr, FILE_AND_LINE)
-#define CHECK(exp)                                                   \
-    {                                                                \
-        if (!(exp)) {                                                \
-            xr::detail::_Throw("Check failed", #exp, FILE_AND_LINE); \
-        }                                                            \
-    }
-#define CHECK_MSG(exp, msg)                               \
-    {                                                     \
-        if (!(exp)) {                                     \
-            xr::detail::_Throw(msg, #exp, FILE_AND_LINE); \
-        }                                                 \
+    template <typename T>
+    inline T&& _Check(T&& res, const char* failureMessage, const char* originator = nullptr, const char* sourceLocation = nullptr) {
+        if (!res) {
+            xr::detail::_Throw(failureMessage, originator, sourceLocation);
+        }
+
+        return std::forward<T>(res);
     }
 
     [[noreturn]] inline void _ThrowXrResult(XrResult res, const char* originator = nullptr, const char* sourceLocation = nullptr) {

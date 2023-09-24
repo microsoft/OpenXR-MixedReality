@@ -73,6 +73,13 @@
 
 #define XR_LIST_FUNCTIONS_XR_KHR_D3D11_enable(_) _(xrGetD3D11GraphicsRequirementsKHR)
 #define XR_LIST_FUNCTIONS_XR_KHR_D3D12_enable(_) _(xrGetD3D12GraphicsRequirementsKHR)
+
+#define XR_LIST_FUNCTIONS_XR_KHR_vulkan_enable2(_) \
+    _(xrCreateVulkanInstanceKHR)                   \
+    _(xrCreateVulkanDeviceKHR)                     \
+    _(xrGetVulkanGraphicsDevice2KHR)               \
+    _(xrGetVulkanGraphicsRequirements2KHR)
+
 #define XR_LIST_FUNCTIONS_XR_KHR_visibility_mask(_) _(xrGetVisibilityMaskKHR)
 
 #define XR_LIST_FUNCTIONS_XR_MSFT_controller_model(_) \
@@ -188,6 +195,7 @@
     XR_KHR_convert_timespec_time_DEFINED(XR_LIST_FUNCTIONS_XR_KHR_convert_timespec_time, _, __)                                     \
     XR_KHR_D3D11_enable_DEFINED(XR_LIST_FUNCTIONS_XR_KHR_D3D11_enable, _, __)                                                       \
     XR_KHR_D3D12_enable_DEFINED(XR_LIST_FUNCTIONS_XR_KHR_D3D12_enable, _, __)                                                       \
+    XR_KHR_vulkan_enable2_DEFINED(XR_LIST_FUNCTIONS_XR_KHR_vulkan_enable2, _, __)                                                   \
     XR_KHR_visibility_mask_DEFINED(XR_LIST_FUNCTIONS_XR_KHR_visibility_mask, _, __)                                                 \
     XR_MSFT_controller_model_DEFINED(XR_LIST_FUNCTIONS_XR_MSFT_controller_model, _, __)                                             \
     XR_MSFT_spatial_anchor_DEFINED(XR_LIST_FUNCTIONS_XR_MSFT_spatial_anchor, _, __)                                                 \

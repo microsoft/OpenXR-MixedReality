@@ -40,4 +40,3 @@ namespace engine {
 
     std::unique_ptr<XrApp> CreateXrApp(XrAppConfiguration appConfiguration);
 } // namespace engine
-

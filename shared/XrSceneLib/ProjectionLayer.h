@@ -137,4 +137,3 @@ namespace engine {
         std::vector<std::unique_ptr<ProjectionLayer>> m_projectionLayers;
     };
 } // namespace engine
-

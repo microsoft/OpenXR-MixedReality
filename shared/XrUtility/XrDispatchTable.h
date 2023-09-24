@@ -81,4 +81,3 @@ namespace xr {
     #undef XR_DISPATCH_TABLE_NO_OP
 // clang-format on
 #endif // ENABLE_GLOBAL_XR_DISPATCH_TABLE
-

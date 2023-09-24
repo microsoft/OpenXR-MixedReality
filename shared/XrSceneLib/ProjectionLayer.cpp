@@ -334,4 +334,3 @@ void engine::AppendProjectionLayer(CompositionLayers& layers, ProjectionLayer* l
     }
 
 }
-

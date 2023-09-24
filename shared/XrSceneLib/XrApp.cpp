@@ -692,4 +692,3 @@ namespace engine {
         return std::make_unique<ImplementXrApp>(std::move(appConfiguration));
     }
 } // namespace engine
-
