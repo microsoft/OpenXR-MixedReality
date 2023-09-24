@@ -175,4 +175,3 @@
     <Error Condition="!Exists('..\..\packages\OpenXR.Headers.1.0.10.2\build\native\OpenXR.Headers.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\..\packages\OpenXR.Headers.1.0.10.2\build\native\OpenXR.Headers.targets'))" />
   </Target>
 </Project>
-

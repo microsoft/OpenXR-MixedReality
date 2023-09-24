@@ -475,4 +475,3 @@ namespace {
 std::unique_ptr<engine::Scene> TryCreateQRCodeScene(engine::Context& context) {
     return context.Extensions.XR_MSFT_scene_marker_enabled ? std::make_unique<QRCodeScene>(context) : nullptr;
 }
-

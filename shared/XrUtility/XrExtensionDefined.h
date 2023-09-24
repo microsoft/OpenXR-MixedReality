@@ -29,6 +29,12 @@
 #define XR_KHR_D3D12_enable_DEFINED(_, defined, undefined) _(undefined)
 #endif
 
+#ifdef XR_KHR_vulkan_enable2
+#define XR_KHR_vulkan_enable2_DEFINED(_, defined, undefined) _(defined)
+#else
+#define XR_KHR_vulkan_enable2_DEFINED(_, defined, undefined) _(undefined)
+#endif
+
 #ifdef XR_KHR_visibility_mask
 #define XR_KHR_visibility_mask_DEFINED(_, defined, undefined) _(defined)
 #else

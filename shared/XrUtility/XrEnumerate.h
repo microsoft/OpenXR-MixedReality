@@ -3,10 +3,13 @@
 
 #pragma once
 
-#include <openxr/openxr.h>
-#include <vector>
-#include <set>
 #include "XrError.h"
+
+#include <openxr/openxr.h>
+
+#include <algorithm>
+#include <set>
+#include <vector>
 
 namespace xr {
     template <typename TArray, typename TValue>
@@ -52,7 +55,22 @@ namespace xr {
 
         std::vector<XrViewConfigurationType> viewConfigs(viewConfigurationCount);
         CHECK_XRCMD(xrEnumerateViewConfigurations(instance, systemId, viewConfigurationCount, &viewConfigurationCount, viewConfigs.data()));
+
         return viewConfigs;
+    }
+
+    // Pick the first supported XrViewConfigurationType from runtime's supported list.
+    inline XrViewConfigurationType PickViewConfiguration(const std::vector<XrViewConfigurationType>& systemSupportedViewConfigs,
+                                                         const std::vector<XrViewConfigurationType>& appSupportedViewConfigs) {
+        auto viewConfigIt = std::find_first_of(systemSupportedViewConfigs.begin(),
+                                               systemSupportedViewConfigs.end(),
+                                               appSupportedViewConfigs.begin(),
+                                               appSupportedViewConfigs.end());
+        if (viewConfigIt == std::end(systemSupportedViewConfigs)) {
+            throw std::runtime_error("No view configs supported");
+        }
+
+        return *viewConfigIt;
     }
 
     inline std::vector<XrViewConfigurationView> EnumerateViewConfigurationViews(XrInstance instance,

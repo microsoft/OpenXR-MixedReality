@@ -183,7 +183,7 @@ namespace {
                         const std::vector<const sample::Cube*>& cubes) override {
             const uint32_t viewInstanceCount = (uint32_t)viewProjections.size();
             CHECK_MSG(viewInstanceCount <= CubeShader::MaxViewInstance,
-                      "Sample shader supports 2 or fewer view instances. Adjust shader to accommodate more.")
+                      "Sample shader supports 2 or fewer view instances. Adjust shader to accommodate more.");
 
             CD3D11_VIEWPORT viewport(
                 (float)imageRect.offset.x, (float)imageRect.offset.y, (float)imageRect.extent.width, (float)imageRect.extent.height);
